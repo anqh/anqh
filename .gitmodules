@@ -16,3 +16,6 @@
 [submodule "modules/image"]
 	path = modules/image
 	url = http://github.com/kohana/image.git
+[submodule "modules/anqh"]
+	path = modules/anqh
+	url = git@github.com:anqh/core.git
