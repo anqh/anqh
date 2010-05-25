@@ -19,3 +19,18 @@
 [submodule "modules/anqh"]
 	path = modules/anqh
 	url = git@github.com:anqh/core.git
+[submodule "modules/blog"]
+	path = modules/blog
+	url = git@github.com:anqh/blog.git
+[submodule "modules/events"]
+	path = modules/events
+	url = git@github.com:anqh/events.git
+[submodule "modules/forum"]
+	path = modules/forum
+	url = git@github.com:anqh/forum.git
+[submodule "modules/venues"]
+	path = modules/venues
+	url = git@github.com:anqh/venues.git
+[submodule "modules/galleries"]
+	path = modules/galleries
+	url = git@github.com:anqh/galleries.git
