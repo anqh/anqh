@@ -34,3 +34,6 @@
 [submodule "modules/galleries"]
 	path = modules/galleries
 	url = git@github.com:anqh/galleries.git
+[submodule "modules/jelly"]
+	path = modules/jelly
+	url = http://github.com/jonathangeiger/kohana-jelly.git
