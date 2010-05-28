@@ -1,0 +1,340 @@
+/*
+ * Widget LESS styles. Generic UI widgets: buttons, inputs etc
+ *
+ * Copyright (c) 2009-2010 Anqh
+ */
+
+/***** TEXT *****/
+
+a,
+a *                                    { color: @link-color; }
+a:hover *,
+a:hover                                { color: @link-hover-color; }
+
+h2 span,
+h3 span,
+h4 span,
+h5 span,
+h6 span                                { color: @text-color; }
+h2                                     { color: @header-color; }
+article header:first-child h3,
+article header:first-child h4          { padding-top: 0; }
+aside article > header > h3            { padding-bottom: 1.111em; }
+legend,
+h3,
+h4,
+h5,
+h3 a,
+label,
+dt,
+h5 a                                   { color: @subheader-color; }
+time[title]:not([class*="date"]),
+abbr[title]                            { border-bottom: 1px dotted @separator-color; margin-bottom: -1px; }
+
+span.user,
+a.user                                 { font-weight: bold; }
+
+.tip                                   { color: @tip-color; font-size: 0.9em; font-style: italic; line-height: 1.552em; }
+.my                                    { color: @my-color; }
+.owner                                 { color: @owner-color; }
+.private                               { color: @private-color; }
+
+/***** /TEXT *****/
+
+
+/***** INPUTS *****/
+
+/*
+section[class*="-edit"] form           { padding: 10px; }
+section[class*="-content"] section[class*="-edit"] form { padding: 0; }
+*/
+
+label                                  { display: block; }
+input[type="checkbox"] + label,
+input[type="radio"] + label,
+.horizontal li                         { display: inline; padding-right: 5px; }
+.horizontal label                      { display: inline; }
+
+input,
+textarea,
+select                                 { background: @input-background; border: 1px solid @input-border-color; .border-radius(5px); color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; }
+input:hover,
+select:hover,
+textarea:hover                         { border-color: @input-border-hover-color; }
+input:focus,
+select:focus,
+textarea:focus                         { border-color: @input-border-focus-color; }
+input[type="checkbox"],
+input[type="radio"]                    { color: @text-color; margin: 0; width: 20px; }
+input[type="text"],
+input[type="password"],
+input[type="file"],
+textarea,
+select                                 { width: 99%; }
+input.hint                             { color: @input-hint-color; font-style: italic; }
+input.private                          { border-color: @private-color; }
+
+fieldset a                             { vertical-align: middle; }
+
+form .notice .info,
+form .error .info                      { float: right; .border-radius(4px 4px 0 0); padding: 0 0.5em; }
+form .notice input,
+form .error input                      { border-top-right-radius: 0; -moz-border-radius-topright: 0; -webkit-border-top-right-radius: 0; }
+form .error .info                      { background: @error-background; color: @error-color; }
+form .error select,
+form .error textarea,
+form .error input                      { border-color: @error-background; }
+form .notice .info                     { background: @info-background; color: @info-color; }
+form .notice input                     { border-color: @info-background; }
+
+/***** /INPUTS *****/
+
+
+/***** BUTTONS *****/
+
+.ui-widget .ui-dialog-buttonpane .ui-state-default,
+a.action                               { margin-left: 5px; }
+.ui-widget .ui-dialog-buttonpane .ui-state-default,
+button,
+input[type="submit"],
+a.action                               { background: @action-background; border-bottom: 1px solid rgba(0,0,0,0.25); .border-radius(5px); .box-shadow(0 1px 3px rgba(0,0,0,0.5)); display: inline-block; color: #fff; cursor: pointer; font-weight: bold; line-height: 1; opacity: 0.9; padding: 4px 1em 3px; position: relative; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+.ui-widget .ui-dialog-buttonpane .ui-state-default,
+input[type="submit"]                   { border-width: 0 0 1px 0; padding: 1px 1em 0; }
+.ui-widget .ui-dialog-buttonpane .ui-state-default:active,
+button:active,
+input[type="submit"]:active,
+a.action:active                        { outline: none; top: 1px; }
+.ui-widget .ui-dialog-buttonpane .ui-state-hover,
+button:hover,
+input[type="submit"]:hover,
+a.action:hover                         { opacity: 1; text-decoration: none; }
+
+section article .actions               { opacity: 0.1; }
+section article:hover .actions         { opacity: 1; }
+.ui-widget .ui-dialog-buttonpane .ui-state-default,
+section article:hover .actions a.action,
+button,
+input[type="submit"],
+a.action                               { background-color: @link-color; }
+section article .actions a.action      { background-color: @action-background; }
+
+section article:hover .actions a[class*="-add"],
+a[class*="-add"]                       { background-color: @positive-color; }
+.confirm-delete .ui-dialog-buttonpane button:first-of-type,
+section article:hover .actions a[class*="-delete"],
+a.action.close,
+a[class*="-delete"]                    { background-color: @negative-color; }
+section article:hover .actions a[class*="-private"],
+a[class*="-private"]                   { background-color: @private-color; }
+
+.ui-widget .ui-dialog-buttonpane .ui-state-default:hover,
+button:hover,
+input[type="submit"]:hover,
+a.action:hover                         { .box-shadow(0 0 10px @link-color); }
+section article:hover .actions a[class*="-private"]:hover,
+a[class*="-private"]:hover             { .box-shadow(0 0 10px @private-color); }
+section article:hover .actions a[class*="-add"]:hover,
+a[class*="-add"]:hover                 { .box-shadow(0 0 10px @positive-color); }
+.confirm-delete,
+.confirm-delete .ui-dialog-buttonpane button:first-of-type:hover,
+section article:hover .actions a[class*="-delete"]:hover,
+a.action.close:hover,
+a[class*="-delete"]:hover              { .box-shadow(0 0 10px @negative-color); }
+
+form .buttons                          { display: block; margin-bottom: 1em; margin-top: 1em; text-align: center; }
+
+.pills li                              { display: inline; }
+.pills li label                        { background: @input-background; .border-radius(5px); color: @text-color; cursor: pointer; display: inline; padding: 0 0.5em; }
+.pills li label:hover                  { background: @link-hover-color; color: @action-link-color; }
+.pills li input[type="checkbox"]       { display: none; }
+.pills li input[type="checkbox"]:checked + label { background: @positive-color; color: @action-link-color; }
+
+a.expander:after                       { content: '\21D3'; }
+
+/***** /BUTTONS *****/
+
+
+/***** ICONS *****/
+
+var.icon                               { cursor: help; font-size: 0.75em; padding-left: 16px; }
+.icon.posts                            { background: url(/ui/icon/comment.gif) no-repeat left center; }
+.icon.topics                           { background: url(/ui/icon/comments.gif) no-repeat left center; }
+.icon.views                            { background: url(/ui/icon/eye.gif) no-repeat left center; }
+
+/***** /ICONS *****/
+
+
+/***** BADGES *****/
+
+.step                                  { font-family: Georgia, serif; font-size: 3em; line-height: 1.5em; }
+.step,
+time.date                              { display: block; width: 70px; }
+time.date *                            { display: block; text-align: center; }
+.step,
+time.date .day                         { color: @subheader-color; font-family: Georgia, serif; font-size: 2em; line-height: 0.833em; }
+time.date span                         { background: @badge-background; }
+time.date .weekday                     { background: @badge-background-alt; /*.border-radius(5px 0 0 0);*/ font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
+time.date .month                       { /*.border-radius(0 0 5px 5px);*/ text-transform: uppercase; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
+time.date.today .weekday               { background: @subheader-color; color: @action-link-color; }
+
+/***** /BADGES *****/
+
+
+/***** MEDIA *****/
+
+.avatar                                { float: left; height: 50px; padding: 5px; text-align: center; width: 50px; }
+.avatar a                              { display: block; }
+.avatar img                            { max-height: 50px; max-width: 50px; }
+a img                                  { opacity: .9; }
+a:hover img                            { opacity: 1; }
+
+#map                                   { height: 200px; width: 280px; }
+
+/*.logo                                  { float: right; }*/
+
+/***** /MEDIA *****/
+
+
+/***** LIGHTBOX *****/
+
+.lightbox                              { background: @section-background; .box-shadow(0 0 90px black); display: none; min-height: 200px; width: 675px; z-index: 10000; }
+.lightbox .close                       { background: @link-color; cursor: pointer; position: absolute; right: 10px; top: 10px; }
+.lightbox .next,
+.lightbox .prev                        { background: @section-background; cursor: pointer; display: block; font-size: 1.5em; padding: 10px 20px; position: absolute; top: 40%; .border-radius(5px) }
+.lightbox .prev                        { left: 10px; }
+.lightbox .next                        { right: 10px; }
+.lightbox .disabled                    { visibility: hidden; }
+.lightbox .next,
+.lightbox .prev,
+.lightbox .info                        { background: #222; background: rgba(0, 0, 0, 0.6); }
+.lightbox .next:hover,
+.lightbox .prev:hover                  { text-decoration: none; }
+.lightbox .info                        { bottom: 0; left: 0; padding: 10px; position: absolute; }
+.lightbox .info strong                 { display: block; }
+.lightbox .progress                    { display: none; left: 50%; position: absolute; top: 45%; }
+.lightboxed a.active img               { outline: 1px solid @link-color; position: relative; z-index: 9999; }
+
+/***** /LIGHTBOX *****/
+
+
+/***** AUTO COMPLETE *****/
+
+.ac_loading                            { background: @input-background; }
+.ui-autocomplete,
+.ac_results                            { background: @input-background; border: 1px solid @input-border-focus-color; overflow: hidden; padding: 0; z-index: 99999; }
+.ui-autocomplete,
+.ac_results ul                         { list-style-position: outside; list-style: none; margin: 0; padding: 0; width: 100%; }
+.ui-autocomplete li,
+.ac_results li                         { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; }
+.ac_odd                                { background-color: @input-background-alt; }
+.ac_over                               { background-color: @input-hint-color; color: @input-border-focus-color; }
+.ac_over strong                        { color: @link-color; }
+
+/***** /AUTO COMPLETE *****/
+
+
+/***** BBCODE *****/
+
+ul.bbcode_list                         { list-style: disc; padding: 0 1.667em; }
+ul.bbcode_list li                      { margin-left: 0; margin-right: 0; padding: 0; }
+ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
+.smiley,
+.bbcode_smiley                         { float: none; margin: 0; padding: 0; vertical-align: baseline; }
+
+.markItUp                              { margin: 5px 0; width: auto; }
+.markItUpResizeHandle                  { border-bottom: 3px dotted @input-border-color; cursor: n-resize; height: 5px; margin: 0 auto 2px; overflow: hidden; width: 40px; }
+.markItUpResizeHandle:hover            { border-bottom-color: @input-border-hover-color; }
+
+.markItUpHeader ul li                  { float: left; position: relative; }
+.markItUpHeader ul li:hover > ul       { display: block; }
+.markItUpHeader ul li a                { background: transparent no-repeat center center; display: block; height: 16px; padding: 2px 0.5em; text-indent: -9999px; width: 16px; }
+.markItUpHeader ul .markItUpSeparator  { background: @input-border-color; margin: 0 10px; overflow: hidden; width: 1px; }
+.markItUpHeader ul .markItUpDropMenu   {  }
+.markItUpHeader ul .markItUpDropMenu > a::after { content: '\25BC'; padding-left: 0.5em; }
+.markItUpHeader ul .markItUpDropMenu li { margin-right:0px; }
+
+.markItUpHeader ul ul                  { background: @section-background; display: none; left: 0; position: absolute; top: 1.6667em; }
+.markItUpHeader ul ul li               { float: none; width: auto; }
+
+.markItUpHeader .button-bold a         { background-image: url(/ui/icon/text_bold.png); }
+.markItUpHeader .button-italic a       { background-image: url(/ui/icon/text_italic.png); }
+.markItUpHeader .button-underline a    { background-image: url(/ui/icon/text_underline.png); }
+.markItUpHeader .button-size a         { background-image: url(/ui/icon/text_size.png); }
+.markItUpHeader .button-small a        { background-image: url(/ui/icon/text_size_small.png); }
+.markItUpHeader .button-normal a       { background-image: url(/ui/icon/text_size_normal.png); }
+.markItUpHeader .button-big a          { background-image: url(/ui/icon/text_size_big.png); }
+.markItUpHeader .button-picture a      { background-image: url(/ui/icon/photo_link.png); }
+.markItUpHeader .button-link a         { background-image: url(/ui/icon/world_link.png); }
+.markItUpHeader .button-list-bullets a { background-image: url(/ui/icon/text_list_numbers.png); }
+.markItUpHeader .button-list-numbers a { background-image: url(/ui/icon/text_list_bullets.png); }
+.markItUpHeader .button-list-item a    { background-image: url(/ui/icon/text_list_item.png); }
+.markItUpHeader .button-quote a        { background-image: url(/ui/icon/text_quote.png); }
+.markItUpHeader .button-code a         { background-image: url(/ui/icon/page_white_code.png); }
+.markItUpHeader .button-clear a        { background-image: url(/ui/icon/page_white_code_red.png); }
+
+/***** /BBCODE *****/
+
+
+/***** PEEPBOX *****/
+
+#peepbox                               { border: 1px solid @input-border-color; }
+#peepbox h4                            { margin-top: 0; }
+
+/***** /PEEPBOX *****/
+
+
+/***** COMMENTS *****/
+
+.comments #comment                     { width: 300px; }
+.comments form                         { margin-bottom: 10px; }
+.comments article p                    { padding-left: 60px; }
+
+/***** /COMMENTS *****/
+
+
+/***** USERS LIST *****/
+
+.users .long                           { display: none; }
+
+/***** /USERS LIST *****/
+
+
+/***** MONTH BROWSER *****/
+
+.month-browser ol                      { float: left; list-style: none; }
+.month-browser nav > ol                { height: 40px; }
+.month-browser ol li                   { float: left; width: 60px; }
+.month-browser a.selected              { font-weight: bold; }
+.month-browser ol ol                   { display: none; left: 0; position: absolute; width: 100%; }
+.month-browser ol li:hover ol          { display: block; }
+
+/***** /MONTH BROWSER *****/
+
+
+/***** shout *****/
+
+.shout input[type=text]                { width: 70%; }
+
+/***** /shout *****/
+
+
+/***** events *****/
+
+.events ol.days                        { list-style: none; }
+.events ol.days li                     { overflow: hidden; }
+.events ol.days li article             { padding: 10px 0; }
+
+.event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
+
+/***** /events *****/
+
+
+/***** forum *****/
+
+span.locked                            { color: #333; font-variant: small-caps; }
+blockquote                             { color: #777; }
+aside.post-old                         { color: @separator-color; text-align: center; }
+section.mod .divider                   { border-bottom: 1px dotted @body-background-color; border-top: 1px dotted @body-background-color; margin: 2px 0; text-align: center; }
+/*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
+
+/***** /forum *****/

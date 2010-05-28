@@ -1,0 +1,73 @@
+/*
+* jQuery UI CSS Framework
+* Copyright (c) 2009 AUTHORS.txt (http://jqueryui.com/about)
+* Dual licensed under the MIT (MIT-LICENSE.txt) and GPL (GPL-LICENSE.txt) licenses.
+* To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Lucida%20Grande,Lucida%20Sans%20Unicode,sans-serif&fwDefault=normal&fsDefault=1em&cornerRadius=0&bgColorHeader=111111&bgTextureHeader=01_flat.png&bgImgOpacityHeader=75&borderColorHeader=111111&fcHeader=ccaa33&iconColorHeader=33aacc&bgColorContent=000000&bgTextureContent=01_flat.png&bgImgOpacityContent=75&borderColorContent=000000&fcContent=a7a7a7&iconColorContent=33aacc&bgColorDefault=222222&bgTextureDefault=01_flat.png&bgImgOpacityDefault=75&borderColorDefault=222222&fcDefault=33aacc&iconColorDefault=33aacc&bgColorHover=000000&bgTextureHover=01_flat.png&bgImgOpacityHover=75&borderColorHover=000000&fcHover=ffffff&iconColorHover=33aacc&bgColorActive=000000&bgTextureActive=01_flat.png&bgImgOpacityActive=65&borderColorActive=000000&fcActive=ccaa33&iconColorActive=33aacc&bgColorHighlight=222222&bgTextureHighlight=01_flat.png&bgImgOpacityHighlight=55&borderColorHighlight=ccaa33&fcHighlight=a7a7a7&iconColorHighlight=ccaa33&bgColorError=000000&bgTextureError=01_flat.png&bgImgOpacityError=95&borderColorError=cc3333&fcError=cc3333&iconColorError=cc3333&bgColorOverlay=333333&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=0&opacityOverlay=50&bgColorShadow=000000&bgTextureShadow=01_flat.png&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=10px&offsetTopShadow=-10px&offsetLeftShadow=-10px&cornerRadiusShadow=10px
+*/
+
+
+/* Component containers
+----------------------------------*/
+.ui-widget-content                     { /*border: 1px solid #000;*/ background: black; }
+.ui-widget-header                      { /*border: 1px solid #111;*/ background: #111; color: #ac3; }
+.ui-widget-header a                    { color: #ca3; }
+.ui-dialog                             { border: 1px solid #222; }
+.ui-tabs-nav                           { border-bottom: 1px solid #222; }
+
+/* Interaction states
+----------------------------------*/
+.ui-state-default,
+.ui-widget-content .ui-state-default   { border: 1px solid #222; background: #111; color: #3ac; }
+.ui-tabs .ui-state-default             { background: black; border: 1px solid #111; border-width: 0 1px 0 0; }
+.ui-state-default a,
+.ui-state-default a:link,
+.ui-state-default a:visited            { color: #3ac; }
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus     { border: 1px solid black; background: #000; color: #fff; }
+.ui-state-hover a,
+.ui-state-hover a:hover                { color: #fff; }
+.ui-state-active,
+.ui-widget-content .ui-state-active    { background: black; border: 1px solid black; color: #ca3; }
+.ui-tabs .ui-state-active,
+.ui-tabs .ui-state-hover               { background: #222; border-width: 0 1px 0 0; }
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited             { color: #ca3; }
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight { border: 1px solid #ca3; background: #222; color: #a7a7a7; }
+.ui-state-highlight a,
+.ui-widget-content .ui-state-highlight a { color: #a7a7a7; }
+.ui-state-error,
+.ui-widget-content .ui-state-error     { border: 1px solid #c33; background: black; color: #c33; }
+.ui-state-error a,
+.ui-widget-content .ui-state-error a,
+.ui-state-error-text,
+.ui-widget-content .ui-state-error-text { color: #c33; }
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.ui-icon,
+.ui-widget-content .ui-icon,
+.ui-widget-header .ui-icon,
+.ui-state-default .ui-icon,
+.ui-state-hover .ui-icon,
+.ui-state-focus .ui-icon,
+.ui-state-active .ui-icon              { background-image: url(images/ui-icons_33aacc_256x240.png); }
+.ui-state-highlight .ui-icon           { background-image: url(images/ui-icons_ccaa33_256x240.png); }
+.ui-state-error .ui-icon,
+.ui-state-error-text .ui-icon          { background-image: url(images/ui-icons_cc3333_256x240.png); }
+
+
+/* Misc visuals
+----------------------------------*/
+
+/* Overlays */
+.ui-widget-overlay                     { background: #333; }
+.ui-widget-shadow                      { background: black; }

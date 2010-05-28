@@ -1,0 +1,128 @@
+/*
+ * Copyright (c) 2008-2010 Anqh
+ *
+ * Based on Better Web Readability Project - CSS Library by Vladimir Carrer,
+ * see official site for more info: http://www.vcarrer.com/
+ *
+ * Original
+ * Font size 16px
+ * Line height 26px
+ *
+ * Modified
+ * Font size 12px
+ * Line height 20px
+ * H1 24px
+ * H2 21px
+ * H3 18px
+ * H4 16px
+ * H5 14px
+ * H6 14px
+ */
+
+/*
+ * The fonts included are copyrighted by the vendor listed below.
+ *
+ * @vendor:     Ralph Oliver du Carrois
+ * @vendorurl:  http://www.carrois.com
+ * @licenseurl: http://www.fontsquirrel.com/license/Colaborate
+ */
+@font-face                             { font-family: 'ColaborateThinRegular'; src: url('/ui/font/ColabThi.eot'); src: local('Colaborate-Thin Regular'), local('Colaborate-Thin'), url('/ui/font/ColabThi.ttf') format('truetype'); }
+@font-face                             { font-family: 'ColaborateLightRegular'; src: url('/ui/font/ColabLig.eot'); src: local('ColaborateLight Regular'), local('Colaborate-Light'), url('/ui/font/ColabLig.ttf') format('truetype'); }
+@font-face                             { font-family: 'ColaborateRegularRegular'; src: url('/ui/font/ColabReg.eot'); src: local('Colaborate-Regular Regular'), local('Colaborate-Regular'), url('/ui/font/ColabReg.ttf') format('truetype'); }
+@font-face                             { font-family: 'ColaborateMediumRegular'; src: url('/ui/font/ColabMed.eot'); src: local('Colaborate-Medium Regular'), local('Colaborate-Medium'), url('/ui/font/ColabMed.ttf') format('truetype'); }
+@font-face                             { font-family: 'ColaborateBoldRegular'; src: url('/ui/font/ColabBol.eot'); src: local('Colaborate-Bold Regular'), local('Colaborate-Bold'), url('/ui/font/ColabBol.ttf') format('truetype'); }
+
+body                                   { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 75%; font-size-adjust: none; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1.665em; }
+
+p                                      { font-weight: 300; }
+p + p                                  { padding: 1.666em 0 0; text-indent: 1.666em; }
+p.first:first-letter                   { float: left; font-family: Baskerville, Palatino Linotype, serif; font-size: 3em; font-weight: 700; line-height: 1em; padding: 0.2em 0.1em 0 0; }
+p img                                  { float: left; margin: 0.5em 0.833em 0.833em 0; padding: 0; }
+p img.right                            { float: right; margin: 0.5em 0 0.833em 0.833em }
+
+h1,
+h2,
+legend,
+h3,
+h4,
+h5,
+h6                                     { font-weight: normal; font-family: 'ColaborateLightRegular', Arial, sans-serif; }
+h1                                     { font-size: 2em; line-height: 1.666em; /*margin-top: 0.833em;*/ }
+h2                                     { font-size: 1.75em; /*line-height: 1.9048em;*/ padding: 0.476em 0; /*margin-bottom: 0.952em;*/ }
+legend                                 { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
+h3                                     { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
+h4                                     { font-size: 1.3333em; line-height: 1.25em; padding-top: 1.25em; }
+h5,
+h6                                     { font-size: 1.1667em; line-height: 1.4286em; padding-top: 1.4286em; }
+header h3,
+header h4,
+header h5,
+header h6                              { padding-top: 0; }
+h1 span                                { font-size: 0.5em; }
+h2 span                                { font-size: 0.571em; }
+h3 span                                { font-size: 0.666em; }
+h4 span                                { font-size: 0.75em; }
+h5 span,
+h6 span                                { font-size: 0.857em; }
+
+input,
+textarea,
+select,
+option                                 { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
+
+ul.bullet                              { list-style: disc; }
+ul.circle                              { list-style: circle; }
+ul.square                              { list-style: square; }
+/*
+ol,
+ul.bullet,
+ul.circle,
+ul.square,
+dl                                     { margin: 0 0 1.667em 0; }
+ol:last-child,
+ul.bullet:last-child,
+ul.circle:last-child,
+ul.square:last-child,
+dl:last-child                          { margin: 0; }
+*/
+li ol                                  { margin: 0 1.667em; }
+dl dt                                  { font-weight: bold; }
+dl dd                                  { margin-left: 1.667em; }
+
+a                                      { text-decoration: none; }
+a:hover                                { text-decoration: underline; }
+
+table                                  { margin-bottom: 1.667em; border-collapse: collapse; }
+th                                     { font-weight: bold; }
+tr,
+th,
+td                                     { height: 20px; margin: 0; padding: 0 1.667em 0 1em; }
+tfoot                                  { font-style: italic; }
+caption                                { font-family: Georgia, serif; text-align: center; }
+
+mark                                   { font-style: italic; font-weight: bold; }
+abbr[title]                            { font-variant: small-caps; letter-spacing: 0.1em; text-transform: lowercase; }
+address                                { font-style: italic; }
+small                                  { font-size: 0.75em; line-height: 2.222em; }
+dfn,
+strong                                 { font-weight: bold; }
+em,
+dfn                                    { font-style: italic; }
+pre,
+code                                   { margin: 1.667em 0; white-space: pre; }
+pre,
+code,
+tt                                     { font: 1em monospace; line-height: 1.5; }
+time,
+var                                    { /*font-family: Georgia, Times New Roman, Times, serif;*/ font-style: normal; }
+tt                                     { display: block; margin: 1.667em 0; }
+hr                                     { margin-bottom: 1.667em; }
+
+blockquote                             { font-family: Georgia, serif; font-style: italic; padding: 1.667em; }
+blockquote:before                      { content: "\201C"; font-family: Georgia, serif; font-size: 4em; line-height: 0; margin-left: -0.5em; vertical-align: -0.7em; }
+/*blockquote > p                         { padding: 0; margin: 0; }*/
+blockquote em                          { font-style: normal; }
+blockquote cite                        { font-size: 0.9em; margin: 0.1em; opacity: 0.75; padding-left: 2em; }
+
+.note                                  { font-family: Georgia, Times New Roman, Times, serif; font-size: 0.9em; font-style: italic; margin: 0.1em; }
+.mono                                  { font-family: Courier New, Courier, monospace; }

@@ -1,0 +1,100 @@
+/*
+ * Layout LESS styles. Generic layout elements: header, body, footer, dock etc.
+ *
+ * Copyright 2009 - 2010 Anqh
+ */
+
+/***** PAGE *****/
+
+body                                   { background: @body-background-color @body-background-image; color: @text-color; }
+
+/***** /PAGE *****/
+
+
+/***** DOCK *****/
+
+#dock                                  { background: @dock-background; border-bottom: @dock-border; .box-shadow(0 0 10px @dock-background); padding: 0.4116em 0; left: 0; position: fixed; right: 0; top: 0; z-index: 100; }
+#dock label,
+#dock div                              { color: @dock-color; }
+#dock form                             { float: left; }
+#dock label,
+#dock input                            { display: inline; margin-left: 0; margin-right: 10px; }
+#dock input[type="text"],
+#dock input[type="password"]           { width: 100px; }
+
+/***** /DOCK *****/
+
+
+/***** HEADER *****/
+
+#header                                { margin-top: 40px; margin-bottom: 10px; }
+#header h1 a                           { display: block; }
+
+#header nav ul                         { display: block; float: right; }
+#header nav ul li                      { background: @mainmenu-link-background; display: block; float: left; margin-right: 1px; }
+#header nav ul li:hover,
+#header nav ul li.selected             { background: @mainmenu-background; .box-shadow(0 0 10px @mainmenu-background); }
+#header nav ul li a                    { color: @mainmenu-color; display: block; font-family: 'ColaborateLightRegular', Arial, sans-serif; font-size: 1.333em; height: 1em; padding: 1.5em 2.1875em 0.625em 0.625em; vertical-align: middle; }
+#header nav ul li.selected a           { color: @header-color; }
+#header nav ul li a:hover              { color: @mainmenu-hover-color; text-decoration: none; }
+
+/***** /HEADER *****/
+
+
+/***** BODY *****/
+
+#side-ads                              { float: right; _margin-left: -3px; text-align: center; }
+body.left #main                        { float: left; }
+body.right #main                       { float: right; }
+
+.mod                                   { background: @mod-background; }
+.cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
+.tab                                   { background: none; margin: 0; padding: 0; }
+
+#title                                 { background: @mod-background; margin-bottom: 10px; padding: 0 5px; position: relative; }
+#title .container                      { padding: 0 10px; }
+#title .actions                        { bottom: 10px; position: absolute; right: 10px; }
+#title nav                             { overflow: hidden; }
+#title nav li                          { background: black; border-right: 1px solid #111; float: left; }
+#title nav li a                        { display: block; padding: 0.8333em 1em; }
+#title nav li a:hover                  { text-decoration: none; }
+#title nav li:hover,
+#title nav li.selected                 { background: #222; }
+#title nav li.selected a               { color: @header-color; }
+#title .subtitle .icon                 { margin: 0 5px; }
+
+.actions                               { float: right; }
+.actions.alt                           { float: left; }
+
+section .article,
+section article                        { border-bottom: 1px solid @body-background-color; /*background: @section-background-alt;*/ position: relative; }
+section .divider + article,
+section article + article              { border-top: 1px solid @body-background-color; }
+section article:hover                  { /*.box-shadow(0 0 10px rgba(255, 255, 255, 0.25)); background: @section-background-alt;*/ }
+
+.mod article header                    { border-bottom: 1px solid @body-background-color; overflow: hidden; }
+.mod article header h4                 { float: left; }
+.mod article header h4 a               { padding-right: 10px; }
+.mod article header ul.details         { float: right; }
+.mod article header ul.details li      { border-left: 1px solid @body-background-color; float: left; margin: 0 -5px 0 -6px; padding: 0 5px; }
+
+.mod[class*="-edit"] .container        { overflow: visible; }
+/*section article + aside,
+section article + article,
+ul.contentlist li + li                 { border-top: @separator-border; padding-top: 0.8333em; }
+li.line + li.line                      { border-top: @separator-border; }
+section aside + article                { padding-top: 0.8333em; }
+*/
+/***** /BODY *****/
+
+
+/***** FOOTER *****/
+
+#footer                                { background: @footer-background; margin-top: 2em; }
+#footer .mod                           { background: none; margin-bottom: 1em; }
+#footer p,
+#footer nav ul                         { text-align: center; }
+#footer nav li                         { display: inline; padding: 0 6px; }
+#footer nav ul ul                      { display: none; }
+
+/***** /FOOTER *****/

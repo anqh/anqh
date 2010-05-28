@@ -1,0 +1,188 @@
+/*
+ * Copyright 2008 - 2009 klubitus
+ */
+
+/***** TEXT *****/
+
+body                                   { background: black url(../background.jpg) fixed no-repeat center top; color: #a7a7a7; }
+a,
+a *                                    { color: #3ac; }
+a:hover *,
+a:hover                                { color: white; }
+h2 span,
+h3 span,
+h4 span,
+h5 span,
+h6 span                                { color: #a7a7a7; }
+h2                                     { color: #ca3; }
+legend,
+h3,
+h4,
+h5,
+h3 a,
+/*h4 a,*/
+label,
+dt,
+h5 a                                   { color: #ac3; }
+abbr                                   { border-bottom-color: #333; }
+
+/***** /TEXT *****/
+
+
+/***** DOCK *****/
+
+#dock                                  { background: transparent url(../black75.png); border-bottom: 1px solid #333; padding: 0.4116em 0; }
+#dock label,
+#dock div                              { color: #f2f2f2; }
+
+/***** /DOCK *****/
+
+
+/***** HEADER *****/
+
+#header                                { }
+#header li                             { background: url(../black50.png); }
+#header li:hover                       { background: url(../black75.png); }
+#header li a                           { color: #ccc; }
+#header li a:hover                     { color: white; }
+#header li.selected                    { background: black; border-bottom: 1px solid black; }
+#header li.selected a                  { color: #ca3; }
+
+/***** /HEADER *****/
+
+
+/***** FOOTER *****/
+
+#footer                                { background: url(../black50.png); border-top: 1px solid #333; border-bottom: 1px solid #333; }
+
+/***** /FOOTER *****/
+
+
+/***** END *****/
+
+#end { color: #f2f2f2; }
+
+/***** /END *****/
+
+
+/***** CENTER *****/
+
+#content .container-12                 { background: black; }
+#title                                 { background: #111; border-bottom: 1px solid #222; }
+#tabs li                               { background: black; border-right: 1px solid #111; }
+#tabs li:hover,
+#tabs li.selected                      { background: #222; }
+#tabs li.selected a                    { color: #ca3; }
+
+/***** /CENTER *****/
+
+
+/***** FORMS *****/
+
+input,
+select,
+textarea           { background: #111; border: 1px solid #666; color: #f2f2f2; }
+input:hover,
+select:hover,
+textarea:hover     { border-color: #999; }
+input:focus,
+select:focus,
+textarea:focus     { border-color: #f2f2f2; }
+input[type="checkbox"] + label,
+input[type="radio"] + label            { color: #a7a7a7; }
+input[type="submit"]                   { background: #3ac; border: 0 none; color: black; }
+input[type="submit"]:hover             { background: white; }
+
+form .error .info  { background: red; color: black; }
+form .error input  { border-color: red; }
+form .notice .info { background: green; color: black; }
+form .notice input { border-color: green; }
+.hint              { color: #666; }
+
+/***** /FORMS *****/
+
+
+/***** ELEMENTS *****/
+
+/*.tab,*/
+/*.container,
+ul.contentlist li                      { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; }*/
+.tab .actions a.action,
+.container .actions a.action,
+ul.contentlist li .actions a.action    { background: #222; }
+/*.tab:hover,*/
+.container:hover,
+ul.contentlist li:hover                { background: #111; }
+.tab:hover .actions a.action,
+.container:hover .actions a.action,
+ul.contentlist li:hover .actions a.action,
+a.action                               { background: #3ac; color: black; padding: 0 0.5em; -moz-border-radius: 5px; }
+ul.contentlist li:hover .actions a[class*="-add"],
+a[class*="-add"]                       { background: #ac3; }
+ul.contentlist li:hover .actions a[class*="-delete"],
+a[class*="-delete"]                    { background: #c33; }
+ul.contentlist li .actions a.action:hover,
+a.action:hover                         { background: white; text-decoration: none; }
+
+ul.contentlist li + li                 { border-top: 1px dashed #333; padding-top: 0.75em; }
+
+.tip { color: #999; }
+
+.step,
+.date .day                     { color: #ac3; }
+.date span                     { background: #222; }
+.date .weekday                 { background: #333; -moz-border-radius: 5px 0 0 0; }
+.date .month                   { -moz-border-radius: 0 0 5px 5px; }
+.date.today .weekday           { background: #ac3; color: black; }
+
+.button { background-image: url(button.png); color: #ca3; }
+
+.my                                    { color: #b0a88a; }
+.owner                                 { color: #a9ba6d; }
+
+.pills li label                        { background: #222; color: #a7a7a7; -moz-border-radius: 5px; }
+.pills li label:hover                  { background: white; color: black; }
+.pills li input[type="checkbox"]:checked + label { background: #ac3; color: black; }
+
+/***** /ELEMENTS *****/
+
+
+/***** JQUERY *****/
+
+/* autocomplete */
+
+.ac_results     { border: 1px solid black; background-color: white; }
+.ac_loading     { background: white; }
+.ac_odd         { background-color: #eee; }
+.ac_over        { background-color: #0a246a; color: white; }
+.ac_over strong { color: yellow; }
+
+/* /autocomplete */
+
+/***** /JQUERY *****/
+
+
+/***** events *****/
+
+#events .calendar .events              { border-top: 1px solid #333; }
+
+/***** events *****/
+
+
+/***** profile *****/
+
+#member .comments label.private,
+#member .comments .private .comment { color: #a3a; }
+#member #comment.private            { border-color: #a3a; }
+
+/***** /profile *****/
+
+
+/***** forum *****/
+
+span.locked                            { color: #333; font-variant: small-caps; }
+blockquote                             { color: #777; }
+/*blockquote              { background: url(quote_close.gif) no-repeat right bottom; }
+blockquote:first-letter { background: url(quote_open.gif) no-repeat left top; }*/
+
+/***** /forum *****/
