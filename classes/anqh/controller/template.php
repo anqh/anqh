@@ -110,7 +110,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 		// Controller name as the default page id if none set
 		empty($this->page_id) && $this->page_id = $this->request->controller;
 
-		$this->ajax = (Request::$is_ajax || $this->request !== Request::instance());
+		$this->ajax = (Request::$is_ajax/* || ($this->request !== Request::instance())*/);
 	}
 
 
@@ -176,8 +176,84 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				Widget::add('dock2', ' | ' . __('Language: ') . implode(', ', $languages));
 			}
 
+			if ($this->user) {
+
+				// Authenticated view
+				Widget::add('dock', __('[#:id] :user', array(':id' => $this->user->id, ':user' => HTML::nick($this->user->id, $this->user->username))));
+
+				$new_messages = array();
+				if ($this->user->newcomments) {
+					$new_messages[] = HTML::anchor(
+						URL::user($this->user),
+						__(':commentsC', array(':comments' => $this->user->newcomments)),
+						array('title' => __('New comments'), 'class' => 'new-comments')
+					);
+				}
+				if (!empty($new_messages)) {
+					Widget::add('dock', ' - ' . __('New messages: ') . implode(' ', $new_messages));
+				}
+
+				// Logout also from Facebook
+				if (FB::enabled() && Visitor::instance()->get_provider()) {
+					Widget::add('dock', ' - ' . HTML::anchor('sign/out', FB::icon() . __('Sign out'), array('onclick' => "FB.Connect.logoutAndRedirect('/sign/out'); return false;")));
+				} else {
+					Widget::add('dock', ' - ' . HTML::anchor('sign/out', __('Sign out')));
+				}
+
+				if (Kohana::config('site.inviteonly')) {
+	//				widget::add('dock', ' | ' . html::anchor('sign/up', __('Send invite')));
+				}
+
+				// Admin functions
+				if ($this->visitor->logged_in('admin')) {
+					Widget::add('dock2', ' | ' . __('Admin: ')
+						. HTML::anchor('roles', __('Roles')) . ', '
+						. HTML::anchor('tags', __('Tags')) . ', '
+						. HTML::anchor('#kohana-profiler', __('Profiler'), array('onclick' => '$("#kohana-profiler").toggle();'))
+					);
+				}
+
+			} else {
+
+				// Non-authenticated view
+				$form =  Form::open('sign/in');
+				$form .= Form::input('username', null, array('title' => __('Username')));
+				$form .= Form::password('password', '', array('title' => __('Password')));
+				$form .= Form::submit('submit', __('Sign in'));
+				$form .= Form::close();
+				$form .= html::anchor('/sign/up', __('Sign up'));
+				/*
+				if (FB::enabled()) {
+					$form .= ' | ' . FB::fbml_login();
+				}
+				*/
+				Widget::add('dock', $form);
+
+			}
+
 			// End
 			Widget::add('end', View::factory('generic/end'));
+
+			// Analytics
+			$google_analytics = Kohana::config('site.google_analytics');
+			if ($google_analytics) {
+				Widget::add('head', HTML::script_source("
+	var _gaq = _gaq || []; _gaq.push(['_setAccount', '" . $google_analytics . "']); _gaq.push(['_trackPageview']);
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+	"));
+			}
+
+			// Ads
+			$ads = Kohana::config('site.ads');
+			if ($ads && $ads['enabled']) {
+				foreach ($ads['slots'] as $ad => $slot) {
+					Widget::add($slot, View::factory('ads/' . $ad));
+				}
+			}
 
 			// And finally the profiler stats
 			if (in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {

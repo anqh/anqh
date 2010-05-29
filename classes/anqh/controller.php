@@ -11,10 +11,39 @@
 abstract class Anqh_Controller extends Kohana_Controller {
 
 	/**
+	 * Internal request?
+	 *
+	 * @var  boolean
+	 */
+	protected $internal = false;
+
+	/**
 	 * Current language
 	 *
 	 * @var  string
 	 */
 	protected $language = 'en';
+
+	/**
+	 * User Model
+	 *
+	 * @var  User_Model
+	 */
+	protected $user;
+
+
+	/**
+	 * Construct controller
+	 */
+	public function before() {
+		parent::before();
+
+		// Check if this was an interna request or direct
+		$this->internal = $this->request !== Request::instance();
+
+		// Load current user, null if none
+		$this->user = null;
+
+	}
 
 }

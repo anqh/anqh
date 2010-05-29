@@ -20,7 +20,42 @@ abstract class Anqh_Controller_Index extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
+		$this->page_title = __('Welcome to :site', array(':site' => Kohana::config('site.site_name')));
 
+		// Display news feed
+		/*
+		$newsfeed = new NewsFeed($this->user);
+		$newsfeed->max_items = 25;
+		widget::add('main', View_Mod::factory('generic/newsfeed', array('newsfeed' => $newsfeed->as_array())));
+		*/
+
+		// Shout
+		$shouts = Jelly::select('shout')->limit(10)->execute();
+		Widget::add('side', ViewMod::factory('generic/shout', array(
+			'mod_title' => __('Shouts'),
+			'shouts'    => $shouts,
+			'can_shout' => false, //ORM::factory('shout')->has_access(Shout_Model::ACCESS_WRITE, $this->user),
+			'errors'    => array(),
+			'values'    => array(),
+		)));
+
+		// Online
+		/*
+		$guests = Online_User_Model::get_guest_count();
+		$online = Online_User_Model::find_online_users();
+		$counts = array();
+		if (count($online)) {
+			$counts[] = __2(':members member', ':members members', count($online), array(':members' => count($online)));
+		}
+		if ($guests) {
+			$counts[] = __2(':guests guest', ':guests guests', $guests, array(':guests' => $guests));
+		}
+		widget::add('side', View_Mod::factory('generic/users', array(
+			'mod_title' => __('Online') . ': ' . implode(', ', $counts),
+			'viewer'    => $this->user,
+			'users'     => $online,
+		)));
+		*/
 	}
 
 }
