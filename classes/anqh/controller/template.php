@@ -24,6 +24,13 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	protected $history = true;
 
 	/**
+	 * Actions for current page
+	 *
+	 * @var  array
+	 */
+	protected $page_actions = array();
+
+	/**
 	 * Current page class
 	 *
 	 * @var  string
@@ -79,6 +86,20 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	 */
 	protected $skin_imports;
 
+	/**
+	 * Selected tab
+	 *
+	 * @var  string
+	 */
+	protected $tab_id;
+
+	/**
+	 * Tabs navigation
+	 *
+	 * @var  array
+	 */
+	protected $tabs;
+
 
 	/**
 	 * Construct controller
@@ -125,12 +146,16 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			$this->template
 				->set('skin',          $skin)
 				->set('skin_imports',  $skin_imports)
-				//->set('stylesheets',   $this->stylesheets)
 				->set('language',      $this->language)
 				->set('page_id',       $this->page_id)
 				->set('page_class',    $page_class)
 				->set('page_title',    $this->page_title)
 				->set('page_subtitle', $this->page_subtitle);
+
+			// Generic views
+			Widget::add('actions',    View::factory('generic/actions')->set('actions', $this->page_actions));
+			Widget::add('navigation', View::factory('generic/navigation')->set('items', Kohana::config('site.menu'))->set('selected', $this->page_id));
+			Widget::add('tabs',       View::factory('generic/tabs_top')->set('tabs', $this->tabs)->set('selected', $this->tab_id));
 
 		}
 
