@@ -27,11 +27,6 @@ setlocale(LC_ALL, 'en_US.utf-8');
 spl_autoload_register(array('Kohana', 'auto_load'));
 
 /**
- * Set the production status by the domain.
- */
-define('IN_PRODUCTION', !isset($_ENV['DEVELOPMENT']));
-
-/**
  * Enable the Kohana auto-loader for unserialization.
  *
  * @see  http://php.net/spl_autoload_call
@@ -40,6 +35,13 @@ define('IN_PRODUCTION', !isset($_ENV['DEVELOPMENT']));
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 
 //-- Configuration and initialization -----------------------------------------
+
+/**
+ * Environment check, defaults to Kohana::DEVELOPMENT
+ */
+if (isset($_ENV['ENVIRONMENT'])) {
+	Kohana::$environment = $_ENV['ENVIRONMENT'];
+}
 
 /**
  * Initialize Kohana, setting the default options.
@@ -57,7 +59,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 Kohana::init(array(
 	'base_url'   => '/',
 	'index_file' => false,
-	'profile'    => !IN_PRODUCTION,
+	'profile'    => in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 ));
 
 /**
@@ -74,11 +76,14 @@ Kohana::$config->attach(new Kohana_Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	'core' => MODPATH . 'anqh', // Anqh core
+	'core'     => MODPATH . 'anqh',     // Anqh core
+
+	'database' => MODPATH . 'database', // Database access
+	'jelly'    => MODPATH . 'jelly',    // Jelly ORM
+	'cache'    => MODPATH . 'cache',    // Caching with multiple backends
+
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
-	// 'cache'      => MODPATH.'cache',      // Caching with multiple backends
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	// 'database'   => MODPATH.'database',   // Database access
 	// 'image'      => MODPATH.'image',      // Image manipulation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'pagination' => MODPATH.'pagination', // Paging of results
@@ -107,12 +112,16 @@ try {
 } catch (Exception $e) {
 
 	// Throw errors in development environment
-	if (!IN_PRODUCTION) {
+	if (Kohana::$environment == Kohana::DEVELOPMENT) {
 		throw $e;
 	}
 
 	// Log errors
 	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
+
+	// 404
+	$request = Request::factory('error/404')->execute();
+	//$request->status = 404;
 
 }
 
@@ -120,9 +129,19 @@ try {
  * Add statistics to the response.
  */
 if ($request->response) {
+	$queries = 0;
+	foreach (Profiler::groups() as $group => $benchmarks) {
+		if (strpos($group, 'database') === 0) {
+			$queries += count($benchmarks);
+		}
+	}
+
 	$total = array(
 		'{memory_usage}'   => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
-		'{execution_time}' => number_format(microtime(true) - KOHANA_START_TIME, 5) . ' seconds'
+		'{execution_time}' => number_format(microtime(true) - KOHANA_START_TIME, 5),
+		'{database_queries}' => $queries,
+		'{included_files}' => '?',
+		'{kohana_version}' => Kohana::VERSION,
 	);
 	$request->response = strtr((string)$request->response, $total);
 }
