@@ -157,6 +157,33 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			Widget::add('navigation', View::factory('generic/navigation')->set('items', Kohana::config('site.menu'))->set('selected', $this->page_id));
 			Widget::add('tabs',       View::factory('generic/tabs_top')->set('tabs', $this->tabs)->set('selected', $this->tab_id));
 
+			// Dock
+			$classes = array(
+				HTML::anchor('set/width/narrow', __('Narrow'), array('onclick' => '$("body").addClass("fixed").removeClass("liquid"); $.get(this.href); return false;')),
+				HTML::anchor('set/width/wide',   __('Wide'),   array('onclick' => '$("body").addClass("liquid").removeClass("narrow"); $.get(this.href); return false;')),
+				HTML::anchor('set/main/left',    __('Left'),   array('onclick' => '$("body").addClass("left").removeClass("right"); $.get(this.href); return false;')),
+				HTML::anchor('set/main/right',   __('Right'),  array('onclick' => '$("body").addClass("right").removeClass("left"); $.get(this.href); return false;')),
+			);
+			Widget::add('dock2', __('Layout: ') . implode(', ', $classes));
+
+			// Language selection
+			$available_languages  = Kohana::config('locale.languages');
+			if (count($available_languages)) {
+				$languages = array();
+				foreach ($available_languages as $lang => $locale) {
+					$languages[] = HTML::anchor('set/lang/' . $lang, HTML::chars($locale[2]));
+				}
+				Widget::add('dock2', ' | ' . __('Language: ') . implode(', ', $languages));
+			}
+
+			// End
+			Widget::add('end', View::factory('generic/end'));
+
+			// And finally the profiler stats
+			if (in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {
+				Widget::add('foot', View::factory('profiler/stats'));
+			}
+
 		}
 
 		parent::after();

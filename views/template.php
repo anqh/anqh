@@ -156,7 +156,7 @@
 		</div>
 		<div id="end" class="content">
 
-<?php Widget::get('end') ?>
+<?php echo Widget::get('end') ?>
 
 		</div>
 	</footer><!-- #footer -->
