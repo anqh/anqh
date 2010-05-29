@@ -24,13 +24,13 @@
 		Less::style($skin, null, $skin_imports); ?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
-	<script src="http://www.google.com/jsapi?key=<?php echo Kohana::config('site.google_api_key') ?>"></script>
 	<?php echo
+		HTML::script('http://www.google.com/jsapi?key=' . Kohana::config('site.google_api_key')),
 		HTML::script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'),
 		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js'),
 		HTML::script('js/jquery.tools.min.js'); ?>
 
-<?php //echo widget::get('head') ?>
+<?php echo Widget::get('head') ?>
 
 </head>
 
@@ -43,7 +43,7 @@
 		<div class="content">
 
 <h1><?php echo html::anchor('/', Kohana::config('site.site_name')) ?></h1>
-<?php //echo widget::get('navigation') ?>
+<?php echo Widget::get('navigation') ?>
 
 		</div>
 	</header><!-- #header -->
@@ -51,7 +51,7 @@
 	<!-- /HEADER -->
 
 
-<?php //echo widget::get('ad_top') ?>
+<?php echo Widget::get('ad_top') ?>
 
 
 	<!-- BODY -->
@@ -69,8 +69,8 @@
 					<h2><?php echo $page_title ?></h2>
 					<?php echo !empty($page_subtitle) ? '<p class="subtitle">' . $page_subtitle . '</p>' : '' ?>
 
-<?php //echo widget::get('actions') ?>
-<?php //echo widget::get('tabs') ?>
+<?php echo Widget::get('actions') ?>
+<?php echo Widget::get('tabs') ?>
 
 				</header><!-- #title -->
 
@@ -79,13 +79,13 @@
 
 				<section id="wide" class="unit size1of1">
 
-<?php //echo widget::get('wide') ?>
+<?php echo Widget::get('wide') ?>
 
 				</section><!-- wide -->
 
 				<section id="main" class="unit size3of5">
 
-<?php //echo widget::get('main') ?>
+<?php echo Widget::get('main') ?>
 
 				</section><!-- #main -->
 
@@ -96,7 +96,7 @@
 
 				<aside id="side" class="unit size2of5">
 
-<?php //echo widget::get('side') ?>
+<?php echo Widget::get('side') ?>
 
 				</aside><!-- #side -->
 
@@ -112,7 +112,7 @@
 
 			<section id="side-ads" class="unit size1of6">
 
-<?php //echo widget::get('ad_side') ?>
+<?php echo Widget::get('ad_side') ?>
 
 			</section><!-- #side-ads -->
 
@@ -131,12 +131,12 @@
 		<div class="content">
 			<div class="unit size2of5">
 
-<?php //echo widget::get('dock') ?>
+<?php echo Widget::get('dock') ?>
 
 			</div>
 			<div class="unit size3of5 extra-actions">
 
-<?php //echo widget::get('dock2') ?>
+<?php echo Widget::get('dock2') ?>
 
 			</div>
 		</div>
@@ -150,13 +150,13 @@
 	<footer id="footer">
 		<div class="content">
 
-<?php //echo widget::get('navigation') ?>
-<?php //echo widget::get('footer') ?>
+<?php echo Widget::get('navigation') ?>
+<?php echo Widget::get('footer') ?>
 
 		</div>
 		<div id="end" class="content">
 
-<?php //widget::get('end') ?>
+<?php Widget::get('end') ?>
 
 		</div>
 	</footer><!-- #footer -->
@@ -165,7 +165,6 @@
 
 
 <?php echo
-//	HTML::script('js/jquery.autocomplete.pack.js');
 	HTML::script('js/jquery.form.js'),
 	HTML::script('js/jquery.text-overflow.js'); ?>
 
@@ -268,7 +267,7 @@ $(function() {
 //]]>
 </script>
 
-<?php //echo widget::get('foot') ?>
+<?php echo Widget::get('foot') ?>
 
 </body>
 
