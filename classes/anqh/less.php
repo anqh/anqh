@@ -50,7 +50,7 @@ class Anqh_Less extends lessc {
 				$file = $css;
 
 			} catch (Exception $e) {
-				Kohana::$log->add('error', __METHOD__ . ': Error compiling LESS file ' . $file . ', ' . $e->getMessage());
+				Kohana::$log->add(Kohana::ERROR, __METHOD__ . ': Error compiling LESS file ' . $file . ', ' . $e->getMessage());
 			}
 
 		}
