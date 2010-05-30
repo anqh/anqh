@@ -22,7 +22,7 @@
 <?php echo Form::open('/shout') ?>
 <fieldset class="horizontal">
 	<ul>
-		<?php echo Form::input_wrap(array('name' => 'shout', 'maxlength' => 300, 'title' => __('Shout')), '', '', '', $errors) ?>
+		<?php echo Form::input_wrap('shout', '', array('maxlength' => 300, 'title' => __('Shout')), '', $errors) ?>
 		<li><?php echo Form::submit(false, __('Shout')) ?></li>
 	</ul>
 	<?php echo Form::csrf() ?>
