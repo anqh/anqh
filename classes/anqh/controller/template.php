@@ -105,12 +105,10 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	 * Construct controller
 	 */
 	public function before() {
+		$this->auto_render = !$this->internal;
+		$this->ajax = Request::$is_ajax;
+
 		parent::before();
-
-		// Controller name as the default page id if none set
-		empty($this->page_id) && $this->page_id = $this->request->controller;
-
-		$this->ajax = (Request::$is_ajax/* || ($this->request !== Request::instance())*/);
 	}
 
 
@@ -124,9 +122,12 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			Session::instance()->set('history', $this->request->uri());
 		}
 
-		if ($this->ajax) {
-
+		if ($this->ajax || $this->internal) {
+			$this->request->response .= 'ajax';
 		} else if ($this->auto_render) {
+
+			// Controller name as the default page id if none set
+			empty($this->page_id) && $this->page_id = $this->request->controller;
 
 			// Skin
 			$skin_path = 'ui/' . Kohana::config('site.skin') . '/';
@@ -204,9 +205,10 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				if (FB::enabled() && Visitor::instance()->get_provider()) {
 					Widget::add('dock', ' - ' . HTML::anchor('sign/out', FB::icon() . __('Sign out'), array('onclick' => "FB.Connect.logoutAndRedirect('/sign/out'); return false;")));
 				} else {
-					Widget::add('dock', ' - ' . HTML::anchor('sign/out', __('Sign out')));
-				}
 				*/
+					Widget::add('dock', ' - ' . HTML::anchor('sign/out', __('Sign out')));
+				//}
+
 
 				if (Kohana::config('site.inviteonly')) {
 	//				widget::add('dock', ' | ' . html::anchor('sign/up', __('Send invite')));
@@ -268,9 +270,9 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				Widget::add('foot', View::factory('profiler/stats'));
 			}
 
+			parent::after();
 		}
 
-		parent::after();
 	}
 
 }
