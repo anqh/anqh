@@ -11,6 +11,25 @@
 abstract class Anqh_Request extends Kohana_Request {
 
 	/**
+	 * Redirect back to history
+	 *
+	 * @static
+	 * @param   string   $default  if no history found
+	 * @param   boolean  $return   return url, don't redirect
+	 * @return  string
+	 */
+	public static function back($default = '/', $return = false) {
+		$url = Session::instance()->get('history', $default);
+
+		if ($return) {
+			return $url;
+		}
+
+		Request::instance()->redirect($url);
+	}
+
+
+	/**
 	 * Get client host name
 	 *
 	 * @static
