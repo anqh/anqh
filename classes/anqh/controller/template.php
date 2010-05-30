@@ -12,14 +12,14 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	/**
 	 * AJAX-like request?
 	 *
-	 * @var  bool
+	 * @var  boolean
 	 */
 	protected $ajax = false;
 
 	/**
 	 * Add current page to history
 	 *
-	 * @var  bool
+	 * @var  boolean
 	 */
 	protected $history = true;
 
@@ -118,6 +118,12 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	 * Destroy controller
 	 */
 	public function after() {
+
+		// Save current URI
+		if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
+			Session::instance()->set('history', $this->request->uri());
+		}
+
 		if ($this->ajax) {
 
 		} else if ($this->auto_render) {
@@ -179,7 +185,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			if ($this->user) {
 
 				// Authenticated view
-				Widget::add('dock', __('[#:id] :user', array(':id' => $this->user->id, ':user' => HTML::nick($this->user->id, $this->user->username))));
+				Widget::add('dock', __('[#:id] :user', array(':id' => $this->user->id, ':user' => HTML::user($this->user))));
 
 				$new_messages = array();
 				if ($this->user->newcomments) {
@@ -194,18 +200,20 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				}
 
 				// Logout also from Facebook
+				/*
 				if (FB::enabled() && Visitor::instance()->get_provider()) {
 					Widget::add('dock', ' - ' . HTML::anchor('sign/out', FB::icon() . __('Sign out'), array('onclick' => "FB.Connect.logoutAndRedirect('/sign/out'); return false;")));
 				} else {
 					Widget::add('dock', ' - ' . HTML::anchor('sign/out', __('Sign out')));
 				}
+				*/
 
 				if (Kohana::config('site.inviteonly')) {
 	//				widget::add('dock', ' | ' . html::anchor('sign/up', __('Send invite')));
 				}
 
 				// Admin functions
-				if ($this->visitor->logged_in('admin')) {
+				if ($this->user->has_role('admin')) {
 					Widget::add('dock2', ' | ' . __('Admin: ')
 						. HTML::anchor('roles', __('Roles')) . ', '
 						. HTML::anchor('tags', __('Tags')) . ', '
@@ -218,8 +226,8 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				// Non-authenticated view
 				$form =  Form::open('sign/in');
 				$form .= Form::input('username', null, array('title' => __('Username')));
-				$form .= Form::password('password', '', array('title' => __('Password')));
-				$form .= Form::submit('submit', __('Sign in'));
+				$form .= Form::password('password', null, array('title' => __('Password')));
+				$form .= Form::submit('signin', __('Sign in'));
 				$form .= Form::close();
 				$form .= html::anchor('/sign/up', __('Sign up'));
 				/*

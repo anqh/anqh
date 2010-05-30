@@ -42,7 +42,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		$this->internal = $this->request !== Request::instance();
 
 		// Load current user, null if none
-		$this->user = null;
+		$this->user = Visitor::instance()->get_user();
 
 	}
 

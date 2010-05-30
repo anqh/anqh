@@ -113,7 +113,9 @@ class Anqh_Model_User extends Jelly_Model {
 				//'image' => new Field_File()          => array('upload::valid', 'upload::type[gif,jpg,png]', 'upload::size[400K]'),
 
 				'images' => new Field_ManyToMany,
-				'friends' => new Field_HasMany,
+				'friends' => new Field_HasMany(array(
+					'foreign' => 'friend',
+				)),
 
 				'last_login' => new Field_Timestamp,
 
@@ -214,10 +216,6 @@ class Anqh_Model_User extends Jelly_Model {
 		// Login starts out invalid
 		$status = false;
 
-		// Log login attempt
-		$login = new Login_Model();
-		$login->password = !empty($array['password']);
-		$login->username = $array['username'];
 
 		if ($this->validate($array, false, array(), array(), array('rules' => 'login'))) {
 
@@ -464,13 +462,15 @@ class Anqh_Model_User extends Jelly_Model {
 	/**
 	 * Check for friendship
 	 *
-	 * @param  mixed  $friend  id, User_Model
+	 * @param  mixed  $friend  Model_User, $id
 	 */
 	public function is_friend($friend) {
-		if (empty($friend)) {
+		if (empty($friend) || !(is_int($friend) || $friend instanceof Model_User)) {
 			return false;
 		}
 
+		return $this->has('friends', $friend);
+		/*
 		// Load friends
 		if (!is_array($this->data_friends)) {
 			$friends = array();
@@ -488,6 +488,7 @@ class Anqh_Model_User extends Jelly_Model {
 		}
 
 		return isset($this->data_friends[(int)$friend]);
+		*/
 	}
 
 	/***** /FRIENDS *****/
@@ -496,7 +497,7 @@ class Anqh_Model_User extends Jelly_Model {
 	/**
 	 * Load one user.
 	 *
-	 * @param   mixed  $user  user_id, username, email, User_Model or false for current session
+	 * @param   mixed  $user  id, username, email, Model_User, user array or false for current session
 	 * @return  Model_User
 	 */
 	public static function find_user($id = false) {

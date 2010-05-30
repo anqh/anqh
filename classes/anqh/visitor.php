@@ -32,10 +32,9 @@ class Anqh_Visitor {
 	 * @param  array  $config
 	 */
 	public function __construct($config = array()) {
-		$this->_session = Session::instance();
+		$config['salt_pattern'] = preg_split('/,\s*/', Kohana::config('visitor')->get('salt_pattern'));
 		$this->_config = $config;
-
-		Kohana::$log->add(Kohana::DEBUG, 'Visitor Library loaded');
+		$this->_session = Session::instance();
 	}
 
 
@@ -340,14 +339,11 @@ class Anqh_Visitor {
 
 		$user = $this->_get_user($user);
 
-		if (is_string($password)) {
+		// Get the salt from the stored password
+		$salt = $this->find_salt($user->password);
 
-			// Get the salt from the stored password
-			$salt = $this->find_salt($user->password);
-
-			// Create a hashed password using the salt from the stored password
-			$password = $this->hash_password($password, $salt);
-		}
+		// Create a hashed password using the salt from the stored password
+		$password = $this->hash_password($password, $salt);
 
 		// If the passwords match, perform a login
 		if ($user->has_role('login') && $user->password === $password) {
