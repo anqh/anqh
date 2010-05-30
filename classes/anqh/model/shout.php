@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Shout extends Jelly_Model {
+class Anqh_Model_Shout extends Jelly_Model implements Interface_Permission {
 
 	/**
 	 * Create new model
@@ -33,6 +33,32 @@ class Anqh_Model_Shout extends Jelly_Model {
 					'max_length' => 250,
 				)),
 			));
+	}
+
+
+	/**
+	 * Check permission
+	 *
+	 * @param   string      $permission
+	 * @param   Model_User  $user
+	 * @return  boolean
+	 */
+	public function has_permission($permission, $user) {
+
+		// Logged in user has access to everything for now
+		$status = !is_null($user);
+
+		return $status;
+	}
+
+
+	/**
+	 * Get object id for Permission
+	 *
+	 * @return  integer
+	 */
+	public function get_permission_id() {
+		return 0;
 	}
 
 }

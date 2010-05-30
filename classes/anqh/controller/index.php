@@ -7,12 +7,10 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-abstract class Anqh_Controller_Index extends Controller_Template {
+class Anqh_Controller_Index extends Controller_Template {
 
 	/**
-	 * Index id is home
-	 *
-	 * @var  string
+	 * @var  string  Index id is home
 	 */
 	protected $page_id = 'home';
 
@@ -34,7 +32,7 @@ abstract class Anqh_Controller_Index extends Controller_Template {
 		Widget::add('side', View_Module::factory('generic/shout', array(
 			'mod_title' => __('Shouts'),
 			'shouts'    => $shouts,
-			'can_shout' => false, //ORM::factory('shout')->has_access(Shout_Model::ACCESS_WRITE, $this->user),
+			'can_shout' => Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE),
 			'errors'    => array(),
 			'values'    => array(),
 		)));
