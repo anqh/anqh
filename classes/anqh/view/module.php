@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_ViewMod extends View {
+class Anqh_View_Module extends View {
 
 	protected $_viewfile;
 

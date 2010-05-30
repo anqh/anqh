@@ -31,7 +31,7 @@ abstract class Anqh_Controller_Index extends Controller_Template {
 
 		// Shout
 		$shouts = Jelly::select('shout')->limit(10)->execute();
-		Widget::add('side', ViewMod::factory('generic/shout', array(
+		Widget::add('side', View_Module::factory('generic/shout', array(
 			'mod_title' => __('Shouts'),
 			'shouts'    => $shouts,
 			'can_shout' => false, //ORM::factory('shout')->has_access(Shout_Model::ACCESS_WRITE, $this->user),
