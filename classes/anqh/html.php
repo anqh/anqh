@@ -10,6 +10,32 @@
 class Anqh_HTML extends Kohana_HTML {
 
 	/**
+	 * Returns errors
+	 *
+	 * @param  string|array  $error(s)
+	 * @param  string        $filters
+	 * @return string
+	 */
+	public static function error($errors = false) {
+		if (empty($errors)) {
+			return '';
+		}
+
+		// More than one argument = filters
+		if (func_num_args() > 1) {
+			$argv = func_get_args();
+			$filters = is_array($argv[1]) ? $argv[1] : array_slice($argv, 1);
+		}
+
+		$error = is_array($errors)
+			? (empty($filters) ? $errors : array_intersect_key($errors, array_flip($filters)))
+			: $errors;
+
+		return empty($error) ? '' : '<span class="info">' . implode('<br />', $error). '</span>';
+	}
+
+
+	/**
 	 * JavaScript source code block
 	 *
 	 * @param   string  $source
