@@ -11,6 +11,16 @@
 abstract class Anqh_URL extends Kohana_URL {
 
 	/**
+	 * Return model specific url
+	 *
+	 * @param  Jelly_Model  $model
+	 */
+	public static function model(Jelly_Model $model) {
+		return Jelly::model_name($model) . '/' . self::title($model->id() . ' ' . $model->name());
+	}
+
+
+	/**
 	 * Get URL for user
 	 *
 	 * @param   mixed  $user

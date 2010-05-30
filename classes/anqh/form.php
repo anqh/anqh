@@ -22,6 +22,8 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function button_wrap($name, $body, array $attributes = null, $label = '', $error = '', $tip = '') {
+		$body = is_array($body) ? Arr::get($body, $name) : $body;
+
 		$input = Form::button($name, $body, $attributes);
 
 		return Form::wrap($input, $name, $label, $error, $tip);
@@ -42,6 +44,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function checkbox_wrap($name, $value = null, $checked = false, array $attributes = null, $label = '', $error = '', $tip = '') {
+		$value = is_array($value) ? Arr::get($value, $name) : $value;
 		$checked = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
 
 		// Add id to input if label given
@@ -142,6 +145,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function input_wrap($name, $value = null, array $attributes = null, $label = '', $error = '', $tip = '') {
+		$value = is_array($value) ? Arr::get($value, $name) : $value;
 
 		// Add id to input if label given
 		if ($label && !isset($attributes['id'])) {
@@ -168,6 +172,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function password_wrap($name, $value = null, array $attributes = null, $label = '', $error = '', $tip = '', $show_password = '') {
+		$value = is_array($value) ? Arr::get($value, $name) : $value;
 
 		// Inject show password element id
 		if ($show_password) {
@@ -227,6 +232,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = '', $error = '', $tip = '') {
+		$body = is_array($body) ? Arr::get($body, $name) : $body;
 
 		// Add id to input if label given
 		if ($label && !isset($attributes['id'])) {
