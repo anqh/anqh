@@ -80,6 +80,7 @@ Kohana::modules(array(
 
 	'database' => MODPATH . 'database', // Database access
 	'jelly'    => MODPATH . 'jelly',    // Jelly ORM
+	// 'formo'    => MODPATH . 'formo',    // Form module
 	'cache'    => MODPATH . 'cache',    // Caching with multiple backends
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
@@ -94,9 +95,37 @@ Kohana::modules(array(
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+Route::set('default', '(<action>(/<ignore>))', array('action' => 'index', 'ignore' => '.+'))
+	->defaults(array(
+		'controller' => 'index',
+		'action'     => 'index',
+	));
+Route::set('sign', 'sign(/<action>)', array('action' => 'up|in|out'))
+	->defaults(array(
+		'controller' => 'sign',
+		'action'     => 'up'
+	));
+Route::set('roles', 'roles')
+	->defaults(array(
+		'controller' => 'roles',
+		'action'     => 'index',
+	));
+Route::set('role', 'role(/<id>(/<action>))', array('action' => 'delete|edit'))
+	->defaults(array(
+		'controller' => 'roles',
+		'action'     => 'edit',
+	));
+/*
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'index',
+		'action'     => 'index',
+	));
+*/
+Route::set('catch_all', '<path>', array('path' => '.+'))
+	->defaults(array(
+		'controller' => 'error',
+		'action' => '404'
 	));
 
 /**
@@ -121,7 +150,6 @@ try {
 
 	// 404
 	$request = Request::factory('error/404')->execute();
-	//$request->status = 404;
 
 }
 
@@ -129,18 +157,24 @@ try {
  * Add statistics to the response.
  */
 if ($request->response) {
-	$queries = 0;
-	foreach (Profiler::groups() as $group => $benchmarks) {
-		if (strpos($group, 'database') === 0) {
-			$queries += count($benchmarks);
+
+	if (Kohana::$profiling) {
+
+		// DB queries
+		$queries = 0;
+		foreach (Profiler::groups() as $group => $benchmarks) {
+			if (strpos($group, 'database') === 0) {
+				$queries += count($benchmarks);
+			}
 		}
+
 	}
 
 	$total = array(
 		'{memory_usage}'   => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
 		'{execution_time}' => number_format(microtime(true) - KOHANA_START_TIME, 5),
 		'{database_queries}' => $queries,
-		'{included_files}' => '?',
+		'{included_files}' => count(get_included_files()),
 		'{kohana_version}' => Kohana::VERSION,
 	);
 	$request->response = strtr((string)$request->response, $total);
