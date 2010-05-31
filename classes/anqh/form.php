@@ -21,8 +21,9 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $tip
 	 * @return  string
 	 */
-	public static function button_wrap($name, $body, array $attributes = null, $label = '', $error = '', $tip = '') {
-		$body = is_array($body) ? Arr::get($body, $name) : $body;
+	public static function button_wrap($name, $body, array $attributes = null, $label = null, $error = null, $tip = null) {
+		$body       = is_array($body) ? Arr::get($body, $name) : $body;
+		$attributes = (array)$attributes + array('id' => 'button-' . $name);
 
 		$input = Form::button($name, $body, $attributes);
 
@@ -43,14 +44,15 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array   $tip
 	 * @return  string
 	 */
-	public static function checkbox_wrap($name, $value = null, $checked = false, array $attributes = null, $label = '', $error = '', $tip = '') {
-		$value = is_array($value) ? Arr::get($value, $name) : $value;
-		$checked = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
-
-		// Add id to input if label given
-		if ($label && !isset($attributes['id'])) {
-			$attributes['id'] = $name;
+	public static function checkbox_wrap($name, $value = null, $checked = false, array $attributes = null, $label = null, $error = null, $tip = null) {
+		if (is_array($value)) {
+			$value = Arr::get($value, $name);
+		} else if (is_object($value)) {
+			$value = $value->$name;
 		}
+		$checked    = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
+		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::checkbox($name, $value, $checked, $attributes);
 
@@ -70,7 +72,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $class
 	 * @return  string
 	 */
-	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = '', $error = '', $tip = '', $class = null) {
+	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
 
 		// Get checkboxes
 		$checkboxes = Arr::get($values, $name, $values);
@@ -119,12 +121,9 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $tip
 	 * @return  string
 	 */
-	public static function file_wrap($name, array $attributes = null, $label = '', $error = '', $tip = '') {
-
-		// Add id to input if label given
-		if ($label && !isset($attributes['id'])) {
-			$attributes['id'] = $name;
-		}
+	public static function file_wrap($name, array $attributes = null, $label = null, $error = null, $tip = null) {
+		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::file($name, $attributes);
 
@@ -144,15 +143,15 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $tip
 	 * @return  string
 	 */
-	public static function input_wrap($name, $value = null, array $attributes = null, $label = '', $error = '', $tip = '') {
-		$value = is_array($value) ? Arr::get($value, $name) : $value;
-
-		// Add id to input if label given
-		if ($label && !isset($attributes['id'])) {
-			$attributes['id'] = $name;
+	public static function input_wrap($name, $value = null, array $attributes = null, $label = null, $error = null, $tip = null) {
+		if (is_array($value)) {
+			$value = Arr::get($value, $name);
+		} else if (is_object($value)) {
+			$value = $value->$name;
 		}
-
-		$input = Form::input($name, $value, $attributes);
+		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$label      = $label ? array($attributes['id'] => $label) : '';
+		$input      = Form::input($name, $value, $attributes);
 
 		return Form::wrap($input, $name, $label, $error, $tip);
 	}
@@ -171,17 +170,18 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $show_password
 	 * @return  string
 	 */
-	public static function password_wrap($name, $value = null, array $attributes = null, $label = '', $error = '', $tip = '', $show_password = '') {
-		$value = is_array($value) ? Arr::get($value, $name) : $value;
+	public static function password_wrap($name, $value = null, array $attributes = null, $label = null, $error = null, $tip = null, $show_password = null) {
+		if (is_array($value)) {
+			$value = Arr::get($value, $name);
+		} else if (is_object($value)) {
+			$value = $value->$name;
+		}
+		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		// Inject show password element id
 		if ($show_password) {
 			$attributes['show'] = $name . '_show';
-		}
-
-		// Add id to input if label given
-		if ($label && !isset($attributes['id'])) {
-			$attributes['id'] = $name;
 		}
 
 		$input = Form::password($name, $value, $attributes);
@@ -208,13 +208,31 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $tip
 	 * @return  string
 	 */
-	public static function select_wrap($name, array $options = null, $selected = null, array $attributes = null, $label = '', $error = '', $tip = '') {
-		$selected = Arr::get($selected, $name, $selected);
-		$options = Arr::get($options, $name, $options);
+	public static function select_wrap($name, array $options = null, $selected = null, array $attributes = null, $label = null, $error = null, $tip = null) {
+		$selected   = Arr::get($selected, $name, $selected);
+		$options    = Arr::get($options, $name, $options);
+		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::select($name, $options, $selected, $attributes);
 
 		return Form::wrap($input, $name, $label, $error, $tip);
+	}
+
+
+	/**
+	 * Creates a submit form input with cancel link.
+	 *
+	 * @param   string  input name
+	 * @param   string  input value
+	 * @param   array   html attributes
+	 *
+	 * @param   string  $cancel             cancel url
+	 * @param   array   $cancel_attributes  html attributes for cancel
+	 * @return  string
+	 */
+	public static function submit_wrap($name, $value, array $attributes = null, $cancel = null, $cancel_attributes = null) {
+		return Form::submit($name, $value, $attributes) . ($cancel ? "\n" . HTML::anchor($cancel, __('Cancel'), $cancel_attributes) : '');
 	}
 
 
@@ -231,13 +249,14 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $tip
 	 * @return  string
 	 */
-	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = '', $error = '', $tip = '') {
-		$body = is_array($body) ? Arr::get($body, $name) : $body;
-
-		// Add id to input if label given
-		if ($label && !isset($attributes['id'])) {
-			$attributes['id'] = $name;
+	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = null, $error = null, $tip = null) {
+		if (is_array($body)) {
+			$body = Arr::get($body, $name);
+		} else if (is_object($body)) {
+			$body = $value->$name;
 		}
+		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
 
@@ -256,20 +275,19 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   bool          $label_after
 	 * @return  string
 	 */
-	public static function wrap($input, $name, $label = '', $error = '', $tip = '', $label_after = false) {
-		$wrap = '';
+	public static function wrap($input, $name, $label = null, $error = null, $tip = null, $label_after = false) {
 
 		// Find the input error if any
 		$error = HTML::error($error, $name);
 		$wrap = empty($error) ? '<li>' : '<li class="error">' . $error;
 
 		// Input label if any
-		if (!empty($label)) {
-			$wrap .= Form::label($name, $label);
+		if ($label) {
+			$wrap .= is_array($label) ? Form::label(key($label), current($label)) : Form::label($name, $label);
 		}
 
 		// Input tip if any
-		if (!empty($tip)) {
+		if ($tip) {
 			$tip = '<p class="tip">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
 		}
 
