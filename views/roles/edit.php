@@ -9,21 +9,22 @@
  */
 ?>
 
-<?= form::open() ?>
+<?php echo Form::open() ?>
 
 	<fieldset>
 		<ul>
 
-			<?= Form::input_wrap('name', $values, array('maxlength' => 32), __('Name'), $errors) ?>
+			<?php echo Form::input_wrap('name', $role, array('maxlength' => 32), __('Name'), $errors) ?>
 
-			<?= Form::input_wrap('description', $values, null, __('Description'), $errors) ?>
+			<?php echo Form::input_wrap('description', $role, null, __('Description'), $errors) ?>
 
 		</ul>
 	</fieldset>
 
 	<fieldset>
-		<?= Form::submit(false, __('Save')) ?>
-		<?= HTML::anchor(Request::back('roles', true), __('Cancel')) ?>
+
+		<?php echo Form::submit_wrap('save', __('Save'), null, Request::back(Route::get('roles')->uri(), true)) ?>
+
 	</fieldset>
 
-<?= form::close() ?>
+<?php echo Form::close() ?>

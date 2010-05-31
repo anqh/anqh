@@ -27,7 +27,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 	 */
 	public function action_index() {
 		$this->page_title = __('Roles');
-		$this->page_actions[] = array('link' => 'role/add', 'text' => __('Add new role'), 'class' => 'role-add');
+		$this->page_actions[] = array('link' => Route::get('role')->uri(array('action' => 'create')), 'text' => __('Add new role'), 'class' => 'role-add');
 
 		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Jelly::select('role')->execute())));
 	}
@@ -37,27 +37,51 @@ class Anqh_Controller_Roles extends Controller_Template {
 	 * Action: delete
 	 */
 	public function action_delete($role_id) {
-		Widget::add('main', 'delete');
+		$this->history = false;
+
+		$role = Jelly::select('role', (int)$role_id);
+		if (!$role->loaded()) {
+			throw new Model_Exception($role, (int)$role_id, Model_Exception::NOT_FOUND);
+		}
+		if (!Permission::has($role, Model_Role::PERMISSION_DELETE, $this->user)) {
+			throw new Model_Exception($role, (int)$role_id, Model_Exception::PERMISSION, Model_Role::PERMISSION_DELETE);
+		}
+		$role->delete();
+
+		Request::back(Route::get('roles')->uri());
 	}
 
 
 	/**
 	 * Action: role
 	 */
-	public function action_edit($role_id) {
+	public function action_edit($role_id = 0) {
 		$this->history = false;
-		
-		$role = Jelly::select('role', (int)$role_id);
 
-		$form_values = $form_errors = array();
-
-		if ($role->loaded()) {
-			$this->page_title = HTML::chars($role->name);
-			$this->page_actions[] = array('link' => URL::model($role) . '/delete', 'text' => __('Delete role'), 'class' => 'role-delete');
-			Widget::add('main', View_Module::factory('roles/edit', array('values' => $form_values, 'errors' => $form_errors)));
+		if ($role_id) {
+			$role = Jelly::select('role', (int)$role_id);
+			if (!$role->loaded()) {
+				throw new Model_Exception($role, (int)$role_id, Model_Exception::NOT_FOUND);
+			}
 		} else {
-			throw new Model_Exception('Failed to load :model: :id', array(':id' => (int)$role_id, ':model' => Jelly::model_name($role)));
+			$role = Jelly::factory('role');
 		}
+
+		$errors = array();
+
+		if ($_POST) {
+			$role->set($_POST);
+			try {
+				$role->save();
+				$this->request->redirect(Route::get('roles')->uri());
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validate');
+			}
+		}
+
+		$this->page_title = HTML::chars($role->name ? $role->name : __('Role'));
+		$this->page_actions[] = array('link' => URL::model($role) . '/delete', 'text' => __('Delete role'), 'class' => 'role-delete');
+		Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));
 	}
 
 }
