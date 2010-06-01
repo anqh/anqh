@@ -23,14 +23,18 @@ class Anqh_Model_Shout extends Jelly_Model implements Interface_Permission {
 					'auto_now_create' => true,
 				)),
 				'author' => new Field_BelongsTo(array(
-					'empty'   => false,
 					'column'  => 'author_id',
-					'foreign' => 'users.id',
+					'foreign' => 'user',
+					'rules' => array(
+						'not_empty' => array(true),
+					),
 				)),
 				'shout'  => new Field_String(array(
-					'empty'      => false,
-					'min_length' => 1,
-					'max_length' => 250,
+					'rules' => array(
+						'not_empty' => array(true),
+						'min_length' => array(1),
+						'max_length' => array(250)
+					),
 				)),
 			));
 	}

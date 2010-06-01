@@ -12,14 +12,14 @@
 <ul>
 <?php foreach ($shouts as $shout): ?>
 
-	<li><?php echo HTML::time(date::format('HHMM', $shout->created), $shout->created), ' ', HTML::user($shout->author), ': ', HTML::chars($shout->shout) ?></li>
+	<li><?php echo HTML::time(Date::format('HHMM', $shout->created), $shout->created), ' ', HTML::user($shout->author), ': ', HTML::chars($shout->shout) ?></li>
 
 <?php endforeach; ?>
 </ul>
 
 <?php if ($can_shout): ?>
 
-<?php echo Form::open('/shout') ?>
+<?php echo Form::open(Route::get('shouts')->uri(array('action' => 'shout'))) ?>
 <fieldset class="horizontal">
 	<ul>
 		<?php echo Form::input_wrap('shout', '', array('maxlength' => 300, 'title' => __('Shout')), '', $errors) ?>

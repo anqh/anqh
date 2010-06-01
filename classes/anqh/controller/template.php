@@ -123,7 +123,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 		}
 
 		if ($this->ajax || $this->internal) {
-			$this->request->response .= 'ajax';
+			$this->request->response .= '';
 		} else if ($this->auto_render) {
 
 			// Controller name as the default page id if none set
@@ -217,7 +217,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				// Admin functions
 				if ($this->user->has_role('admin')) {
 					Widget::add('dock2', ' | ' . __('Admin: ')
-						. HTML::anchor('roles', __('Roles')) . ', '
+						. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
 						. HTML::anchor('tags', __('Tags')) . ', '
 						. HTML::anchor('#kohana-profiler', __('Profiler'), array('onclick' => '$("#kohana-profiler").toggle();'))
 					);
@@ -226,12 +226,12 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			} else {
 
 				// Non-authenticated view
-				$form =  Form::open('sign/in');
+				$form =  Form::open(Route::get('sign')->uri(array('action' => 'in')));
 				$form .= Form::input('username', null, array('title' => __('Username')));
 				$form .= Form::password('password', null, array('title' => __('Password')));
 				$form .= Form::submit('signin', __('Sign in'));
 				$form .= Form::close();
-				$form .= html::anchor('/sign/up', __('Sign up'));
+				$form .= html::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up'));
 				/*
 				if (FB::enabled()) {
 					$form .= ' | ' . FB::fbml_login();
