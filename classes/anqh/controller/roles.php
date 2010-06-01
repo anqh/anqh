@@ -16,7 +16,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		parent::before();
 
 		if (!Visitor::instance()->logged_in('admin')) {
-			$this->request->redirect('/');
+			throw new Kohana_Exception('Unauthorized access');
 		}
 
 	}
