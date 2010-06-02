@@ -76,12 +76,13 @@ Kohana::$config->attach(new Kohana_Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	'core'     => MODPATH . 'anqh',     // Anqh core
-
 	'database' => MODPATH . 'database', // Database access
 	'jelly'    => MODPATH . 'jelly',    // Jelly ORM
 	// 'formo'    => MODPATH . 'formo',    // Form module
 	'cache'    => MODPATH . 'cache',    // Caching with multiple backends
+
+	'core'     => MODPATH . 'anqh',     // Anqh core
+	'forum'    => MODPATH . 'forum',    // Anqh forums
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
@@ -104,6 +105,11 @@ Route::set('sign', 'sign(/<action>)', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',
 		'action'     => 'up'
+	));
+Route::set('shouts', 'shouts(/<action>)', array('action' => 'index|shout'))
+	->defaults(array(
+		'controller' => 'shouts',
+		'action'     => 'index'
 	));
 Route::set('roles', 'roles')
 	->defaults(array(
