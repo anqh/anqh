@@ -36,6 +36,28 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
+	 * Print icon with value
+	 *
+	 * @param  integer|array  $value     :var => value
+	 * @param  string         $singular  title for singular value
+	 * @param  string         $plural    title for plural value
+	 * @param  string         $class     icon class
+	 */
+	public static function icon_value($value, $singular = '', $plural = '', $class = '') {
+		$class = $class ? 'icon ' . $class : 'icon';
+		if (is_array($value)) {
+			$var = key($value);
+			$value = $value[$var];
+		}
+		$formatted = Num::format($value, 0);
+		$plural = $plural ? $plural : $singular;
+		$title = ($singular && $plural) ? ' title="' . __2($singular, $plural, $value, array($var => $formatted)) . '"' : '';
+
+		return '<var class="' . $class . '"' . $title . '>' . $formatted . '</var>';
+	}
+
+
+	/**
 	 * JavaScript source code block
 	 *
 	 * @param   string  $source
@@ -77,15 +99,15 @@ class Anqh_HTML extends Kohana_HTML {
 
 			// Set title if not the same as content
 			if (!isset($attributes['title'])) {
-				$title = date::format($short ? 'DMYYYY' : 'DMYYYY_HM', $time);
+				$title = Date::format($short ? 'DMYYYY' : 'DMYYYY_HM', $time);
 				if ($title != $str) {
-					$attributes['title'] = date::format($short ? 'DMYYYY' : 'DMYYYY_HM', $time);
+					$attributes['title'] = Date::format($short ? 'DMYYYY' : 'DMYYYY_HM', $time);
 				}
 			}
 
 		}
 
-		return '<time' . html::attributes($attributes) . '>' . $str . '</time>';
+		return '<time' . HTML::attributes($attributes) . '>' . $str . '</time>';
 	}
 
 

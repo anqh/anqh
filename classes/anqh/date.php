@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Date {
+class Anqh_Date extends Kohana_Date {
 
 	/**
 	 * ISO8601 date
@@ -74,6 +74,31 @@ class Anqh_Date {
 		}
 
 		return date($format, $date);
+	}
+
+
+	/**
+	 * Returns time difference in human readable format with only the largest span
+	 *
+	 * @param		int|string	$time1
+	 * @param		int|string	$time2
+	 * @param		string			$output
+	 * @return	string
+	 */
+	public static function timespan_short($time1, $time2 = null) {
+		if (!is_numeric($time1)) $time1 = strtotime($time1);
+		if (!is_null($time2) && !is_int($time2)) $time2 = strtotime($time2);
+		if ($difference = Date::span($time1, $time2) and is_array($difference)) {
+			foreach ($difference as $span => $amount)
+				if ($amount > 0)
+					return $amount . ' ' . __(Inflector::singular($span, $amount));
+		}
+
+		if (empty($difference)) {
+			return '0 ' . __('seconds');
+		}
+
+		return __('some time');
 	}
 
 }
