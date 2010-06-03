@@ -16,8 +16,20 @@ class Anqh_Model_Builder_Forum_Topic extends Jelly_Builder {
 	 * @param   integer  $page
 	 * @return  Jelly_Builder
 	 */
-	public function latest($limit = 20, $page = 1) {
-		return $this->order_by('last_post_id', 'DESC')->offset(($page - 1) * $limit)->limit($limit);
+	public function active($limit = 20, $page = 1) {
+		return $this->order_by('last_posted', 'DESC')->offset(($page - 1) * $limit)->limit($limit);
 	}
 
+
+	/**
+	 * Find latest topics
+	 *
+	 * @param   integer  $limit
+	 * @param   integer  $page
+	 * @return  Jelly_Builder
+	 */
+	public function latest($limit = 20, $page = 1) {
+		return $this->order_by('created', 'DESC')->offset(($page - 1) * $limit)->limit($limit);
+	}
+	
 }

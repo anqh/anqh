@@ -34,8 +34,40 @@ class Anqh_Controller_Forum extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('forum/topics', array(
 			'mod_class' => 'topics articles',
-			'topics'    => Jelly::select('forum_topic')->latest()->execute()
+			'topics'    => Jelly::select('forum_topic')->active()->execute()
 		)));
+
+		$this->side_views();
+	}
+
+
+	/**
+	 * Side tabs
+	 */
+	public function side_views() {
+		$tabs = array(
+			'active' => array('href' => '#topics-active', 'title' => __('New posts'), 'tab' => View_Module::factory('forum/topiclist', array(
+				'mod_id'    => 'topics-active',
+				'mod_class' => 'cut tab topics',
+				'title'     => __('New posts'),
+				'topics'    =>  Jelly::select('forum_topic')->active()->execute(),
+			))),
+			'latest' => array('href' => '#topics-new', 'title' => __('New topics'), 'tab' => View_Module::factory('forum/topiclist', array(
+				'mod_id'    => 'topics-new',
+				'mod_class' => 'cut tab topics',
+				'title'     => __('New topics'),
+				'topics'    =>  Jelly::select('forum_topic')->latest()->execute(),
+			))),
+			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => in_array($this->tab_id, array('active', 'latest')), 'tab' => View_Module::factory('forum/grouplist', array(
+				'mod_id'    => 'forum-areas',
+				'mod_class' => 'cut tab areas',
+				'title'     => __('Forum areas'),
+				'groups'    => Jelly::select('forum_group')->execute(),
+				'user'      => $this->user,
+			))),
+		);
+
+		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'topics-tab', 'tabs' => $tabs)));
 	}
 
 }
