@@ -498,7 +498,7 @@ class Anqh_Model_User extends Jelly_Model {
 	 * Load one user.
 	 *
 	 * @param   mixed  $user  id, username, email, Model_User, user array or false for current session
-	 * @return  Model_User
+	 * @return  Model_User  or null
 	 */
 	public static function find_user($id = false) {
 		static $session = false;
@@ -562,6 +562,8 @@ class Anqh_Model_User extends Jelly_Model {
 			if ($cache) {
 				Cache::instance()->set('user_' . $user->id, serialize($user), 3600);
 			}
+		} else {
+			$user = null;
 		}
 
 		return $user;

@@ -32,15 +32,6 @@ interface Anqh_Interface_Permission {
 
 
 	/**
-	 * Get object id
-	 *
-	 * @abstract
-	 * @return  integer|string
-	 */
-	public function get_permission_id();
-
-
-	/**
 	 * Check permission
 	 *
 	 * @abstract

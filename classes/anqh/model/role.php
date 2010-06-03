@@ -47,14 +47,4 @@ class Anqh_Model_Role extends Jelly_Model implements Interface_Permission {
 		return $status;
 	}
 
-
-	/**
-	 * Get object id for Permission
-	 *
-	 * @return  integer
-	 */
-	public function get_permission_id() {
-		return $this->id;
-	}
-
 }

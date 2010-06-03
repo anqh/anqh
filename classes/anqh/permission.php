@@ -31,7 +31,7 @@ abstract class Anqh_Permission {
 		$user = Model_User::find_user($user);
 
 		// Create unique permission id for caching
-		$permission_id = sprintf('%s:%d:%s:%d', get_class($model), $model->get_permission_id(), $permission, $user && $user->loaded() ? $user->id : 0);
+		$permission_id = sprintf('%s:%d:%s:%d', get_class($model), $model->id(), $permission, $user && $user->loaded() ? $user->id : 0);
 
 		// If permission check not found from cache ask the model
 		if (!isset(self::$_permissions[$permission_id])) {
