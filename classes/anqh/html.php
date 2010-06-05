@@ -10,6 +10,25 @@
 class Anqh_HTML extends Kohana_HTML {
 
 	/**
+	 * Print user avatar
+	 *
+	 * @param   string  $avatar
+	 * @param   string  $title
+	 * @param   bool    $mini
+	 * @return  string
+	 */
+	public static function avatar($avatar, $title = '', $mini = false) {
+		if (empty($avatar) || /*strpos($avatar, ':') ||*/ strpos($avatar, '/') === false) $avatar = 'avatar/unknown.png';
+
+		if (empty($title)) {
+			return '<div class="avatar">' . HTML::image($avatar, array('alt' => 'Avatar')) . '</div>';
+		} else {
+			return '<div class="avatar">' . HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title))) . '</div>';
+		}
+	}
+
+
+	/**
 	 * Returns errors
 	 *
 	 * @param  string|array  $error(s)

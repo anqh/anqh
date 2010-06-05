@@ -78,6 +78,21 @@ class Anqh_Date extends Kohana_Date {
 
 
 	/**
+	 * Returns the difference between timestamps in a "fuzzy" way.
+	 *
+	 * @param   integer  $timestamp
+	 * @param   interer  $timestamp2  Defaults to now
+	 * @return  string
+	 */
+	public static function fuzzy_span($timestamp, $timestamp2 = null) {
+
+		// If timestamp2 given, pad the actual timestamp to make up the time
+		return parent::fuzzy_span($timestamp2 ? $timestamp - $timestamp2 + time() : $timestamp);
+
+	}
+
+
+	/**
 	 * Returns time difference in human readable format with only the largest span
 	 *
 	 * @param		int|string	$time1
