@@ -22,7 +22,7 @@
 
 		<?php	foreach ($group->areas as $area): ?>
 			<?php if (Permission::has($area, Interface_Permission::PERMISSION_READ)): ?>
-			<li><?php echo HTML::anchor(URL::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></li>
+			<li><?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></li>
 			<?php endif; ?>
 		<?php endforeach; ?>
 

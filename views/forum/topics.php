@@ -13,16 +13,16 @@
 
 <article class="topic-<?php echo $topic->id ?>">
 	<header>
-		<h4 class="unit size5of6"><?php echo HTML::anchor(URL::model($topic) . '/page/last#last', HTML::chars($topic->name)) ?></h4>
+		<h4 class="unit size5of6"><?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name)) ?></h4>
 		<ul class="details unit size1of6">
-			<!-- <li class="unit size1of2"><?php echo HTML::icon_value(array(':views' => $topic->reads), ':views view', ':views views', 'views') ?></li> -->
-			<li class="unit size1of1"><?php echo HTML::icon_value(array(':replies' => $topic->posts - 1), ':replies reply', ':replies replies', 'posts') ?></li>
+			<!-- <li class="unit size1of2"><?php echo HTML::icon_value(array(':views' => $topic->num_reads), ':views view', ':views views', 'views') ?></li> -->
+			<li class="unit size1of1"><?php echo HTML::icon_value(array(':replies' => $topic->num_posts - 1), ':replies reply', ':replies replies', 'posts') ?></li>
 		</ul>
 	</header>
 	<footer>
 		<?php if (isset($area)):
 				echo __('In :area.', array(
-					':area' => HTML::anchor(URL::model($topic->forum_area), HTML::chars($topic->forum_area->name), array('title' => strip_tags($topic->forum_area->description)))
+					':area' => HTML::anchor(Route::model($topic->area), HTML::chars($topic->area->name), array('title' => strip_tags($topic->area->description)))
 				));
 			endif;
 			echo __('Last post by :user :ago ago', array(

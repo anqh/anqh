@@ -8,7 +8,22 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-Route::set('forum', 'forum(/<action>(/<id>(/<params>)))', array('action' => 'index|group|areas|area|topic', 'params' => '.*'))
+Route::set('forum_group', 'forums/<id>(/<params>)', array('params' => '.*'))
+	->defaults(array(
+		'controller' => 'forum',
+		'action'     => 'group',
+	));
+Route::set('forum_area', 'forum/<id>(/<params>)', array('params' => '.*'))
+	->defaults(array(
+		'controller' => 'forum',
+		'action'     => 'area',
+	));
+Route::set('forum_topic', 'topic/<id>(/<params>)', array('params' => '.*'))
+	->defaults(array(
+		'controller' => 'forum',
+		'action'     => 'topic',
+	));
+Route::set('forum', 'forum(/<params>)', array('params' => '.*'))
 	->defaults(array(
 		'controller' => 'forum',
 		'action'     => 'index'
