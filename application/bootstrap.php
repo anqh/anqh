@@ -76,19 +76,20 @@ Kohana::$config->attach(new Kohana_Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	'database' => MODPATH . 'database', // Database access
-	'jelly'    => MODPATH . 'jelly',    // Jelly ORM
-	// 'formo'    => MODPATH . 'formo',    // Form module
-	'cache'    => MODPATH . 'cache',    // Caching with multiple backends
+	'core'       => MODPATH . 'anqh',       // Anqh core
+	'forum'      => MODPATH . 'forum',      // Anqh forums
 
-	'core'     => MODPATH . 'anqh',     // Anqh core
-	'forum'    => MODPATH . 'forum',    // Anqh forums
+	'database'   => MODPATH . 'database',   // Database access
+	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
+	// 'formo'    => MODPATH . 'formo',       // Form module
+	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
+	'pagination' => MODPATH . 'pagination', // Paging of results
+
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	// 'image'      => MODPATH.'image',      // Image manipulation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 ));
 
@@ -96,11 +97,6 @@ Kohana::modules(array(
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
-Route::set('default', '(<action>(/<ignore>))', array('action' => 'index', 'ignore' => '.+'))
-	->defaults(array(
-		'controller' => 'index',
-		'action'     => 'index',
-	));
 Route::set('sign', 'sign(/<action>)', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',
@@ -128,6 +124,11 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'action'     => 'index',
 	));
 */
+Route::set('default', '(<page>)', array('page' => '.+'))
+	->defaults(array(
+		'controller' => 'index',
+		'action'     => 'index',
+	));
 Route::set('catch_all', '<path>', array('path' => '.+'))
 	->defaults(array(
 		'controller' => 'error',
