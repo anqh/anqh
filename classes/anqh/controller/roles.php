@@ -16,7 +16,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		parent::before();
 
 		if (!Visitor::instance()->logged_in('admin')) {
-			throw new Kohana_Exception('Unauthorized access');
+			throw new Permission_Exception(new Model_Role);
 		}
 
 	}
@@ -27,7 +27,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 	 */
 	public function action_index() {
 		$this->page_title = __('Roles');
-		$this->page_actions[] = array('link' => Route::get('role')->uri(array('action' => 'create')), 'text' => __('Add new role'), 'class' => 'role-add');
+		$this->page_actions[] = array('link' => Route::get('role')->uri(array('action' => 'create')), 'text' => __('New role'), 'class' => 'role-add');
 
 		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Jelly::select('role')->execute())));
 	}
@@ -41,10 +41,10 @@ class Anqh_Controller_Roles extends Controller_Template {
 
 		$role = Jelly::select('role', (int)$role_id);
 		if (!$role->loaded()) {
-			throw new Model_Exception($role, (int)$role_id, Model_Exception::NOT_FOUND);
+			throw new Model_Exception($role, (int)$role_id);
 		}
 		if (!Permission::has($role, Model_Role::PERMISSION_DELETE, $this->user)) {
-			throw new Model_Exception($role, (int)$role_id, Model_Exception::PERMISSION, Model_Role::PERMISSION_DELETE);
+			throw new Permission_Exception($role, (int)$role_id, Model_Role::PERMISSION_DELETE);
 		}
 		$role->delete();
 
@@ -62,7 +62,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		if ($role_id) {
 			$role = Jelly::select('role', (int)$role_id);
 			if (!$role->loaded()) {
-				throw new Model_Exception($role, (int)$role_id, Model_Exception::NOT_FOUND);
+				throw new Model_Exception($role, (int)$role_id);
 			}
 		} else {
 			$role = Jelly::factory('role');
@@ -84,8 +84,8 @@ class Anqh_Controller_Roles extends Controller_Template {
 		$this->page_title = __('Role') . ($role->name ? ': ' . HTML::chars($role->name) : '');
 
 		// Set actions
-		if ($role->loaded()) {
-			$this->page_actions[] = array('link' => URL::model($role) . '/delete', 'text' => __('Delete role'), 'class' => 'role-delete');
+		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE, $this->user)) {
+			$this->page_actions[] = array('link' => Route::model($role, 'delete', false), 'text' => __('Delete role'), 'class' => 'role-delete');
 		}
 
 		// Build form

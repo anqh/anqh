@@ -20,12 +20,12 @@ abstract class Anqh_Permission {
 	 * Check permission for object
 	 *
 	 * @static
-	 * @param   Interface_Permission  $model       Object implemeneting permission interface
+	 * @param   Permission_Interface  $model       Object implemeneting permission interface
 	 * @param   string                $permission
 	 * @param   mixed                 $user        Defaults to session user
 	 * @return  boolean
 	 */
-	public static function has(Interface_Permission $model, $permission = Interface_Permission::PERMISSION_READ, $user = false) {
+	public static function has(Permission_Interface $model, $permission = Permission_Interface::PERMISSION_READ, $user = false) {
 
 		// Make sure we have a valid user, if any
 		$user = Model_User::find_user($user);

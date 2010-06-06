@@ -32,7 +32,7 @@ class Anqh_Controller_Shouts extends Controller_Template {
 		$shout = Jelly::factory('shout');
 		$errors = array();
 
-		if (Permission::has($shout, Interface_Permission::PERMISSION_CREATE) && Security::csrf_valid()) {
+		if (Permission::has($shout, Permission_Interface::PERMISSION_CREATE) && Security::csrf_valid()) {
 			$shout->author = $this->user;
 			$shout->shout  = $_POST['shout'];
 			try {

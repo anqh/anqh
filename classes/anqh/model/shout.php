@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Shout extends Jelly_Model implements Interface_Permission {
+class Anqh_Model_Shout extends Jelly_Model implements Permission_Interface {
 
 	/**
 	 * Create new model
