@@ -11,6 +11,6 @@
 
 <ul>
 	<?php foreach ($roles as $role): ?>
-	<li><?php echo HTML::anchor(URL::model($role), $role->name), ' - ', HTML::chars($role->description) ?></li>
+	<li><?php echo HTML::anchor(Route::model($role, 'edit', false), $role->name), ' - ', HTML::chars($role->description) ?></li>
 	<?php endforeach; ?>
 </ul>
