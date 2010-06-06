@@ -19,7 +19,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 			$this->request->redirect(Route::get('default')->uri(array('action' => 'index')));
 		}
 
-		if (Request::$method == 'POST') {
+		if ($_POST) {
 			$visitor = Visitor::instance();
 
 			// Log login attempt
@@ -57,6 +57,19 @@ class Anqh_Controller_Sign extends Controller_Template {
 		// Add newsfeed item
 		// newsfeeditem_user::login($this->visitor->get_user());
 
+		Request::back();
+	}
+
+
+	/**
+	 * Sign out
+	 */
+	public function action_out() {
+		$this->history = false;
+
+		Visitor::instance()->logout();
+
+		// Redirect back to the login page
 		Request::back();
 	}
 
@@ -148,19 +161,6 @@ class Anqh_Controller_Sign extends Controller_Template {
 		}
 
 		widget::add('main', View::factory('member/signup', array('values' => $form_values, 'errors' => $form_errors, 'invitation' => $invitation)));
-	}
-
-
-	/**
-	 * Sign out
-	 */
-	public function out() {
-		$this->history = false;
-
-		$this->visitor->logout();
-
-		// Redirect back to the login page
-		url::back();
 	}
 
 
