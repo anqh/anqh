@@ -145,7 +145,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				->set('page_subtitle', $this->page_subtitle);
 
 			// Generic views
-			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb)));
+			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb, 'last' => !$this->history)));
 			Widget::add('actions',    View::factory('generic/actions',    array('actions' => $this->page_actions)));
 			Widget::add('navigation', View::factory('generic/navigation', array('items' => Kohana::config('site.menu'), 'selected' => $this->page_id)));
 			Widget::add('tabs',       View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));

@@ -9,7 +9,9 @@
  */
 
 // Show only previous 4 to fit on one line
-$current = array_pop($breadcrumb);
+if (!$last) {
+	$current = array_pop($breadcrumb);
+}
 $breadcrumb = array_slice($breadcrumb, -4, 4, true);
 foreach ($breadcrumb as $uri => &$title) $title = HTML::anchor($uri, Text::limit_chars($title, 20, '&hellip;', true));
 ?>

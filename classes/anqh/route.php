@@ -10,19 +10,25 @@
 class Anqh_Route extends Kohana_Route {
 
 	/**
-	 * Return model specific route
+	 * Return model specific route, if $params is null, use $action as $params
 	 *
 	 * @param   Jelly_Model  $model
+	 * @param   string       $action
 	 * @param   string       $params
 	 * @return  string
 	 */
-	public static function model(Jelly_Model $model, $params = null) {
+	public static function model(Jelly_Model $model, $action = null, $params = null) {
 		$route  = Jelly::model_name($model);
 		$id     = URL::title($model->id() . ' ' . $model->name());
+		$uri    = array(
+			'id'     => $id,
+			'action' => $action && !is_null($params) ? $action : null,
+			'params' => is_null($params) ? $action : ($params ? $params : null)
+		);
 		try {
-			return Route::get($route)->uri(array('id' => $id, 'params' => $params));
+			return Route::get($route)->uri($uri);
 		} catch (Kohana_Exception $e) {
-			return $route . '/' . $id . ($params ? '/' . $params : '');
+			return $route . '/' . $id . ($uri['action'] ? '/' . $uri['action'] : '') . ($uri['params'] ? '/' . $uri['params'] : '');
 		}
 	}
 
