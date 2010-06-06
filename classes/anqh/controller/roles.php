@@ -53,11 +53,12 @@ class Anqh_Controller_Roles extends Controller_Template {
 
 
 	/**
-	 * Action: role
+	 * Action: edit
 	 */
 	public function action_edit($role_id = 0) {
 		$this->history = false;
 
+		// Load role
 		if ($role_id) {
 			$role = Jelly::select('role', (int)$role_id);
 			if (!$role->loaded()) {
@@ -67,8 +68,8 @@ class Anqh_Controller_Roles extends Controller_Template {
 			$role = Jelly::factory('role');
 		}
 
+		// Handle post
 		$errors = array();
-
 		if ($_POST) {
 			$role->set($_POST);
 			try {
@@ -79,9 +80,30 @@ class Anqh_Controller_Roles extends Controller_Template {
 			}
 		}
 
-		$this->page_title = HTML::chars($role->name ? $role->name : __('Role'));
-		$this->page_actions[] = array('link' => URL::model($role) . '/delete', 'text' => __('Delete role'), 'class' => 'role-delete');
-		Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));
+		// Set title
+		$this->page_title = __('Role') . ($role->name ? ': ' . HTML::chars($role->name) : '');
+
+		// Set actions
+		if ($role->loaded()) {
+			$this->page_actions[] = array('link' => URL::model($role) . '/delete', 'text' => __('Delete role'), 'class' => 'role-delete');
+		}
+
+		// Build form
+		$form = array(
+			'values' => $role,
+			'errors' => $errors,
+			'cancel' => Request::back(Route::get('roles')->uri(), true),
+			'groups' => array(
+				array(
+					'fields' => array(
+						'name'        => array(),
+						'description' => array(),
+					)
+				)
+			)
+		);
+		//Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
 }

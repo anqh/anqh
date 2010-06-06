@@ -20,13 +20,16 @@ class Anqh_Model_Role extends Jelly_Model implements Interface_Permission {
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
+					'label'  => __('Name'),
 					'unique' => true,
 					'rules'  => array(
 						'max_length' => array(32),
 						'not_empty' => array(true),
 					)
 				)),
-				'description' => new Field_Text,
+				'description' => new Field_Text(array(
+					'label' => __('Description'),
+				)),
 				'users' => new Field_ManyToMany,
 		));
 	}

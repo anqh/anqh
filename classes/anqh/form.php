@@ -10,6 +10,26 @@
 class Anqh_Form extends Kohana_Form {
 
 	/**
+	 * Build input attributes from Jelly model rules
+	 *
+	 * @static
+	 * @param   Jelly_Model  $field
+	 * @return  array
+	 */
+	public static function attributes(Jelly_Field $field) {
+		$attributes = array();
+		foreach ($field->rules as $rule => $params) {
+			switch ($rule) {
+				case 'max_length': $attributes['maxlength'] = $params[0]; break;
+				case 'not_empty': $params[0] && $attributes['title'] = __('Required'); break;
+			}
+		}
+
+		return $attributes;
+	}
+
+
+	/**
 	 * Creates a button form input.
 	 *
 	 * @param   string        input name
