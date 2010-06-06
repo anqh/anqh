@@ -39,13 +39,15 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home'    => array('url' => '',        'text' => __('Home')),
+		'home'    => array('url' => Route::get('default')->uri(), 'text' => __('Home')),
+		/*
 		'events'  => array('url' => 'events',  'text' => __('Events')),
 		'venues'  => array('url' => 'venues',  'text' => __('Venues')),
 		'music'   => array('url' => 'music',   'text' => __('Music')),
-		'forum'   => array('url' => 'forum',   'text' => __('Forum')),
+		'forum'   => array('url' => Route::get('forum')->uri(),   'text' => __('Forum')),
 		'blogs'   => array('url' => 'blogs',   'text' => __('Blogs')),
 		'members' => array('url' => 'members', 'text' => __('Members')),
+		*/
 	),
 
 	/**
