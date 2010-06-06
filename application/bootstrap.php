@@ -123,13 +123,14 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'controller' => 'index',
 		'action'     => 'index',
 	));
-*/
+
 Route::set('default', '(<page>)', array('page' => '.+'))
 	->defaults(array(
 		'controller' => 'index',
 		'action'     => 'index',
 	));
-Route::set('catch_all', '<path>', array('path' => '.+'))
+*/
+Route::set('default', '(<path>)', array('path' => '.+'))
 	->defaults(array(
 		'controller' => 'error',
 		'action' => '404'
