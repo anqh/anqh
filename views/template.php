@@ -64,7 +64,10 @@
 
 			<section id="content" class="unit size5of6">
 
+
 				<header id="title">
+
+<?php echo Widget::get('breadcrumb') ?>
 
 					<h2><?php echo $page_title ?></h2>
 					<?php echo !empty($page_subtitle) ? '<p class="subtitle">' . $page_subtitle . '</p>' : '' ?>

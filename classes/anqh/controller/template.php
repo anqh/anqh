@@ -10,93 +10,72 @@
 abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 
 	/**
-	 * AJAX-like request?
-	 *
-	 * @var  boolean
+	 * @var  boolean  AJAX-like request
 	 */
 	protected $ajax = false;
 
 	/**
-	 * Add current page to history
-	 *
-	 * @var  boolean
+	 * @var  array  Bookmarks / navigation history
+	 */
+	protected $breadcrumb = array();
+
+	/**
+	 * @var  boolean  Add current page to history
 	 */
 	protected $history = true;
 
 	/**
-	 * Actions for current page
-	 *
-	 * @var  array
+	 * @var  array  Actions for current page
 	 */
 	protected $page_actions = array();
 
 	/**
-	 * Current page class
-	 *
-	 * @var  string
+	 * @var  string  Current page class
 	 */
 	protected $page_class;
 
 	/**
-	 * Current page id, defaults to controller name
-	 *
-	 * @var  string
+	 * @var  string  Current page id, defaults to controller name
 	 */
 	protected $page_id;
 
 	/**
-	 * Page main content position
-	 *
-	 * @var  string
+	 * @var  string  Page main content position
 	 */
 	protected $page_main = 'left';
 
 	/**
-	 * Current page subtitle
-	 *
-	 * @var  string
+	 * @var  string  Current page subtitle
 	 */
 	protected $page_subtitle = '';
 
 	/**
-	 * Current page title
-	 *
-	 * @var  string
+	 * @var  string  Current page title
 	 */
 	protected $page_title = '';
 
 	/**
-	 * Page width setting, 'fixed' or 'liquid'
-	 *
-	 * @var  string
+	 * @var  string  Page width setting, 'fixed' or 'liquid'
 	 */
 	protected $page_width = 'fixed';
 
 	/**
-	 * Skin for the site
-	 *
-	 * @var  string
+	 * @var  string  Skin for the site
 	 */
 	protected $skin;
 
 	/**
-	 * Skin files imported in skin, check against file modification time for LESS
-	 *
-	 * @var  array
+	 * @var  array  Skin files imported in skin, check against file modification time for LESS
 	 */
 	protected $skin_imports;
 
 	/**
-	 * Selected tab
-	 *
-	 * @var  string
+	 * @var  string  Selected tab
 	 */
 	protected $tab_id;
 
 	/**
-	 * Tabs navigation
-	 *
-	 * @var  array
+	 * @var  array  Tabs navigation
 	 */
 	protected $tabs;
 
@@ -107,6 +86,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	public function before() {
 		$this->auto_render = !$this->internal;
 		$this->ajax = Request::$is_ajax;
+		$this->breadcrumb = Session::instance()->get('breadcrumb', array());
 
 		parent::before();
 	}
@@ -116,15 +96,20 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	 * Destroy controller
 	 */
 	public function after() {
-
-		// Save current URI
-		if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
-			Session::instance()->set('history', $this->request->uri());
-		}
-
 		if ($this->ajax || $this->internal) {
 			$this->request->response .= '';
 		} else if ($this->auto_render) {
+
+			// Save current URI
+			if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
+				$uri = $this->request->uri();
+				unset($this->breadcrumb[$uri]);
+				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
+				$this->breadcrumb[$uri] = $this->page_title;
+				Session::instance()
+					->set('history', $uri . ($_GET ? URL::query($_GET) : ''))
+					->set('breadcrumb', $this->breadcrumb);
+			}
 
 			// Controller name as the default page id if none set
 			empty($this->page_id) && $this->page_id = $this->request->controller;
@@ -160,9 +145,10 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				->set('page_subtitle', $this->page_subtitle);
 
 			// Generic views
-			Widget::add('actions',    View::factory('generic/actions')->set('actions', $this->page_actions));
-			Widget::add('navigation', View::factory('generic/navigation')->set('items', Kohana::config('site.menu'))->set('selected', $this->page_id));
-			Widget::add('tabs',       View::factory('generic/tabs_top')->set('tabs', $this->tabs)->set('selected', $this->tab_id));
+			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb)));
+			Widget::add('actions',    View::factory('generic/actions',    array('actions' => $this->page_actions)));
+			Widget::add('navigation', View::factory('generic/navigation', array('items' => Kohana::config('site.menu'), 'selected' => $this->page_id)));
+			Widget::add('tabs',       View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
 
 			// Dock
 			$classes = array(
