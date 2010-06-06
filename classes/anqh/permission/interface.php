@@ -8,7 +8,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-interface Anqh_Interface_Permission {
+interface Anqh_Permission_Interface {
 
 	/**
 	 * Permission to create new object
