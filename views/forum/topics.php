@@ -25,7 +25,7 @@
 					':area' => HTML::anchor(Route::model($topic->area), HTML::chars($topic->area->name), array('title' => strip_tags($topic->area->description)))
 				));
 			endif;
-			echo __('Last post by :user :ago ago', array(
+			echo __('Last post by :user :ago', array(
 				':user'  => HTML::user(false, $topic->last_poster),
 				':ago'   => HTML::time(__(Date::fuzzy_span($topic->last_posted)), $topic->last_posted)
 			)); ?>

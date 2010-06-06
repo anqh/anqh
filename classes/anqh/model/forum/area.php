@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Area extends Jelly_Model implements Interface_Permission {
+class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface {
 
 	/**
 	 * Permission to post new topic
@@ -15,34 +15,49 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Interface_Permission 
 	const PERMISSION_POST = 'post';
 
 	/**
+	 * Everybody can read area
+	 */
+	const READ_NORMAL = 0;
+
+	/**
+	 * Only memberes can read area
+	 */
+	const READ_MEMBERS = 1;
+
+	/**
+	 * Visible area
+	 */
+	const STATUS_NORMAL = 0;
+
+	/**
+	 * Hidden area
+	 */
+	const STATUS_HIDDEN = 1;
+
+	/**
 	 * Normal area
 	 */
 	const TYPE_NORMAL = 0;
 
 	/**
-	 * Read-only area
+	 * Topics bound to foreign model
 	 */
-	const TYPE_READONLY = 1;
-
-	/**
-	 * Log-in required area
-	 */
-	const TYPE_LOGGED = 2;
+	const TYPE_BIND = 1;
 
 	/**
 	 * Private area
 	 */
-	const TYPE_PRIVATE = 4;
+	const TYPE_PRIVATE = 2;
 
 	/**
-	 * Bound area, topics bound to other model
+	 * Members can start new topics
 	 */
-	const TYPE_BIND = 8;
+	const WRITE_NORMAL = 0;
 
 	/**
-	 * Hidden area
+	 * Only admins can start new topics
 	 */
-	const TYPE_HIDDEN = 128;
+	const WRITE_ADMINS = 1;
 
 
 	/**
@@ -54,37 +69,89 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Interface_Permission 
 		$meta->sorting(array('sort' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
+				'group' => new Field_BelongsTo(array(
+					'label'   => __('Forum group'),
+					'column'  => 'forum_group_id',
+					'foreign' => 'forum_group',
+				)),
 				'name' => new Field_String(array(
+					'label' => __('Area name'),
 					'rules' => array(
 						'not_empty' => array(true),
 						'max_length' => array(64),
 					),
 				)),
 				'description' => new Field_String(array(
+					'label' => __('Description'),
 					'rules' => array(
 						'max_length' => array(250),
 					),
 				)),
-				'sort' => new Field_Integer,
-				'type' => new Field_Integer,
+				'sort' => new Field_Integer(array(
+					'label'   => __('Sort'),
+					'default' => 0,
+				)),
 				'created' => new Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
-				'num_posts' => new Field_Integer(array(
-					'column' => 'posts',
-				)),
-				'num_topics' => new Field_Integer(array(
-					'column' => 'topics',
-				)),
-				'access' => new Field_Integer,
 				'author' => new Field_BelongsTo(array(
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
 				'bind' => new Field_String,
-				'group' => new Field_BelongsTo(array(
-					'column'  => 'forum_group_id',
-					'foreign' => 'forum_group',
+
+				'access_read' => new Field_Enum(array(
+					'label'   => __('Read access'),
+					'default' => self::READ_NORMAL,
+					'choices' => array(
+						self::READ_MEMBERS => 'Members only',
+						self::READ_NORMAL  => 'Everybody',
+					),
+					'rules'   => array(
+						'not_empty' => array(true),
+					)
+				)),
+				'access_write' => new Field_Enum(array(
+					'label'   => __('Write access'),
+					'default' => self::WRITE_NORMAL,
+					'choices' => array(
+						self::WRITE_ADMINS => 'Admins only',
+						self::WRITE_NORMAL => 'Members',
+					),
+					'rules'   => array(
+						'not_empty' => array(true),
+					)
+				)),
+				'status' => new Field_Enum(array(
+					'label'   => __('Status'),
+					'default' => self::STATUS_NORMAL,
+					'choices' => array(
+						self::STATUS_HIDDEN => 'Hidden',
+						self::STATUS_NORMAL => 'Normal',
+					),
+					'rules'   => array(
+						'not_empty' => array(true),
+					)
+				)),
+				'type' => new Field_Enum(array(
+					'label'   => __('Type'),
+					'column'  => 'area_type',
+					'default' => self::TYPE_NORMAL,
+					'choices' => array(
+						self::TYPE_PRIVATE => 'Private',
+						self::TYPE_BIND    => 'Bind, topics bound to foreign model',
+						self::TYPE_NORMAL  => 'Normal',
+					),
+					'rules'   => array(
+						'not_empty' => array(true),
+					)
+				)),
+
+				'num_posts' => new Field_Integer(array(
+					'column' => 'posts',
+				)),
+				'num_topics' => new Field_Integer(array(
+					'column' => 'topics',
 				)),
 				'last_topic' => new Field_HasOne(array(
 					'column'  => 'last_topic_id',
@@ -115,15 +182,18 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Interface_Permission 
 		    break;
 
 			case self::PERMISSION_POST:
-		    if ($user && !$this->is_type(self::TYPE_HIDDEN)) {
-			    $status = (!$this->is_type(self::TYPE_READONLY | self::TYPE_BIND) || $user->has_role('admin'));
-		    }
+		    $status = $user
+			    && ($this->access_write != self::WRITE_ADMINS
+				    && $this->type != self::TYPE_BIND
+				    && $this->status != self::STATUS_HIDDEN
+				    || $user->has_role('admin')
+			    );
 		    break;
 
 			case self::PERMISSION_READ:
-		    if (!$this->is_type(self::TYPE_HIDDEN)) {
-			    $status = ($user || !$this->is_type(self::TYPE_LOGGED | self::TYPE_PRIVATE));
-		    }
+				$status = $this->status == self::STATUS_NORMAL
+					&& $this->type != self::TYPE_PRIVATE
+					&& ($this->access_read == self::READ_NORMAL || $user);
 		    break;
 
 		}
@@ -131,20 +201,4 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Interface_Permission 
 		return $status;
 	}
 
-
-	/**
-	 * Check area access type
-	 *
-	 * @param   integer  $area_type
-	 * @return  boolean
-	 *
-	 * @see  TYPE_NORMAL
-	 * @see  TYPE_READONLY
-	 * @see  TYPE_LOGGED
-	 * @see  TYPE_PRIVATE
-	 * @see  TYPE_BIND
-	 */
-	public function is_type($area_type) {
-		return $area_type == self::TYPE_NORMAL ? ($this->access === 0) : (bool)$this->access & $area_type;
-	}
 }

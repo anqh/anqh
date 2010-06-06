@@ -17,11 +17,11 @@
 <?php	foreach ($groups as $group): ?>
 
 	<li class="group">
-		<h5><?php echo HTML::anchor(URL::model($group), HTML::chars($group->name)) ?></h5>
+		<h5><?php echo HTML::anchor(Route::model($group), HTML::chars($group->name)) ?></h5>
 		<ul class="areas">
 
 		<?php	foreach ($group->areas as $area): ?>
-			<?php if (Permission::has($area, Interface_Permission::PERMISSION_READ)): ?>
+			<?php if (Permission::has($area, Permission_Interface::PERMISSION_READ)): ?>
 			<li><?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></li>
 			<?php endif; ?>
 		<?php endforeach; ?>
