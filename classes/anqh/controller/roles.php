@@ -43,9 +43,8 @@ class Anqh_Controller_Roles extends Controller_Template {
 		if (!$role->loaded()) {
 			throw new Model_Exception($role, (int)$role_id);
 		}
-		if (!Permission::has($role, Model_Role::PERMISSION_DELETE, $this->user)) {
-			throw new Permission_Exception($role, (int)$role_id, Model_Role::PERMISSION_DELETE);
-		}
+		Permission::required($role, Model_Role::PERMISSION_DELETE, $this->user);
+
 		$role->delete();
 
 		Request::back(Route::get('roles')->uri());
@@ -64,8 +63,10 @@ class Anqh_Controller_Roles extends Controller_Template {
 			if (!$role->loaded()) {
 				throw new Model_Exception($role, (int)$role_id);
 			}
+			Permission::required($role, Model_Role::PERMISSION_UPDATE, $this->user);
 		} else {
 			$role = Jelly::factory('role');
+			Permission::required($role, Model_Role::PERMISSION_CREATE, $this->user);
 		}
 
 		// Handle post

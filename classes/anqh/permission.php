@@ -41,4 +41,20 @@ abstract class Anqh_Permission {
 		return self::$_permissions[$permission_id];
 	}
 
+
+	/**
+	 * Require permission for object, throw exception if not
+	 *
+	 * @static
+	 * @param   Permission_Interface $model
+	 * @param   string  $permission
+	 * @param   mixed   $user
+	 * @throws  Permission_Exception  on no permission
+	 */
+	public static function required(Permission_Interface $model, $permission = Permission_Interface::PERMISSION_READ, $user = false) {
+		if (!self::has($model, $permission, $user)) {
+			throw new Permission_Exception($model, $model->id(), $permission);
+		}
+	}
+
 }
