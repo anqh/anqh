@@ -117,24 +117,23 @@ Route::set('role', 'role(/<id>(/<action>))', array('action' => 'delete|edit'))
 		'controller' => 'roles',
 		'action'     => 'edit',
 	));
-/*
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'index',
 		'action'     => 'index',
 	));
-*/
-
+/*
 Route::set('index', '')
 	->defaults(array(
 		'controller' => 'index',
 		'action'     => 'index',
 	));
-Route::set('default', '(<path>)', array('path' => '.+'))
+Route::set('catch_all', '(<path>)', array('path' => '.+'))
 	->defaults(array(
 		'controller' => 'error',
 		'action' => '404'
 	));
+*/
 
 /**
  * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
