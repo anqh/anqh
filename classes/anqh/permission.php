@@ -26,6 +26,9 @@ abstract class Anqh_Permission {
 	 * @return  boolean
 	 */
 	public static function has(Permission_Interface $model, $permission = Permission_Interface::PERMISSION_READ, $user = false) {
+		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('Anqh', __METHOD__ . '(' . get_class($model) . ')');
+		}
 
 		// Make sure we have a valid user, if any
 		$user = Model_User::find_user($user);
@@ -36,6 +39,10 @@ abstract class Anqh_Permission {
 		// If permission check not found from cache ask the model
 		if (!isset(self::$_permissions[$permission_id])) {
 			self::$_permissions[$permission_id] = $model->has_permission($permission, $user);
+		}
+
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
 		}
 
 		return self::$_permissions[$permission_id];
