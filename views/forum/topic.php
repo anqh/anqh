@@ -27,6 +27,8 @@
 endforeach; ?>
 
 <?php
+return;
+
 echo HTML::script_source('
 $(function() {
 	$("a.post-edit").live("click", function(e) {

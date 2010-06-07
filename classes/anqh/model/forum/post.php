@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Post extends Jelly_Model {
+class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface {
 
 	/**
 	 * Create new model
@@ -45,6 +45,27 @@ class Anqh_Model_Forum_Post extends Jelly_Model {
 				'modified'    => new Field_Timestamp,
 				'post'        => new Field_Text,
 			));
+	}
+
+
+	/**
+	 * Check permission
+	 *
+	 * @param   string      $permission
+	 * @param   Model_User  $user
+	 * @return  boolean
+	 */
+	public function has_permission($permission, $user) {
+		$status = false;
+
+		switch ($permission) {
+			case self::PERMISSION_UPDATE:
+			case self::PERMISSION_DELETE:
+		    $status = $user && ($user->id == $this->author->id || $user->has_role('admin'));
+		    break;
+		}
+
+		return $status;
 	}
 
 }

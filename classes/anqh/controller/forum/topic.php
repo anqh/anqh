@@ -17,7 +17,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Load topic
 		$topic_id = (int)$this->request->param('id');
-		$topic = Jelly::select('forum_topic', $topic_id);
+		$topic = Jelly::select('forum_topic')->load($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -30,7 +30,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Set title
-		$this->page_title = ($topic->read_only ? '<span class="locked">' . __('[Locked]') . '</span> ' : '') . HTML::chars($topic->name());
+		$this->page_title = ($topic->status == Model_Forum_Topic::STATUS_LOCKED ? '<span class="locked">' . __('[Locked]') . '</span> ' : '') . HTML::chars($topic->name());
 		$this->page_subtitle = __('Area :area. ', array(
 			':area' => HTML::anchor(Route::model($topic->area), HTML::chars($topic->area->name), array('title' => strip_tags($topic->area->description)))
 		));
@@ -42,7 +42,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
 		}
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $this->user)) {
-			$this->page_actions[] = array('link' => Route::model($topic, '#reply'), 'text' => __('Reply to topic'), 'class' => 'topic-post');
+			$this->page_actions[] = array('link' => Route::model($topic, 'reply'), 'text' => __('Reply to topic'), 'class' => 'topic-post');
 		}
 
 		// Pagination
@@ -65,6 +65,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		)));
 
 		// Reply
+		/*
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $this->user)) {
 			Widget::add('main', View_Module::factory('forum/post_edit', array(
 				'mod_id'    => 'reply',
@@ -75,6 +76,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				'parent_id' => 0,
 			)));
 		}
+		*/
 
 		$this->side_views();
 	}

@@ -9,29 +9,42 @@
  */
 
 // Viewer's post
-$my = ($user && $post->author_id == $user->id);
+$my = ($user && $post->author->id == $user->id);
 
 // Topic author's post
 $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 ?>
 
 	<article id="post-<?php echo $post->id ?>" class="post <?php echo ($owners ? 'owner ' : ''), ($my ? 'my ' : ''), Text::alternate('', 'alt') ?>">
-		<header<?php echo $post->id == $topic->last_post_id ? ' id="last"' : '' ?>>
+		<header<?php echo $post->id == $topic->last_post->id ? ' id="last"' : '' ?>>
 
 			<?php echo HTML::avatar($post->author->avatar, $post->author->username) ?>
 
 			<span class="actions">
-			<?php if ($my): ?>
+			<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_UPDATE, $user)) echo HTML::anchor(
+					Route::get('forum_post')->uri(array(
+						'id'       => Route::model_id($post),
+						'topic_id' => Route::model_id($topic),
+						'action'   => 'edit')),
+					__('Edit'),
+					array('class' => 'action post-edit')) ?>
 
-				<?php echo HTML::anchor(Route::model($post, 'edit'), __('Edit'), array('class' => 'action post-edit')) ?>
-				<?php echo HTML::anchor(Route::model($post, 'delete?token=' . Security::csrf()), __('Delete'), array('class' => 'action post-delete')) ?>
+			<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_DELETE, $user)) echo HTML::anchor(
+					Route::get('forum_post')->uri(array(
+						'id'       => Route::model_id($post),
+						'topic_id' => Route::model_id($topic),
+						'action'   => 'delete')) . '?token=' . Security::csrf(),
+					__('Delete'),
+					array('class' => 'action post-delete')) ?>
 
-			<?php endif; ?>
-			<?php if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $user)): ?>
+			<?php if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $user)) echo HTML::anchor(
+					Route::get('forum_post')->uri(array(
+						'id'       => Route::model_id($post),
+						'topic_id' => Route::model_id($topic),
+						'action'   => 'quote')),
+					__('Quote'),
+					array('class' => 'action post-quote')) ?>
 
-				<?php echo HTML::anchor(Route::model($post, 'quote'), __('Quote'), array('class' => 'action post-quote')) ?>
-
-			<?php endif; ?>
 			</span>
 
 			<span class="details">
@@ -45,11 +58,14 @@ $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 				':ago' => HTML::time(Date::fuzzy_span($post->modified), $post->modified)
 			)) ?>
 			<?php endif;
-			if ($post->parent_id): $parent_topic = $post->parent->topic; ?>
+			if ($post->parent->id): ?>
 			<br />
 			<?php echo __('Replying to :parent', array(
-				':parent' => HTML::anchor(Route::model($parent_topic, $post->parent_id . '#post-' . $post->parent_id), HTML::chars($parent_topic->name)),
-			)) ?>
+				':parent' => HTML::anchor(
+					Route::get('forum_post')->uri(array(
+						'id'       => Route::model_id($post->parent),
+						'topic_id' => Route::model_id($topic))) . '#post-' . $post->parent->id,
+					HTML::chars($post->parent->topic->name)))) ?>
 			<?php endif; ?>
 			</span>
 

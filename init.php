@@ -26,9 +26,13 @@ Route::set('forum_area', 'forum/<id>(/<action>)', array('action' => 'edit|delete
 	->defaults(array(
 		'controller' => 'forum_area',
 	));
-Route::set('forum_topic', 'topic/<id>(/<action>)', array('action' => 'add|edit'))
+Route::set('forum_topic', 'topic/<id>(/<action>)', array('action' => 'add|edit|reply|delete'))
 	->defaults(array(
 		'controller' => 'forum_topic',
+	));
+Route::set('forum_post', 'topic/<topic_id>/<id>(/<action>)', array('action' => 'edit|quote|delete'))
+	->defaults(array(
+		'controller' => 'forum_topic'
 	));
 Route::set('forum', 'forum(/)')
 	->defaults(array(

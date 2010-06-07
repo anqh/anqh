@@ -14,6 +14,21 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 */
 	const PERMISSION_POST = 'post';
 
+	/**
+	 * Normal topic
+	 */
+	const STATUS_NORMAL = 0;
+
+	/**
+	 * Locked topic
+	 */
+	const STATUS_LOCKED = 1;
+
+	/**
+	 * Sunk topic, don't update last posted
+	 */
+	const STATUS_SINK = 2;
+
 
 	/**
 	 * Create new model
@@ -32,7 +47,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				)),
 				'name'        => new Field_String(array(
 					'rules' => array(
-						'not_empty' => array(true),
+						'not_empty'  => array(true),
 						'max_length' => array(200),
 					)
 				)),
@@ -45,8 +60,19 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				'created' => new Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
-				'first_post' => new Field_BelongsTo(array(
-					'column' => 'first_post_id',
+				'type'        => new Field_Integer,
+				'status'      => new Field_Enum(array(
+					'default' => self::STATUS_NORMAL,
+					'choices' => array(
+						self::STATUS_LOCKED => __('Locked'),
+						self::STATUS_SINK   => __('Sink'),
+						self::STATUS_NORMAL => __('Normal'),
+					)
+				)),
+				'sticky'      => new Field_Boolean,
+				'read_only'   => new Field_Boolean,
+				'first_post'  => new Field_BelongsTo(array(
+					'column'  => 'first_post_id',
 					'foreign' => 'forum_post',
 				)),
 				'last_post'   => new Field_BelongsTo(array(
@@ -55,9 +81,6 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				)),
 				'last_posted' => new Field_Integer,
 				'last_poster' => new Field_String,
-				'type'        => new Field_Integer,
-				'sticky'      => new Field_Boolean,
-				'read_only'   => new Field_Boolean,
 				'num_reads'   => new Field_Integer(array(
 					'column' => 'reads'
 				)),
@@ -86,13 +109,19 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 
 		switch ($permission) {
 			case self::PERMISSION_DELETE:
+				$status = $user && $user->has_role('admin');
 		    break;
+
+			case self::PERMISSION_POST:
+		    $status = $user && ($this->status != self::STATUS_LOCKED || $user->has_role('admin'));
+			  break;
 
 			case self::PERMISSION_READ:
 				$status = Permission::has($this->area, Model_Forum_Area::PERMISSION_READ, $user);
 		    break;
 
 			case self::PERMISSION_UPDATE:
+				$status = $user && ($this->status != self::STATUS_LOCKED && $user == $this->author || $user->has_role('admin'));
 		    break;
 		}
 
