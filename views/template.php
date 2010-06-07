@@ -21,7 +21,7 @@
 		HTML::style('ui/grid.css'),
 		HTML::style('ui/typo.css'),
 		HTML::style('ui/base.css'),
-		Less::style($skin, null, $skin_imports); ?>
+		Less::style($skin, null, false, $skin_imports); ?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
 	<?php echo
