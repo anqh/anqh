@@ -102,7 +102,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 
 			// Save current URI
 			if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
-				$uri = $this->request->uri();
+				$uri = preg_replace('/\/index$/i', '', $this->request->uri());
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
 				$this->breadcrumb[$uri] = $this->page_title;
@@ -259,6 +259,18 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			parent::after();
 		}
 
+	}
+
+
+	/**
+	 * Print an error message
+	 *
+	 * @param  string  $message
+	 */
+	public function error($message = null) {
+		!$message && $message = __('Error occured.');
+
+		Widget::add('error', View_Module::factory('generic/error', array('message' => $message)));
 	}
 
 }

@@ -88,6 +88,7 @@
 
 				<section id="main" class="unit size3of5">
 
+<?php echo Widget::get('error') ?>
 <?php echo Widget::get('main') ?>
 
 				</section><!-- #main -->

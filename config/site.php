@@ -39,7 +39,7 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home'    => array('url' => Route::get('default')->uri(), 'text' => __('Home')),
+		'home'    => array('url' => '/', 'text' => __('Home')),
 		/*
 		'events'  => array('url' => 'events',  'text' => __('Events')),
 		'venues'  => array('url' => 'venues',  'text' => __('Venues')),
