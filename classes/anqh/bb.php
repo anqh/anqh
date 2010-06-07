@@ -85,22 +85,21 @@ class Anqh_BB extends BBCode {
 
 				// Parent post id
 				case 'post':
-					$post_id = (int)$param['value'];
-					$post = ORM::factory('forum_post', $post_id);
+					$post = Jelly::select('forum_post', (int)$param['value']);
 					break;
 
 				// Parent post author
 				case 'author':
 					$author_name = $param['value'];
-					$author = ORM::factory('user')->find_user($author_name);
+					$author = Model_User::find_user($author_name);
 					break;
 
 			}
 		}
 
 		// Add parent post
-		if (isset($post) && $post->id) {
-			$quote = '<blockquote cite="' . URL::model($post->forum_topic) . '/' . $post->id . '#post-' . $post->id . '">';
+		if (isset($post) && $post->loaded()) {
+			$quote = '<blockquote cite="' . URL::site(Route::model($post->topic)) . '?post=' . $post->id . '#post-' . $post->id . '">';
 
 			// Override author
 			$author = $post->author;
@@ -111,10 +110,10 @@ class Anqh_BB extends BBCode {
 		$quote .= '<p>' . trim($content) . '</p>';
 
 		// Post author
-		if (isset($author) && $author->id) {
-			$quote .= '<cite>' . __('-- :author', array(':author' => html::user($author))) . '</cite>';
+		if (isset($author) && $author->loaded()) {
+			$quote .= '<cite>' . __('-- :author', array(':author' => HTML::user($author))) . '</cite>';
 		} else if (isset($author_name)) {
-			$quote .= '<cite>' . __('-- :author', array(':author' => html::specialchars($author_name))) . '</cite>';
+			$quote .= '<cite>' . __('-- :author', array(':author' => HTML::chars($author_name))) . '</cite>';
 		}
 
 		$quote .= '</blockquote>';
