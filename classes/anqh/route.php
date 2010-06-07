@@ -20,10 +20,22 @@ class Anqh_Route extends Kohana_Route {
 	 */
 	public static function model(Jelly_Model $model, $action = null, $params = null, $route = null) {
 		return Route::get($route ? $route : Jelly::model_name($model))->uri(array(
-			'id'     => URL::title($model->id() . ' ' . $model->name()),
+			'id'     => self::model_id($model),
 			'action' => $action,
 			'params' => $params,
 		));
+	}
+
+
+	/**
+	 * Return model id for routing/URLs
+	 *
+	 * @static
+	 * @param   Jelly_Model  $model
+	 * @return  string
+	 */
+	public static function model_id(Jelly_Model $model) {
+		return URL::title($model->id() . ' ' . $model->name());
 	}
 
 }
