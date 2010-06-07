@@ -18,23 +18,19 @@ Route::set('forum_area_add', 'forum/areas/<group_id>/<action>', array('action' =
 		'controller' => 'forum_area',
 		'action'     => 'edit',
 	));
-Route::set('forum_group', 'forum/areas(/<id>(/<action>))', array('action' => 'index|edit'))
+Route::set('forum_group', 'forum/areas(/<id>(/<action>))', array('action' => 'edit|delete'))
 	->defaults(array(
 		'controller' => 'forum_group',
-		'action'     => 'index',
 	));
-Route::set('forum_area', 'forum/<id>(/<action>)', array('action' => 'index|edit'))
+Route::set('forum_area', 'forum/<id>(/<action>)', array('action' => 'edit|delete'))
 	->defaults(array(
 		'controller' => 'forum_area',
-		'action'     => 'index',
 	));
-Route::set('forum_topic', 'topic/<id>(/<action>)', array('action' => 'index|add|edit'))
+Route::set('forum_topic', 'topic/<id>(/<action>)', array('action' => 'add|edit'))
 	->defaults(array(
 		'controller' => 'forum_topic',
-		'action'     => 'index',
 	));
-Route::set('forum', 'forum(/<params>)', array('params' => '.*'))
+Route::set('forum', 'forum(/)')
 	->defaults(array(
 		'controller' => 'forum',
-		'action'     => 'index'
 	));

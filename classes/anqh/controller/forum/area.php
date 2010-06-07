@@ -18,6 +18,25 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 
 	/**
+	 * Action: delete
+	 */
+	public function action_delete() {
+		$this->history = false;
+
+		$area_id = (int)$this->request->param('id');
+		$area = Jelly::select('forum_area', $area_id);
+		if (!$area->loaded()) {
+			throw new Model_Exception($area, $area_id);
+		}
+		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE, $this->user);
+
+		$group = $area->group;
+		$area->delete();
+		$this->request->redirect(Route::model($group));
+	}
+
+
+	/**
 	 * Action: edit
 	 */
 	public function action_edit() {
@@ -79,7 +98,16 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 						'group'       => array(),
 						'name'        => array(),
 						'description' => array(),
-						'sort'        => array(),
+						),
+					),
+				array(
+					'header' => __('Settings'),
+					'fields' => array(
+						'access_read'  => array(),
+						'access_write' => array(),
+						'type'         => array(),
+						'status'       => array(),
+						'sort'         => array(),
 					)
 				)
 			)
@@ -125,7 +153,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Posts
 		Widget::add('main', View_Module::factory('forum/topics', array(
 			'mod_class'  => 'topics articles',
-			'topics'     => $area->get('topics')->active()->pagination($pagination)->execute(),
+			'topics'     => $posts = $area->get('topics')->active()->pagination($pagination)->execute(),
 			'pagination' => $pagination
 		)));
 

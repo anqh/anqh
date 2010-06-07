@@ -10,6 +10,24 @@
 class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 	/**
+	 * Action: delete
+	 */
+	public function action_delete() {
+		$this->history = false;
+
+		$group_id = (int)$this->request->param('id');
+		$group = Jelly::select('forum_group', $group_id);
+		if (!$group->loaded()) {
+			throw new Model_Exception($group, $group_id);
+		}
+		Permission::required($group, Model_Forum_Group::PERMISSION_DELETE, $this->user);
+
+		$group->delete();
+		$this->request->redirect(Route::get('forum')->uri());
+	}
+
+
+	/**
 	 * Action: edit
 	 */
 	public function action_edit() {
@@ -81,10 +99,10 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 			// All groups
 			$groups = Jelly::select('forum_group')->execute();
-			$this->page_title = __('Forum areas');
 			if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, $this->user)) {
 				$this->page_actions[] = array('link' => Route::get('forum_group_add')->uri(), 'text' => __('New group'), 'class' => 'group-add');
 			}
+
 		} else {
 
 			// One group
@@ -93,17 +111,17 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 				throw new Model_Exception($group, $group_id);
 			}
 			Permission::required($group, Model_Forum_Group::PERMISSION_READ, $this->user);
-			
+
 			if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, $this->user)) {
 				$this->page_actions[] = array('link' => Route::model($group, 'edit'), 'text' => __('Edit group'), 'class' => 'group-edit');
 			}
 			if (Permission::has($group, Model_Forum_GROUP::PERMISSION_CREATE_AREA, $this->user)) {
 				$this->page_actions[] = array('link' => Route::model($group, 'add'), 'text' => __('New area'), 'class' => 'area-add');
 			}
-			$this->page_title = $group->name;
 			$groups = array($group);
 		}
 
+		$this->page_title = count($groups) > 1 ? __('Forum areas') : $groups[0]->name;
 		Widget::add('main', View_Module::factory('forum/groups', array('groups' => $groups)));
 
 		$this->side_views();
