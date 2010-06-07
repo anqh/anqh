@@ -13,6 +13,8 @@ echo Form::open(Arr::get($form, 'action'), Arr::get($form, 'attributes'));
 foreach ($form['groups'] as $group_name => $group): ?>
 
 	<fieldset<?php echo HTML::attributes(Arr::get($group, 'attributes')) ?>>
+		<?php if (isset($group['header'])): ?> <legend><?php echo HTML::chars($group['header']) ?></legend<?php endif; ?>
+
 		<ul>
 		<?php foreach ($group['fields'] as $field_name => $field): ?>
 
