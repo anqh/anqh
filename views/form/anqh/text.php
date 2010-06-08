@@ -5,5 +5,6 @@
 	true,
 	isset($label) ? $label : '',
 	isset($errors) ? $errors : '',
-	isset($tip) ? $tip : ''
+	isset($tip) ? $tip : '',
+	isset($bbcode)
 );

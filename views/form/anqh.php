@@ -27,7 +27,8 @@ foreach ($form['groups'] as $group_name => $group): ?>
 
 	<fieldset>
 
-		<?php echo Form::submit_wrap('save', __('Save'), null, $form['cancel']) ?>
+		<?php echo Form::csrf(Arr::path($form, 'csrf.id'), Arr::path($form, 'csrf.action')) ?>
+		<?php echo Form::submit_wrap('save', __('Save'), null, Arr::get($form, 'cancel'), null, Arr::get($form, 'hidden')) ?>
 
 	</fieldset>
 

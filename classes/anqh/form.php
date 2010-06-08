@@ -249,10 +249,25 @@ class Anqh_Form extends Kohana_Form {
 	 *
 	 * @param   string  $cancel             cancel url
 	 * @param   array   $cancel_attributes  html attributes for cancel
+	 * @param   array   $hidden             hidden fields
 	 * @return  string
 	 */
-	public static function submit_wrap($name, $value, array $attributes = null, $cancel = null, $cancel_attributes = null) {
-		return Form::submit($name, $value, $attributes) . ($cancel ? "\n" . HTML::anchor($cancel, __('Cancel'), $cancel_attributes) : '');
+	public static function submit_wrap($name, $value, array $attributes = null, $cancel = null, $cancel_attributes = null, array $hidden = null) {
+		$wrap = Form::submit($name, $value, $attributes);
+
+		// Cancel link
+		if ($cancel) {
+			$wrap .= "\n" . HTML::anchor($cancel, __('Cancel'), $cancel_attributes);
+		}
+
+		// Hidden fields
+		if ($hidden) {
+			foreach ($hidden as $hidden_name => $hidden_value) {
+				$wrap .= Form::hidden($hidden_name, $hidden_value);
+			}
+		}
+
+		return $wrap;
 	}
 
 
@@ -269,7 +284,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $tip
 	 * @return  string
 	 */
-	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = null, $error = null, $tip = null) {
+	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = null, $error = null, $tip = null, $bbcode = null) {
 		if (is_array($body)) {
 			$body = Arr::get($body, $name);
 		} else if (is_object($body)) {
@@ -279,6 +294,9 @@ class Anqh_Form extends Kohana_Form {
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
+		if ($bbcode) {
+			$input .= HTML::script_source('$(function() { $("#' . $attributes['id'] . '").markItUp(bbCodeSettings); });');
+		}
 
 		return Form::wrap($input, $name, $label, $error, $tip);
 	}
