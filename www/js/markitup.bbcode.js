@@ -12,17 +12,17 @@ bbCodeSettings = {
 				{ name: 'Normal', className: 'button-normal', openWith: '[size=100]', closeWith: '[/size]' },
 				{ name: 'Big', className: 'button-big', openWith: '[size=200]', closeWith: '[/size]' }
 			]},
-		{ separator: '---' },
+		{ separator: '&bull;' },
 		{ name: 'Picture', className: 'button-picture', key: 'P', replaceWith: '[img][![URL]!][/img]' },
 		{ name: 'Link', className: 'button-link', key: 'L', openWith: '[url=[![URL]!]]', closeWith: '[/url]', placeHolder: 'http://' },
-		{ separator: '---' },
+		{ separator: '&bull;' },
 		{ name: 'Bulleted list', className: 'button-list-bullets', openWith: '[list]\n', closeWith: '\n[/list]' },
 		{ name: 'Numbered list', className: 'button-list-numbers', openWith: '[list=[![Starting number]!]]\n', closeWith: '\n[/list]' },
 		{ name: 'List item', className: 'button-list-item', openWith: '[*] ' },
-		{ separator: '---' },
+		{ separator: '&bull;' },
 		{ name: 'Quote', className: 'button-quote', openWith: '[quote]', closeWith: '[/quote]' },
 		{ name: 'Code', className: 'button-code', openWith: '[code]', closeWith: '[/code]' },
-		{ separator: '---' },
+		{ separator: '&bull;' },
 		{ name: 'Clean', className: 'button-clear', replaceWith: function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, ''); } }
 		//{ name: 'Preview', className: "preview", call: 'preview' }
 	]

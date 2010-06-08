@@ -49,6 +49,7 @@ section[class*="-edit"] form           { padding: 10px; }
 section[class*="-content"] section[class*="-edit"] form { padding: 0; }
 */
 
+form ul li + li                        { margin-top: 0.8333em; }
 label                                  { display: block; }
 input[type="checkbox"] + label,
 input[type="radio"] + label,
@@ -245,10 +246,9 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpResizeHandle                  { border-bottom: 3px dotted @input-border-color; cursor: n-resize; height: 5px; margin: 0 auto 2px; overflow: hidden; width: 40px; }
 .markItUpResizeHandle:hover            { border-bottom-color: @input-border-hover-color; }
 
-.markItUpHeader ul li                  { float: left; position: relative; }
+.markItUpHeader ul li                  { float: left; margin: 0; position: relative; }
 .markItUpHeader ul li:hover > ul       { display: block; }
 .markItUpHeader ul li a                { background: transparent no-repeat center center; display: block; height: 16px; padding: 2px 0.5em; text-indent: -9999px; width: 16px; }
-.markItUpHeader ul .markItUpSeparator  { background: @input-border-color; margin: 0 10px; overflow: hidden; width: 1px; }
 .markItUpHeader ul .markItUpDropMenu   {  }
 .markItUpHeader ul .markItUpDropMenu > a::after { content: '\25BC'; padding-left: 0.5em; }
 .markItUpHeader ul .markItUpDropMenu li { margin-right:0px; }
