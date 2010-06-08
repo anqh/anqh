@@ -37,3 +37,9 @@
 [submodule "modules/jelly"]
 	path = modules/jelly
 	url = http://github.com/jonathangeiger/kohana-jelly.git
+[submodule "modules/formo"]
+	path = modules/formo
+	url = http://github.com/bmidget/kohana-formo.git
+[submodule "modules/postgresql"]
+	path = modules/postgresql
+	url = http://github.com/cbandy/kohana-postgresql.git
