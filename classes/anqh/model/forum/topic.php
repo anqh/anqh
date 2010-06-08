@@ -128,4 +128,34 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		return $status;
 	}
 
+
+	/**
+	 * Refresh topic foreign values
+	 *
+	 * @param   boolean  $save
+	 */
+	public function refresh($save = true) {
+		if (!$this->loaded()) {
+			return false;
+		}
+
+		// First post
+		$first_post = Jelly::select('forum_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'ASC')->limit(1)->execute();
+		$this->first_post = $first_post;
+
+		// Last post
+		$last_post = Jelly::select('forum_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'DESC')->limit(1)->execute();
+		$this->last_post = $last_post;
+		$this->last_posted = $last_post->created;
+		$this->last_poster = $last_post->author_name;
+
+		$this->num_posts = count($this->posts);
+
+		if ($save) {
+			$this->save();
+		}
+
+		return true;
+	}
+
 }

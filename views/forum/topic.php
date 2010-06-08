@@ -27,8 +27,6 @@
 endforeach; ?>
 
 <?php
-return;
-
 echo HTML::script_source('
 $(function() {
 	$("a.post-edit").live("click", function(e) {
@@ -46,9 +44,8 @@ $(function() {
 		action.data("action", function() {
 			var post = action.attr("href").match(/([0-9]*)\\/delete/);
 			if (post) {
-				$.get(action.attr("href"), function(data) {
-					$("#post-" + post[1]).slideUp();
-				});
+				$("#post-" + post[1]).slideUp();
+				$.get(action.attr("href"));
 			}
 		});
 	});
@@ -81,11 +78,11 @@ $(function() {
 		});
 	});
 
-	$("section#quote form a").live("click", function(e) {
+	$("form#quote a").live("click", function(e) {
 		e.preventDefault();
-		var section = $(this).closest("section");
-		var article = section.closest("article");
-		section.slideUp(null, function() { section.remove(); });
+		var quote = $(this).closest("form");
+		var article = quote.closest("article");
+		quote.slideUp(null, function() { quote.remove(); });
 		article.find(".actions").fadeIn();
 	});
 });

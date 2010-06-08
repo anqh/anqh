@@ -153,7 +153,7 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 				'num_topics' => new Field_Integer(array(
 					'column' => 'topics',
 				)),
-				'last_topic' => new Field_HasOne(array(
+				'last_topic' => new Field_BelongsTo(array(
 					'column'  => 'last_topic_id',
 					'foreign' => 'forum_topic',
 				)),

@@ -43,7 +43,9 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 					'auto_now_create' => true,
 				)),
 				'modified'    => new Field_Timestamp,
-				'post'        => new Field_Text,
+				'post'        => new Field_Text(array(
+					'bbcode' => true,
+				)),
 			));
 	}
 
@@ -59,10 +61,17 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 		$status = false;
 
 		switch ($permission) {
+
+			case self::PERMISSION_READ:
+		    $status = Permission::has($this->topic, Model_Forum_Topic::PERMISSION_READ, $user);
+		    break;
+
+			// Allow modifying and deleting also from locked topics, fyi
 			case self::PERMISSION_UPDATE:
 			case self::PERMISSION_DELETE:
 		    $status = $user && ($user->id == $this->author->id || $user->has_role('admin'));
 		    break;
+
 		}
 
 		return $status;
