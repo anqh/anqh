@@ -81,6 +81,7 @@ Kohana::modules(array(
 
 	'database'   => MODPATH . 'database',   // Database access
 	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
+	'postgresql' => MODPATH . 'postgresql', // PostgreSQL
 	// 'formo'    => MODPATH . 'formo',       // Form module
 	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
 	'pagination' => MODPATH . 'pagination', // Paging of results
@@ -97,6 +98,11 @@ Kohana::modules(array(
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sql|js|css'))
+	->defaults(array(
+		'controller' => 'static',
+		'action'     => '404'
+	));
 Route::set('sign', 'sign(/<action>)', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',
@@ -178,11 +184,11 @@ if ($request->response) {
 	}
 
 	$total = array(
-		'{memory_usage}'   => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
-		'{execution_time}' => number_format(microtime(true) - KOHANA_START_TIME, 5),
+		'{memory_usage}'     => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
+		'{execution_time}'   => number_format(microtime(true) - KOHANA_START_TIME, 5),
 		'{database_queries}' => $queries,
-		'{included_files}' => count(get_included_files()),
-		'{kohana_version}' => Kohana::VERSION,
+		'{included_files}'   => count(get_included_files()),
+		'{kohana_version}'   => Kohana::VERSION,
 	);
 	$request->response = strtr((string)$request->response, $total);
 }
