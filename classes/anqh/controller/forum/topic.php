@@ -25,8 +25,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: delete
 	 */
 	public function action_delete() {
-		$this->history = false;
-
 		$id = (int)$this->request->param('id');
 
 		// Are we deleting a post, if so we have a topic_id
@@ -44,8 +42,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: edit
 	 */
 	public function action_edit() {
-		$this->history = false;
-
 		$id = (int)$this->request->param('id');
 
 		// Are we editing a post, if so we have a topic_id
@@ -54,7 +50,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			return $this->edit_post($topic_id, $id);
 		}
 
-		return $this->edit_topic($id);
+		return $this->edit_topic(null, $id);
 	}
 
 
@@ -153,11 +149,17 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 
 	/**
+	 * Action: post
+	 */
+	public function action_post() {
+		return $this->edit_topic((int)$this->request->param('id'));
+	}
+
+
+	/**
 	 * Action: quote
 	 */
 	public function action_quote() {
-		$this->history = false;
-
 		return $this->edit_post((int)$this->request->param('topic_id'), null, (int)$this->request->param('id'));
 	}
 
@@ -166,8 +168,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: reply
 	 */
 	public function action_reply() {
-		$this->history = false;
-
 		return $this->edit_post((int)$this->request->param('id'));
 	}
 
@@ -179,6 +179,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * @param  integer  $post_id
 	 */
 	protected function delete_post($topic_id, $post_id) {
+		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
 		$topic = Jelly::select('forum_topic')->load($topic_id);
@@ -212,6 +213,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * @param  integer  $topic_id
 	 */
 	protected function delete_topic($topic_id) {
+		$this->history = false;
+
 
 	}
 
@@ -350,10 +353,87 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	/**
 	 * Edit forum topic
 	 *
+	 * @param  integer  $area_id
 	 * @param  integer  $topic_id
 	 */
-	protected function edit_topic($topic_id) {
+	protected function edit_topic($area_id = null, $topic_id = null) {
+		$this->history = false;
 
+		if ($area_id) {
+
+			// Start new topic
+			$area = Jelly::select('forum_area')->load($area_id);
+			if (!$area->loaded()) {
+				throw new Model_Exception($area, $area_id);
+			}
+			Permission::required($area, Model_Forum_Area::PERMISSION_POST, $this->user);
+			$this->page_title = HTML::chars($area->name);
+			$topic = Jelly::factory('forum_topic');
+			$post  = Jelly::factory('forum_post');
+			$cancel = Route::model($area);
+
+			// Build form
+			$form = array(
+				'values' => $topic,
+				'cancel' => $cancel,
+				'groups' => array(
+					array(
+						'fields' => array(
+							'name' => array(),
+							'post' => array('model' => $post),
+						),
+					),
+				)
+			);
+
+		} else {
+
+			// Edit old topic
+			$topic = Jelly::select('forum_topic')->load($topic_id);
+			if (!$topic->loaded()) {
+				throw new Model_Exception($topic, $topic_id);
+			}
+			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, $this->user);
+			$this->set_title($topic);
+			$cancel = Route::model($topic);
+
+			// Build form
+			$form = array(
+				'values' => $topic,
+				'cancel' => $cancel,
+				'groups' => array(
+					array(
+						'fields' => array(
+							'name'   => array(),
+							'status' => array()
+						),
+					),
+				)
+			);
+		}
+
+		$errors = array();
+		if ($_POST) {
+			if (isset($post)) {
+
+				// New topic
+
+			} else {
+
+				// Old topic
+				$topic->set(Arr::extract($_POST, array('name', 'status')));
+				try {
+					$topic->save();
+					$this->request->redirect(Route::model($topic));
+				} catch (Validate_Exception $e) {
+					$errors = $e->array->errors('validate');
+				}
+
+			}
+		}
+		$form['errors'] = $errors;
+
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
 
@@ -362,8 +442,13 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 *
 	 * @param  Model_Forum_Topic  $topic
 	 */
-	protected function set_title($topic = null) {
-		$this->page_title = ($topic->status == Model_Forum_Topic::STATUS_LOCKED ? '<span class="locked">' . __('[Locked]') . '</span> ' : '') . HTML::chars($topic->name());
+	protected function set_title(Model_Forum_Topic $topic = null) {
+		switch ($topic->status) {
+			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="locked">' . __('[Locked]') . '</span> '; break;
+			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="sink">' . __('[Sink]') . '</span> '; break;
+			default: $prefix = '';
+		}
+		$this->page_title = $prefix . HTML::chars($topic->name());
 		$this->page_subtitle = __('Area :area. ', array(
 			':area' => HTML::anchor(Route::model($topic->area), HTML::chars($topic->area->name), array('title' => strip_tags($topic->area->description)))
 		));

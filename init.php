@@ -18,6 +18,10 @@ Route::set('forum_area_add', 'forum/areas/<group_id>/<action>', array('action' =
 		'controller' => 'forum_area',
 		'action'     => 'edit',
 	));
+Route::set('forum_topic_add', 'forum/<id>/<action>', array('action' => 'post'))
+	->defaults(array(
+		'controller' => 'forum_topic',
+	));
 Route::set('forum_group', 'forum/areas(/<id>(/<action>))', array('action' => 'edit|delete'))
 	->defaults(array(
 		'controller' => 'forum_group',

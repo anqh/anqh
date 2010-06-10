@@ -44,6 +44,7 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 				)),
 				'modified'    => new Field_Timestamp,
 				'post'        => new Field_Text(array(
+					'label'  => __('Post'),
 					'bbcode' => true,
 				)),
 			));

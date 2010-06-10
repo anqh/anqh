@@ -46,6 +46,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 					)
 				)),
 				'name'        => new Field_String(array(
+					'label' => __('Topic'),
 					'rules' => array(
 						'not_empty'  => array(true),
 						'max_length' => array(200),
@@ -62,6 +63,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				)),
 				'type'        => new Field_Integer,
 				'status'      => new Field_Enum(array(
+					'label'   => __('Status'),
 					'default' => self::STATUS_NORMAL,
 					'choices' => array(
 						self::STATUS_LOCKED => __('Locked'),
@@ -69,7 +71,10 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 						self::STATUS_NORMAL => __('Normal'),
 					)
 				)),
-				'sticky'      => new Field_Boolean,
+				'sticky'      => new Field_Boolean(array(
+					'label'   => __('Sticky'),
+					'default' => false
+				)),
 				'read_only'   => new Field_Boolean,
 				'first_post'  => new Field_BelongsTo(array(
 					'column'  => 'first_post_id',
@@ -121,7 +126,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		    break;
 
 			case self::PERMISSION_UPDATE:
-				$status = $user && ($this->status != self::STATUS_LOCKED && $user == $this->author || $user->has_role('admin'));
+				$status = $user && (($this->status != self::STATUS_LOCKED && $user->id == $this->author->id) || $user->has_role('admin'));
 		    break;
 		}
 
