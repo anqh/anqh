@@ -16,9 +16,9 @@ foreach ($form['groups'] as $group_name => $group): ?>
 		<?php if (isset($group['header'])): ?> <legend><?php echo HTML::chars($group['header']) ?></legend<?php endif; ?>
 
 		<ul>
-		<?php foreach ($group['fields'] as $field_name => $field): ?>
+		<?php foreach ($group['fields'] as $field_name => $field): $model = Arr::get($field, 'model', $form['values']); ?>
 
-			<?php echo $form['values']->input($field_name, 'form/anqh', $field + array('errors' => Arr::get($form, 'errors'))) ?>
+			<?php if ($model) echo $model->input($field_name, 'form/anqh', $field + array('errors' => Arr::get($form, 'errors'))) ?>
 
 		<?php endforeach; ?>
 		</ul>
