@@ -334,6 +334,9 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$this->user->num_posts++;
 					$this->user->save();
 
+					// News feed
+					NewsfeedItem_Forum::reply($this->user, $post);
+
 				}
 
 				$this->request->redirect(Route::model($topic, '?page=last#last'));
@@ -498,8 +501,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$this->user->num_posts++;
 					$this->user->save();
 
-					$this->request->redirect(Route::model($topic));
+					// News feed
+					NewsfeedItem_Forum::topic($this->user, $topic);
 
+					$this->request->redirect(Route::model($topic));
 				}
 
 			} else {
