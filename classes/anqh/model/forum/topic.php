@@ -40,6 +40,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 			->fields(array(
 				'id'          => new Field_Primary,
 				'area'        => new Field_BelongsTo(array(
+					'column'  => 'forum_area_id',
 					'foreign' => 'forum_area',
 					'rules'   => array(
 						'not_empty' => array(true),
@@ -50,7 +51,10 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 					'rules' => array(
 						'not_empty'  => array(true),
 						'max_length' => array(200),
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'old_name'    => new Field_String,
 				'author'      => new Field_BelongsTo(array(

@@ -80,11 +80,17 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 						'not_empty' => array(true),
 						'max_length' => array(64),
 					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'description' => new Field_String(array(
 					'label' => __('Description'),
 					'rules' => array(
 						'max_length' => array(250),
+					),
+					'filters' => array(
+						'trim' => null,
 					),
 				)),
 				'sort' => new Field_Integer(array(

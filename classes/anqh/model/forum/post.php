@@ -46,6 +46,12 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 				'post'        => new Field_Text(array(
 					'label'  => __('Post'),
 					'bbcode' => true,
+					'rules' => array(
+						'not_empty' => array(true),
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 			));
 	}

@@ -29,13 +29,19 @@ class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface
 					'rules' => array(
 						'not_empty'  => array(true),
 						'max_length' => array(32),
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'description' => new Field_String(array(
 					'label' => __('Description'),
 					'rules' => array(
 						'max_length' => array(250),
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'created' => new Field_Timestamp(array(
 					'auto_now_create' => true

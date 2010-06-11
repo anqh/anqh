@@ -30,10 +30,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Are we deleting a post, if so we have a topic_id
 		$topic_id = (int)$this->request->param('topic_id');
 		if ($topic_id) {
-			return $this->delete_post($topic_id, $id);
+			return $this->_delete_post($topic_id, $id);
 		}
 
-		return $this->delete_topic($id);
+		return $this->_delete_topic($id);
 
 	}
 
@@ -47,10 +47,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Are we editing a post, if so we have a topic_id
 		$topic_id = (int)$this->request->param('topic_id');
 		if ($topic_id) {
-			return $this->edit_post($topic_id, $id);
+			return $this->_edit_post($topic_id, $id);
 		}
 
-		return $this->edit_topic(null, $id);
+		return $this->_edit_topic(null, $id);
 	}
 
 
@@ -95,7 +95,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Set title
-		$this->set_title($topic);
+		$this->_set_title($topic);
 
 		// Set actions
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, $this->user)) {
@@ -109,7 +109,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$per_page = 20;
 		$pagination = Pagination::factory(array(
 			'items_per_page' => $per_page,
-			'total_items'    => $topic->num_posts,
+			'total_items'    => max(1, $topic->num_posts),
 		));
 		if (Arr::get($_GET, 'page') == 'last') {
 			$pagination->last();
@@ -152,7 +152,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: post
 	 */
 	public function action_post() {
-		return $this->edit_topic((int)$this->request->param('id'));
+		return $this->_edit_topic((int)$this->request->param('id'));
 	}
 
 
@@ -160,7 +160,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: quote
 	 */
 	public function action_quote() {
-		return $this->edit_post((int)$this->request->param('topic_id'), null, (int)$this->request->param('id'));
+		return $this->_edit_post((int)$this->request->param('topic_id'), null, (int)$this->request->param('id'));
 	}
 
 
@@ -168,7 +168,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: reply
 	 */
 	public function action_reply() {
-		return $this->edit_post((int)$this->request->param('id'));
+		return $this->_edit_post((int)$this->request->param('id'));
 	}
 
 
@@ -178,7 +178,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * @param  integer  $topic_id
 	 * @param  integer  $post_id
 	 */
-	protected function delete_post($topic_id, $post_id) {
+	protected function _delete_post($topic_id, $post_id) {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
@@ -212,10 +212,25 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 *
 	 * @param  integer  $topic_id
 	 */
-	protected function delete_topic($topic_id) {
+	protected function _delete_topic($topic_id) {
 		$this->history = false;
 
+		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
+		$topic = Jelly::select('forum_topic')->load($topic_id);
+		if (!$topic->loaded()) {
+			throw new Model_Exception($topic, $topic_id);
+		}
 
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, $this->user);
+
+		$area  = $topic->area;
+		$posts = $topic->num_posts;
+		$topic->delete();
+		$area->num_posts -= $posts;
+		$area->num_topics--;
+		$area->save();
+
+		$this->request->redirect(Route::model($area));
 	}
 
 
@@ -226,7 +241,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * @param  integer  $post_id    When editing a post
 	 * @param  integer  $quote_id   When quoting a post
 	 */
-	protected function edit_post($topic_id, $post_id = null, $quote_id = null) {
+	protected function _edit_post($topic_id, $post_id = null, $quote_id = null) {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
@@ -268,7 +283,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			}
 		}
 
-		$this->set_title($topic);
+		$this->_set_title($topic);
 
 		// Handle post
 		$errors = array();
@@ -301,16 +316,24 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			try {
 				$post->save();
 				if ($increase) {
+
+					// Topic
 					$topic->num_posts++;
 					$topic->last_post   = $post;
 					$topic->last_posted = $post->created;
 					$topic->last_poster = $post->author_name;
 					$topic->save();
 
+					// Area
 					$area = $topic->area;
 					$area->num_posts++;
 					$area->last_topic = $topic;
 					$area->save();
+
+					// User
+					$this->user->num_posts++;
+					$this->user->save();
+
 				}
 
 				$this->request->redirect(Route::model($topic, '?page=last#last'));
@@ -356,7 +379,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * @param  integer  $area_id
 	 * @param  integer  $topic_id
 	 */
-	protected function edit_topic($area_id = null, $topic_id = null) {
+	protected function _edit_topic($area_id = null, $topic_id = null) {
 		$this->history = false;
 
 		if ($area_id) {
@@ -375,12 +398,20 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			// Build form
 			$form = array(
 				'values' => $topic,
+				'save'   => array(
+					'attributes' => array('tabindex' => 3)
+				),
 				'cancel' => $cancel,
 				'groups' => array(
 					array(
 						'fields' => array(
-							'name' => array(),
-							'post' => array('model' => $post),
+							'name' => array(
+								'attributes' => array('tabindex' => 1)
+							),
+							'post' => array(
+								'attributes' => array('tabindex' => 2),
+								'model' => $post
+							),
 						),
 					),
 				)
@@ -394,8 +425,13 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				throw new Model_Exception($topic, $topic_id);
 			}
 			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, $this->user);
-			$this->set_title($topic);
+			$this->_set_title($topic);
 			$cancel = Route::model($topic);
+
+			// Set actions
+			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, $this->user)) {
+				$this->page_actions[] = array('link' => Route::model($topic, 'delete'), 'text' => __('Delete topic'), 'class' => 'topic-delete');
+			}
 
 			// Build form
 			$form = array(
@@ -405,10 +441,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					array(
 						'fields' => array(
 							'name'   => array(),
-							'status' => array()
+							'status' => array(),
 						),
 					),
-				)
+				),
 			);
 		}
 
@@ -417,6 +453,54 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (isset($post)) {
 
 				// New topic
+				$post->post        = $_POST['post'];
+				$post->area        = $area;
+				$post->author      = $this->user;
+				$post->author_name = $this->user->username;
+				$post->author_ip   = Request::$client_ip;
+				$post->author_host = Request::host_name();
+				try {
+					$post->validate();
+				} catch (Validate_Exception $e) {
+					$errors += $e->array->errors('validate');
+				}
+
+				$topic->name = $_POST['name'];
+				$topic->area = $area;
+				try {
+					$topic->validate();
+				} catch (Validate_Exception $e) {
+					$errors += $e->array->errors('validate');
+				}
+
+				// If no errors found, save models
+				if (empty($errors)) {
+					$topic->save();
+
+					// Post
+					$post->topic = $topic;
+					$post->save();
+
+					// Topic
+					$topic->first_post  = $topic->last_post   = $post;
+					$topic->last_poster = $this->user->username;
+					$topic->last_posted = time();
+					$topic->num_posts   = 1;
+					$topic->save();
+
+					// Area
+					$area->last_topic = $topic;
+					$area->num_posts++;
+					$area->num_topics++;
+					$area->save();
+
+					// User
+					$this->user->num_posts++;
+					$this->user->save();
+
+					$this->request->redirect(Route::model($topic));
+
+				}
 
 			} else {
 
@@ -442,7 +526,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 *
 	 * @param  Model_Forum_Topic  $topic
 	 */
-	protected function set_title(Model_Forum_Topic $topic = null) {
+	protected function _set_title(Model_Forum_Topic $topic = null) {
 		switch ($topic->status) {
 			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="locked">' . __('[Locked]') . '</span> '; break;
 			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="sink">' . __('[Sink]') . '</span> '; break;
