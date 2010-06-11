@@ -72,6 +72,7 @@ input[type="password"],
 input[type="file"],
 textarea,
 select                                 { width: 99%; }
+textarea.hint,
 input.hint                             { color: @input-hint-color; font-style: italic; }
 input.private                          { border-color: @private-color; }
 
@@ -252,7 +253,6 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpHeader ul .markItUpDropMenu   {  }
 .markItUpHeader ul .markItUpDropMenu > a::after { content: '\25BC'; padding-left: 0.5em; }
 .markItUpHeader ul .markItUpDropMenu li { margin-right:0px; }
-
 .markItUpHeader ul ul                  { background: @section-background; display: none; left: 0; position: absolute; top: 1.6667em; }
 .markItUpHeader ul ul li               { float: none; width: auto; }
 
