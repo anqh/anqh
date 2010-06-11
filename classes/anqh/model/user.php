@@ -43,6 +43,7 @@ class Anqh_Model_User extends Jelly_Model {
 		$visitor = Visitor::instance();
 
 		$meta
+			->name_key('username')
 			->fields(array(
 				'id' => new Field_Primary,
 				'username' => new Field_String(array(
@@ -52,23 +53,26 @@ class Anqh_Model_User extends Jelly_Model {
 						'min_length' => array(max((int)$visitor->get_config('username.length_min'), 1)),
 						'max_length' => array(min((int)$visitor->get_config('username.length_max'), 30)),
 						'regex'      => array('/^[' . $visitor->get_config('username.chars') . ']+/ui'),
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'username_clean' => new Field_String(array(
 					'unique' => true,
-					'rules' => array(
+					'rules'  => array(
 						'not_empty' => array(true),
 					)
 				)),
 				'password' => new Field_Password(array(
 					'hash_with' => array($visitor, 'hash_password'),
-					'rules' => array(
+					'rules'     => array(
 						'not_empty'  => array(true),
 						'min_length' => array(5),
 					)
 				)),
 				'password_confirm' => new Field_Password(array(
-					'in_db' => false,
+					'in_db'     => false,
 					'callbacks' => array(
 						'matches' => array('Anqh_Model_User', '_check_password_matches')
 					),
@@ -79,30 +83,45 @@ class Anqh_Model_User extends Jelly_Model {
 				)),
 				'email' => new Field_Email(array(
 					'unique' => true,
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 
 				'name' => new Field_String(array(
 					'rules' => array(
 						'min_length' => array(1),
 						'max_length' => array(50),
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'address_street' => new Field_String(array(
 					'rules' => array(
 						'max_length' => array(50),
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'address_zip' => new Field_String(array(
 					'rules' => array(
 						'min_length' => array(4),
 						'max_length' => array(5),
 						'digit'      => array()
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'address_city' => new Field_String(array(
 					'rules' => array(
 						'max_length' => array(50)
-					)
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'city' => new Field_BelongsTo,
 				'dob'  => new Field_String,
@@ -124,6 +143,11 @@ class Anqh_Model_User extends Jelly_Model {
 				)),
 				'roles' => new Field_ManyToMany,
 
+				// Foreign values, should make own models?
+				'num_posts' => new Field_Integer(array(
+					'column' => 'posts',
+				)),
+			
 			));
 	}
 
@@ -616,7 +640,7 @@ class Anqh_Model_User extends Jelly_Model {
 	 * @param  array|string  $roles
 	 */
 	public function has_role($roles) {
-		foreach ($this->roles as $role) {
+		foreach ($this->get('roles')->execute() as $role) {
 			if (is_array($roles) && in_array($role->name, $roles)
 				|| is_numeric($roles) && $role->id == $roles
 				|| is_string($roles) && $role->name == $roles) {

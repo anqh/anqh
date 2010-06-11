@@ -16,21 +16,26 @@ class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta
-			->name_key('name')
 			->fields(array(
-				'id' => new Field_Primary,
-				'name' => new Field_String(array(
+				'id'          => new Field_Primary,
+				'name'        => new Field_String(array(
 					'label'  => __('Name'),
 					'unique' => true,
 					'rules'  => array(
 						'max_length' => array(32),
-						'not_empty' => array(true),
-					)
+						'not_empty'  => array(true),
+					),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
 				'description' => new Field_Text(array(
 					'label' => __('Description'),
+					'filters' => array(
+						'trim' => null,
+					),
 				)),
-				'users' => new Field_ManyToMany,
+				'users'       => new Field_ManyToMany,
 		));
 	}
 
