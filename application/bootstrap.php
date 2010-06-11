@@ -123,6 +123,26 @@ Route::set('role', 'role(/<id>(/<action>))', array('action' => 'delete|edit'))
 		'controller' => 'roles',
 		'action'     => 'edit',
 	));
+Route::set('tag_group_add', 'tags/addgroup')
+	->defaults(array(
+		'controller' => 'tags',
+		'action'     => 'addgroup',
+	));
+Route::set('tag_group', 'tags/<id>(/<action>)', array('action' => 'group|add|deletegroup|editgroup'))
+	->defaults(array(
+		'controller' => 'tags',
+		'action'     => 'group',
+	));
+Route::set('tag', 'tag/<id>(/<action>)', array('action' => 'tag|edit|delete'))
+	->defaults(array(
+		'controller' => 'tags',
+		'action'     => 'tag',
+	));
+Route::set('tags', 'tags')
+	->defaults(array(
+		'controller' => 'tags',
+		'action'     => 'index',
+	));
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'index',
@@ -171,10 +191,13 @@ try {
  */
 if ($request->response) {
 
+	// Render the request to get all pending database queries and files
+	$request->response = (string)$request->response;
+
+	$queries = 0;
 	if (Kohana::$profiling) {
 
 		// DB queries
-		$queries = 0;
 		foreach (Profiler::groups() as $group => $benchmarks) {
 			if (strpos($group, 'database') === 0) {
 				$queries += count($benchmarks);
@@ -190,7 +213,7 @@ if ($request->response) {
 		'{included_files}'   => count(get_included_files()),
 		'{kohana_version}'   => Kohana::VERSION,
 	);
-	$request->response = strtr((string)$request->response, $total);
+	$request->response = strtr($request->response, $total);
 }
 
 /**
