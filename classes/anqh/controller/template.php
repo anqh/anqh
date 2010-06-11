@@ -204,7 +204,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				if ($this->user->has_role('admin')) {
 					Widget::add('dock2', ' | ' . __('Admin: ')
 						. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
-						. HTML::anchor('tags', __('Tags')) . ', '
+						. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
 						. HTML::anchor('#kohana-profiler', __('Profiler'), array('onclick' => '$("#kohana-profiler").toggle();'))
 					);
 				}
