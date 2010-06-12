@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-abstract class Jelly_Field_JSON extends Jelly_Field_Text {
+abstract class Jelly_Field_JSON extends Field_Text {
 
 	/**
 	 * @var  boolan  Return as array or object
