@@ -78,6 +78,7 @@ Kohana::$config->attach(new Kohana_Config_File);
 Kohana::modules(array(
 	'core'       => MODPATH . 'anqh',       // Anqh core
 	'forum'      => MODPATH . 'forum',      // Anqh forums
+	'venues'     => MODPATH . 'venues',     // Anqh venues
 
 	'database'   => MODPATH . 'database',   // Database access
 	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
@@ -174,7 +175,7 @@ try {
 } catch (Exception $e) {
 
 	// Throw errors in development environment
-	if (Kohana::$environment == Kohana::DEVELOPMENT) {
+	if (Kohana::$environment == Kohana::DEVELOPMENT || Kohana::$environment == Kohana::TESTING) {
 		throw $e;
 	}
 
