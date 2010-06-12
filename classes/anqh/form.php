@@ -21,7 +21,7 @@ class Anqh_Form extends Kohana_Form {
 		foreach ($field->rules as $rule => $params) {
 			switch ($rule) {
 				case 'max_length': $attributes['maxlength'] = $params[0]; break;
-				case 'not_empty': $params[0] && $attributes['title'] = __('Required'); break;
+				case 'not_empty':  $attributes['title'] = __('Required'); break;
 			}
 		}
 

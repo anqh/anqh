@@ -11,11 +11,29 @@
 abstract class Anqh_URL extends Kohana_URL {
 
 	/**
+	 * Transforms an database id to file path, 1234567 = 01/23/45
+	 *
+	 * @param  int $id
+	 * @return string
+	 */
+	public static function id($id) {
+
+		// Convert numeric id to hex and split to chunks of 2
+		$path = str_split(sprintf('%08x', (int)$id), 2);
+
+		// Scrap the last chunk, 256 files per dir
+		array_pop($path);
+
+		return implode('/', $path);
+	}
+
+	
+	/**
 	 * Return model specific url
 	 *
 	 * @param  Jelly_Model  $model
 	 */
-	public static function model(Jelly_Model $model) {
+	public static function modell(Jelly_Model $model) {
 		return Jelly::model_name($model) . '/' . self::title($model->id() . ' ' . $model->name());
 	}
 
