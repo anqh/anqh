@@ -22,18 +22,22 @@ abstract class Anqh_Geo {
 
 
 	/**
-	 * Get country info from GeoNames by geonameId
+	 * Get country info from GeoNames by country code
 	 *
 	 * @static
-	 * @param   integer  $id
+	 * @param   string  $id
 	 * @return  array
 	 */
 	private static function _country_info($id, $lang = 'en') {
+		$url = Kohana::config('geo.base_url') . '/countryInfo?country=' . $id . '&lang=' . $lang;
 		try {
-			return new SimpleXMLElement(Kohana::config('geo.base_url') . '/countryInfo?country=' . (int)$id . '&lang=' . $lang, null, true);
-		} catch (Exception $e) { }
-
-		return false;
+			$xml = new SimpleXMLElement($url, null, true);
+			Kohana::$log->add(Kohana::DEBUG, 'GeoNames OK: ' . $url);
+			return $xml;
+		} catch (Exception $e) {
+			Kohana::$log->add(Kohana::ERROR, 'GeoNames failed: ' . $url . ' - ' . Kohana::exception_text($e));
+			return false;
+		}
 	}
 
 
@@ -45,11 +49,15 @@ abstract class Anqh_Geo {
 	 * @return  array
 	 */
 	private static function _get($id, $lang = 'en') {
+		$url = Kohana::config('geo.base_url') . '/get?geonameId=' . (int)$id . '&lang=' . $lang . '&style=full';
 		try {
-			return new SimpleXMLElement(Kohana::config('geo.base_url') . '/get?geonameId=' . (int)$id . '&lang=' . $lang . '&style=full', null, true);
-		} catch (Exception $e) { }
-
-		return false;
+			$xml = new SimpleXMLElement($url, null, true);
+			Kohana::$log->add(Kohana::DEBUG, 'GeoNames OK: ' . $url);
+			return $xml;
+		} catch (Exception $e) {
+			Kohana::$log->add(Kohana::ERROR, 'GeoNames failed: ' . $url . ' - ' . Kohana::exception_text($e));
+			return false;
+		}
 	}
 
 
@@ -65,8 +73,6 @@ abstract class Anqh_Geo {
 		if (!$id) {
 			return false;
 		}
-
-		$languages = Kohana::config('geo.languages');
 
 		// Try local cache first
 		if (!isset(self::$_cities[$id])) {
@@ -97,16 +103,24 @@ abstract class Anqh_Geo {
 			}
 
 			self::$_cities[$city->id] = $city;
+		} else {
+			$city = self::$_cities[$id];
 		}
 
 		// Localization
 		if (!isset($city->i18n[$lang])) {
-			$page = self::_get($city->id, $lang);
-			$city->i18n[$lang] = (string)$page->name;
+			$languages = Kohana::config('geo.languages');
+			$i18n = (array)$city->i18n;
+			foreach ($languages as $language) {
+				if (!isset($i18n[$language]) && $page = self::_get($city->id, $language)) {
+					$i18n[$language] = (string)$page->name;
+				}
+			}
+			$city->i18n = $i18n;
 			$city->save();
 		}
 
-		return self::$_cities[$id];
+		return $city;
 	}
 
 
@@ -122,8 +136,6 @@ abstract class Anqh_Geo {
 		if (!$id) {
 			return false;
 		}
-
-		$languages = Kohana::config('geo.languages');
 
 		// Try local cache first
 		if (!isset(self::$_countries[$id])) {
@@ -156,8 +168,6 @@ abstract class Anqh_Geo {
 					$country->code       = strtoupper((string)$details->countryCode);
 					$country->currency   = (string)$info->country->currencyCode;
 					$country->population = (int)$details->population;
-					$country->i18n       = array($lang => (string)$info->country->countryName);
-
 					try {
 						$country->save();
 					} catch (Validate_Exception $e) {
@@ -168,16 +178,24 @@ abstract class Anqh_Geo {
 			}
 
 			self::$_countries[$country->id] = self::$_countries[$country->code] = $country;
+		} else {
+			$country = self::$_countries[$id];
 		}
 
 		// Localization
 		if (!isset($country->i18n[$lang])) {
-			$info = self::_country_info($country->code, $lang);
-			$country->i18n[$lang] = (string)$info->country->countryName;
+			$languages = Kohana::config('geo.languages');
+			$i18n = (array)$country->i18n;
+			foreach ($languages as $language) {
+				if (!isset($i18n[$language]) && $info = self::_country_info($country->code, $language)) {
+					$i18n[$language] = (string)$info->country->countryName;
+				}
+			}
+			$country->i18n = $i18n;
 			$country->save();
 		}
 
-		return self::$_countries[$id];
+		return $country;
 	}
 
 }

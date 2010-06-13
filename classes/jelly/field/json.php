@@ -14,6 +14,10 @@ abstract class Jelly_Field_JSON extends Field_Text {
 	 */
 	public $array = true;
 
+	/**
+	 * @var  boolean  Don't trim JSON
+	 */
+	public $trim = false;
 
 	/**
 	 * Decode data back to original form
@@ -41,7 +45,7 @@ abstract class Jelly_Field_JSON extends Field_Text {
 	 * @return  string
 	 */
 	public function save($model, $value, $loaded) {
-		return json_encode($value);
+		return $value === null && $this->null ? null : json_encode($value);
 	}
 
 }

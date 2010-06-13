@@ -14,6 +14,11 @@ class Field_String extends Jelly_Field_String {
 	 */
 	public $null = true;
 
+	/**
+	 * @var  boolean  Auto-trim
+	 */
+	public $trim = true;
+
 
 	/**
 	 * Adds a trim filter if it doesn't already exist.
@@ -25,7 +30,9 @@ class Field_String extends Jelly_Field_String {
 	public function initialize($model, $column) {
 		parent::initialize($model, $column);
 
-		$this->filters += array($this->null ? 'Field_String::trim' : 'trim' => null);
+		if ($this->trim) {
+			$this->filters += array($this->null ? 'Field_String::trim' : 'trim' => null);
+		}
 	}
 
 

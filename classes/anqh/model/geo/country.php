@@ -16,8 +16,8 @@ class Anqh_Model_Geo_Country extends Jelly_Model {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'       => new Field_Primary,
-			'name'     => new Field_String(array(
+			'id' => new Field_Primary,
+			'name' => new Field_String(array(
 				'label'  => __('Country'),
 				'unique' => true,
 				'rules'  => array(
@@ -25,7 +25,7 @@ class Anqh_Model_Geo_Country extends Jelly_Model {
 					'not_empty'  => array(true),
 				),
 			)),
-			'code'     => new Field_String(array(
+			'code' => new Field_String(array(
 				'label'  => __('Country code'),
 				'unique' => true,
 				'rules'  => array(
@@ -39,14 +39,15 @@ class Anqh_Model_Geo_Country extends Jelly_Model {
 					'exact_length' => array(3),
 				),
 			)),
-			'created'  => new Field_Timestamp(array(
+			'population' => new Field_Integer,
+			'created' => new Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
-			'modified' => new Field_Timestamp(array(
+			'modified'   => new Field_Timestamp(array(
 				'auto_now_update' => true,
 			)),
-			'i18n'     => new Field_JSON,
-			'cities'   => new Field_HasMany(array(
+			'i18n' => new Field_JSON,
+			'cities' => new Field_HasMany(array(
 				'foreign' => 'geo_city',
 			)),
 		));

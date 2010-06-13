@@ -263,6 +263,54 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 
 
 	/**
+	 * Autocomplete for city
+	 *
+	 * @param  string  $name  Form input name for city name
+	 * @param  string  $id    Form input name for city id
+	 */
+	public function autocomplete_city($name = 'city_name', $id = 'city_id') {
+		widget::add('foot', html::script_source('
+$(function() {
+	$("input[name=' . $name . ']")
+		.autocomplete({
+			source: function(request, response) {
+				$.ajax({
+					url: "http://ws.geonames.org/searchJSON",
+					dataType: "jsonp",
+					data: {
+						lang: "' . $this->language . '",
+						featureClass: "P",
+						countryBias: "FI",
+						style: "full",
+						maxRows: 10,
+						name_startsWith: request.term
+					},
+					success: function(data) {
+						response($.map(data.geonames, function(item) {
+							return {
+								id: item.geonameId,
+								label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
+								value: item.name
+							}
+						}))
+					}
+				})
+			},
+			minLength: 2,
+			select: function(event, ui) {
+				$("input[name=' . $id . ']").val(ui.item.id);
+			},
+			open: function() {
+			},
+			close: function() {
+			}
+		});
+});
+		'));
+	}
+
+
+	/**
 	 * Print an error message
 	 *
 	 * @param  string  $message
