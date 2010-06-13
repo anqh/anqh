@@ -90,6 +90,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $name     input name
 	 * @param   array         $values   input values
 	 * @param   array         $checked  checked statuses
+	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
@@ -97,28 +98,17 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
-
-		// Get checkboxes
-		$checkboxes = Arr::get($values, $name, $values);
-		if (!empty($checkboxes)) {
-
-			// Create internal id
-			$singular = Inflector::singular($name) . '_';
-
-			// Get values
-			$checked = Arr::get($checked, $name, $checked);
-			$input = $class ? "<ul>\n" : '<ul class="' . $class . "\">\n";
-			foreach ($checkboxes as $checkbox_id => $checkbox_name) {
-				$internal_id = $singular . $checkbox_id;
+			$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
+			foreach ($values as $checkbox_value => $checkbox_title) {
+				$id = 'field-' . $name . '-' . $checkbox_value;
 				$input .= '<li>';
-				$input .= Form::checkbox($name . '[' . $checkbox_id . ']', 1, isset($checked[$checkbox_id]), array('id' => $internal_id));
-				$input .= Form::label($internal_id, $checkbox_name);
+				$input .= Form::checkbox($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id));
+				$input .= Form::label($id, $checkbox_title);
 				$input .= "</li>\n";
 			}
 			$input .= "</ul>\n";
 
 			return Form::wrap($input, $name, $label, $error, $tip);
-		}
 	}
 
 
@@ -243,10 +233,10 @@ class Anqh_Form extends Kohana_Form {
 
 		$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
 		foreach ($values as $radio_value => $radio_title) {
-			$internal_id = 'field-' . $name . '-' . $radio_value;
+			$id = 'field-' . $name . '-' . $radio_value;
 			$input .= '<li>';
-			$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $internal_id));
-			$input .= Form::label($internal_id, $radio_title);
+			$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $id));
+			$input .= Form::label($id, $radio_title);
 			$input .= "</li>\n";
 		}
 		$input .= "</ul>\n";
