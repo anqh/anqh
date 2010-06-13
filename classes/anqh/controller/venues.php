@@ -288,6 +288,12 @@ class Anqh_Controller_Venues extends Controller_Template {
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
 			$venue->set(Arr::extract($_POST, Model_Venue::$editable_fields));
+
+			// GeoNames
+			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
+				$venue->city = $city;
+			}
+			
 			try {
 				$venue->save();
 				$this->request->redirect(Route::model($venue));
@@ -345,6 +351,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		$this->autocomplete_city('city_name', 'city_id');
 	}
 
 }
