@@ -25,7 +25,7 @@ class Field_String extends Jelly_Field_String {
 	public function initialize($model, $column) {
 		parent::initialize($model, $column);
 
-		$this->filters += array($this->null ? 'Jelly_String::trim' : 'trim' => null);
+		$this->filters += array($this->null ? 'Field_String::trim' : 'trim' => null);
 	}
 
 
