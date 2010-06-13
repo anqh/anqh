@@ -35,7 +35,7 @@ abstract class Jelly_Field_JSON extends Field_Text {
 
 
 	/**
-	 * Decode data as soon as it comes in.
+	 * Encode data on save
 	 *
 	 * @param   mixed  $value
 	 * @return  string

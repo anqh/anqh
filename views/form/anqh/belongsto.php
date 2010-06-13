@@ -1,6 +1,6 @@
 <?php echo Form::select_wrap(
 	$name,
-	$options,
+	$field->null ? array('' => '') + $options : $options,
 	$value->id(),
 	$attributes + Form::attributes($field),
 	isset($label) ? $label : '',

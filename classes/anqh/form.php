@@ -25,6 +25,10 @@ class Anqh_Form extends Kohana_Form {
 			}
 		}
 
+		if ($field instanceof Field_URL) {
+			$attributes['title'] = 'http://';
+		}
+
 		return $attributes;
 	}
 
@@ -210,6 +214,42 @@ class Anqh_Form extends Kohana_Form {
 		if ($show_password) {
 			$input .= Form::checkbox($name . '_show', 'yes') . Form::label($name . '_show', $show_password);
 		}
+
+		return Form::wrap($input, $name, $label, $error, $tip);
+	}
+
+
+	/**
+	 * Creates a list of radio form inputs
+	 *
+	 * @param   string        $name     input name
+	 * @param   array         $values   input values
+	 * @param   array         $checked  checked status
+	 * @param   array         $attributes
+	 *
+	 * @param   string        $label
+	 * @param   string|array  $error
+	 * @param   string|array  $tip
+	 * @param   string        $class
+	 * @return  string
+	 */
+	public static function radios_wrap($name, $values = array(), $checked = '', $attributes = null, $label = null, $error = null, $tip = null, $class = null) {
+		$values = Arr::get($values, $name, $values);
+		if (is_object($checked)) {
+			$checked->$name;
+		} else if (is_array($checked)) {
+			$checked = Arr::get($checked, $name);
+		}
+
+		$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
+		foreach ($values as $radio_value => $radio_title) {
+			$internal_id = 'field-' . $name . '-' . $radio_value;
+			$input .= '<li>';
+			$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $internal_id));
+			$input .= Form::label($internal_id, $radio_title);
+			$input .= "</li>\n";
+		}
+		$input .= "</ul>\n";
 
 		return Form::wrap($input, $name, $label, $error, $tip);
 	}
