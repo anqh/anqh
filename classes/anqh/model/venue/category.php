@@ -47,7 +47,10 @@ class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interf
 					'auto_now_create' => true,
 				)),
 
-				'tag_group' => new Field_BelongsTo,
+				'tag_group' => new Field_BelongsTo(array(
+					'label' => __('Tag group'),
+					'null'  => true,
+				)),
 				'venues'    => new Field_HasMany,
 		));
 	}

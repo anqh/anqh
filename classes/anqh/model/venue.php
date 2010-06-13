@@ -10,6 +10,14 @@
 class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 
 	/**
+	 * @var  array  User editable fields
+	 */
+	public static $editable_fields = array(
+		'category', 'name', 'description', 'homepage', 'hours', 'info', 'address', 'zip', 'city_name', 'event_host', 'tags',
+	);
+
+
+	/**
 	 * Create new model
 	 *
 	 * @param  Jelly_Meta  $meta
@@ -20,6 +28,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 			->fields(array(
 				'id' => new Field_Primary,
 				'category' => new Field_BelongsTo(array(
+					'label'   => 'Category',
 					'foreign' => 'venue_category',
 				)),
 				'name' => new Field_String(array(
@@ -35,14 +44,16 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 						'max_length' => array(250),
 					),
 				)),
-				'homepage' => new Field_URL,
-				'hours' => new Field_String(array(
+				'homepage' => new Field_URL(array(
+					'label' => 'Homepage',
+				)),
+				'hours' => new Field_Text(array(
 					'label' => __('Opening hours'),
 					'rules' => array(
 						'max_length' => array(250),
 					),
 				)),
-				'info' => new Field_String(array(
+				'info' => new Field_Text(array(
 					'label' => __('Other information'),
 					'rules' => array(
 						'max_length' => array(512),
@@ -63,17 +74,33 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 						'digit'      => null,
 					),
 				)),
-				'city_name'  => new Field_String,
+				'city_name'  => new Field_String(array(
+					'label' => __('City'),
+				)),
+				'city'       => new Field_BelongsTo(array(
+					'foreign' => 'geo_city',
+				)),
 				'latitude'   => new Field_Float,
 				'longitude'  => new Field_Float,
-				'event_host' => new Field_Boolean,
+				'event_host' => new Field_Boolean(array(
+					'label' => __('Event host'),
+				)),
+				'created'    => new Field_Timestamp(array(
+					'auto_now_create' => true,
+				)),
+				'modified'   => new Field_Timestamp(array(
+					'auto_now_update' => true,
+				)),
 
 				'default_image' => new Field_BelongsTo(array(
 					'column'  => 'default_image_id',
 					'foreign' => 'image',
 				)),
 				'images' => new Field_ManyToMany,
-				'tags'   => new Field_ManyToMany,
+				'tags'   => new Field_ManyToMany(array(
+					'label' => __('Tags'),
+					'null'  => true,
+				)),
 		));
 	}
 

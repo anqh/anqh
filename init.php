@@ -8,7 +8,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-Route::set('venue_category_add', 'venues/add')
+Route::set('venue_category_add', 'venues/addcategory')
 	->defaults(array(
 		'controller' => 'venues',
 		'action'     => 'addcategory',
@@ -18,7 +18,7 @@ Route::set('venue_add', 'venues/<id>/add')
 		'controller' => 'venues',
 		'action'     => 'add',
 	));
-Route::set('venue_category', 'venues/<id>(/<action>)', array('action' => 'edit|delete'))
+Route::set('venue_category', 'venues/<id>(/<action>)', array('action' => 'editcategory|deletecategory'))
 	->defaults(array(
 		'controller' => 'venues',
 		'action'     => 'category',
