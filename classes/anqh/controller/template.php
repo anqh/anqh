@@ -253,6 +253,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 
 			// And finally the profiler stats
 			if (in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {
+				Widget::add('foot', View::factory('generic/debug'));
 				Widget::add('foot', View::factory('profiler/stats'));
 			}
 
