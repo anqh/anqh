@@ -10,7 +10,7 @@
 
 $groups = array(
 	'Session' => $_SESSION,
-	'Cookie'  => $_COOKIE,
+	'Cookies'  => $_COOKIE,
 )
 ?>
 

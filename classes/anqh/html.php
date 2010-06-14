@@ -29,6 +29,37 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
+	 * Prints date box
+	 *
+	 * @param   string|integer  $date
+	 * @param   boolean         $show_year
+	 * @param   string          $class
+	 * @return  string
+	 */
+	public static function box_day($date, $show_year = false, $class = '') {
+
+		// Get date elements
+		$date = !is_numeric($date) ? strtotime($date) : (int)$date;
+		list($weekday, $day, $month, $year) = explode(' ', date('D d M y', $date));
+		if ($show_year) {
+			$month .= " '" . $year;
+		}
+
+		// Today?
+		if (date('Y-m-d', $date) == date('Y-m-d')) {
+			$class .= ' date today';
+			$weekday = __('Today');
+		} else {
+			$class .= ' date';
+		}
+
+		$template = '<span class="weekday">%s</span><span class="day">%s</span><span class="month">%s</span>';
+
+		return self::time(sprintf($template, $weekday, $day, $month), array('class' => trim($class), 'datetime' => $date), true);
+	}
+
+
+	/**
 	 * Returns errors
 	 *
 	 * @param  string|array  $error(s)
