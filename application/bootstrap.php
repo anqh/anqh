@@ -77,6 +77,7 @@ Kohana::$config->attach(new Kohana_Config_File);
  */
 Kohana::modules(array(
 	'core'       => MODPATH . 'anqh',       // Anqh core
+	'events'     => MODPATH . 'events',     // Anqh event calendar
 	'forum'      => MODPATH . 'forum',      // Anqh forums
 	'venues'     => MODPATH . 'venues',     // Anqh venues
 
@@ -104,7 +105,7 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
-Route::set('sign', 'sign(/<action>)', array('action' => 'up|in|out'))
+Route::set('sign', 'sign/<action>', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',
 		'action'     => 'up'
