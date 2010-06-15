@@ -18,7 +18,7 @@ Route::set('events_ymd', 'events/<year>/week/<week>', array('year' => '\d{4}', '
 		'controller' => 'events',
 		'action'     => 'browse',
 	));
-Route::set('events_ymd', 'events/<year>(/<month>(/<day>))', array('year' => '\d{4}', 'month' => '\d{2}', 'day' => '\d{2}'))
+Route::set('events_ymd', 'events/<year>(/<month>(/<day>))', array('year' => '\d{4}', 'month' => '\d{1,2}', 'day' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'events',
 		'action'     => 'browse',
