@@ -31,6 +31,16 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 	/**
+	 * Action: add
+	 */
+	public function action_add() {
+		$this->page_title = __('Event');
+
+		return $this->_edit_event();
+	}
+
+
+	/**
 	 * Action: browse calendar
 	 */
 	public function action_browse() {
@@ -47,6 +57,19 @@ class Anqh_Controller_Events extends Controller_Template {
 		$year  = $year ? $year : date('Y');
 		$first = mktime(0, 0, 0, $month, $day, $year);
 		$last  = strtotime('+1 week', $first);
+
+		// Load events
+		$events = Jelly::select('event')->between($first, $last)->execute_grouped();
+		if (count($events)) {
+			$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
+
+			Widget::add('main', View_Module::factory('generic/filters', array(
+				'filters' => $this->_filters($events),
+			)));
+			Widget::add('main', View_Module::factory('events/events', array(
+				'events' => $events,
+			)));
+		}
 
 		// Calendar
 		Widget::add('side', View_Module::factory('events/calendar', array(
@@ -133,6 +156,129 @@ class Anqh_Controller_Events extends Controller_Template {
 
 	}
 
+
+	/**
+	 * Edit event
+	 *
+	 * @param  integer  $event_id
+	 */
+	protected function _edit_event($event_id = null) {
+		$this->history = false;
+
+		if ($event_id) {
+
+			// Editing old
+			$event = Jelly::select('event')->load($event_id);
+			if (!$event->loaded()) {
+				throw new Model_Exception($event, $event_id);
+			}
+			Permission::required($event, Model_Event::PERMISSION_UPDATE, $this->user);
+			$cancel = Request::back(Route::model($event), true);
+
+		} else {
+
+			// Creating new
+			$event = Jelly::factory('event');
+			Permission::required($event, Model_Event::PERMISSION_CREATE, $this->user);
+			$cancel = Request::back(Route::get('events')->uri(), true);
+
+		}
+
+		// Handle post
+		$errors = array();
+		if ($_POST) {
+			$event->set($_POST);
+			try {
+				$event->save();
+				$this->request->redirect(Route::model($event));
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
+			}
+		}
+
+		// Build form
+		$form = array(
+			'values' => $event,
+			'errors' => $errors,
+			'cancel' => $cancel,
+			'hidden' => array(
+				'city_id'  => $event->city ? $event->city->id : 0,
+				'venue_id' => $event->venue ? $event->venue->id : 0,
+			),
+			'groups' => array(
+				'event' => array(
+					'header' => __('Event'),
+					'fields' => array(
+						'name'     => array(),
+						'homepage' => array(),
+					),
+				),
+				'when' => array(
+					'header' => __('When?'),
+					'fields' => array(
+						'date_begin' => array(
+							'label'      => __('Date'),
+							'attributes' => array('maxlength' => 10),
+							'rules'      => array('not_empty' => null),
+						),
+						'time_begin' => array(
+							'label'      => __('From'),
+							'attributes' => array('maxlength' => 5)
+						),
+						'time_end'   => array(
+							'label'      => __('To'),
+							'attributes' => array('maxlength' => 5)
+						),
+					)
+				),
+				'where' => array(
+					'header' => __('Where?'),
+					'fields' => array(
+						'venue_name' => array(),
+						'city_name'  => array(),
+						'age'        => array(),
+					)
+				),
+				'tickets' => array(
+					'header' => __('Tickets'),
+					'fields' => array(
+						'price'  => array('attributes' => array('title' => __('Set to zero for free entry'))),
+						'price2' => array(),
+					),
+				),
+				'who' => array(
+					'header' => __('Who?'),
+					'fields' => array(
+						'dj' => array(),
+					)
+				),
+				'what' => array(
+					'header' => __('What?'),
+					'fields' => array(
+						'info' => array(),
+					)
+				)
+			)
+		);
+
+		// Tags
+		$tag_group = Jelly::select('tag_group')->where('name', '=', 'Music')->limit(1)->execute();
+		if ($tag_group->loaded() && count($tag_group->tags)) {
+			$tags = array();
+			foreach ($tag_group->tags as $tag) {
+				$tags[$tag->id()] = $tag->name();
+			}
+			$form['groups']['what']['fields']['tags'] = array(
+				'class'  => 'pills',
+				'values' => $tags,
+			);
+		}
+
+		// Autocompletes
+		$this->autocomplete_city('city_name', 'city_id');
+
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+	}
 
 	/**
 	 * Build filter items

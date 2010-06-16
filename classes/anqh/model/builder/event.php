@@ -10,6 +10,30 @@
 class Anqh_Model_Builder_Event extends Jelly_Builder {
 
 	/**
+	 * Load events between dates
+	 * @param   integer  $stamp_begin
+	 * @param   integer  $stamp_end
+	 * @return  Jelly_Builder
+	 */
+	public function between($stamp_begin, $stamp_end) {
+		$stamp_begin = (int)$stamp_begin;
+		$stamp_end   = (int)$stamp_end;
+
+		if (!$stamp_begin || !$stamp_end) {
+			throw new Kohana_Exception('Start and end time must be given');
+		}
+
+		if ($stamp_begin > $stamp_end) {
+			$stamp_temp  = $stamp_begin;
+			$stamp_begin = $stamp_end;
+			$stamp_end   = $stamp_begin;
+		}
+		
+		return $this->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))->order_by('stamp_begin', 'DESC')->order_by('city_name', 'ASC');
+	}
+
+
+	/**
 	 * Return events as array grouped by date and city
 	 *
 	 * @return  array
@@ -38,7 +62,7 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 				$grouped[$date][$city][] = $event;
 			}
 
-			// Sort bt city
+			// Sort by city
 			$dates = array_keys($grouped);
 			foreach ($dates as $date) {
 				ksort($grouped[$date]);
