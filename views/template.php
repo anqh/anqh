@@ -27,7 +27,7 @@
 	<?php echo
 		HTML::script('http://www.google.com/jsapi?key=' . Kohana::config('site.google_api_key')),
 		HTML::script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'),
-		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js'),
+		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'),
 		HTML::script('js/jquery.tools.min.js'); ?>
 
 <?php echo Widget::get('head') ?>
@@ -131,7 +131,7 @@
 
 	<!-- DOCK -->
 
-	<section id="dock">
+	<section id="dock" class="pinned">
 		<div class="content">
 			<div class="unit size2of5">
 

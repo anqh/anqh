@@ -205,9 +205,12 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 					Widget::add('dock2', ' | ' . __('Admin: ')
 						. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
 						. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
-						. HTML::anchor('#kohana-profiler', __('Profiler'), array('onclick' => '$("#kohana-profiler").toggle();'))
+						. HTML::anchor('#debug', __('Profiler'), array('onclick' => '$("div.kohana").toggle();'))
 					);
 				}
+
+				// Pin
+				Widget::add('dock2', ' | ' . HTML::anchor('#pin', __('Pin'), array('class' => 'pin', 'onclick' => '$("#dock").toggleClass("pinned"); return false;')));
 
 			} else {
 

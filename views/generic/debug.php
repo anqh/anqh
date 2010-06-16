@@ -14,7 +14,7 @@ $groups = array(
 )
 ?>
 
-<div class="kohana">
+<div id="debug" class="kohana">
 	<?php foreach ($groups as $group => $content): ?>
 	<table class="profiler">
 		<tr class="group">
