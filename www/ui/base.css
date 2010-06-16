@@ -2,14 +2,6 @@
  * Copyright (c) 2008-2010 Anqh
  */
 
-/***** TEMPLATE *****/
-
-.fixed .content                        { width: 960px; }
-.liquid .content                       { margin: 0 25px; width: auto; }
-
-/***** /TEMPLATE *****/
-
-
 /***** AREAS *****/
 
 .groups .group + .group,

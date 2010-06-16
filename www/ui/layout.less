@@ -7,13 +7,17 @@
 /***** PAGE *****/
 
 body                                   { background: @body-background-color @body-background-image; color: @text-color; }
+.fixed .content                        { width: 960px; }
+.liquid .content                       { margin: 0 25px; width: auto; }
+.kohana                                { display: none; }
 
 /***** /PAGE *****/
 
 
 /***** DOCK *****/
 
-#dock                                  { background: @dock-background; border-bottom: @dock-border; .box-shadow(0 0 10px @dock-background); padding: 0.4116em 0; left: 0; position: fixed; right: 0; top: 0; z-index: 100; }
+#dock                                  { background: @dock-background; border-bottom: @dock-border; .box-shadow(0 0 10px @dock-background); padding: 0.4116em 0; left: 0; position: absolute; right: 0; top: 0; z-index: 100; }
+#dock.pinned                           { position: fixed; }
 #dock label,
 #dock div                              { color: @dock-color; }
 #dock form                             { float: left; }

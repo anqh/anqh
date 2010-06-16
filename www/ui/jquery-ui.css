@@ -277,6 +277,7 @@
 /* Datepicker
 ----------------------------------*/
 .ui-datepicker { width: 17em; padding: .2em .2em 0; }
+.ui-widget-content.ui-datepicker-inline { background: transparent; width: auto; }
 .ui-datepicker .ui-datepicker-header   { position: relative; }
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next { position:absolute; top: 2px; width: 1.6667em; height: 1.6667em; }
@@ -416,7 +417,6 @@
 /* Autocomplete
 ----------------------------------*/
 .ui-autocomplete { position: absolute; cursor: default; }
-.ui-autocomplete-loading { background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat; }
 /* workarounds */
 * html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6
 
