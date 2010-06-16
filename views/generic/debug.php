@@ -29,7 +29,12 @@ $groups = array(
 			<th class="name"><?php echo $key ?></th>
 			<td class="average">
 				<div>
-					<div class="value"><?php print_r($value) ?></div>
+					<div class="value"><?php if (strlen($value = print_r($value, true)) > 100): ?>
+						<a href="#" onclick="$(this).next('div').toggle(); return false;"><?php echo __('Show') ?> (<?php echo strlen($value) ?>)</a>
+						<div style="display:none"><?php echo $value ?></div>
+					<?php else: ?>
+						<?php echo $value ?>
+					<?php endif ?></div>
 				</div>
 			</td>
 		</tr>
