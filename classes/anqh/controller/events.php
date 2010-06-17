@@ -82,6 +82,58 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 	/**
+	 * Action: event
+	 */
+	public function action_event() {
+		$event_id = (int)$this->request->param('id');
+
+		// Load event
+		$event = Jelly::select('event')->load($event_id);
+		if (!$event->loaded()) {
+			throw new Model_Exception($event, $event_id);
+		}
+		Permission::required($event, Model_Event::PERMISSION_READ, $this->user);
+
+		// Set actions
+		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, $this->user)) {
+			if ($event->is_favorite($this->user)) {
+				$this->page_actions[] = array('link' => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(), 'text' => __('Remove favorite'), 'class' => 'favorite-delete');
+			} else {
+				$this->page_actions[] = array('link' => Route::model($event, 'favorite') . '?token=' . Security::csrf(), 'text' => __('Add favorite'), 'class' => 'favorite-add');
+			}
+		}
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, $this->user)) {
+			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
+		}
+
+		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
+		Widget::add('side', View_Module::factory('events/event_info', array('user' => $this->user, 'event' => $event)));
+	}
+
+
+	/**
+	 * Action: add to favorites
+	 */
+	public function action_favorite() {
+		$this->history = false;
+
+		// Load event
+		$event_id = (int)$this->request->param('id');
+		$event = Jelly::select('event')->load($event_id);
+		if (!$event->loaded()) {
+			throw new Model_Exception($event, $event_id);
+		}
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE, $this->user);
+
+		if (Security::csrf_valid()) {
+			$event->add_favorite($this->user);
+		}
+
+		$this->request->redirect(Route::model($event));
+	}
+
+
+	/**
 	 * Controller default action
 	 */
 	public function action_index() {
@@ -120,6 +172,28 @@ class Anqh_Controller_Events extends Controller_Template {
 			'url_month' => '/events/:year/:month',
 		)));
 
+	}
+
+
+	/**
+	 * Action: add to favorites
+	 */
+	public function action_unfavorite() {
+		$this->history = false;
+
+		// Load event
+		$event_id = (int)$this->request->param('id');
+		$event = Jelly::select('event')->load($event_id);
+		if (!$event->loaded()) {
+			throw new Model_Exception($event, $event_id);
+		}
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE, $this->user);
+
+		if (Security::csrf_valid()) {
+			$event->delete_favorite($this->user);
+		}
+
+		$this->request->redirect(Route::model($event));
 	}
 
 
@@ -187,7 +261,8 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST) {
-			$event->set($_POST);
+			$post = Arr::extract($_POST, Model_Event::$editable_fields);
+			$event->set($post);
 			try {
 				$event->save();
 				$this->request->redirect(Route::model($event));
@@ -277,6 +352,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Autocompletes
 		$this->autocomplete_city('city_name', 'city_id');
 
+		Widget::add('foot', HTML::script_source("$('input#field-date_begin').datepicker({ dateFormat: 'd.m.yy', firstDay: 1, changeFirstDay: false, showOtherMonths: true, showWeeks: true, showStatus: true, showOn: 'both' });"));
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 

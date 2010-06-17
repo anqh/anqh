@@ -8,7 +8,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-Route::set('event', 'event/<id>(/<action>)', array('action' => 'edit|delete'))
+Route::set('event', 'event/<id>(/<action>)', array('action' => 'edit|delete|favorite|unfavorite'))
 	->defaults(array(
 		'controller' => 'events',
 		'action'     => 'event',

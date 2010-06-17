@@ -10,6 +10,18 @@
 class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 	/**
+	 * Permission to add favorite
+	 */
+	const PERMISSION_FAVORITE = 'favorite';
+
+	/**
+	 * @var  array  User editable fields
+	 */
+	public static $editable_fields = array(
+		'name', 'homepage', 'stamp_begin', 'stamp_end', 'date_begin', 'time_begin', 'time_end', 'venue', 'venue_name', 'city', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags'
+	);
+
+	/**
 	 * Create new model
 	 *
 	 * @param  Jelly_Meta  $meta
@@ -35,7 +47,9 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'in_db' => false,
 				'rules' => array(
 					'not_empty' => null,
+					'date'      => null,
 				),
+				'pretty_format' => 'j.n.Y',
 			)),
 			'time_begin'  => new Field_String(array(
 				'in_db' => false,
@@ -119,10 +133,63 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			)),
 			'tags'        => new Field_ManyToMany,
 			'images'      => new Field_ManyToMany,
-			'favorites'   => new Field_HasMany(array(
-				'through' => 'users',
-			))
+			'favorites'   => new Field_ManyToMany(array(
+				'foreign' => 'user',
+				'through' => 'favorites',
+			)),
 		));
+	}
+
+
+	/**
+	 * Create favorite
+	 *
+	 * @param  Model_User  $user
+	 */
+	public function add_favorite(Model_User $user) {
+		return $this->loaded()
+			&& !$this->is_favorite($user)
+			&& (bool)Jelly::factory('favorite')->set(array(
+				'user'  => $user,
+				'event' => $this
+			))->save();
+	}
+
+
+	/**
+	 * Delete favorite
+	 *
+	 * @param  Model_User  $user
+	 */
+	public function delete_favorite(Model_User $user) {
+		return $this->loaded()
+			&& $this->is_favorite($user)
+			&& (bool)Jelly::delete('favorite')
+				->where('user_id', '=', $user->id)
+				->where('event_id', '=', $this->id)
+				->execute();
+	}
+
+
+	/**
+	 * Get users who have added event as their favorite
+	 *
+	 * @return  array
+	 */
+	public function find_favorites() {
+		static $favorites;
+
+		if (!is_array($favorites)) {
+			$favorites = array();
+			if ($this->loaded()) {
+				$users = DB::select('user_id')->from('favorites')->where('event_id', '=', $this->id)->execute();
+				foreach ($users as $user) {
+					$favorites[(int)$user['user_id']] = (int)$user['user_id'];
+				}
+			}
+		}
+
+		return $favorites;
 	}
 
 
@@ -136,6 +203,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	public function has_permission($permission, $user) {
 		switch ($permission) {
 			case self::PERMISSION_CREATE:
+			case self::PERMISSION_FAVORITE:
 		    return (bool)$user;
 		    break;
 
@@ -148,6 +216,26 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Check for favorite
+	 *
+	 * @param  Model_User|integer  $user  id, User_Model
+	 */
+	public function is_favorite($user) {
+		if (empty($user)) {
+			return false;
+		}
+
+		if ($user instanceof Model_User) {
+			$user = $user->id;
+		}
+
+		$favorites = $this->find_favorites();
+
+		return isset($favorites[(int)$user]);
 	}
 
 }
