@@ -34,7 +34,7 @@ class Anqh_Validate extends Kohana_Validate {
 		} else if (strlen($time) > 3) {
 
 			// Normal format 0.00-23:59
-			list($hour, $minute) = sscanf($time, '%d[:\.]%d');
+			list($hour, $minute) = preg_split('/[:\.]/', $time, 2);
 
 		}
 
