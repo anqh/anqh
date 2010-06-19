@@ -79,7 +79,7 @@ class Anqh_HTML extends Kohana_HTML {
 
 		$error = is_array($errors)
 			? (empty($filters) ? $errors : array_intersect_key($errors, array_flip($filters)))
-			: $errors;
+			: (array)$errors;
 
 		return empty($error) ? '' : '<span class="info">' . implode('<br />', $error). '</span>';
 	}

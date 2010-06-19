@@ -47,7 +47,7 @@ class Anqh_Form extends Kohana_Form {
 	 */
 	public static function button_wrap($name, $body, array $attributes = null, $label = null, $error = null, $tip = null) {
 		$body       = is_array($body) ? Arr::get($body, $name) : $body;
-		$attributes = (array)$attributes + array('id' => 'button-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name, 'button-'));
 
 		$input = Form::button($name, $body, $attributes);
 
@@ -75,7 +75,7 @@ class Anqh_Form extends Kohana_Form {
 			$value = $value->$name;
 		}
 		$checked    = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
-		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::checkbox($name, $value, $checked, $attributes);
@@ -100,7 +100,7 @@ class Anqh_Form extends Kohana_Form {
 	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
 			$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
 			foreach ($values as $checkbox_value => $checkbox_title) {
-				$id = 'field-' . $name . '-' . $checkbox_value;
+				$id = self::input_id($name) . '-' . $checkbox_value;
 				$input .= '<li>';
 				$input .= Form::checkbox($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id));
 				$input .= Form::label($id, $checkbox_title);
@@ -136,12 +136,25 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function file_wrap($name, array $attributes = null, $label = null, $error = null, $tip = null) {
-		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::file($name, $attributes);
 
 		return Form::wrap($input, $name, $label, $error, $tip);
+	}
+
+
+	/**
+	 * Return input element id based on input name
+	 *
+	 * @static
+	 * @param   string  $name
+	 * @param   string  $prefix
+	 * @return  string
+	 */
+	public static function input_id($name, $prefix = 'field-') {
+		return $prefix . str_replace(array('_', '[', ']'), array('-', '-', ''), $name);
 	}
 
 
@@ -163,7 +176,7 @@ class Anqh_Form extends Kohana_Form {
 		} else if (is_object($value)) {
 			$value = $value->$name;
 		}
-		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 		$input      = Form::input($name, $value, $attributes);
 
@@ -190,7 +203,7 @@ class Anqh_Form extends Kohana_Form {
 		} else if (is_object($value)) {
 			$value = $value->$name;
 		}
-		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		// Inject show password element id
@@ -233,7 +246,7 @@ class Anqh_Form extends Kohana_Form {
 
 		$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
 		foreach ($values as $radio_value => $radio_title) {
-			$id = 'field-' . $name . '-' . $radio_value;
+			$id = self::input_id($name) . '-' . $radio_value;
 			$input .= '<li>';
 			$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $id));
 			$input .= Form::label($id, $radio_title);
@@ -261,7 +274,7 @@ class Anqh_Form extends Kohana_Form {
 	public static function select_wrap($name, array $options = null, $selected = null, array $attributes = null, $label = null, $error = null, $tip = null) {
 		$selected   = Arr::get($selected, $name, $selected);
 		$options    = Arr::get($options, $name, $options);
-		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::select($name, $options, $selected, $attributes);
@@ -320,7 +333,7 @@ class Anqh_Form extends Kohana_Form {
 		} else if (is_object($body)) {
 			$body = $value->$name;
 		}
-		$attributes = (array)$attributes + array('id' => 'field-' . $name);
+		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
