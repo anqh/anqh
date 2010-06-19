@@ -8,7 +8,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-abstract class Anqh_NewsfeedItem {
+abstract class Anqh_NewsfeedItem implements NewsfeedItem_Interface {
 
 	/**
 	 * Add news feed item
