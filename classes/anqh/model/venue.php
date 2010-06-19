@@ -92,6 +92,10 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 					'auto_now_update' => true,
 				)),
 
+				'author' => new Field_BelongsTo(array(
+					'column'  => 'author_id',
+					'foreign' => 'user',
+				)),
 				'default_image' => new Field_BelongsTo(array(
 					'column'  => 'default_image_id',
 					'foreign' => 'image',
