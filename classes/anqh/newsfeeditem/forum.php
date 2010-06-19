@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_NewsfeedItem_Forum extends NewsfeedItem implements NewsfeedItem_Interface {
+class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 
 	/**
 	 * Reply to a topic
