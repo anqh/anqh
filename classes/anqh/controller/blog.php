@@ -114,6 +114,11 @@ class Anqh_Controller_Blog extends Controller_Template {
 					$entry->new_comments++;
 					$entry->save();
 
+					// Newsfeed
+					if (!$comment->private) {
+						NewsfeedItem_Blog::comment($this->user, $entry);
+					}
+
 					if (!$this->ajax) {
 						$this->request->redirect(Route::model($entry));
 					}
@@ -187,6 +192,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 			$entry = Jelly::factory('blog_entry');
 			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, $this->user);
 			$cancel = Request::back(Route::get('blogs')->uri(), true);
+			$newsfeed = true;
 
 			$entry->author = $this->user;
 
@@ -198,6 +204,12 @@ class Anqh_Controller_Blog extends Controller_Template {
 			$entry->set($_POST);
 			try {
 				$entry->save();
+
+				// Newsfeed
+				if (isset($newsfeed)) {
+					NewsfeedItem_Blog::entry($this->user, $entry);
+				}
+
 				$this->request->redirect(Route::model($entry));
 			} catch (Validate_Exception $e) {
 				$errors = $e->array->errors('validation');
