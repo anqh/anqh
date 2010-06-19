@@ -49,9 +49,6 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 					'rules' => array(
 						'not_empty' => array(true),
 					),
-					'filters' => array(
-						'trim' => null,
-					),
 				)),
 			));
 	}
