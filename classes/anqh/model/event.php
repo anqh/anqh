@@ -18,8 +18,9 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'name', 'homepage', 'stamp_begin', 'stamp_end', 'date_begin', 'time_begin', 'time_end', 'venue', 'venue_name', 'city', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags'
+		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'venue_name', 'city', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags'
 	);
+
 
 	/**
 	 * Create new model
@@ -41,45 +42,32 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			'homepage'    => new Field_URL(array(
 				'label' => __('Homepage'),
 			)),
-			'stamp_begin' => new Field_Timestamp(array(
+			'stamp_begin' => new Field_DateTime(array(
+				'label'      => __('From'),
+				'label_date' => __('Date'),
+				'label_time' => __('From'),
 				'rules' => array(
 					'not_empty' => null,
 				),
 			)),
-			'stamp_end'   => new Field_Timestamp(array(
+			'stamp_end'   => new Field_DateTime(array(
+				'label'      => __('To'),
+				'label_time' => __('To'),
+				'show_date'  => false,
 				'rules' => array(
 					'not_empty' => null,
 				),
 			)),
-			'date_begin'  => new Field_Date(array(
-				'label' => _('Date'),
-				'in_db' => false,
-				'rules' => array(
-					'not_empty' => null,
-				),
-				'pretty_format' => 'j.n.Y',
+			'venue'       => new Field_BelongsTo(array(
+				'null'    => true,
 			)),
-			'time_begin'  => new Field_Time(array(
-				'label' => _('From'),
-				'in_db' => false,
-				'rules' => array(
-					'not_empty' => null,
-				)
-			)),
-			'time_end'    => new Field_Time(array(
-				'label' => _('To'),
-				'in_db' => false,
-				'rules' => array(
-					'not_empty'  => null,
-				)
-			)),
-			'venue'       => new Field_BelongsTo,
 			'venue_name'  => new Field_String(array(
 				'label' => __('Venue'),
 			)),
 			'venue_url'   => new Field_URL,
 			'city'        => new Field_BelongsTo(array(
 				'foreign' => 'geo_city',
+				'null'    => true,
 			)),
 			'city_name'   => new Field_String(array(
 				'label' => __('City'),
@@ -89,6 +77,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			)),
 			'country'     => new Field_BelongsTo(array(
 				'foreign' => 'geo_country',
+				'null'    => true,
 			)),
 
 			'dj'          => new Field_Text(array(

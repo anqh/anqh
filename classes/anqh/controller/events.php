@@ -291,14 +291,6 @@ class Anqh_Controller_Events extends Controller_Template {
 				$this->page_actions[] = array('link' => Route::model($event, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete event'), 'class' => 'event-delete');
 			}
 
-			// Dummy fields
-			if (!$_POST) {
-				$date_begin = $event->meta()->fields('date_begin');
-				$event->date_begin = $date_begin->pretty_format ? date($date_begin->pretty_format, $event->stamp_begin) : $event->stamp_begin;
-				$event->time_begin = Date::format('HHMM', $event->stamp_begin);
-				$event->time_end   = Date::format('HHMM', $event->stamp_end);
-			}
-
 		} else {
 
 			// Creating new
@@ -314,8 +306,9 @@ class Anqh_Controller_Events extends Controller_Template {
 		$errors = array();
 		if ($_POST) {
 			$post = Arr::extract($_POST, Model_Event::$editable_fields);
-			$post['stamp_begin'] = !empty($post['date_begin']) && !empty($post['time_begin']) ? $post['date_begin'] . ' ' . $post['time_begin'] : null;
-			$post['stamp_end']   = !empty($post['date_begin']) && !empty($post['time_end']) ? $post['date_begin'] . ' ' . $post['time_end'] : null;
+			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time'])) {
+				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
+			}
 			$event->set($post);
 			try {
 				$event->validate();
@@ -329,9 +322,6 @@ class Anqh_Controller_Events extends Controller_Template {
 				$this->request->redirect(Route::model($event));
 			} catch (Validate_Exception $e) {
 				$errors = $e->array->errors('validation');
-				$errors['date_begin'] = Arr::get($errors, 'date_begin', Arr::get($errors, 'stamp_begin'));
-				$errors['time_begin'] = Arr::get($errors, 'time_begin', Arr::get($errors, 'stamp_begin'));
-				$errors['time_end']   = Arr::get($errors, 'time_end', Arr::get($errors, 'stamp_end'));
 			}
 		}
 
@@ -355,9 +345,8 @@ class Anqh_Controller_Events extends Controller_Template {
 				'when' => array(
 					'header' => __('When?'),
 					'fields' => array(
-						'date_begin' => array(),
-						'time_begin' => array(),
-						'time_end'   => array(),
+						'stamp_begin' => array(),
+						'stamp_end'   => array(),
 					)
 				),
 				'where' => array(
@@ -421,7 +410,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 		Widget::add('foot', HTML::script_source('
 var venues = ' . json_encode($hosts) . ';
-$("#field-venue_name").autocomplete({
+$("#field-venue-name").autocomplete({
 	minLength: 0,
 	source: venues,
 	focus: function(event, ui) {
@@ -444,7 +433,7 @@ $("#field-venue_name").autocomplete({
 };
 '));
 
-		Widget::add('foot', HTML::script_source('$("#field-date_begin").datepicker({ dateFormat: "d.m.yy", firstDay: 1, changeFirstDay: false, showOtherMonths: true, showWeeks: true, showStatus: true, showOn: "both" });'));
+		Widget::add('foot', HTML::script_source('$("#field-stamp-begin-date").datepicker({ dateFormat: "d.m.yy", firstDay: 1, changeFirstDay: false, showOtherMonths: true, showWeeks: true, showStatus: true, showOn: "both" });'));
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
