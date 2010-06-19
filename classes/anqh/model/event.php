@@ -41,27 +41,36 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			'homepage'    => new Field_URL(array(
 				'label' => __('Homepage'),
 			)),
-			'stamp_begin' => new Field_Timestamp,
-			'stamp_end'   => new Field_Timestamp,
-			'date_begin'  => new Field_Timestamp(array(
+			'stamp_begin' => new Field_Timestamp(array(
+				'rules' => array(
+					'not_empty' => null,
+				),
+			)),
+			'stamp_end'   => new Field_Timestamp(array(
+				'rules' => array(
+					'not_empty' => null,
+				),
+			)),
+			'date_begin'  => new Field_Date(array(
+				'label' => _('Date'),
 				'in_db' => false,
 				'rules' => array(
 					'not_empty' => null,
-					'date'      => null,
 				),
 				'pretty_format' => 'j.n.Y',
 			)),
-			'time_begin'  => new Field_String(array(
+			'time_begin'  => new Field_Time(array(
+				'label' => _('From'),
 				'in_db' => false,
 				'rules' => array(
-					'time'      => null,
 					'not_empty' => null,
 				)
 			)),
-			'time_end'    => new Field_String(array(
+			'time_end'    => new Field_Time(array(
+				'label' => _('To'),
 				'in_db' => false,
 				'rules' => array(
-					'time' => null,
+					'not_empty'  => null,
 				)
 			)),
 			'venue'       => new Field_BelongsTo,

@@ -33,14 +33,16 @@
 		<dt><?php echo __('Homepage') ?></dt><dd><?php echo HTML::anchor($event->homepage) ?></dd>
 		<?php endif; ?>
 
-		<dt><?php echo __('Opening hours') ?></dt><dd><?php echo $event->end_time ?
+		<dt><?php echo __('Opening hours') ?></dt>
+		<dd><?php echo HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true) ?></dd>
+		<dd><?php echo $event->stamp_end ?
 				__('From :from to :to', array(
-					':from' => HTML::time(date::format('HHMM', $event->start_time), $event->start_time),
-					':to'   => HTML::time(date::format('HHMM', $event->end_time), $event->end_time))
-				) :
+					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
+					':to'   => HTML::time(Date::format('HHMM', $event->stamp_end), $event->stamp_end)
+				)) :
 				__('From :from onwards', array(
-					':from' => HTML::time(date::format('HHMM', $event->start_time), $event->start_time))
-				) ?></dd>
+					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
+				)) ?></dd>
 
 		<?php if ($event->venue_id): ?>
 		<dt><?php echo __('Venue') ?></dt><dd><?php echo HTML::anchor(url::model($event->venue), $event->venue->name) ?>, <?php echo HTML::chars($event->venue->city_name) ?></dd>

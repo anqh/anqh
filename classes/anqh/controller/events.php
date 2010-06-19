@@ -82,6 +82,40 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 	/**
+	 * Action: delete event
+	 */
+	public function action_delete() {
+		$this->history = false;
+
+		// Load venue
+		$event_id = (int)$this->request->param('id');
+		$event = Jelly::select('event')->load($event_id);
+		if (!$event->loaded()) {
+			throw new Model_Exception($event, $event_id);
+		}
+
+		Permission::required($event, Model_Event::PERMISSION_DELETE, $this->user);
+
+		if (!Security::csrf_valid()) {
+			$this->request->redirect(Route::model($event));
+		}
+
+		$date = $event->stamp_begin;
+		$event->delete();
+
+		$this->request->redirect(Route::get('events_ymd')->uri(array('year' => date('Y', $date), 'month' => date('m', $date), 'day' => date('d', $date))));
+	}
+
+
+	/**
+	 * Action: edit event
+	 */
+	public function action_edit() {
+		return $this->_edit_event((int)$this->request->param('id'));
+	}
+
+
+	/**
 	 * Action: event
 	 */
 	public function action_event() {
@@ -105,6 +139,9 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, $this->user)) {
 			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
 		}
+
+		$this->page_title = HTML::chars($event->name);
+		$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
 
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
 		Widget::add('side', View_Module::factory('events/event_info', array('user' => $this->user, 'event' => $event)));
@@ -249,6 +286,19 @@ class Anqh_Controller_Events extends Controller_Template {
 			Permission::required($event, Model_Event::PERMISSION_UPDATE, $this->user);
 			$cancel = Request::back(Route::model($event), true);
 
+			// Set actions
+			if (Permission::has($event, Model_Event::PERMISSION_DELETE, $this->user)) {
+				$this->page_actions[] = array('link' => Route::model($event, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete event'), 'class' => 'event-delete');
+			}
+
+			// Dummy fields
+			if (!$_POST) {
+				$date_begin = $event->meta()->fields('date_begin');
+				$event->date_begin = $date_begin->pretty_format ? date($date_begin->pretty_format, $event->stamp_begin) : $event->stamp_begin;
+				$event->time_begin = Date::format('HHMM', $event->stamp_begin);
+				$event->time_end   = Date::format('HHMM', $event->stamp_end);
+			}
+
 		} else {
 
 			// Creating new
@@ -256,18 +306,32 @@ class Anqh_Controller_Events extends Controller_Template {
 			Permission::required($event, Model_Event::PERMISSION_CREATE, $this->user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
+			$event->author = $this->user;
+
 		}
 
 		// Handle post
 		$errors = array();
 		if ($_POST) {
 			$post = Arr::extract($_POST, Model_Event::$editable_fields);
+			$post['stamp_begin'] = !empty($post['date_begin']) && !empty($post['time_begin']) ? $post['date_begin'] . ' ' . $post['time_begin'] : null;
+			$post['stamp_end']   = !empty($post['date_begin']) && !empty($post['time_end']) ? $post['date_begin'] . ' ' . $post['time_end'] : null;
 			$event->set($post);
 			try {
+				$event->validate();
+
+				// Make sure end time is after start time, i.e. the next day
+				if ($event->stamp_end < $event->stamp_begin) {
+					$event->stamp_end += 60 * 60 * 24;
+				}
 				$event->save();
+
 				$this->request->redirect(Route::model($event));
 			} catch (Validate_Exception $e) {
 				$errors = $e->array->errors('validation');
+				$errors['date_begin'] = Arr::get($errors, 'date_begin', Arr::get($errors, 'stamp_begin'));
+				$errors['time_begin'] = Arr::get($errors, 'time_begin', Arr::get($errors, 'stamp_begin'));
+				$errors['time_end']   = Arr::get($errors, 'time_end', Arr::get($errors, 'stamp_end'));
 			}
 		}
 
@@ -277,8 +341,8 @@ class Anqh_Controller_Events extends Controller_Template {
 			'errors' => $errors,
 			'cancel' => $cancel,
 			'hidden' => array(
-				'city_id'  => $event->city ? $event->city->id : 0,
-				'venue_id' => $event->venue ? $event->venue->id : 0,
+				'city'  => $event->city ? $event->city->id : 0,
+				'venue' => $event->venue ? $event->venue->id : 0,
 			),
 			'groups' => array(
 				'event' => array(
@@ -291,19 +355,9 @@ class Anqh_Controller_Events extends Controller_Template {
 				'when' => array(
 					'header' => __('When?'),
 					'fields' => array(
-						'date_begin' => array(
-							'label'      => __('Date'),
-							'attributes' => array('maxlength' => 10),
-							'rules'      => array('not_empty' => null),
-						),
-						'time_begin' => array(
-							'label'      => __('From'),
-							'attributes' => array('maxlength' => 5)
-						),
-						'time_end'   => array(
-							'label'      => __('To'),
-							'attributes' => array('maxlength' => 5)
-						),
+						'date_begin' => array(),
+						'time_begin' => array(),
+						'time_end'   => array(),
 					)
 				),
 				'where' => array(
@@ -349,10 +403,48 @@ class Anqh_Controller_Events extends Controller_Template {
 			);
 		}
 
-		// Autocompletes
+		// Autocomplete city
 		$this->autocomplete_city('city_name', 'city_id');
 
-		Widget::add('foot', HTML::script_source("$('input#field-date_begin').datepicker({ dateFormat: 'd.m.yy', firstDay: 1, changeFirstDay: false, showOtherMonths: true, showWeeks: true, showStatus: true, showOn: 'both' });"));
+		// Autocomplete venue
+		$venues = Jelly::select('venue')->with('city')->event_hosts()->execute();
+		$hosts = array();
+		if (count($venues)) {
+			foreach ($venues as $venue) {
+				$hosts[] = array(
+					'value'   => $venue->id,
+					'label'   => HTML::chars($venue->name),
+					'city'    => HTML::chars($venue->city->name),
+					'city_id' => $venue->city->id,
+				);
+			}
+		}
+		Widget::add('foot', HTML::script_source('
+var venues = ' . json_encode($hosts) . ';
+$("#field-venue_name").autocomplete({
+	minLength: 0,
+	source: venues,
+	focus: function(event, ui) {
+		$("input[name=venue_name]").val(ui.item.label);
+		return false;
+	},
+	select: function(event, ui) {
+		$("input[name=venue_name]").val(ui.item.label);
+		$("input[name=venue]").val(ui.item.value);
+		$("input[name=city_name]").val(ui.item.city);
+		$("input[name=city]").val(ui.item.city_id);
+		return false;
+	}
+})
+.data("autocomplete")._renderItem = function(ul, item) {
+	return $("<li></li>")
+		.data("item.autocomplete", item)
+		.append("<a>" + item.label + ", " + item.city + "</a>")
+		.appendTo(ul);
+};
+'));
+
+		Widget::add('foot', HTML::script_source('$("#field-date_begin").datepicker({ dateFormat: "d.m.yy", firstDay: 1, changeFirstDay: false, showOtherMonths: true, showWeeks: true, showStatus: true, showOn: "both" });'));
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
