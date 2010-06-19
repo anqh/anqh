@@ -102,7 +102,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 
 			// Save current URI
 			if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
-				$uri = preg_replace('/\/index$/i', '', $this->request->uri());
+				$uri = $this->request->uri;
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
 				$this->breadcrumb[$uri] = $this->page_title;
