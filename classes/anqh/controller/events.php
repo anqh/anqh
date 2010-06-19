@@ -164,6 +164,10 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		if (Security::csrf_valid()) {
 			$event->add_favorite($this->user);
+
+			// News feed
+			NewsfeedItem_Events::favorite($this->user, $event);
+
 		}
 
 		$this->request->redirect(Route::model($event));
@@ -299,6 +303,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
 			$event->author = $this->user;
+			$newsfeed = true;
 
 		}
 
@@ -318,6 +323,11 @@ class Anqh_Controller_Events extends Controller_Template {
 					$event->stamp_end += 60 * 60 * 24;
 				}
 				$event->save();
+
+				// News feed
+				if (isset($newsfeed)) {
+					NewsfeedItem_Events::event($this->user, $event);
+				}
 
 				$this->request->redirect(Route::model($event));
 			} catch (Validate_Exception $e) {
