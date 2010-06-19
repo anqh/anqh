@@ -38,6 +38,33 @@ abstract class Anqh_Text extends Kohana_Text {
 
 
 	/**
+	 * Return text with smileys
+	 *
+	 * @param  string  $text
+	 */
+	public static function smileys($text) {
+		static $smileys;
+
+		// Load smileys
+		if (!is_array($smileys)) {
+			$smileys = array();
+
+			$config = Kohana::config('site.smiley');
+			if (!empty($config)) {
+				$url = URL::base() . $config['dir'] . '/';
+				foreach ($config['smileys'] as $name => $smiley) {
+					$smileys[$name] = HTML::image($url . $smiley['src'], array('class' => 'smiley', 'alt' => HTML::chars($name), 'title' => HTML::chars($name)));
+				}
+			}
+
+		}
+
+		// Smile!
+		return empty($smileys) ? $text : str_replace(array_keys($smileys), $smileys, $text);
+	}
+
+
+	/**
 	 * Replaces special/accented UTF-8 characters by ASCII-7 'equivalents'.
 	 *
 	 * @param   string   string to transliterate
