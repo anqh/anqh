@@ -39,9 +39,8 @@ class Anqh_Controller_Index extends Controller_Template {
 		)));
 
 		// Online
-		/*
-		$guests = Online_User_Model::get_guest_count();
-		$online = Online_User_Model::find_online_users();
+		$guests = Model_User_Online::get_guest_count();
+		$online = Model_User_Online::find_online_users();
 		$counts = array();
 		if (count($online)) {
 			$counts[] = __2(':members member', ':members members', count($online), array(':members' => count($online)));
@@ -49,12 +48,12 @@ class Anqh_Controller_Index extends Controller_Template {
 		if ($guests) {
 			$counts[] = __2(':guests guest', ':guests guests', $guests, array(':guests' => $guests));
 		}
-		widget::add('side', View_Mod::factory('generic/users', array(
+		Widget::add('side', View_Module::factory('generic/users', array(
 			'mod_title' => __('Online') . ': ' . implode(', ', $counts),
 			'viewer'    => $this->user,
 			'users'     => $online,
 		)));
-		*/
+
 	}
 
 }

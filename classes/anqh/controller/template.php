@@ -7,12 +7,17 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
+abstract class Anqh_Controller_Template extends Controller {
 
 	/**
 	 * @var  boolean  AJAX-like request
 	 */
 	protected $ajax = false;
+
+	/**
+	 * @var  boolean  auto render template
+	 **/
+	public $auto_render = true;
 
 	/**
 	 * @var  array  Bookmarks / navigation history
@@ -79,16 +84,39 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	 */
 	protected $tabs;
 
+	/**
+	 * @var  string  page template
+	 */
+	public $template = 'template';
+
 
 	/**
 	 * Construct controller
 	 */
 	public function before() {
+		parent::before();
+
 		$this->auto_render = !$this->internal;
 		$this->ajax = Request::$is_ajax;
 		$this->breadcrumb = Session::instance()->get('breadcrumb', array());
 
-		parent::before();
+		// Load the template
+		if ($this->auto_render === true) {
+			$this->template = View::factory($this->template);
+		}
+
+		// Online users
+		if (!$this->internal) {
+			$online = Jelly::select('user_online')->load(session_id());
+			if (!$online->loaded()) {
+				$online->id = session_id();
+			}
+			$online->user = $this->user;
+			try {
+				$online->save();
+			} catch (Validate_Exception $e) {}
+		}
+
 	}
 
 
@@ -149,6 +177,26 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 			Widget::add('actions',    View::factory('generic/actions',    array('actions' => $this->page_actions)));
 			Widget::add('navigation', View::factory('generic/navigation', array('items' => Kohana::config('site.menu'), 'selected' => $this->page_id)));
 			Widget::add('tabs',       View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
+
+			// Footer
+			Widget::add('footer', View_Module::factory('events/event_list', array(
+				'mod_id'    => 'footer-events-new',
+				'mod_class' => 'article unit size1of4 cut events',
+				'mod_title' => __('New events'),
+				'events'    => Jelly::select('event')->order_by('id', 'DESC')->limit(10)->execute()
+			)));
+			Widget::add('footer', View_Module::factory('forum/topiclist', array(
+				'mod_id'    => 'footer-topics-active',
+				'mod_class' => 'article unit size1of4 cut topics',
+				'mod_title' => __('New posts'),
+				'topics'    => Jelly::select('forum_topic')->order_by('last_post_id', 'DESC')->limit(10)->execute()
+			)));
+			Widget::add('footer', View_Module::factory('blog/entry_list', array(
+				'mod_id'    => 'footer-blog-entries',
+				'mod_class' => 'article unit size1of4 cut blogentries',
+				'mod_title'  => __('New blogs'),
+				'entries'   => Jelly::select('blog_entry')->limit(10)->execute(),
+			)));
 
 			// Dock
 			$classes = array(
@@ -260,9 +308,13 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 				Widget::add('foot', View::factory('profiler/stats'));
 			}
 
-			parent::after();
+			if ($this->auto_render === true) {
+				$this->request->response = $this->template;
+			}
+
 		}
 
+		return parent::after();
 	}
 
 
