@@ -24,9 +24,52 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
+	 * Action: browse
+	 */
+	public function action_browse() {
+		$this->tab_id = 'browse';
+
+		$months = Model_Gallery::find_months();
+
+		// Default to last month
+		$year  = (int)$this->request->param('year');
+		$month = (int)$this->request->param('month');
+		if (!$year) {
+			$year  = max(array_keys($months));
+			$month = max(array_keys($months[$year]));
+		} else if (!$month) {
+			$month = isset($months[$year]) ? min(array_keys($months[$year])) : 1;
+		}
+
+		$year  = min($year, date('Y'));
+		$month = min(12, max(1, $month));
+
+		$this->page_title .= ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
+
+		// Month browser
+		Widget::add('wide', View_Module::factory('galleries/month_browser', array(
+			'year'   => $year,
+			'month'  => $month,
+			'months' => $months
+		)));
+
+		// Galleries
+		$galleries = Jelly::select('gallery')->year_month($year, $month)->execute();
+		if (count($galleries)) {
+			Widget::add('wide', View_Module::factory('galleries/galleries', array(
+				'galleries' => $galleries
+			)));
+		}
+
+
+	}
+
+
+	/**
 	 * Action: comment
 	 */
 	public function action_comment() {
+		$this->history = false;
 		$comment_id = (int)$this->request->param('id');
 		$action     = $this->request->param('commentaction');
 
@@ -118,6 +161,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$images = $gallery->find_images();
 		$previous = $next = $current = null;
 		foreach ($images as $image) {
+			$i++;
 			if (!is_null($current)) {
 
 				// Current was found last round
@@ -136,7 +180,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$previous = $image;
 
 			}
-			$i++;
 		}
 
 		// Show image
@@ -146,12 +189,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$current->num_views++;
 			$current->save();
 			Widget::add('wide', View_Module::factory('galleries/image', array(
-				'gallery'  => $gallery,
-				'images'   => count($images),
-				'current'  => $i,
-				'image'    => $current,
-				'next'     => $next,
-				'previous' => $previous
+				'mod_class' => 'gallery-image',
+				'gallery'   => $gallery,
+				'images'    => count($images),
+				'current'   => $i,
+				'image'     => $current,
+				'next'      => $next,
+				'previous'  => $previous
 			)));
 
 			// Comments section
@@ -235,12 +279,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Add new tab
 		$this->tab_id = 'gallery';
-		$this->tabs['browse']['link'] = Route::get('galleries')->uri(array('action' => 'browse', 'year' => date('Y', $gallery->event_date), 'month' => date('m', $gallery->event_date)));
+		$this->tabs['browse']['link'] = Route::get('galleries')->uri(array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
 		$this->tabs['gallery'] = array('link' => Route::model($gallery), 'text' => __('Gallery'));
 
 		// Set title
 		$this->page_title = HTML::chars($gallery->name);
-		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $gallery->event_date), $gallery->event_date, true);
+		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
 	}
 

@@ -46,7 +46,7 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 				'column' => 'image_count',
 			)),
 
-			'event_date' => new Field_Timestamp(array(
+			'date' => new Field_Timestamp(array(
 				'rules' => array(
 					'not_empty' => null,
 				),
@@ -89,6 +89,41 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 */
 	public function find_images() {
 		return $this->get('images')->where('status', '=', Model_Image::VISIBLE)->order_by('id', 'DESC')->execute();
+	}
+
+
+	/**
+	 * Get months with galleries.
+	 * Returns array of years => months => count
+	 *
+	 * @static
+	 * @return  array
+	 */
+	public static function find_months() {
+		$months = array();
+
+		// Build counts
+		$galleries = Jelly::select('gallery')->where('image_count', '>', 0)->execute();
+		foreach ($galleries as $gallery) {
+			list($year, $month) = explode(' ', date('Y n', $gallery->date));
+
+			if (!isset($months[$year])) {
+				$months[$year] = array();
+			}
+			if (!isset($months[$year][$month])) {
+				$months[$year][$month] = 1;
+			} else {
+				$months[$year][$month]++;
+			}
+		}
+
+		// Sort years
+		krsort($months);
+		foreach ($months as &$year) {
+			krsort($year);
+		}
+
+		return $months;
 	}
 
 

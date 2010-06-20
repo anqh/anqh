@@ -19,7 +19,7 @@
 		<header>
 			<h4><?= HTML::anchor(Route::model($gallery), HTML::chars($gallery->name)) ?></h4>
 			<span class="details">
-				<?php echo HTML::time(Date::format('DMYYYY', $gallery->event_date), $gallery->event_date, true) ?>,
+				<?php echo HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true) ?>,
 				<?php echo __2(':images image', ':images images', $gallery->num_images, array(':images' => '<var>' . $gallery->num_images . '</var>')) ?>
 			</span>
 		</header>
