@@ -53,6 +53,7 @@
 ----------------------------------*/
 
 /* states and images */
+/*
 .ui-icon,
 .ui-widget-content .ui-icon,
 .ui-widget-header .ui-icon,
@@ -63,7 +64,7 @@
 .ui-state-highlight .ui-icon           { background-image: url(images/ui-icons_ccaa33_256x240.png); }
 .ui-state-error .ui-icon,
 .ui-state-error-text .ui-icon          { background-image: url(images/ui-icons_cc3333_256x240.png); }
-
+*/
 
 /* Misc visuals
 ----------------------------------*/
