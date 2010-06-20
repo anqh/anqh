@@ -36,7 +36,7 @@
 		<h3><?php echo __('Contact information') ?></h3>
 	</header>
 
-	<?php if ($venue->address || $venue->city): ?>
+	<?php if ($venue->address || $venue->city_name): ?>
 	<dl class="address">
 		<dt><?php echo __('Address') ?></dt>
 		<dd>
@@ -46,31 +46,36 @@
 			</address>
 		</dd>
 
-		<?php if (false && $venue->latitude && $venue->longitude): ?>
+		<?php if ($venue->latitude && $venue->longitude): ?>
 		<dd>
 			<?php echo HTML::anchor('#map', __('Toggle map')) ?>
 		</dd>
 		<?php endif; ?>
 
 	</dl>
-		<?php if (false && $venue->latitude && $venue->longitude): ?>
+
+		<?php if ($venue->latitude && $venue->longitude): ?>
 	<div id="map" style="display: none"><?php echo __('Map loading') ?></div>
-			<?php
-				$map = new Gmap('map', array('ScrollWheelZoom' => true));
-				$map->center($venue->latitude, $venue->longitude, 15)->controls('small')->types();
-				$map->add_marker(
-					$venue->latitude, $venue->longitude,
-					'<strong>' . HTML::chars($venue->name) . '</strong><p>' . HTML::chars($venue->address) . '<br />' . HTML::chars($venue->zip) . ' ' . HTML::chars($venue->city_name) . '</p>'
-				);
-				Widget::add('foot', HTML::script_source($map->render('gmaps/jquery_event')));
-				Widget::add('foot', HTML::script_source("$('.contact a[href=#map]').click(function() { $('#map').toggle('normal', gmap_open); return false; });"));
-			?>
+		<?php
+$options = array(
+	'marker'     => HTML::chars($venue->name),
+	'infowindow' => HTML::chars($venue->address) . '<br />' . HTML::chars($venue->city_name),
+	'lat'        => $venue->latitude,
+	'long'       => $venue->longitude
+);
+Widget::add('foot', HTML::script_source('
+$(function() {
+	//$("#map").googleMap(' .  json_encode($options) . ');
+	$(".contact a[href=#map]").click(function() { $("#map").toggle("fast", function() { $("#map").googleMap(' .  json_encode($options) . '); }); return false; });
+});
+'));
+?>
 		<?php endif; ?>
 	<?php endif; ?>
 
 </article>
 
-<?php if (count($venue->images) > 1): ?>
+<?php if (count($venue->images)): ?>
 <article class="pictures lightboxed">
 	<header>
 		<h3><?php echo __('Pictures') ?></h3>
@@ -90,6 +95,8 @@
 	<div class="info"></div>
 </div>
 <?php
+return;
+
 echo HTML::script_source('
 $(function() {
 	$(".lightboxed a").overlay({

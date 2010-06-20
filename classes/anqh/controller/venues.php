@@ -328,7 +328,9 @@ class Anqh_Controller_Venues extends Controller_Template {
 			'errors' => $errors,
 			'cancel' => $cancel,
 			'hidden' => array(
-				'city_id' => ($venue->city ? $venue->city->id : 0),
+				'city_id'   => $venue->city ? $venue->city->id : 0,
+				'latitude'  => $venue->latitude,
+				'longitude' => $venue->longitude,
 			),
 			'groups' => array(
 				'basic' => array(
@@ -345,7 +347,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 					'header' => __('Contact information'),
 					'fields' => array(
 						'address'   => array(),
-						'zip'       => array(),
+						//'zip'       => array(),
 						'city_name' => array(),
 					)
 				),
@@ -371,7 +373,38 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+
+		// Autocomplete
 		$this->autocomplete_city('city_name', 'city_id');
+
+		// Maps
+		Widget::add('foot', HTML::script_source('
+$(function() {
+	$("#fields-contact ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
+
+	$("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
+
+	$("input[name=address], input[name=city_name]").blur(function(event) {
+		var address = $("input[name=address]").val();
+		var city = $("input[name=city_name]").val();
+		if (address != "" && city != "") {
+			var geocode = address + ", " + city;
+			geocoder.geocode({ address: geocode }, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK && results.length) {
+				  map.setCenter(results[0].geometry.location);
+				  $("input[name=latitude]").val(results[0].geometry.location.lat());
+				  $("input[name=longitude]").val(results[0].geometry.location.lng());
+				  var marker = new google.maps.Marker({
+				    position: results[0].geometry.location,
+				    map: map
+				  });
+				}
+			});
+		}
+	});
+
+});
+'));
 	}
 
 }

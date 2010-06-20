@@ -13,7 +13,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'category', 'name', 'description', 'homepage', 'hours', 'info', 'address', 'zip', 'city_name', 'event_host', 'tags',
+		'category', 'name', 'description', 'homepage', 'hours', 'info', 'address', 'zip', 'city_name', 'city', 'latitude', 'longitude', 'event_host', 'tags',
 	);
 
 
