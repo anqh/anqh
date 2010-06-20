@@ -10,9 +10,14 @@
 
 echo Form::open(Arr::get($form, 'action'), Arr::get($form, 'attributes'));
 
-foreach ($form['groups'] as $group_name => $group): ?>
+foreach ($form['groups'] as $group_name => $group):
+	$group_attributes = Arr::get($group, 'attributes', array());
+	if (is_string($group_name)) {
+		$group_attributes += array('id' => 'fields-' . $group_name);
+	}
+?>
 
-	<fieldset<?php echo HTML::attributes(Arr::get($group, 'attributes')) ?>>
+	<fieldset<?php echo HTML::attributes($group_attributes) ?>>
 		<?php if (isset($group['header'])): ?> <legend><?php echo HTML::chars($group['header']) ?></legend<?php endif; ?>
 
 		<ul>
