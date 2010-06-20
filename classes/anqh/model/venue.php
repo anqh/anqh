@@ -105,6 +105,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 					'label' => __('Tags'),
 					'null'  => true,
 				)),
+				'events' => new Field_HasMany,
 		));
 	}
 

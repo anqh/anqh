@@ -172,6 +172,26 @@ class Anqh_Controller_Venues extends Controller_Template {
 			$this->page_actions[] = array('link' => Route::model($venue, 'edit'), 'text' => __('Edit venue'), 'class' => 'venue-edit');
 		}
 
+		// Events
+		$events = $venue->get('events')->upcoming()->limit(10)->execute();
+		if (count($events)) {
+			Widget::add('main', View_Module::factory('events/event_list', array(
+				'mod_id'    => 'venue-upcoming-events',
+				'mod_title' => __('Upcoming events'),
+				'events'    => $events,
+			)));
+		}
+
+		$events = $venue->get('events')->past()->limit(10)->execute();
+		if (count($events)) {
+			Widget::add('main', View_Module::factory('events/event_list', array(
+				'mod_id'    => 'venue-past-events',
+				'mod_title' => __('Past events'),
+				'events'    => $events,
+			)));
+		}
+
+		// Venue info
 		Widget::add('side', View_Module::factory('venues/info', array(
 			'venue' => $venue,
 		)));
@@ -293,7 +313,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
 				$venue->city = $city;
 			}
-			
+
 			try {
 				$venue->save();
 				$this->request->redirect(Route::model($venue));
