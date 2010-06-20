@@ -54,9 +54,6 @@ class Anqh_Model_User extends Jelly_Model {
 						'max_length' => array(min((int)$visitor->get_config('username.length_max'), 30)),
 						'regex'      => array('/^[' . $visitor->get_config('username.chars') . ']+/ui'),
 					),
-					'filters' => array(
-						'trim' => null,
-					),
 				)),
 				'username_clean' => new Field_String(array(
 					'unique' => true,
@@ -84,7 +81,7 @@ class Anqh_Model_User extends Jelly_Model {
 				'email' => new Field_Email(array(
 					'unique' => true,
 					'filters' => array(
-						'trim' => null,
+						'mb_strtolower' => null,
 					),
 				)),
 
@@ -93,16 +90,10 @@ class Anqh_Model_User extends Jelly_Model {
 						'min_length' => array(1),
 						'max_length' => array(50),
 					),
-					'filters' => array(
-						'trim' => null,
-					),
 				)),
 				'address_street' => new Field_String(array(
 					'rules' => array(
 						'max_length' => array(50),
-					),
-					'filters' => array(
-						'trim' => null,
 					),
 				)),
 				'address_zip' => new Field_String(array(
@@ -111,16 +102,10 @@ class Anqh_Model_User extends Jelly_Model {
 						'max_length' => array(5),
 						'digit'      => array()
 					),
-					'filters' => array(
-						'trim' => null,
-					),
 				)),
 				'address_city' => new Field_String(array(
 					'rules' => array(
 						'max_length' => array(50)
-					),
-					'filters' => array(
-						'trim' => null,
 					),
 				)),
 				'city' => new Field_BelongsTo,
@@ -137,6 +122,9 @@ class Anqh_Model_User extends Jelly_Model {
 				)),
 
 				'last_login' => new Field_Timestamp,
+				'created'    => new Field_Timestamp(array(
+					'auto_now_create' => true,
+				)),
 
 				'tokens' => new Field_HasMany(array(
 					'foreign' => 'user_token'
@@ -147,21 +135,10 @@ class Anqh_Model_User extends Jelly_Model {
 				'num_posts' => new Field_Integer(array(
 					'column' => 'posts',
 				)),
-			
+
 			));
 	}
 
-	/*
-	// ORM
-	protected $has_many         = array('events', 'friends', 'tokens', 'user_comments');
-	protected $has_many_through = array('events' => 'favorites');
-	//protected $has_one          = array('city', 'default_image' => 'image');
-	protected $belongs_to       = array('default_image' => 'image');
-	protected $reload_on_wakeup = false;
-
-	// Cached data
-	protected $data_friends;
-	*/
 
 	/**
 	 * Magic setter
