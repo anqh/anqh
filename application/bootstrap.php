@@ -81,6 +81,7 @@ Kohana::modules(array(
 	'forum'      => MODPATH . 'forum',      // Anqh forums
 	'venues'     => MODPATH . 'venues',     // Anqh venues
 	'blog'       => MODPATH . 'blog',       // Anqh blogs
+	'galleries'  => MODPATH . 'galleries',  // Anqh galleries
 
 	'database'   => MODPATH . 'database',   // Database access
 	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
@@ -88,7 +89,6 @@ Kohana::modules(array(
 	// 'formo'    => MODPATH . 'formo',       // Form module
 	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
 	'pagination' => MODPATH . 'pagination', // Paging of results
-
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
