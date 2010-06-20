@@ -25,9 +25,10 @@
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
 	<?php echo
-		HTML::script('http://www.google.com/jsapi?key=' . Kohana::config('site.google_api_key')),
+		//HTML::script('http://www.google.com/jsapi?key=' . Kohana::config('site.google_api_key')),
 		HTML::script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'),
 		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'),
+		HTML::script('http://maps.google.com/maps/api/js?sensor=false'),
 		HTML::script('js/jquery.tools.min.js'); ?>
 
 <?php echo Widget::get('head') ?>
@@ -174,7 +175,43 @@
 
 <script>
 //<![CDATA[
+var map;
+var geocoder;
+$.fn.googleMap = function(options) {
+	var defaults = {
+		lat: 60.1695,
+		long: 24.9355,
+		zoom: 14,
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		marker: false,
+		infowindow: false
+	};
+
+	options = $.extend(defaults, options || {});
+	var center = new google.maps.LatLng(options.lat, options.long);
+
+	map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
+	if (options.marker) {
+		var marker = new google.maps.Marker({
+		  position: center,
+		  map: map,
+			title: options.marker == true ? '' : options.marker
+		});
+		if (options.infowindow) {
+			var infowindow = new google.maps.InfoWindow({
+				content: options.infowindow
+			});
+			google.maps.event.addListener(marker, 'click', function() {
+				infowindow.open(map, marker);
+			})
+		}
+	}
+}
+
 $(function() {
+
+	// Google Maps
+	geocoder = new google.maps.Geocoder();
 
 	// Form input hints
 	$('input:text, textarea, input:password').hint('hint');

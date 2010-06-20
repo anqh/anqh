@@ -273,7 +273,7 @@ abstract class Anqh_Controller_Template extends Kohana_Controller_Template {
 	 * @param  string  $id    Form input name for city id
 	 */
 	public function autocomplete_city($name = 'city_name', $id = 'city_id') {
-		widget::add('foot', html::script_source('
+		Widget::add('foot', HTML::script_source('
 $(function() {
 	$("input[name=' . $name . ']")
 		.autocomplete({
@@ -294,7 +294,9 @@ $(function() {
 							return {
 								id: item.geonameId,
 								label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
-								value: item.name
+								value: item.name,
+								lat: item.lat,
+								long: item.lng
 							}
 						}))
 					}
@@ -303,11 +305,12 @@ $(function() {
 			minLength: 2,
 			select: function(event, ui) {
 				$("input[name=' . $id . ']").val(ui.item.id);
+				if ($("input[name=address]") && $("input[name=address]").val() == "") {
+					$("input[name=latitude]").val(ui.item.lat);
+					$("input[name=longitude]").val(ui.item.long);
+					map && map.setCenter(new google.maps.LatLng(ui.item.lat, ui.item.long));
+				}
 			},
-			open: function() {
-			},
-			close: function() {
-			}
 		});
 });
 		'));
