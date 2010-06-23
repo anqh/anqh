@@ -10,11 +10,6 @@
 abstract class Anqh_Controller_Template extends Controller {
 
 	/**
-	 * @var  boolean  AJAX-like request
-	 */
-	protected $ajax = false;
-
-	/**
 	 * @var  boolean  auto render template
 	 **/
 	public $auto_render = true;
@@ -97,7 +92,6 @@ abstract class Anqh_Controller_Template extends Controller {
 		parent::before();
 
 		$this->auto_render = !$this->internal;
-		$this->ajax = Request::$is_ajax;
 		$this->breadcrumb = Session::instance()->get('breadcrumb', array());
 
 		// Load the template
@@ -128,13 +122,15 @@ abstract class Anqh_Controller_Template extends Controller {
 			$this->request->response .= '';
 		} else if ($this->auto_render) {
 
+			$session = Session::instance();
+
 			// Save current URI
 			if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
 				$uri = $this->request->uri;
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
 				$this->breadcrumb[$uri] = $this->page_title;
-				Session::instance()
+				$session
 					->set('history', $uri . ($_GET ? URL::query($_GET) : ''))
 					->set('breadcrumb', $this->breadcrumb);
 			}
@@ -155,11 +151,11 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Do some CSS magic to page class
 			$page_class = explode(' ',
-				$this->language . ' ' .        // Language
-				$this->page_width . ' ' .      // Fixed/liquid layout
-				$this->page_main . ' ' .       // Left/right aligned layout
-				$this->request->action . ' ' . // Controller method
-				$this->page_class);
+				$this->language . ' ' .                      // Language
+				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
+				$session->set('page_main', 'left') . ' ' .   // Left/right aligned layout
+				$this->request->action . ' ' .               // Controller method
+				$this->page_class);                          // Controller set classes
 			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
 
 			// Bind the generic page variables
@@ -200,10 +196,10 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Dock
 			$classes = array(
-				HTML::anchor('set/width/narrow', __('Narrow'), array('onclick' => '$("body").addClass("fixed").removeClass("liquid"); $.get(this.href); return false;')),
-				HTML::anchor('set/width/wide',   __('Wide'),   array('onclick' => '$("body").addClass("liquid").removeClass("narrow"); $.get(this.href); return false;')),
-				HTML::anchor('set/main/left',    __('Left'),   array('onclick' => '$("body").addClass("left").removeClass("right"); $.get(this.href); return false;')),
-				HTML::anchor('set/main/right',   __('Right'),  array('onclick' => '$("body").addClass("right").removeClass("left"); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").addClass("fixed").removeClass("liquid"); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'wide')),   __('Wide'),   array('onclick' => '$("body").addClass("liquid").removeClass("narrow"); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").addClass("left").removeClass("right"); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").addClass("right").removeClass("left"); $.get(this.href); return false;')),
 			);
 			Widget::add('dock2', __('Layout: ') . implode(', ', $classes));
 
@@ -282,8 +278,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			Widget::add('end', View::factory('generic/end'));
 
 			// Analytics
-			$google_analytics = Kohana::config('site.google_analytics');
-			if ($google_analytics) {
+			if ($google_analytics = Kohana::config('site.google_analytics')) {
 				Widget::add('head', HTML::script_source("
 	var _gaq = _gaq || []; _gaq.push(['_setAccount', '" . $google_analytics . "']); _gaq.push(['_trackPageview']);
 	(function() {

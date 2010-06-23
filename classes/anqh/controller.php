@@ -11,6 +11,11 @@
 abstract class Anqh_Controller extends Kohana_Controller {
 
 	/**
+	 * @var  boolean  AJAX-like request
+	 */
+	protected $ajax = false;
+
+	/**
 	 * Internal request?
 	 *
 	 * @var  boolean
@@ -40,6 +45,9 @@ abstract class Anqh_Controller extends Kohana_Controller {
 
 		// Check if this was an interna request or direct
 		$this->internal = $this->request !== Request::instance();
+
+		// Ajax request?
+		$this->ajax = Request::$is_ajax;
 
 		// Load current user, null if none
 		$this->user = Visitor::instance()->get_user();

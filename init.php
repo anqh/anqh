@@ -18,6 +18,10 @@ Route::set('sign', 'sign/<action>', array('action' => 'up|in|out'))
 		'controller' => 'sign',
 		'action'     => 'up'
 	));
+Route::set('setting', 'set/<action>/<value>')
+	->defaults(array(
+		'controller' => 'set'
+	));
 Route::set('shouts', 'shouts(/<action>)', array('action' => 'index|shout'))
 	->defaults(array(
 		'controller' => 'shouts',
