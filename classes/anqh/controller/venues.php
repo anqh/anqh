@@ -47,10 +47,10 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		// Set actions
-		if (Permission::has($category, Model_Venue_Category::PERMISSION_UPDATE, $this->user)) {
+		if (Permission::has($category, Model_Venue_Category::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($category, 'editcategory'), 'text' => __('Edit category'), 'class' => 'category-edit');
 		}
-		if (Permission::has($category, Model_Venue_Category::PERMISSION_VENUE, $this->user)) {
+		if (Permission::has($category, Model_Venue_Category::PERMISSION_VENUE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($category, 'add'), 'text' => __('Add venue'), 'class' => 'venue-add');
 		}
 
@@ -81,7 +81,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_DELETE, $this->user);
+		Permission::required($venue, Model_Venue::PERMISSION_DELETE, self::$user);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($venue));
@@ -107,7 +107,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 			throw new Model_Exception($category, $category_id);
 		}
 
-		Permission::required($category, Model_Venue_Category::PERMISSION_DELETE, $this->user);
+		Permission::required($category, Model_Venue_Category::PERMISSION_DELETE, self::$user);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($category));
@@ -141,7 +141,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 	public function action_index() {
 
 		// Set actions
-		if (Permission::has(new Model_Venue_Category, Model_Venue_Category::PERMISSION_CREATE, $this->user)) {
+		if (Permission::has(new Model_Venue_Category, Model_Venue_Category::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('venue_category_add')->uri(), 'text' => __('Add category'), 'class' => 'category-add');
 		}
 
@@ -168,7 +168,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		));
 
 		// Set actions
-		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, $this->user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($venue, 'edit'), 'text' => __('Edit venue'), 'class' => 'venue-edit');
 		}
 
@@ -213,11 +213,11 @@ class Anqh_Controller_Venues extends Controller_Template {
 			if (!$category->loaded()) {
 				throw new Model_Exception($category, $category_id);
 			}
-			Permission::required($category, Model_Venue_Category::PERMISSION_UPDATE, $this->user);
+			Permission::required($category, Model_Venue_Category::PERMISSION_UPDATE, self::$user);
 			$cancel = Route::model($category);
 
 			// Set actions
-			if (Permission::has($category, Model_Forum_Topic::PERMISSION_DELETE, $this->user)) {
+			if (Permission::has($category, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($category, 'deletecategory'), 'text' => __('Delete category'), 'class' => 'category-delete');
 			}
 
@@ -225,7 +225,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 			// Creating new
 			$category = Jelly::factory('venue_category');
-			Permission::required($category, Model_Venue_Category::PERMISSION_CREATE, $this->user);
+			Permission::required($category, Model_Venue_Category::PERMISSION_CREATE, self::$user);
 			$cancel = Route::get('venues')->uri();
 
 		}
@@ -278,12 +278,12 @@ class Anqh_Controller_Venues extends Controller_Template {
 			if (!$venue->loaded()) {
 				throw new Model_Exception($venue, $venue_id);
 			}
-			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, $this->user);
+			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
 			$cancel = Route::model($venue);
 			$category = $venue->category;
 
 			// Set actions
-			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, $this->user)) {
+			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($venue, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete venue'), 'class' => 'venue-delete');
 			}
 
@@ -294,11 +294,11 @@ class Anqh_Controller_Venues extends Controller_Template {
 			if (!$category->loaded()) {
 				throw new Model_Exception($category, $category_id);
 			}
-			Permission::required($category, Model_Venue_Category::PERMISSION_VENUE, $this->user);
+			Permission::required($category, Model_Venue_Category::PERMISSION_VENUE, self::$user);
 
 			$venue = Jelly::factory('venue')->set(array(
 				'category' => $category,
-				'author'   => $this->user,
+				'author'   => self::$user,
 			));
 			$cancel = Route::model($category);
 
