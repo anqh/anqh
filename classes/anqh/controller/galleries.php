@@ -17,8 +17,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		$this->page_title = __('Galleries');
 		$this->tabs = array(
-			'latest' => array('link' => Route::get('galleries')->uri(), 'text' => __('Latest updates')),
-			'browse' => array('link' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
+			'latest' => array('url' => Route::get('galleries')->uri(), 'text' => __('Latest updates')),
+			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
 		);
 	}
 
@@ -81,7 +81,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, $this->user)) {
+			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, self::$user)) {
 				    $comment->delete();
 				    $image->num_comments--;
 				    $image->save();
@@ -90,7 +90,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, $this->user)) {
+				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, self::$user)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -120,7 +120,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
-		Permission::required($gallery, Model_Gallery::PERMISSION_READ, $this->user);
+		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
 
 		// Set title and tabs
 		$this->_set_gallery($gallery);
@@ -134,7 +134,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if ($gallery->event) {
 			Widget::add('side', View_Module::factory('events/event_info', array(
 				'event' => $gallery->event,
-				'user'  => $this->user,
+				'user'  => self::$user,
 			)));
 		}
 	}
@@ -199,18 +199,18 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			)));
 
 			// Comments section
-			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, $this->user)) {
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
 				$errors = array();
 				$values = array();
 
 				// Handle comment
-				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, $this->user) && $_POST) {
+				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, self::$user) && $_POST) {
 					$comment = Jelly::factory('image_comment');
 					$comment->image  = $current;
 					if ($current->author) {
 						$comment->user   = $current->author;
 					}
-					$comment->author = $this->user;
+					$comment->author = self::$user;
 					$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));
 					try {
 						$comment->save();
@@ -219,7 +219,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 						// Newsfeed
 						if (!$comment->private) {
-							NewsfeedItem_Galleries::comment($this->user, $gallery, $current);
+							NewsfeedItem_Galleries::comment(self::$user, $gallery, $current);
 						}
 
 						if (!$this->ajax) {
@@ -240,7 +240,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					'errors'     => $errors,
 					'values'     => $values,
 					'pagination' => null,
-					'user'       => $this->user,
+					'user'       => self::$user,
 				));
 
 				if ($this->ajax) {
