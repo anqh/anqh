@@ -32,7 +32,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE, $this->user)) {
+			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE, self::$user)) {
 				    $comment->delete();
 				    $entry->num_comments--;
 				    $entry->save();
@@ -41,7 +41,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_Blog_Comment::PERMISSION_UPDATE, $this->user)) {
+				  if (Permission::has($comment, Model_Blog_Comment::PERMISSION_UPDATE, self::$user)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -78,7 +78,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		if (!$entry->loaded()) {
 			throw new Model_Exception($entry, $entry_id);
 		}
-		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ, $this->user);
+		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ, self::$user);
 
 		// Set title
 		$this->page_title    = HTML::chars($entry->name);
@@ -88,7 +88,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		));
 
 		// Set actions
-		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_UPDATE, $this->user)) {
+		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($entry, 'edit'), 'text' => __('Edit blog entry'), 'class' => 'blog-edit');
 		}
 
@@ -97,16 +97,16 @@ class Anqh_Controller_Blog extends Controller_Template {
 		)));
 
 		// Comments section
-		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, $this->user)) {
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, self::$user)) {
 			$errors = array();
 			$values = array();
 
 			// Handle comment
-			if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, $this->user) && $_POST) {
+			if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, self::$user) && $_POST) {
 				$comment = Jelly::factory('blog_comment');
 				$comment->blog_entry = $entry;
 				$comment->user       = $entry->author;
-				$comment->author     = $this->user;
+				$comment->author     = self::$user;
 				$comment->set(Arr::extract($_POST, Model_Blog_Comment::$editable_fields));
 				try {
 					$comment->save();
@@ -116,7 +116,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 					// Newsfeed
 					if (!$comment->private) {
-						NewsfeedItem_Blog::comment($this->user, $entry);
+						NewsfeedItem_Blog::comment(self::$user, $entry);
 					}
 
 					if (!$this->ajax) {
@@ -137,7 +137,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 				'errors'     => $errors,
 				'values'     => $values,
 				'pagination' => null,
-				'user'       => $this->user,
+				'user'       => self::$user,
 			));
 
 			if ($this->ajax) {
@@ -157,7 +157,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$this->page_title = __('Blogs');
 
 		// Set actions
-		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, $this->user)) {
+		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('blogs')->uri(array('action' => 'add')), 'text' => __('Add blog entry'), 'class' => 'blog-add');
 		}
 
@@ -183,18 +183,18 @@ class Anqh_Controller_Blog extends Controller_Template {
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
-			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, $this->user);
+			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user);
 			$cancel = Route::model($entry);
 
 		} else {
 
 			// Creating new
 			$entry = Jelly::factory('blog_entry');
-			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, $this->user);
+			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;
 
-			$entry->author = $this->user;
+			$entry->author = self::$user;
 
 		}
 
@@ -207,7 +207,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 				// Newsfeed
 				if (isset($newsfeed)) {
-					NewsfeedItem_Blog::entry($this->user, $entry);
+					NewsfeedItem_Blog::entry(self::$user, $entry);
 				}
 
 				$this->request->redirect(Route::model($entry));

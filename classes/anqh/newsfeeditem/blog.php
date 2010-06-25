@@ -27,7 +27,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 	/**
 	 * Get newsfeed item as HTML
 	 *
-	 * @param   Newsfeed_Model  $item
+	 * @param   Model_NewsfeedItem  $item
 	 * @return  string
 	 */
 	public static function get(Model_NewsfeedItem $item) {
@@ -37,14 +37,14 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 
 			case self::TYPE_COMMENT:
 				$entry = Jelly::select('blog_entry')->load($item->data['entry_id']);
-				if ($entry->id) {
+				if ($entry->loaded()) {
 					$text = __('commented to blog :blog', array(':blog' => HTML::anchor(Route::model($entry), HTML::chars($entry->name), array('title' => $entry->name))));
 				}
 				break;
 
 			case self::TYPE_ENTRY:
 				$entry = Jelly::select('blog_entry')->load($item->data['entry_id']);
-				if ($entry->id) {
+				if ($entry->loaded()) {
 					$text = __('wrote a new blog entry :blog', array(':blog' => HTML::anchor(Route::model($entry), HTML::chars($entry->name), array('title' => $entry->name))));
 				}
 				break;
