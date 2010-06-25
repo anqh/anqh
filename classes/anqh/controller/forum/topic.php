@@ -72,7 +72,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ, $this->user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ, self::$user);
 
 		// Did we request single post with ajax?
 		if ($this->ajax && isset($post_id)) {
@@ -84,12 +84,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			// Permission is already checked by the topic, no need to check for post
 
-			echo View::factory('forum/post', array('topic' => $topic, 'post'  => $post, 'user'  => $this->user));
+			echo View::factory('forum/post', array('topic' => $topic, 'post'  => $post, 'user'  => self::$user));
 			return;
 		}
 
 		// Update read counter if not owner
-		if (!$this->user || $topic->author != $this->user) {
+		if (!self::$user || $topic->author != self::$user) {
 			$topic->num_reads++;
 			$topic->save();
 		}
@@ -98,10 +98,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$this->_set_title($topic);
 
 		// Set actions
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, $this->user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
 		}
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $this->user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
 			$this->page_actions[] = array('link' => '#reply', 'text' => __('Reply to topic'), 'class' => 'topic-post');
 		}
 
@@ -118,14 +118,14 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Posts
 		Widget::add('main', View_Module::factory('forum/topic', array(
 			'mod_class'  => 'topic articles topic-' . $topic->id,
-			'user'       => $this->user,
+			'user'       => self::$user,
 			'topic'      => $topic,
 			'posts'      => $topic->get('posts')->pagination($pagination)->execute(),
 			'pagination' => $pagination
 		)));
 
 		// Reply
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $this->user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
 			$form = array(
 				'action' => Route::model($topic, 'reply'),
 				'values' => Jelly::factory('forum_post'),
@@ -192,7 +192,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$post->loaded() || $post->topic->id != $topic->id) {
 			throw new Model_Exception($post, $post_id);
 		}
-		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, $this->user);
+		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, self::$user);
 
 		$post->delete();
 		$topic->refresh();
@@ -221,7 +221,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			throw new Model_Exception($topic, $topic_id);
 		}
 
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, $this->user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user);
 
 		$area  = $topic->area;
 		$posts = $topic->num_posts;
@@ -249,7 +249,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_POST, $this->user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_POST, self::$user);
 
 		if ($post_id) {
 
@@ -258,7 +258,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$post->loaded() || $post->topic->id != $topic->id) {
 				throw new Model_Exception($post, $post_id);
 			}
-			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, $this->user);
+			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, self::$user);
 			$label = __('Edit post');
 
 		} else {
@@ -275,7 +275,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$quote->loaded() || $quote->topic->id != $topic->id) {
 				throw new Model_Exception($quote, $quote_id);
 			}
-			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, $this->user);
+			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, self::$user);
 
 			$label = __('Quote');
 			if (!$post->loaded()) {
@@ -297,8 +297,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				// New post
 				$post->topic       = $topic;
 				$post->area        = $topic->area;
-				$post->author      = $this->user;
-				$post->author_name = $this->user->username;
+				$post->author      = self::$user;
+				$post->author_name = self::$user->username;
 				if ($quote_id) {
 					$post->parent = $quote;
 				}
@@ -331,11 +331,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$area->save();
 
 					// User
-					$this->user->num_posts++;
-					$this->user->save();
+					self::$user->num_posts++;
+					self::$user->save();
 
 					// News feed
-					NewsfeedItem_Forum::reply($this->user, $post);
+					NewsfeedItem_Forum::reply(self::$user, $post);
 
 				}
 
@@ -392,7 +392,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
-			Permission::required($area, Model_Forum_Area::PERMISSION_POST, $this->user);
+			Permission::required($area, Model_Forum_Area::PERMISSION_POST, self::$user);
 			$this->page_title = HTML::chars($area->name);
 			$topic = Jelly::factory('forum_topic');
 			$post  = Jelly::factory('forum_post');
@@ -427,12 +427,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$topic->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}
-			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, $this->user);
+			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user);
 			$this->_set_title($topic);
 			$cancel = Route::model($topic);
 
 			// Set actions
-			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, $this->user)) {
+			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($topic, 'delete'), 'text' => __('Delete topic'), 'class' => 'topic-delete');
 			}
 
@@ -458,8 +458,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				// New topic
 				$post->post        = $_POST['post'];
 				$post->area        = $area;
-				$post->author      = $this->user;
-				$post->author_name = $this->user->username;
+				$post->author      = self::$user;
+				$post->author_name = self::$user->username;
 				$post->author_ip   = Request::$client_ip;
 				$post->author_host = Request::host_name();
 				try {
@@ -486,7 +486,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 					// Topic
 					$topic->first_post  = $topic->last_post   = $post;
-					$topic->last_poster = $this->user->username;
+					$topic->last_poster = self::$user->username;
 					$topic->last_posted = time();
 					$topic->num_posts   = 1;
 					$topic->save();
@@ -498,11 +498,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$area->save();
 
 					// User
-					$this->user->num_posts++;
-					$this->user->save();
+					self::$user->num_posts++;
+					self::$user->save();
 
 					// News feed
-					NewsfeedItem_Forum::topic($this->user, $topic);
+					NewsfeedItem_Forum::topic(self::$user, $topic);
 
 					$this->request->redirect(Route::model($topic));
 				}

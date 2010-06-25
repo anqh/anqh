@@ -16,7 +16,7 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta
-			->sorting(array('id' => 'ASC'))
+			->sorting(array('created' => 'ASC'))
 			->fields(array(
 				'id'          => new Field_Primary,
 				'topic'       => new Field_BelongsTo(array(

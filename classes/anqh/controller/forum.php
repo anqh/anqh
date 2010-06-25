@@ -18,10 +18,11 @@ class Anqh_Controller_Forum extends Controller_Template {
 	public function before() {
 		parent::before();
 
+		$this->page_id = 'forum';
 		$this->page_title = __('Forum');
 		$this->tabs = array(
-			'index' => array('link' => Route::get('forum')->uri(), 'text' => __('New posts')),
-			'areas' => array('link' => Route::get('forum_group')->uri(), 'text' => __('Areas'))
+			'index' => array('url' => Route::get('forum')->uri(), 'text' => __('New posts')),
+			'areas' => array('url' => Route::get('forum_group')->uri(), 'text' => __('Areas'))
 		);
 	}
 
@@ -63,7 +64,7 @@ class Anqh_Controller_Forum extends Controller_Template {
 				'mod_class' => 'cut tab areas',
 				'title'     => __('Forum areas'),
 				'groups'    => Jelly::select('forum_group')->execute(),
-				'user'      => $this->user,
+				'user'      => self::$user,
 			))),
 		);
 

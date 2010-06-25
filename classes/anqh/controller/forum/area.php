@@ -28,7 +28,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, $area_id);
 		}
-		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE, $this->user);
+		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE, self::$user);
 
 		$group = $area->group;
 		$area->delete();
@@ -50,7 +50,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
-			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, $this->user);
+			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user);
 		} else {
 			$area = Jelly::factory('forum_area');
 		}
@@ -64,7 +64,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
-			Permission::required($group, Model_Forum_Group::PERMISSION_CREATE_AREA, $this->user);
+			Permission::required($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$user);
 		}
 
 		// Handle post
@@ -83,7 +83,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->page_title = __('Forum area') . ($area->name ? ': ' . HTML::chars($area->name) : '');
 
 		// Set actions
-		if ($area->loaded() && Permission::has($area, Model_Forum_Area::PERMISSION_DELETE, $this->user)) {
+		if ($area->loaded() && Permission::has($area, Model_Forum_Area::PERMISSION_DELETE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($area, 'delete'), 'text' => __('Delete area'), 'class' => 'area-delete');
 		}
 
@@ -129,17 +129,17 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, (int)$area_id);
 		}
-		Permission::required($area, Model_Forum_Area::PERMISSION_READ, $this->user);
+		Permission::required($area, Model_Forum_Area::PERMISSION_READ, self::$user);
 
 		// Set title
 		$this->page_title = HTML::chars($area->name);
 		$this->page_subtitle = $area->description;
 
 		// Set actions
-		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, $this->user)) {
+		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($area, 'edit', false), 'text' => __('Edit area'), 'class' => 'area-edit');
 		}
-		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, $this->user)) {
+		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($area, 'post'), 'text' => __('New topic'), 'class' => 'topic-add');
 		}
 

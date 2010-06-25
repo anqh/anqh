@@ -27,7 +27,7 @@ $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 						'topic_id' => Route::model_id($topic),
 						'action'   => 'edit')),
 					__('Edit'),
-					array('class' => 'action post-edit')) ?>
+					array('class' => 'action post-edit small')) ?>
 
 			<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_DELETE, $user)) echo HTML::anchor(
 					Route::get('forum_post')->uri(array(
@@ -35,7 +35,7 @@ $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 						'topic_id' => Route::model_id($topic),
 						'action'   => 'delete')) . '?token=' . Security::csrf(),
 					__('Delete'),
-					array('class' => 'action post-delete')) ?>
+					array('class' => 'action post-delete small')) ?>
 
 			<?php if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $user)) echo HTML::anchor(
 					Route::get('forum_post')->uri(array(
@@ -43,7 +43,7 @@ $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 						'topic_id' => Route::model_id($topic),
 						'action'   => 'quote')),
 					__('Quote'),
-					array('class' => 'action post-quote')) ?>
+					array('class' => 'action post-quote small')) ?>
 
 			</span>
 
