@@ -35,6 +35,7 @@ section article:hover .hidden          { visibility: visible; }
 
 .pagination { text-align: center; }
 
+/*
 .button               { background: transparent no-repeat left top; display: block; float: left; margin: 0 5px 0 -5px; padding: 0.833em 0; text-align: center; }
 .button.x-small       { background-position: left top; width: 50px; }
 .button.small         { background-position: 0 -40px; width: 75px; }
@@ -47,6 +48,7 @@ section article:hover .hidden          { visibility: visible; }
 .button.medium:hover  { background-position: -150px -80px; }
 .button.large:hover   { background-position: -150px -120px; }
 .button.x-large:hover { background-position: -150px -160px; }
+*/
 
 .aside a.action { float: right; }
 .calendar table               { margin-bottom: 0; }

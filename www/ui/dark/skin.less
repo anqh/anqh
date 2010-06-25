@@ -6,39 +6,53 @@
 
 .border-radius(@radius: 5px)           { border-radius: @radius; -moz-border-radius: @radius; -webkit-border-radius: @radius; }
 .box-shadow(@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
-
 .ajax(@background: transparnet)        { background: @background url(ajax.gif) right center no-repeat; }
 
-@body-background-color:                #313131;
-@body-background-image:                no-repeat center top;
+@body-background-color:                #111;
+@body-background-image:                no-repeat;
 @section-background:                   #121212;
 @section-background-alt:               #111;
-@mod-background:                       #141211;
+@mod-background:                       black;
 
 @separator-color:                      #333;
 @separator-border:                     1px dotted @separator-color;
 
-@input-background:                     #111;
+@input-background:                     #222;
 @input-background-alt:                 #222;
 @input-color:                          #f2f2f2;
 @input-hint-color:                     #666;
-@input-border-color:                   @input-hint-color;
+@input-border-bottom:                  #333;
+@input-border-top:                     #111;
+@input-border-color:                   @input-border-bottom;
 @input-border-hover-color:             #999;
-@input-border-focus-color:             @input-color;
+@input-border-focus-color:             @input-hint-color;
+
+@button-background:                    #222;
+@button-top:                           #222;
+@button-bottom:                        #111;
+@button-border-top:                    #404040;
+@button-border-bottom:                 #111;
 
 @widget-background:                    #111;
 @widget-border-color:                  @input-border-color;
 @widget-border:                        1px solid @widget-border-color;
 
+@midget-background:                    rgba(0, 0, 0, 0.8);
+@midget-border-color:                  #333;
+@midget-border:                        1px solid @midget-border-color;
+
 @header-color:                         #ca3;
 @subheader-color:                      #ac3;
 @text-color:                           #a7a7a7;
 @link-color:                           #3ac;
+@link-rgba:                            rgba(51, 170, 204, 0.69);
 @link-hover-color:                     white;
 @action-background:                    #222;
 @action-link-color:                    black;
 @positive-color:                       #ac3;
+@positive-rgba:                        rgba(170, 204, 51, 0.69);
 @negative-color:                       #c33;
+@negative-rgba:                        rgba(204, 51, 51, 69);
 @error-background:                     red;
 @info-background:                      green;
 @error-color:                          @action-link-color;
@@ -47,6 +61,7 @@
 @owner-color:                          #a9ba6d;
 @my-color:                             #b0a88a;
 @private-color:                        #a3a;
+@private-rgba:                         rgba(170, 51, 170, 69);
 
 @badge-background:                     #222;
 @badge-background-alt:                 #333;
@@ -66,6 +81,3 @@
 @import "../layout.less";
 /*@import "../jquery-ui.less";*/
 @import "../widget.less";
-@import "../jquery-ui.css";
-@import "jquery-ui.css";
-@import "../site.css";

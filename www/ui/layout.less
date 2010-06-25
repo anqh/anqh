@@ -21,8 +21,12 @@ body                                   { background: @body-background-color @bod
 #dock label,
 #dock div                              { color: @dock-color; }
 #dock form                             { float: left; }
+#visitor label,
+#visitor input,
 #dock label,
 #dock input                            { display: inline; margin-left: 0; margin-right: 10px; }
+#visitor input[type="text"],
+#visitor input[type="password"]        { width: 30%; }
 #dock input[type="text"],
 #dock input[type="password"]           { width: 100px; }
 
@@ -32,7 +36,9 @@ body                                   { background: @body-background-color @bod
 /***** HEADER *****/
 
 #header                                { margin-top: 40px; margin-bottom: 10px; }
-#header h1 a                           { display: block; }
+h1 a                                   { display: block; }
+
+#header .mod                           { margin-left: 10px; }
 
 #header nav ul                         { display: block; float: right; }
 #header nav ul li                      { background: @mainmenu-link-background; display: block; float: left; margin-right: 1px; }
@@ -41,6 +47,20 @@ body                                   { background: @body-background-color @bod
 #header nav ul li a                    { color: @mainmenu-color; display: block; font-family: 'ColaborateLightRegular', Arial, sans-serif; font-size: 1.333em; height: 1em; padding: 1.5em 2.1875em 0.625em 0.625em; vertical-align: middle; }
 #header nav ul li.selected a           { color: @header-color; }
 #header nav ul li a:hover              { color: @mainmenu-hover-color; text-decoration: none; }
+
+#side-narrow nav ul                    { display: block; }
+#side-narrow nav ul li                 { background: @mainmenu-link-background; display: block; margin-bottom: 1px; width: 100%; }
+#side-narrow nav ul li:hover,
+#side-narrow nav ul li.selected        { background: @mod-background; .box-shadow(0 0 5px @mainmenu-background); margin-left: 10px; }
+#side-narrow nav ul li a               { color: @mainmenu-color; display: block; font-family: 'ColaborateLightRegular', Arial, sans-serif; font-size: 1.333em; height: 1em; padding: 0.667em; vertical-align: middle; }
+#side-narrow nav ul li.selected a      { color: @header-color; }
+#side-narrow nav ul li a:hover         { color: @mainmenu-hover-color; text-decoration: none; }
+#side-narrow nav ul.submenu li         { /*text-align: right;*/ }
+#side-narrow nav ul.submenu li a       { font-size: 1em; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; padding-left: 20px; }
+#side-narrow nav ul li.selected li:hover,
+#side-narrow nav ul li.selected li.selected  { margin-left: 0; }
+#side-narrow nav ul li.selected ul.submenu a { color: @mainmenu-color; }
+#side-narrow nav ul li.selected ul.submenu li.selected a { color: @header-color; }
 
 /***** /HEADER *****/
 
@@ -55,9 +75,9 @@ body.right #main                       { float: right; }
 .cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 .tab                                   { background: none; margin: 0; padding: 0; }
 
-#title                                 { background: @mod-background; margin-bottom: 10px; padding: 0 5px; position: relative; }
+#title                                 { background: @mod-background; /*margin-bottom: 10px;*/ padding: 0 5px; position: relative; }
 #title .container                      { padding: 0 10px; }
-#title .actions                        { bottom: 10px; position: absolute; right: 10px; }
+#title .actions                        { /*bottom: 10px; position: absolute; right: 10px;*/ }
 #title nav                             { overflow: hidden; }
 #title nav li                          { background: black; border-right: 1px solid #111; float: left; }
 #title nav li a                        { display: block; padding: 0.8333em 1em; }
@@ -65,10 +85,12 @@ body.right #main                       { float: right; }
 #title nav li:hover,
 #title nav li.selected                 { background: #222; }
 #title nav li.selected a               { color: @header-color; }
-#title .subtitle .icon                 { margin: 0 5px; }
+#title .subtitle .icon,
+#title h3 .icon                        { margin: 0 5px; }
 
 .actions                               { float: right; }
 .actions.alt                           { float: left; }
+#title .actions                        { float: none; }
 
 section .article,
 section article                        { border-bottom: 1px solid @body-background-color; /*background: @section-background-alt;*/ position: relative; }
@@ -89,6 +111,11 @@ ul.contentlist li + li                 { border-top: @separator-border; padding-
 li.line + li.line                      { border-top: @separator-border; }
 section aside + article                { padding-top: 0.8333em; }
 */
+
+#header .mod,
+aside .mod                             { background: @midget-background; border: @midget-border; .box-shadow(0 0 10px black); .border-radius(3px); margin-bottom: 10px; }
+.mod .mod                              { background: transparent; border: 0 none; .box-shadow(none); .border-radius(0); margin-bottom: 0; }
+
 /***** /BODY *****/
 
 

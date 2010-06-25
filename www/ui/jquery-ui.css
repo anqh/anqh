@@ -14,7 +14,7 @@
 * html .ui-helper-clearfix { height: 1%; }
 .ui-helper-clearfix { display: block; }
 /* end clearfix */
-.ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
+.ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacityale: 0; filter:Alpha(Opacity=0); }
 
 
 /* Interaction Cues
@@ -26,7 +26,7 @@
 ----------------------------------*/
 
 /* states and images */
-.ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+.ui-icon { display: block; /*text-indent: -99999px;*/ overflow: hidden; background-repeat: no-repeat; }
 
 
 /* Misc visuals
@@ -280,9 +280,9 @@
 .ui-widget-content.ui-datepicker-inline { background: transparent; width: auto; }
 .ui-datepicker .ui-datepicker-header   { position: relative; }
 .ui-datepicker .ui-datepicker-prev,
-.ui-datepicker .ui-datepicker-next { position:absolute; top: 2px; width: 1.6667em; height: 1.6667em; }
+.ui-datepicker .ui-datepicker-next     { height: 1.6667em; position:absolute; text-align: center; top: 2px; width: 1.6667em; }
 .ui-datepicker .ui-datepicker-prev-hover,
-.ui-datepicker .ui-datepicker-next-hover { top: 1px; }
+.ui-datepicker .ui-datepicker-next-hover { cursor: pointer; text-decoration: none; top: 1px; }
 .ui-datepicker .ui-datepicker-prev { left:2px; }
 .ui-datepicker .ui-datepicker-next { right:2px; }
 .ui-datepicker .ui-datepicker-prev-hover { left:1px; }

@@ -28,6 +28,7 @@ h3 a,
 label,
 dt,
 h5 a                                   { color: @subheader-color; }
+#title h3                              { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 1em; }
 time[title]:not([class*="date"]),
 abbr[title]                            { border-bottom: 1px dotted @separator-color; margin-bottom: -1px; }
 
@@ -58,10 +59,10 @@ input[type="radio"] + label,
 
 input,
 textarea,
-select                                 { background: @input-background; border: 1px solid @input-border-color; .border-radius(5px); color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; }
+select                                 { background: @input-background; border: 1px solid transparent; border-top: 1px solid @input-border-top; border-bottom: 1px solid @input-border-bottom; .border-radius(5px); color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; }
 input:hover,
 select:hover,
-textarea:hover                         { border-color: @input-border-hover-color; }
+textarea:hover                         { border-color: @input-border-color; }
 input:focus,
 select:focus,
 textarea:focus                         { border-color: @input-border-focus-color; outline: none; }
@@ -95,24 +96,30 @@ form .notice input                     { border-color: @info-background; }
 /***** BUTTONS *****/
 
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
-a.action                               { margin-left: 5px; }
+a.action                               { margin: 5px 2px; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
-input[type="submit"],
-a.action                               { background: @action-background; border-bottom: 1px solid rgba(0,0,0,0.25); .border-radius(5px); .box-shadow(0 1px 3px rgba(0,0,0,0.5)); display: inline-block; color: #fff; cursor: pointer; font-weight: bold; line-height: 1; opacity: 0.9; padding: 4px 1em 3px; position: relative; text-shadow: 0 -1px 1px rgba(0,0,0,0.25); }
+input[type=submit],
+a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 2px 1em 4px;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); }
+button.small,
+input[type=submit].small,
+a.action.small                         { font-size: 0.909em; padding: 0 0.667em; }
+/*a.action                               { line-height: 1; }*/
+/*a.action:before                        { .border-radius(5px); content: ' '; position: absolute; left: -1px; top: -2px; bottom: -2px; right: -1px; z-index: -1; border: 1px solid #222; }*/
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
-input[type="submit"]                   { border-width: 0 0 1px 0; padding: 1px 1em 0; }
+input[type=submit]                   { /*border-width: 0 0 1px 0; padding: 1px 1em 0;*/ }
 .ui-widget .ui-dialog-buttonpane .ui-state-default:active,
 button:active,
-input[type="submit"]:active,
+input[type=submit]:active,
 a.action:active                        { outline: none; top: 1px; }
 .ui-widget .ui-dialog-buttonpane .ui-state-hover,
 button:hover,
-input[type="submit"]:hover,
+input[type=submit]:hover,
 a.action:hover                         { opacity: 1; text-decoration: none; }
 
 section article .actions               { opacity: 0.1; }
 section article:hover .actions         { opacity: 1; }
+/*
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 section article:hover .actions a.action,
 button,
@@ -128,20 +135,20 @@ a.action.close,
 a[class*="-delete"]                    { background-color: @negative-color; }
 section article:hover .actions a[class*="-private"],
 a[class*="-private"]                   { background-color: @private-color; }
-
+*/
 .ui-widget .ui-dialog-buttonpane .ui-state-default:hover,
 button:hover,
 input[type="submit"]:hover,
-a.action:hover                         { .box-shadow(0 0 10px @link-color); }
+a.action:hover                         { color: @link-color; .box-shadow(0 0 5px @link-rgba); text-shadow: 0 0 5px @link-rgba; }
 section article:hover .actions a[class*="-private"]:hover,
-a[class*="-private"]:hover             { .box-shadow(0 0 10px @private-color); }
+a[class*="-private"]:hover             { color: @private-color; .box-shadow(0 0 4px @private-rgba); text-shadow: 0 0 5px @private-rgba; }
 section article:hover .actions a[class*="-add"]:hover,
-a[class*="-add"]:hover                 { .box-shadow(0 0 10px @positive-color); }
-.confirm-delete,
+a[class*="-add"]:hover                 { color: @positive-color; .box-shadow(0 0 4px @positive-rgba); text-shadow: 0 0 5px @positive-rgba; }
 .confirm-delete .ui-dialog-buttonpane button:first-of-type:hover,
 section article:hover .actions a[class*="-delete"]:hover,
 a.action.close:hover,
-a[class*="-delete"]:hover              { .box-shadow(0 0 10px @negative-color); }
+a[class*="-delete"]:hover              { color: @negative-color; .box-shadow(0 0 5px @negative-rgba); text-shadow: 0 0 5px @negative-rgba; }
+.confirm-delete                        { .box-shadow(0 0 5px @negative-rgba); }
 
 form .buttons                          { display: block; margin-bottom: 1em; margin-top: 1em; text-align: center; }
 

@@ -12,13 +12,13 @@
 .ui-widget-header                      { /*border: 1px solid #111;*/ background: #111; color: #ac3; }
 .ui-widget-header a                    { color: #ca3; }
 .ui-dialog                             { border: 1px solid #222; }
-.ui-tabs-nav                           { border-bottom: 1px solid #222; }
+.ui-tabs-nav                           { /*border-bottom: 1px solid #222;*/ }
 
 /* Interaction states
 ----------------------------------*/
 .ui-state-default,
 .ui-widget-content .ui-state-default   { border: 1px solid #222; background: #111; color: #3ac; }
-.ui-tabs .ui-state-default             { background: black; border: 1px solid #111; border-width: 0 1px 0 0; }
+.ui-tabs .ui-state-default             { background: #111; border: 1px solid #111; border-width: 0 1px 0 0; }
 .ui-state-default a,
 .ui-state-default a:link,
 .ui-state-default a:visited            { color: #3ac; }
@@ -31,7 +31,7 @@
 .ui-state-active,
 .ui-widget-content .ui-state-active    { background: black; border: 1px solid black; color: #ca3; }
 .ui-tabs .ui-state-active,
-.ui-tabs .ui-state-hover               { background: #222; border-width: 0 1px 0 0; }
+.ui-tabs .ui-state-hover               { background: black; border-width: 0 1px 0 0; }
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited             { color: #ca3; }
