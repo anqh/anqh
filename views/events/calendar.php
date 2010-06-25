@@ -33,8 +33,8 @@ $options = array(
 		__('May'), __('Jun'), __('Jul'), __('Aug'),
 		__('Sep'), __('Oct'), __('Nov'), __('Dec')
 	),
-	'nextText'        => __('Next'),
-	'prevText'        => __('Prev'),
+	'nextText'        => __('&raquo;'),
+	'prevText'        => __('&laquo;'),
 	'showWeek'        => true,
 	'weekHeader'      => __('Wk'),
 );
