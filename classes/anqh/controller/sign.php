@@ -10,13 +10,21 @@
 class Anqh_Controller_Sign extends Controller_Template {
 
 	/**
+	 * Construct controller
+	 */
+	public function before() {
+		parent::before();
+
+		$this->history = false;
+	}
+
+
+	/**
 	 * Sign in
 	 */
 	public function action_in() {
-		$this->history = false;
-
-		if ($this->user) {
-			$this->request->redirect(Route::get('default')->uri(array('action' => 'index')));
+		if (self::$user) {
+			Request::back();
 		}
 
 		if ($_POST) {
@@ -32,7 +40,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 
 			// Require valid user for login logging
 			$user = Model_User::find_user($_POST['username']);
-			if ($user->loaded()) {
+			if ($user && $user->loaded()) {
 				$login->user = $user;
 				$login->username = $user->username;
 
@@ -65,8 +73,6 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 * Sign out
 	 */
 	public function action_out() {
-		$this->history = false;
-
 		Visitor::instance()->logout();
 
 		// Redirect back to the login page
@@ -80,8 +86,6 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 * @param  string  $code  Invalid code given?
 	 */
 	public function _invite($code = null) {
-		$this->history = false;
-
 		$invitation = new Invitation_Model();
 
 		$form_values = $invitation->as_array();
@@ -133,8 +137,6 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 * @param  Invitation_Model  $invitation
 	 */
 	public function _join(Invitation_Model $invitation) {
-		$this->history = false;
-
 		$user = new User_Model();
 		$form_values = $user->as_array();
 		$form_errors = array();
@@ -170,8 +172,6 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 * @param  string  $code
 	 */
 	public function up($code = false) {
-		$this->history = false;
-
 		$this->page_title = __('Sign up');
 
 		// Check invitation code

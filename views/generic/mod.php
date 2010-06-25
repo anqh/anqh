@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * View Mod
+ * View Module a.k.a. Midget
  *
  * @package    Anqh
  * @author     Antti Qvickström
@@ -9,10 +9,10 @@
  */
 ?>
 
-<section class="<?php echo $class ?>"<?php echo $id ? ' id="' . $id . '"' : '' ?>>
+<section<?php echo $id ? ' id="' . $id . '"' : '' ?> class="<?php echo $class ?>">
 	<div class="container">
 		<?php if ($title): ?>
-			
+
 		<header>
 			<h4><?php echo $title ?></h4>
 		</header>
@@ -25,4 +25,4 @@
 <?php if ($pagination) echo $pagination; ?>
 
 	</div>
-</section><!-- <?php echo $class ?> -->
+</section><!-- <?php echo $id ? '#' . $id : '.' . $class ?> -->

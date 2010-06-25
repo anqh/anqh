@@ -34,7 +34,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	 *
 	 * @var  User_Model
 	 */
-	protected $user;
+	protected static $user = false;
 
 
 	/**
@@ -50,7 +50,9 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		$this->ajax = Request::$is_ajax;
 
 		// Load current user, null if none
-		$this->user = Visitor::instance()->get_user();
+		if (self::$user === false) {
+			self::$user = Visitor::instance()->get_user();
+		}
 
 	}
 

@@ -21,7 +21,11 @@
 		HTML::style('ui/grid.css'),
 		HTML::style('ui/typo.css'),
 		HTML::style('ui/base.css'),
-		Less::style($skin, null, false, $skin_imports); ?>
+		Less::style($skin, null, false, $skin_imports),
+		HTML::style('ui/jquery-ui.css'),
+		HTML::style('ui/dark/jquery-ui.css'),
+		HTML::style('ui/site.css');
+?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
 	<?php echo
@@ -43,14 +47,26 @@
 	<header id="header">
 		<div class="content">
 
-<h1><?php echo html::anchor('/', Kohana::config('site.site_name')) ?></h1>
-<?php echo Widget::get('navigation') ?>
+			<section id="logo" class="unit size1of6">
+				<h1><?php echo html::anchor('/', Kohana::config('site.site_name')) ?></h1>
+			</section>
+
+			<section id="search" class="unit size1of2">
+
+<?php echo Widget::get('search') ?>
+
+			</section>
+
+			<section id="visitor" class="unit size1of3">
+
+<?php echo Widget::get('visitor') ?>
+
+			</section>
 
 		</div>
 	</header><!-- #header -->
 
 	<!-- /HEADER -->
-
 
 <?php echo Widget::get('ad_top') ?>
 
@@ -61,68 +77,57 @@
 		<div class="content">
 
 
-			<!-- CONTENT -->
+			<!-- SIDE NARROW -->
 
-			<section id="content" class="unit size5of6">
+			<section id="side-narrow" class="unit size1of6">
 
+<?php echo Widget::get('navigation') ?>
 
-				<header id="title">
-
-<?php echo Widget::get('breadcrumb') ?>
-
-					<h2><?php echo $page_title ?></h2>
-					<?php echo !empty($page_subtitle) ? '<p class="subtitle">' . $page_subtitle . '</p>' : '' ?>
-
-<?php echo Widget::get('actions') ?>
-<?php echo Widget::get('tabs') ?>
-
-				</header><!-- #title -->
-
-
-				<!-- MAIN CONTENT -->
-
-				<section id="wide" class="unit size1of1">
-
-<?php echo Widget::get('wide') ?>
-
-				</section><!-- wide -->
-
-				<section id="main" class="unit size3of5">
-
-<?php echo Widget::get('error') ?>
-<?php echo Widget::get('main') ?>
-
-				</section><!-- #main -->
-
-				<!-- /MAIN CONTENT -->
-
-
-				<!-- SIDE CONTENT -->
-
-				<aside id="side" class="unit size2of5">
-
-<?php echo Widget::get('side') ?>
-
-				</aside><!-- #side -->
-
-				<!-- /SIDE CONTENT -->
-
-
-			</section><!-- #content -->
-
-			<!-- /CONTENT -->
-
-
-			<!-- SIDE ADS -->
-
-			<section id="side-ads" class="unit size1of6">
+<?php //echo Widget::get('tabs') ?>
 
 <?php echo Widget::get('ad_side') ?>
 
-			</section><!-- #side-ads -->
+			</section><!-- #side-narrow -->
 
-			<!-- /SIDE ADS -->
+			<!-- /SIDE NARROW -->
 
+
+			<!-- MAIN -->
+
+			<section id="main" class="unit <?php echo ($wide = Widget::get('wide')) ? 'size5of6' : 'size1of2' ?>">
+				<header id="title">
+
+<?php //echo Widget::get('breadcrumb') ?>
+
+					<hgroup>
+						<h2><?php echo $page_title ?></h2>
+						<?php echo !empty($page_subtitle) ? '<h3>' . $page_subtitle . '</h3>' : '' ?>
+					</hgroup>
+
+<?php echo Widget::get('actions') ?>
+
+				</header><!-- #title -->
+
+				<?php echo Widget::get('error') ?>
+				<?php echo $wide ? $wide : Widget::get('main') ?>
+
+			</section><!-- main -->
+
+			<!-- /MAIN -->
+
+			<?php if (!$wide): ?>
+
+			<!-- SIDE -->
+
+			<aside id="side" class="unit size1of3">
+
+<?php echo Widget::get('side') ?>
+
+			</aside><!-- #side -->
+
+			<!-- /SIDE -->
+
+			<?php endif; ?>
 
 		</div>
 	</section><!-- #body -->
@@ -231,9 +236,10 @@ $(function() {
 				dialogClass: 'confirm-delete',
 				modal: true,
 				close: function(ev, ui) { $(this).remove(); },
+				closeText: '✕',
 				buttons: {
-					'<?php echo __('Yes, do it!') ?>': function() { $(this).dialog('close'); action(); },
-					'<?php echo __('No, cancel') ?>': function() { $(this).dialog('close'); }
+					'<?php echo '✓ ' . __('Yes, do it!') ?>': function() { $(this).dialog('close'); action(); },
+					'<?php echo '✕ ' . __('No, cancel') ?>': function() { $(this).dialog('close'); }
 				}
 			});
 		} else {

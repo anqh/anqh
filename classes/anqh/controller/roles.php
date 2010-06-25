@@ -44,7 +44,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		if (!$role->loaded()) {
 			throw new Model_Exception($role, $role_id);
 		}
-		Permission::required($role, Model_Role::PERMISSION_DELETE, $this->user);
+		Permission::required($role, Model_Role::PERMISSION_DELETE, self::$user);
 
 		$role->delete();
 
@@ -65,10 +65,10 @@ class Anqh_Controller_Roles extends Controller_Template {
 			if (!$role->loaded()) {
 				throw new Model_Exception($role, $role_id);
 			}
-			Permission::required($role, Model_Role::PERMISSION_UPDATE, $this->user);
+			Permission::required($role, Model_Role::PERMISSION_UPDATE, self::$user);
 		} else {
 			$role = Jelly::factory('role');
-			Permission::required($role, Model_Role::PERMISSION_CREATE, $this->user);
+			Permission::required($role, Model_Role::PERMISSION_CREATE, self::$user);
 		}
 
 		// Handle post
@@ -87,7 +87,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		$this->page_title = __('Role') . ($role->name ? ': ' . HTML::chars($role->name) : '');
 
 		// Set actions
-		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE, $this->user)) {
+		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($role, 'delete', false), 'text' => __('Delete role'), 'class' => 'role-delete');
 		}
 

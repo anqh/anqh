@@ -105,7 +105,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			if (!$online->loaded()) {
 				$online->id = session_id();
 			}
-			$online->user = $this->user;
+			$online->user = self::$user;
 			try {
 				$online->save();
 			} catch (Validate_Exception $e) {}
@@ -144,16 +144,16 @@ abstract class Anqh_Controller_Template extends Controller {
 			$skin_imports = array(
 				'ui/layout.less',
 				'ui/widget.less',
-				'ui/jquery-ui.css',
+/*				'ui/jquery-ui.css',
 				'ui/site.css',
-				$skin_path . 'jquery-ui.css',
+				$skin_path . 'jquery-ui.css',*/
 			);
 
 			// Do some CSS magic to page class
 			$page_class = explode(' ',
 				$this->language . ' ' .                      // Language
 				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
-				$session->set('page_main', 'left') . ' ' .   // Left/right aligned layout
+				$session->get('page_main', 'left') . ' ' .   // Left/right aligned layout
 				$this->request->action . ' ' .               // Controller method
 				$this->page_class);                          // Controller set classes
 			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
@@ -171,7 +171,12 @@ abstract class Anqh_Controller_Template extends Controller {
 			// Generic views
 			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb, 'last' => !$this->history)));
 			Widget::add('actions',    View::factory('generic/actions',    array('actions' => $this->page_actions)));
-			Widget::add('navigation', View::factory('generic/navigation', array('items' => Kohana::config('site.menu'), 'selected' => $this->page_id)));
+			Widget::add('navigation', View::factory('generic/navigation', array(
+				'items'        => Kohana::config('site.menu'),
+				'selected'     => $this->page_id,
+				'sub_items'    => $this->tabs,
+				'sub_selected' => $this->tab_id
+			)));
 			Widget::add('tabs',       View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
 
 			// Footer
@@ -213,39 +218,18 @@ abstract class Anqh_Controller_Template extends Controller {
 				Widget::add('dock2', ' | ' . __('Language: ') . implode(', ', $languages));
 			}
 
-			if ($this->user) {
+			// Search
+			Widget::add('search', View_Module::factory('generic/search'));
 
-				// Authenticated view
-				Widget::add('dock', __('[#:id] :user', array(':id' => $this->user->id, ':user' => HTML::user($this->user))));
+			// Visitor card
+			Widget::add('visitor', View_Module::factory('generic/visitor', array(
+				'user' => self::$user,
+			)));
 
-				$new_messages = array();
-				if ($this->user->newcomments) {
-					$new_messages[] = HTML::anchor(
-						URL::user($this->user),
-						__(':commentsC', array(':comments' => $this->user->newcomments)),
-						array('title' => __('New comments'), 'class' => 'new-comments')
-					);
-				}
-				if (!empty($new_messages)) {
-					Widget::add('dock', ' - ' . __('New messages: ') . implode(' ', $new_messages));
-				}
-
-				// Logout also from Facebook
-				/*
-				if (FB::enabled() && Visitor::instance()->get_provider()) {
-					Widget::add('dock', ' - ' . HTML::anchor('sign/out', FB::icon() . __('Sign out'), array('onclick' => "FB.Connect.logoutAndRedirect('/sign/out'); return false;")));
-				} else {
-				*/
-					Widget::add('dock', ' - ' . HTML::anchor('sign/out', __('Sign out')));
-				//}
-
-
-				if (Kohana::config('site.inviteonly')) {
-	//				widget::add('dock', ' | ' . html::anchor('sign/up', __('Send invite')));
-				}
+			if (self::$user) {
 
 				// Admin functions
-				if ($this->user->has_role('admin')) {
+				if (self::$user->has_role('admin')) {
 					Widget::add('dock2', ' | ' . __('Admin: ')
 						. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
 						. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
@@ -253,26 +237,10 @@ abstract class Anqh_Controller_Template extends Controller {
 					);
 				}
 
-				// Pin
-				Widget::add('dock2', ' | ' . HTML::anchor('#pin', __('Pin'), array('class' => 'pin', 'onclick' => '$("#dock").toggleClass("pinned"); return false;')));
-
-			} else {
-
-				// Non-authenticated view
-				$form =  Form::open(Route::get('sign')->uri(array('action' => 'in')));
-				$form .= Form::input('username', null, array('title' => __('Username')));
-				$form .= Form::password('password', null, array('title' => __('Password')));
-				$form .= Form::submit('signin', __('Sign in'));
-				$form .= Form::close();
-				$form .= html::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up'));
-				/*
-				if (FB::enabled()) {
-					$form .= ' | ' . FB::fbml_login();
-				}
-				*/
-				Widget::add('dock', $form);
-
 			}
+
+			// Pin
+			Widget::add('dock2', ' | ' . HTML::anchor('#pin', __('Pin'), array('class' => 'pin', 'onclick' => '$("#dock").toggleClass("pinned"); return false;')));
 
 			// End
 			Widget::add('end', View::factory('generic/end'));

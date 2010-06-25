@@ -33,7 +33,7 @@ class Anqh_Controller_Shouts extends Controller_Template {
 		$errors = array();
 
 		if (Permission::has($shout, Permission_Interface::PERMISSION_CREATE) && Security::csrf_valid()) {
-			$shout->author = $this->user;
+			$shout->author = self::$user;
 			$shout->shout  = $_POST['shout'];
 			try {
 				$shout->save();

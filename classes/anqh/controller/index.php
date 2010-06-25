@@ -22,7 +22,7 @@ class Anqh_Controller_Index extends Controller_Template {
 		$this->page_title = __('Welcome to :site', array(':site' => Kohana::config('site.site_name')));
 
 		// Display news feed
-		$newsfeed = new NewsFeed($this->user);
+		$newsfeed = new NewsFeed(self::$user);
 		$newsfeed->max_items = 25;
 		Widget::add('main', View_Module::factory('generic/newsfeed', array(
 			'newsfeed' => $newsfeed->as_array()
@@ -50,7 +50,7 @@ class Anqh_Controller_Index extends Controller_Template {
 		}
 		Widget::add('side', View_Module::factory('generic/users', array(
 			'mod_title' => __('Online') . ': ' . implode(', ', $counts),
-			'viewer'    => $this->user,
+			'viewer'    => self::$user,
 			'users'     => $online,
 		)));
 
