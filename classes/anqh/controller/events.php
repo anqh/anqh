@@ -23,9 +23,9 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		$this->date = new DateTime;
 		$this->tabs = array(
-			'upcoming' => array('link' => Route::get('events')->uri(array('action' => 'upcoming')), 'text' => __('Upcoming events')),
-			'past'     => array('link' => Route::get('events')->uri(array('action' => 'past')),     'text' => __('Past events')),
-			'browse'   => array('link' => Route::get('events')->uri(array('action' => 'browse')),   'text' => __('Browse calendar')),
+			'upcoming' => array('url' => Route::get('events')->uri(array('action' => 'upcoming')), 'text' => __('Upcoming events')),
+			'past'     => array('url' => Route::get('events')->uri(array('action' => 'past')),     'text' => __('Past events')),
+			'browse'   => array('url' => Route::get('events')->uri(array('action' => 'browse')),   'text' => __('Browse calendar')),
 		);
 	}
 
@@ -94,7 +94,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			throw new Model_Exception($event, $event_id);
 		}
 
-		Permission::required($event, Model_Event::PERMISSION_DELETE, $this->user);
+		Permission::required($event, Model_Event::PERMISSION_DELETE, self::$user);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($event));
@@ -126,17 +126,17 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_READ, $this->user);
+		Permission::required($event, Model_Event::PERMISSION_READ, self::$user);
 
 		// Set actions
-		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, $this->user)) {
-			if ($event->is_favorite($this->user)) {
+		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
+			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(), 'text' => __('Remove favorite'), 'class' => 'favorite-delete');
 			} else {
 				$this->page_actions[] = array('link' => Route::model($event, 'favorite') . '?token=' . Security::csrf(), 'text' => __('Add favorite'), 'class' => 'favorite-add');
 			}
 		}
-		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, $this->user)) {
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
 		}
 
@@ -144,7 +144,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
 
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
-		Widget::add('side', View_Module::factory('events/event_info', array('user' => $this->user, 'event' => $event)));
+		Widget::add('side', View_Module::factory('events/event_info', array('user' => self::$user, 'event' => $event)));
 	}
 
 
@@ -160,13 +160,13 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_FAVORITE, $this->user);
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE, self::$user);
 
 		if (Security::csrf_valid()) {
-			$event->add_favorite($this->user);
+			$event->add_favorite(self::$user);
 
 			// News feed
-			NewsfeedItem_Events::favorite($this->user, $event);
+			NewsfeedItem_Events::favorite(self::$user, $event);
 
 		}
 
@@ -190,7 +190,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->tab_id = 'past';
 
 		// Set actions
-		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, $this->user)) {
+		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
 		}
 
@@ -228,10 +228,10 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_FAVORITE, $this->user);
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE, self::$user);
 
 		if (Security::csrf_valid()) {
-			$event->delete_favorite($this->user);
+			$event->delete_favorite(self::$user);
 		}
 
 		$this->request->redirect(Route::model($event));
@@ -246,7 +246,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->tab_id = 'upcoming';
 
 		// Set actions
-		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, $this->user)) {
+		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
 		}
 
@@ -287,11 +287,11 @@ class Anqh_Controller_Events extends Controller_Template {
 			if (!$event->loaded()) {
 				throw new Model_Exception($event, $event_id);
 			}
-			Permission::required($event, Model_Event::PERMISSION_UPDATE, $this->user);
+			Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
 			$cancel = Request::back(Route::model($event), true);
 
 			// Set actions
-			if (Permission::has($event, Model_Event::PERMISSION_DELETE, $this->user)) {
+			if (Permission::has($event, Model_Event::PERMISSION_DELETE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($event, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete event'), 'class' => 'event-delete');
 			}
 
@@ -299,10 +299,10 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			// Creating new
 			$event = Jelly::factory('event');
-			Permission::required($event, Model_Event::PERMISSION_CREATE, $this->user);
+			Permission::required($event, Model_Event::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
-			$event->author = $this->user;
+			$event->author = self::$user;
 			$newsfeed = true;
 
 		}
@@ -326,7 +326,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				// News feed
 				if (isset($newsfeed)) {
-					NewsfeedItem_Events::event($this->user, $event);
+					NewsfeedItem_Events::event(self::$user, $event);
 				}
 
 				$this->request->redirect(Route::model($event));
