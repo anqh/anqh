@@ -132,7 +132,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 			$comments = $entry->comments;
 			$view = View_Module::factory('generic/comments', array(
 				'delete'     => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
-				'private'    => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
+				'private'    => false, //Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
 				'comments'   => $comments,
 				'errors'     => $errors,
 				'values'     => $values,
