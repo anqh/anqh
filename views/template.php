@@ -24,7 +24,8 @@
 		Less::style($skin, null, false, $skin_imports),
 		HTML::style('ui/jquery-ui.css'),
 		HTML::style('ui/dark/jquery-ui.css'),
-		HTML::style('ui/site.css');
+		HTML::style('ui/site.css'),
+		HTML::style('http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:light');
 ?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
@@ -224,6 +225,13 @@ $(function() {
 
 	// Ellipsis ...
 	$('.cut li').ellipsis();
+
+
+	// Tooltips
+	$('a[title]').tooltip({
+		effect: 'slide',
+		position: 'top center'
+	});
 
 
 	// Delete confirmations
