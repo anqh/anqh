@@ -303,6 +303,7 @@ $(function() {
 		$tip.html(cache[href]);
 	}
 
+	/*
 	$('a.user, .avatar a').tooltip({
 		predelay: 500,
 		tip: '#peepbox',
@@ -317,6 +318,7 @@ $(function() {
 			bounce: true
 		}
 	});
+	*/
 
 });
 //]]>

@@ -11,6 +11,6 @@
 
 <?php echo
 	Form::open(),
-	Form::input('search', null, array('title' => __('Search'))),
+	Form::input('search', null, array('title' => __('Search'), 'disabled' => 'disabled')),
 	Form::close();
 
