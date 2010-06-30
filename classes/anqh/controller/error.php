@@ -10,18 +10,20 @@
 class Anqh_Controller_Error extends Controller_Template {
 
 	/**
-	 * Controller default action
-	 */
-	public function action_index() {
-
-	}
-
-	/**
 	 * Action: 404
 	 */
 	public function action_404() {
+		$this->history = false;
+		$this->auto_render = true;
+		$this->internal = false;
 		$this->request->status = 404;
-		$this->page_title = __('404 - le fu.');
+
+		if (!$this->ajax) {
+			$this->template = View::factory($this->template);
+			$this->page_title = __('404 - le fu.');
+		} else {
+			$this->response = __('404 - le fu.');
+		}
 	}
 
 }
