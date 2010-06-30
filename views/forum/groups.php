@@ -27,7 +27,7 @@
 
 			<article class="area">
 				<header>
-					<h4 class="unit size2of3"><?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></h4>
+					<div class="unit size2of3"><?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></div>
 					<ul class="details unit size1of3">
 						<li class="unit size1of2"><?php echo HTML::icon_value(array(':topics' => $area->num_topics), ':topics topic', ':topics topics', 'topics') ?></li>
 						<li class="unit size1of2"><?php echo HTML::icon_value(array(':posts' => $area->num_posts), ':posts post', ':posts posts', 'posts') ?></li>
@@ -50,9 +50,7 @@
 
 			<article class="area disabled">
 				<header>
-					<h4>
-						<span title="<?php echo strip_tags($area->description) ?>"><?php echo HTML::chars($area->name) ?>
-					</h4>
+					<span title="<?php echo strip_tags($area->description) ?>"><?php echo HTML::chars($area->name) ?></span>
 				</header>
 				<footer><?php echo __('Members only') ?></footer>
 			</article>

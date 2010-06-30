@@ -287,7 +287,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Handle post
 		$errors = array();
-		if ($_POST) {
+		if ($_POST && Security::csrf_valid()) {
 
 			$post->post        = $_POST['post'];
 			$post->author_ip   = Request::$client_ip;
@@ -337,6 +337,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					// News feed
 					NewsfeedItem_Forum::reply(self::$user, $post);
 
+				}
+
+				if ($this->ajax) {
+					return Request::factory(Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $post->id)))->execute();
 				}
 
 				$this->request->redirect(Route::model($topic, '?page=last#last'));
@@ -452,7 +456,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		$errors = array();
-		if ($_POST) {
+		if ($_POST && Security::csrf_valid()) {
 			if (isset($post)) {
 
 				// New topic
