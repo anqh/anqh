@@ -235,7 +235,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$comments = $current->comments;
 				$view = View_Module::factory('generic/comments', array(
 					'delete'     => Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
-					'private'    => Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
+					'private'    => false, //Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
 					'comments'   => $comments,
 					'errors'     => $errors,
 					'values'     => $values,
@@ -279,8 +279,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Add new tab
 		$this->tab_id = 'gallery';
-		$this->tabs['browse']['link'] = Route::get('galleries')->uri(array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
-		$this->tabs['gallery'] = array('link' => Route::model($gallery), 'text' => __('Gallery'));
+		$this->tabs['browse']['url'] = Route::get('galleries')->uri(array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
+		$this->tabs['gallery'] = array('url' => Route::model($gallery), 'text' => __('Gallery'));
 
 		// Set title
 		$this->page_title = HTML::chars($gallery->name);
