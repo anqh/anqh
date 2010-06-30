@@ -60,6 +60,7 @@ Kohana::init(array(
 	'base_url'   => '/',
 	'index_file' => false,
 	'profile'    => in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
+	'caching'    => !in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 ));
 
 /**
@@ -111,11 +112,10 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
  * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
  * If no source is specified, the URI will be automatically detected.
  */
-$request = Request::instance();
 try {
 
 	// Attempt to execute the response
-	$request->execute();
+	$request = Request::instance()->execute();
 
 } catch (Exception $e) {
 
@@ -127,9 +127,18 @@ try {
 	// Log errors
 	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
 
-	// 404
-	$request = Request::factory('error/404')->execute();
+	if ($e instanceof Kohana_Request_Exception) {
 
+		// Annoying 404 with uris with dots, can't use Request at all
+		echo __('Something fishy just happened.. please go back and try not to do this again.');
+		exit;
+
+	} else {
+
+		// Normal 404
+		$request = Request::factory('error/404')->execute();
+
+	}
 }
 
 /**
