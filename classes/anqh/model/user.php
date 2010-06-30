@@ -113,6 +113,7 @@ class Anqh_Model_User extends Jelly_Model {
 				'gender' => new Field_Enum(array(
 					'choices' => array('m', 'f')
 				)),
+				'avatar' => new Field_String,
 
 				//'image' => new Field_File()          => array('upload::valid', 'upload::type[gif,jpg,png]', 'upload::size[400K]'),
 
