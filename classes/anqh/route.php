@@ -18,7 +18,7 @@ class Anqh_Route extends Kohana_Route {
 	 * @param   string       $route   Defaults to model name
 	 * @return  string
 	 */
-	public static function model(Jelly_Model $model, $action = null, $params = null, $route = null) {
+	public static function model(Jelly_Model $model, $action = '', $params = null, $route = null) {
 		return Route::get($route ? $route : Jelly::model_name($model))->uri(array(
 			'id'     => self::model_id($model),
 			'action' => $action,
