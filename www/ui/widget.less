@@ -59,7 +59,8 @@ input[type="radio"] + label,
 
 input,
 textarea,
-select                                 { background: @input-background; border: 1px solid transparent; border-top: 1px solid @input-border-top; border-bottom: 1px solid @input-border-bottom; .border-radius(5px); color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; }
+select                                 { background: @input-background; border: 1px solid @input-background; border-bottom: 1px solid @input-border-bottom; .border-radius(5px); border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; }
+select                                 { border-bottom-color: @input-border-top; border-top-color: @input-border-bottom; }
 input:hover,
 select:hover,
 textarea:hover                         { border-color: @input-border-color; }
@@ -71,8 +72,8 @@ input[type="radio"]                    { color: @text-color; margin: 0; width: 2
 input[type="text"],
 input[type="password"],
 input[type="file"],
-textarea,
-select                                 { width: 99%; }
+textarea                               { width: 99%; }
+select                                 { width: 100%; }
 textarea.hint,
 input.hint                             { color: @input-hint-color; font-style: italic; }
 input.private                          { border-color: @private-color; }
@@ -100,7 +101,7 @@ a.action                               { margin: 5px 2px; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
 input[type=submit],
-a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 2px 1em 4px;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); }
+a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); }
 button.small,
 input[type=submit].small,
 a.action.small                         { font-size: 0.909em; padding: 0 0.667em; }
@@ -119,23 +120,6 @@ a.action:hover                         { opacity: 1; text-decoration: none; }
 
 section article .actions               { opacity: 0.1; }
 section article:hover .actions         { opacity: 1; }
-/*
-.ui-widget .ui-dialog-buttonpane .ui-state-default,
-section article:hover .actions a.action,
-button,
-input[type="submit"],
-a.action                               { background-color: @link-color; }
-section article .actions a.action      { background-color: @action-background; }
-
-section article:hover .actions a[class*="-add"],
-a[class*="-add"]                       { background-color: @positive-color; }
-.confirm-delete .ui-dialog-buttonpane button:first-of-type,
-section article:hover .actions a[class*="-delete"],
-a.action.close,
-a[class*="-delete"]                    { background-color: @negative-color; }
-section article:hover .actions a[class*="-private"],
-a[class*="-private"]                   { background-color: @private-color; }
-*/
 .ui-widget .ui-dialog-buttonpane .ui-state-default:hover,
 button:hover,
 input[type="submit"]:hover,
@@ -243,6 +227,13 @@ a:hover img                            { opacity: 1; }
 /***** /AUTO COMPLETE *****/
 
 
+/***** TOOLTIP *****/
+
+.tooltip                               { background: @midget-background; border: @midget-border; .box-shadow(0 0 10px black); .border-radius(3px); padding: 10px; }
+
+/***** /TOOLTIP *****/
+
+
 /***** BBCODE *****/
 
 ul.bbcode_list                         { list-style: disc; padding: 0 1.667em; }
@@ -285,7 +276,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** PEEPBOX *****/
 
-#peepbox                               { border: 1px solid @input-border-color; }
+#peepbox                               { border: 1px solid @input-border-color; display: none; position: absolute; }
 #peepbox h4                            { margin-top: 0; }
 
 /***** /PEEPBOX *****/

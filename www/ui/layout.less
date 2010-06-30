@@ -44,23 +44,24 @@ h1 a                                   { display: block; }
 #header nav ul li                      { background: @mainmenu-link-background; display: block; float: left; margin-right: 1px; }
 #header nav ul li:hover,
 #header nav ul li.selected             { background: @mainmenu-background; .box-shadow(0 0 10px @mainmenu-background); }
-#header nav ul li a                    { color: @mainmenu-color; display: block; font-family: 'ColaborateLightRegular', Arial, sans-serif; font-size: 1.333em; height: 1em; padding: 1.5em 2.1875em 0.625em 0.625em; vertical-align: middle; }
+#header nav ul li a                    { color: @mainmenu-color; display: block; font-family: @header-font; font-size: 1.333em; height: 1em; padding: 1.5em 2.1875em 0.625em 0.625em; vertical-align: middle; }
 #header nav ul li.selected a           { color: @header-color; }
 #header nav ul li a:hover              { color: @mainmenu-hover-color; text-decoration: none; }
 
 #side-narrow nav ul                    { display: block; }
 #side-narrow nav ul li                 { background: @mainmenu-link-background; display: block; margin-bottom: 1px; width: 100%; }
 #side-narrow nav ul li:hover,
-#side-narrow nav ul li.selected        { background: @mod-background; .box-shadow(0 0 5px @mainmenu-background); margin-left: 10px; }
-#side-narrow nav ul li a               { color: @mainmenu-color; display: block; font-family: 'ColaborateLightRegular', Arial, sans-serif; font-size: 1.333em; height: 1em; padding: 0.667em; vertical-align: middle; }
+#side-narrow nav ul li.selected        { /*background: @mod-background;*/ .box-shadow(0 0 5px @mainmenu-background); margin-left: 10px; }
+#side-narrow nav ul li a               { color: @mainmenu-color; display: block; /*font-family: @header-font; font-size: 1.333em;*/ height: 1em; padding: 0.667em; vertical-align: middle; }
 #side-narrow nav ul li.selected a      { color: @header-color; }
-#side-narrow nav ul li a:hover         { color: @mainmenu-hover-color; text-decoration: none; }
-#side-narrow nav ul.submenu li         { /*text-align: right;*/ }
-#side-narrow nav ul.submenu li a       { font-size: 1em; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; padding-left: 20px; }
-#side-narrow nav ul li.selected li:hover,
-#side-narrow nav ul li.selected li.selected  { margin-left: 0; }
-#side-narrow nav ul li.selected ul.submenu a { color: @mainmenu-color; }
-#side-narrow nav ul li.selected ul.submenu li.selected a { color: @header-color; }
+#side-narrow nav ul li a:hover         { color: @header-color; text-decoration: none; }
+#side-narrow nav ul.submenu li         { background: transparent; /*text-align: right;*/ }
+#side-narrow nav ul.submenu li a       { /*font-size: 1em; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif;*/ padding-left: 20px; }
+#side-narrow nav ul li li:hover,
+#side-narrow nav ul li li.selected     { .box-shadow(0 0 0 transparent); margin-left: 0; }
+#side-narrow nav ul ul.submenu a       { color: @mainmenu-color; }
+#side-narrow nav ul ul.submenu li:hover a,
+#side-narrow nav ul ul.submenu li.selected a { color: @header-color; }
 
 /***** /HEADER *****/
 
@@ -112,9 +113,21 @@ li.line + li.line                      { border-top: @separator-border; }
 section aside + article                { padding-top: 0.8333em; }
 */
 
+#title,
+#main .mod,
 #header .mod,
 aside .mod                             { background: @midget-background; border: @midget-border; .box-shadow(0 0 10px black); .border-radius(3px); margin-bottom: 10px; }
+#title,
+#main .mod                             { background: @mod-background;/* margin-bottom: 0; */}
 .mod .mod                              { background: transparent; border: 0 none; .box-shadow(none); .border-radius(0); margin-bottom: 0; }
+#header .mod:hover,
+aside .mod:hover                       { border-color: #333; .box-shadow(0 0 0 transparent); }
+
+aside .mod .container li               { border-top: 1px solid #181818; border-bottom: 1px solid black; }
+aside .mod .container li.group         { border: 0 none; }
+/*aside .mod .container li a             { display: block; }*/
+aside .mod .container li:first-child   { border-top: 0 none; }
+aside .mod .container li:last-child    { border-bottom: 0 none; }
 
 /***** /BODY *****/
 
