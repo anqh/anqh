@@ -57,7 +57,7 @@ class Anqh_Controller_User extends Controller_Template {
 	public function action_index() {
 
 		// Get our user, default to logged in user if no username given
-		$username = (string)$this->request->param('username');
+		$username = urldecode((string)$this->request->param('username'));
 		$user = ($username == '') ? self::$user : Model_User::find_user($username);
 		if (!$user)	{
 			$this->request->redirect(Route::get('users')->uri());
@@ -152,7 +152,7 @@ class Anqh_Controller_User extends Controller_Template {
 			return $this->action_index();
 		}
 
-		$user = Model_User::find_user((string)$this->request->param('username'));
+		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
 		if ($user)	{
 			echo View_Module::factory('user/hovercard', array(
 				'mod_title' => $user->username,
