@@ -13,7 +13,7 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
-Route::set('user', 'member/<username>(/<action>)', array('action' => 'hover', 'username' => '[a-zåäöA-ZÅÄÖ0-9_\.\-& ^]+'))
+Route::set('user', 'member(/<username>(/<action>))', array('action' => 'hover', 'username' => '[a-zåäöA-ZÅÄÖ0-9_\.\-&\+^]+'))
 	->defaults(array(
 		'controller' => 'user',
 	));
