@@ -285,16 +285,16 @@ $(function() {
 
 
 	// Peepbox
-	if ($('#peepbox').length == 0) {
-		$('body').append('<div id="peepbox"></div>');
-		$('#peepbox').data('cache', []);
+	if ($('#hovercard').length == 0) {
+		$('body').append('<div id="hovercard"></div>');
+		$('#hovercard').data('cache', []);
 	}
 
-	function peepbox(href, $tip) {
+	function hovercard(href, $tip) {
 		var cache = $tip.data('cache');
 		if (!cache[href]) {
 			$tip.text('<?php echo __('Loading...') ?>');
-			$.get(href + '?peep', function(response) {
+			$.get(href + '/hover', function(response) {
 				$tip.html(cache[href] = response);
 			});
 			$tip.data('cache', cache);
@@ -303,14 +303,14 @@ $(function() {
 		$tip.html(cache[href]);
 	}
 
-	/*
 	$('a.user, .avatar a').tooltip({
+		effect: 'slide',
 		predelay: 500,
-		tip: '#peepbox',
+		tip: '#hovercard',
 		lazy: false,
 		position: 'bottom right',
 		onBeforeShow: function() {
-			peepbox(this.getTrigger().attr('href'), this.getTip());
+			hovercard(this.getTrigger().attr('href'), this.getTip());
 		}
 	}).dynamic({
 		bottom: {
@@ -318,7 +318,6 @@ $(function() {
 			bounce: true
 		}
 	});
-	*/
 
 });
 //]]>

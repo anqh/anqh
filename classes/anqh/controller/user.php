@@ -141,4 +141,24 @@ class Anqh_Controller_User extends Controller_Template {
 		}
 	}
 
+
+	/**
+	 * Action: peep
+	 */
+	public function action_hover() {
+
+		// Hover card works only with ajax
+		if (!$this->ajax) {
+			return $this->action_index();
+		}
+
+		$user = Model_User::find_user((string)$this->request->param('username'));
+		if ($user)	{
+			echo View_Module::factory('user/hovercard', array(
+				'mod_title' => $user->username,
+				'user'      => $user
+			));
+		}
+	}
+
 }
