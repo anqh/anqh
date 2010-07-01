@@ -7,22 +7,17 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_User extends Jelly_Model {
+class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 	/**
-	 * Access to leave comments
+	 * Permission to post comments
 	 */
-	const ACCESS_COMMENT = 'comment';
+	const PERMISSION_COMMENT = 'comment';
 
 	/**
-	 * Access to edit user
+	 * Permission to read comments
 	 */
-	const ACCESS_EDIT = 'edit';
-
-	/**
-	 * Access to view profile
-	 */
-	const ACCESS_VIEW = 'view';
+	const PERMISSION_COMMENTS = 'comments';
 
 	/**
 	 * @var  Cache  cache instance
@@ -113,18 +108,29 @@ class Anqh_Model_User extends Jelly_Model {
 				'gender' => new Field_Enum(array(
 					'choices' => array('m', 'f')
 				)),
-				'avatar' => new Field_String,
+				'avatar'    => new Field_String,
+				'title'     => new Field_String,
+				'signature' => new Field_String,
 
 				//'image' => new Field_File()          => array('upload::valid', 'upload::type[gif,jpg,png]', 'upload::size[400K]'),
-
-				'images' => new Field_ManyToMany,
-				'friends' => new Field_HasMany(array(
-					'foreign' => 'friend',
-				)),
 
 				'last_login' => new Field_Timestamp,
 				'created'    => new Field_Timestamp(array(
 					'auto_now_create' => true,
+				)),
+
+				// Foreign values, should make own models?
+				'num_posts' => new Field_Integer(array(
+					'column' => 'posts',
+				)),
+				'new_comments' => new Field_Integer(array(
+					'column' => 'newcomments',
+				)),
+				'num_comments' => new Field_Integer(array(
+					'column' => 'comments',
+				)),
+				'num_comments_left' => new Field_Integer(array(
+					'column' => 'commentsleft',
 				)),
 
 				'tokens' => new Field_HasMany(array(
@@ -132,11 +138,14 @@ class Anqh_Model_User extends Jelly_Model {
 				)),
 				'roles' => new Field_ManyToMany,
 
-				// Foreign values, should make own models?
-				'num_posts' => new Field_Integer(array(
-					'column' => 'posts',
+				'picture' => new Field_String,
+				'images'  => new Field_ManyToMany,
+				'friends' => new Field_HasMany(array(
+					'foreign' => 'friend',
 				)),
-
+				'comments' => new Field_HasMany(array(
+					'foreign' => 'user_comment'
+				)),
 			));
 	}
 
@@ -270,7 +279,7 @@ class Anqh_Model_User extends Jelly_Model {
 	 * @return  int
 	 */
 	public function get_comment_count() {
-		return (int)ORM::factory('user_comment')->where('user_id', '=', $this->id)->count_all();
+		return (int)Jelly::select('user_comment')->where('user_id', '=', $this->id)->count();
 	}
 
 
@@ -573,42 +582,31 @@ class Anqh_Model_User extends Jelly_Model {
 
 
 	/**
-	 * Check if user has access to the user
+	 * Check permission
 	 *
-	 * @param  string          $type  'read', 'write' etc
-	 * @param  int|User_Model  $user  current user on false
+	 * @param   string      $permission
+	 * @param   Model_User  $user
+	 * @return  boolean
 	 */
-	public function has_access($type, $user = false) {
-		static $cache = array();
+	public function has_permission($permission, $user) {
+		switch ($permission) {
 
-		$user = ORM::factory('user')->find_user($user);
-		$cache_id = sprintf('%d_%s_%d', $this->id, $type, $user ? $user->id : 0);
+			case self::PERMISSION_READ:
+		    return true;
 
-		if (!isset($cache[$cache_id])) {
-			$access = false;
-			switch ($type) {
+			case self::PERMISSION_COMMENT:
+			case self::PERMISSION_COMMENTS:
+		    return (bool)$user;
 
-				// Access to comment
-				case self::ACCESS_COMMENT:
-					$access = ($user !== null);
-					break;
+			case self::PERMISSION_UPDATE:
+				return $user && ($this->id == $user->id || $user->has_role('admin'));
 
-				// Access to edit profile
-				case self::ACCESS_EDIT:
-					$access = ($user && $user->id == $this->id);
-					break;
+			case self::PERMISSION_CREATE:
+			case self::PERMISSION_DELETE:
 
-				// Access to view profile
-				case self::ACCESS_VIEW:
-					// TODO: ignore
-					$access = true;
-					break;
-
-			}
-			$cache[$cache_id] = $access;
 		}
 
-		return $cache[$cache_id];
+		return false;
 	}
 
 

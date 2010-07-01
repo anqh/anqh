@@ -110,7 +110,7 @@ $(function() {
 	}
 	return false;
 	});
-	
+
 	$("section.comments form").live("submit", function(e) {
 	e.preventDefault();
 	var comment = $(this).closest("section.comments");

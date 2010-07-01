@@ -22,27 +22,29 @@ abstract class Anqh_Model_Comment extends Jelly_Model implements Permission_Inte
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Field_Primary,
-			'comment' => new Field_String(array(
-				'rules' => array(
-					'max_length' => array(300),
-					'not_empty'  => null,
-				),
-			)),
-			'private' => new Field_Boolean,
-			'author' => new Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-				'rules' => array(
-					'not_empty' => null,
-				),
-			)),
-			'user' => new Field_BelongsTo,
-			'created' => new Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-		));
+		$meta
+			->sorting(array('id' => 'DESC'))
+			->fields(array(
+				'id' => new Field_Primary,
+				'comment' => new Field_String(array(
+					'rules' => array(
+						'max_length' => array(300),
+						'not_empty'  => null,
+					),
+				)),
+				'private' => new Field_Boolean,
+				'author' => new Field_BelongsTo(array(
+					'column'  => 'author_id',
+					'foreign' => 'user',
+					'rules' => array(
+						'not_empty' => null,
+					),
+				)),
+				'user' => new Field_BelongsTo,
+				'created' => new Field_Timestamp(array(
+					'auto_now_create' => true,
+				)),
+			));
 
 		return $meta;
 	}

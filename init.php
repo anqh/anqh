@@ -13,6 +13,19 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
+Route::set('user', 'member/<username>(/<action>)')
+	->defaults(array(
+		'controller' => 'user',
+	));
+Route::set('user_comment', 'member/comment/<id>/<commentaction>', array('commentaction' => 'delete|private'))
+	->defaults(array(
+		'controller' => 'user',
+		'action'     => 'comment',
+	));
+Route::set('users', 'members(/<action>)')
+	->defaults(array(
+		'controller' => 'users',
+	));
 Route::set('sign', 'sign/<action>', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',
@@ -25,12 +38,10 @@ Route::set('setting', 'set/<action>/<value>')
 Route::set('shouts', 'shouts(/<action>)', array('action' => 'index|shout'))
 	->defaults(array(
 		'controller' => 'shouts',
-		'action'     => 'index'
 	));
 Route::set('roles', 'roles')
 	->defaults(array(
 		'controller' => 'roles',
-		'action'     => 'index',
 	));
 Route::set('role', 'role(/<id>(/<action>))', array('action' => 'delete|edit'))
 	->defaults(array(
