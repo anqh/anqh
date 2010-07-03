@@ -185,147 +185,15 @@
 
 <?php echo
 	HTML::script('js/jquery.form.js'),
-	HTML::script('js/jquery.text-overflow.js'); ?>
+	HTML::script('js/jquery.text-overflow.js'),
+	HTML::script('js/anqh.js'); ?>
 
 <script>
 //<![CDATA[
-var map;
-var geocoder;
-$.fn.googleMap = function(options) {
-	var defaults = {
-		lat: 60.1695,
-		long: 24.9355,
-		zoom: 14,
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		marker: false,
-		infowindow: false
-	};
-
-	options = $.extend(defaults, options || {});
-	var center = new google.maps.LatLng(options.lat, options.long);
-
-	map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
-	if (options.marker) {
-		var marker = new google.maps.Marker({
-		  position: center,
-		  map: map,
-			title: options.marker == true ? '' : options.marker
-		});
-		if (options.infowindow) {
-			var infowindow = new google.maps.InfoWindow({
-				content: options.infowindow
-			});
-			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.open(map, marker);
-			})
-		}
-	}
-}
 
 $(function() {
 
-	// Google Maps
-	geocoder = new google.maps.Geocoder();
 
-	// Form input hints
-	$('input:text, textarea, input:password').hint('hint');
-
-
-	// Ellipsis ...
-	$('.cut li').ellipsis();
-
-
-	// Tooltips
-	$('a[title], var[title], time[title]').tooltip({
-		effect: 'slide',
-		position: 'top center'
-	});
-
-
-	// Delete confirmations
-	function confirm_delete(title, action) {
-		if (title === undefined) title = '<?php echo __('Are you sure you want to do this?') ?>';
-		if (action === undefined) action = function() { return true; }
-		if ($('#dialog-confirm').length == 0) {
-			$('body').append('<div id="dialog-confirm" title="' + title + '"><?php echo __('Are you sure?') ?></div>');
-			$('#dialog-confirm').dialog({
-				dialogClass: 'confirm-delete',
-				modal: true,
-				close: function(ev, ui) { $(this).remove(); },
-				closeText: '✕',
-				buttons: {
-					'<?php echo '✓ ' . __('Yes, do it!') ?>': function() { $(this).dialog('close'); action(); },
-					'<?php echo '✕ ' . __('No, cancel') ?>': function() { $(this).dialog('close'); }
-				}
-			});
-		} else {
-			$('#confirm-dialog').dialog('open');
-		}
-	}
-
-	$('a[class*="-delete"]').live('click', function(e) {
-		e.preventDefault();
-		var action = $(this);
-		if (action.data('action')) {
-			confirm_delete(action.text(), function() { action.data('action')(); });
-		} else if (action.is('a')) {
-			confirm_delete(action.text(), function() { window.location = action.attr('href'); });
-		} else {
-			confirm_delete(action.text(), function() { action.parent('form').submit(); });
-		}
-	});
-
-	$('.mod a[class*="-delete"]')
-		.live('mouseenter', function () {
-			$(this).closest('article').addClass('delete');
-		})
-		.live('mouseleave', function () {
-			$(this).closest('article').removeClass('delete');
-		});
-
-	$('.mod a[class*="-edit"]')
-		.live('mouseenter', function () {
-			$(this).closest('article').addClass('edit');
-		})
-		.live('mouseleave', function () {
-			$(this).closest('article').removeClass('edit');
-		});
-
-
-	// Peepbox
-	if ($('#hovercard').length == 0) {
-		$('body').append('<div id="hovercard"></div>');
-		$('#hovercard').data('cache', []);
-	}
-
-	function hovercard(href, $tip) {
-		var cache = $tip.data('cache');
-		if (!cache[href]) {
-			$tip.text('<?php echo __('Loading...') ?>');
-			$.get(href + '/hover', function(response) {
-				$tip.html(cache[href] = response);
-			});
-			$tip.data('cache', cache);
-			return;
-		}
-		$tip.html(cache[href]);
-	}
-
-	$('a.user, .avatar a').tooltip({
-		effect: 'slide',
-		predelay: 500,
-		tip: '#hovercard',
-		lazy: false,
-		position: 'bottom right',
-		onBeforeShow: function() {
-			hovercard(this.getTrigger().attr('href'), this.getTip());
-		}
-	}).dynamic({
-		bottom: {
-			direction: 'down',
-			bounce: true
-		}
-	});
 
 });
 //]]>
