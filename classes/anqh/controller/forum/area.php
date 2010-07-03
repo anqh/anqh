@@ -121,7 +121,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	 * Action: index
 	 */
 	public function action_index() {
-		$this->tabs = null;
+		$this->tab_id = 'areas';
 
 		// Load area
 		$area_id = (int)$this->request->param('id');
