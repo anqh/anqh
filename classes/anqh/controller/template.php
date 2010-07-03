@@ -93,6 +93,7 @@ abstract class Anqh_Controller_Template extends Controller {
 
 		$this->auto_render = !$this->internal;
 		$this->breadcrumb = Session::instance()->get('breadcrumb', array());
+		$this->history = $this->history && !$this->ajax;
 
 		// Load the template
 		if ($this->auto_render === true) {
