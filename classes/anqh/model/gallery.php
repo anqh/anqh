@@ -42,9 +42,10 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			'modified' => new Field_Timestamp(array(
 				'column' => 'updated',
 			)),
-			'num_images' => new Field_Integer(array(
-				'column' => 'image_count',
-			)),
+			'image_count' => new Field_Integer,
+			'comment_count' => new Field_Integer,
+			'rate_count' => new Field_Integer,
+			'rate_total' => new Field_Integer,
 
 			'date' => new Field_Timestamp(array(
 				'rules' => array(
@@ -60,8 +61,8 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			'images' => new Field_ManyToMany,
 
 			'copyright' => new Field_String,
-			'dir'       => new Field_String,
-			'mainfile'  => new Field_String,
+			'dir' => new Field_String,
+			'mainfile' => new Field_String,
 		));
 	}
 

@@ -77,14 +77,17 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$comment = Jelly::select('image_comment')->load($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$image = $comment->image;
+			$gallery = Model_Gallery::find_by_image($image->id);
 			switch ($action) {
 
 				// Delete comment
 				case 'delete':
 			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, self::$user)) {
 				    $comment->delete();
-				    $image->num_comments--;
+				    $image->comment_count--;
 				    $image->save();
+				    $gallery->comment_count--;
+				    $gallery->save();
 			    }
 			    break;
 
@@ -98,7 +101,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			}
 			if (!$this->ajax) {
-				$gallery = Model_Gallery::find_by_image($image->id);
 				$this->request->redirect(Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')));
 			}
 		}
@@ -185,19 +187,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Show image
 		if (!is_null($current)) {
 
-			// Image
-			$current->num_views++;
-			$current->save();
-			Widget::add('wide', View_Module::factory('galleries/image', array(
-				'mod_class' => 'gallery-image',
-				'gallery'   => $gallery,
-				'images'    => count($images),
-				'current'   => $i,
-				'image'     => $current,
-				'next'      => $next,
-				'previous'  => $previous
-			)));
-
 			// Comments section
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
 				$errors = array();
@@ -214,8 +203,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));
 					try {
 						$comment->save();
-						$image->num_comments++;
+						$image->comment_count++;
 						$image->save();
+						$gallery->comment_count++;
+						$gallery->save();
 
 						// Newsfeed
 						if (!$comment->private) {
@@ -234,6 +225,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				$comments = $current->comments;
 				$view = View_Module::factory('generic/comments', array(
+					'mod_title'  => __('Comments'),
 					'delete'     => Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
 					'private'    => false, //Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
 					'comments'   => $comments,
@@ -249,6 +241,25 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				}
 				Widget::add('main', $view);
 			}
+
+			// Image
+			$current->view_count++;
+			$current->save();
+			Widget::add('wide', View_Module::factory('galleries/image', array(
+				'mod_class' => 'gallery-image',
+				'gallery'   => $gallery,
+				'images'    => count($images),
+				'current'   => $i,
+				'image'     => $current,
+				'next'      => $next,
+				'previous'  => $previous
+			)));
+
+			// Image info
+			Widget::add('side', View_Module::factory('galleries/image_info', array(
+				'mod_title' => __('Picture info'),
+				'image'     => $current,
+			)));
 
 		}
 
