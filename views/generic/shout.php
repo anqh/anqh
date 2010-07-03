@@ -7,14 +7,14 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
+
+$ordered = array();
+foreach ($shouts as $shout)
+	$ordered[] = '<li>' . HTML::time(Date::format('HHMM', $shout->created), $shout->created) . ' ' . HTML::user($shout->author) . ': ' . Text::smileys(HTML::chars($shout->shout)) . '</li>';
 ?>
 
 <ul>
-<?php foreach ($shouts as $shout): ?>
-
-	<li><?php echo HTML::time(Date::format('HHMM', $shout->created), $shout->created), ' ', HTML::user($shout->author), ': ', Text::smileys(HTML::chars($shout->shout)) ?></li>
-
-<?php endforeach; ?>
+	<?php echo implode("\n", array_reverse($ordered)) ?>
 </ul>
 
 <?php if ($can_shout): ?>
