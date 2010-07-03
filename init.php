@@ -13,7 +13,7 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
-Route::set('user', 'member(/<username>(/<action>))', array('action' => 'hover', 'username' => '[a-zåäöA-ZÅÄÖ0-9_\.\-&\+^]+'))
+Route::set('user', 'member(/<username>(/<action>))', array('action' => 'hover', 'username' => '[^/]+'))
 	->defaults(array(
 		'controller' => 'user',
 	));
@@ -22,10 +22,12 @@ Route::set('user_comment', 'member/comment/<id>/<commentaction>', array('comment
 		'controller' => 'user',
 		'action'     => 'comment',
 	));
+/*
 Route::set('users', 'members(/<action>)')
 	->defaults(array(
 		'controller' => 'users',
 	));
+*/
 Route::set('sign', 'sign/<action>', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',
