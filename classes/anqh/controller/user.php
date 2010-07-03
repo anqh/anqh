@@ -143,7 +143,7 @@ class Anqh_Controller_User extends Controller_Template {
 
 
 	/**
-	 * Action: peep
+	 * Action: hover card
 	 */
 	public function action_hover() {
 
@@ -155,7 +155,7 @@ class Anqh_Controller_User extends Controller_Template {
 		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
 		if ($user)	{
 			echo View_Module::factory('user/hovercard', array(
-				'mod_title' => $user->username,
+				'mod_title' => HTML::chars($user->username),
 				'user'      => $user
 			));
 		}
