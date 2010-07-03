@@ -94,12 +94,12 @@ body.right #main                       { float: right; }
 #title .actions                        { float: none; }
 
 section .article,
-section article                        { border-bottom: 1px solid @body-background-color; /*background: @section-background-alt;*/ position: relative; }
+section article                        {/* border-bottom: 1px solid @body-background-color;*/ /*background: @section-background-alt;*/ overflow: hidden; position: relative; }
 section .divider + article,
 section article + article              { border-top: 1px solid @body-background-color; }
 section article:hover                  { /*.box-shadow(0 0 10px rgba(255, 255, 255, 0.25)); background: @section-background-alt;*/ }
 
-.mod article header                    { border-bottom: 1px solid @body-background-color; overflow: hidden; }
+.mod article header                    { border-bottom: 1px solid @body-background-color; margin-bottom: 0.6667em; overflow: hidden; }
 .mod article header h4                 { float: left; }
 .mod article header h4 a               { padding-right: 10px; }
 .mod article header ul.details         { float: right; }
@@ -115,9 +115,11 @@ section aside + article                { padding-top: 0.8333em; }
 
 #title,
 #main .mod,
+#wide .mod,
 #header .mod,
 aside .mod                             { background: @midget-background; border: @midget-border; .box-shadow(0 0 10px black); .border-radius(3px); margin-bottom: 10px; }
 #title,
+#wide .mod,
 #main .mod                             { background: @mod-background;/* margin-bottom: 0; */}
 .mod .mod                              { background: transparent; border: 0 none; .box-shadow(none); .border-radius(0); margin-bottom: 0; }
 #header .mod:hover,

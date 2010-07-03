@@ -149,12 +149,28 @@ a.expander:after                       { content: '\21D3'; }
 
 /***** ICONS *****/
 
-var.icon                               { cursor: help; font-size: 0.75em; padding-left: 16px; }
+li.icon,
+var.icon                               { font-size: 0.75em; padding-left: 16px; }
+.icon[title]                           { cursor: help; }
+.icon.images                           { background: url(/ui/icon/image.gif) no-repeat left center; }
+.icon.comments,
 .icon.posts                            { background: url(/ui/icon/comment.gif) no-repeat left center; }
+.icon.rate                             { background: url(/ui/icon/rate.gif) no-repeat left center; }
+.icon.rate-half                        { background: url(/ui/icon/rate_half.png) no-repeat left center; }
+.icon.rate-empty                       { background: url(/ui/icon/rate_empty.png) no-repeat left center; }
 .icon.topics                           { background: url(/ui/icon/comments.gif) no-repeat left center; }
 .icon.views                            { background: url(/ui/icon/eye.gif) no-repeat left center; }
 
 /***** /ICONS *****/
+
+
+/***** RATING *****/
+
+ol.rating                              { list-style: none; }
+ol.rating li                           { display: inline; }
+ol.rating .icon                        { display: inline-block; height: 1em; width: 0; }
+
+/***** /RATING *****/
 
 
 /***** BADGES *****/
@@ -178,6 +194,7 @@ time.date.today .weekday               { background: @subheader-color; color: @a
 .avatar                                { float: left; height: 50px; padding: 5px; text-align: center; width: 50px; }
 .avatar a                              { display: block; }
 .avatar img                            { max-height: 50px; max-width: 50px; }
+.thumb a                               { display: block; }
 a img                                  { opacity: .9; }
 a:hover img                            { opacity: 1; }
 
@@ -337,3 +354,10 @@ section.mod .divider                   { border-bottom: 1px dotted @body-backgro
 /*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
 
 /***** /forum *****/
+
+
+/***** galleries *****/
+
+.galleries article                     { min-height: 10em; }
+
+/***** /galleries *****/
