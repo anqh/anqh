@@ -134,6 +134,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Event info
 		if ($gallery->event) {
+			// Event flyers
+			if ($gallery->event->flyer_front->id || $gallery->event->flyer_back->id || $gallery->event->flyer_front_url || $gallery->event->flyer_back_url) {
+				Widget::add('side', View_Module::factory('events/flyers', array(
+					'event' => $gallery->event,
+				)));
+			}
+
 			Widget::add('side', View_Module::factory('events/event_info', array(
 				'event' => $gallery->event,
 				'user'  => self::$user,
