@@ -40,16 +40,14 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			'created' => new Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
-			'num_views' => new Field_Integer(array(
+			'view_count' => new Field_Integer(array(
 				'column' => 'views',
 			)),
-			'num_comments' => new Field_Integer(array(
+			'comment_count' => new Field_Integer(array(
 				'column' => 'comments',
 			)),
-			'num_votes' => new Field_Integer(array(
-				'column' => 'votes',
-			)),
-			'score' => new Field_Integer,
+			'rate_count' => new Field_Integer,
+			'rate_total' => new Field_Integer,
 
 			'original_size'   => new Field_Integer,
 			'original_width'  => new Field_Integer,
@@ -65,7 +63,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				'column'  => 'author_id',
 				'foreign' => 'user',
 			)),
-			'exif'     => new Field_HasOne,
+			'exif'     => new Field_HasOne(array(
+				'foreign' => 'image_exif',
+			)),
 			'comments' => new Field_HasMany(array(
 				'foreign' => 'image_comment',
 			)),
