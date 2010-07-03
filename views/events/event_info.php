@@ -41,7 +41,7 @@
 	<dt><?php echo __('City') ?></dt><dd><?php echo HTML::chars($event->city_name) ?></dd>
 	<?php endif; ?>
 
-	<?php if (!empty($event->age)): ?>
+	<?php if ($event->age > 0): ?>
 	<dt><?php echo  __('Age limit') ?></dt><dd><?php echo __(':years years', array(':years' => '<var>' . $event->age . '</var>')) ?></dd>
 	<?php endif; ?>
 
