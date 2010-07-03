@@ -12,7 +12,7 @@
 <ul>
 <?php foreach ($shouts as $shout): ?>
 
-	<li><?php echo HTML::time(Date::format('HHMM', $shout->created), $shout->created), ' ', HTML::user($shout->author), ': ', HTML::chars($shout->shout) ?></li>
+	<li><?php echo HTML::time(Date::format('HHMM', $shout->created), $shout->created), ' ', HTML::user($shout->author), ': ', Text::smileys(HTML::chars($shout->shout)) ?></li>
 
 <?php endforeach; ?>
 </ul>
