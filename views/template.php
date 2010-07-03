@@ -95,14 +95,14 @@
 
 			<!-- MAIN -->
 
-			<section id="main" class="unit <?php echo ($wide = Widget::get('wide')) ? 'size5of6' : 'size1of2' ?>">
+			<section id="<?php echo ($wide = Widget::get('wide')) ? 'wide' : 'main' ?>" class="unit <?php echo $wide ? 'size5of6' : 'size1of2' ?>">
 				<header id="title">
 
 <?php //echo Widget::get('breadcrumb') ?>
 
 					<hgroup>
 						<h2><?php echo $page_title ?></h2>
-						<?php echo !empty($page_subtitle) ? '<h3>' . $page_subtitle . '</h3>' : '' ?>
+						<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
 					</hgroup>
 
 <?php echo Widget::get('actions') ?>
@@ -112,11 +112,19 @@
 				<?php echo Widget::get('error') ?>
 				<?php echo $wide ? $wide : Widget::get('main') ?>
 
+			</section><!-- <?php echo $wide ? 'wide' : 'main' ?> -->
+
+			<?php if ($wide && $main = Widget::get('main')): ?>
+			<section id="main" class="unit size1of2">
+
+				<?php echo $main ?>
+
 			</section><!-- main -->
+			<?php endif; ?>
 
 			<!-- /MAIN -->
 
-			<?php if (!$wide): ?>
+			<?php if (!$wide || $main): ?>
 
 			<!-- SIDE -->
 
@@ -228,7 +236,7 @@ $(function() {
 
 
 	// Tooltips
-	$('a[title]').tooltip({
+	$('a[title], var[title], time[title]').tooltip({
 		effect: 'slide',
 		position: 'top center'
 	});

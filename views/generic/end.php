@@ -10,7 +10,6 @@
 ?>
 
 <p>
-	<?php echo sprintf('Copyright &copy; 2000&ndash;%d %s', date('Y'), Kohana::config('site.site_name')) ?> -
-	<?php echo __('Page rendered in {execution_time} seconds, using {memory_usage} of memory, {database_queries} database queries and {included_files} files') ?> -
-	<?php echo __('Powered by Kohana v{kohana_version}') ?>
+	<?php echo __('Page rendered in {execution_time} seconds, using {memory_usage} of memory, {database_queries} database queries and {included_files} files') ?><br />
+	<?php echo sprintf('Copyright &copy; 2000&ndash;%d %s', date('Y'), Kohana::config('site.site_name')) ?> - <?php echo __('Powered by Kohana v{kohana_version}') ?>
 </p>

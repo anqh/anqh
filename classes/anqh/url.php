@@ -27,16 +27,6 @@ abstract class Anqh_URL extends Kohana_URL {
 		return implode('/', $path);
 	}
 
-	
-	/**
-	 * Return model specific url
-	 *
-	 * @param  Jelly_Model  $model
-	 */
-	public static function modell(Jelly_Model $model) {
-		return Jelly::model_name($model) . '/' . self::title($model->id() . ' ' . $model->name());
-	}
-
 
 	/**
 	 * Get URL for user
@@ -60,7 +50,7 @@ abstract class Anqh_URL extends Kohana_URL {
 
 		// Username given
 		if (is_string($user)) {
-			return 'member/' . urlencode($user);
+			return Route::get('user')->uri(array('username' => urlencode($user)));
 		}
 
 		return null;
