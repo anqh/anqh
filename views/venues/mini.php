@@ -11,7 +11,7 @@
 
 <article class="venue venue-<?php echo $venue->id ?>">
 	<header>
-		<h4><?php echo HTML::anchor(Route::model($venue), $venue->name) ?></h4>
+		<?php echo HTML::anchor(Route::model($venue), $venue->name) ?>
 	</header>
 
 	<footer>
