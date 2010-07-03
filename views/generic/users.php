@@ -40,7 +40,11 @@
 	<?php if (count($short)) echo implode(', ', $short) ?>
 
 	<?php if (count($long)): ?>
-	<?php echo __('and'), ' ', HTML::anchor('#users', sprintf(__2('%d other', '%d others', count($long)), count($long)), array('class' => 'expander', 'title' => __('Show/hide'), 'onclick' => '$(".users .long").toggle("fast"); return false;')) ?>
+	<?php echo __('and'), ' ', HTML::anchor(
+		'#users',
+		__(count($long) == 1 ? ':count other' : ':count others', array(':count' => count($long))),
+		array('class' => 'expander', 'title' => __('Show all'), 'onclick' => '$(".users .long").toggle("fast"); return false;')
+	) ?>
 	<div class="long">
 	<?php echo implode(', ', $long) ?>
 	</div>
