@@ -15,7 +15,7 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 	 * @param   integer  $stamp_end
 	 * @return  Jelly_Builder
 	 */
-	public function between($stamp_begin, $stamp_end) {
+	public function between($stamp_begin, $stamp_end, $order = 'DESC') {
 		$stamp_begin = (int)$stamp_begin;
 		$stamp_end   = (int)$stamp_end;
 
@@ -28,8 +28,8 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 			$stamp_begin = $stamp_end;
 			$stamp_end   = $stamp_begin;
 		}
-		
-		return $this->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))->order_by('stamp_begin', 'DESC')->order_by('city_name', 'ASC');
+
+		return $this->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))->order_by('stamp_begin', $order == 'ASC' ? 'ASC' : 'DESC')->order_by('city_name', 'ASC');
 	}
 
 

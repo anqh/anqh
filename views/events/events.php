@@ -33,7 +33,7 @@
 			<article class="event event-<?php echo $event->id ?>">
 
 				<header>
-					<h4><?php echo HTML::anchor(Route::model($event), HTML::chars($event->name)) ?></h4>
+					<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name)) ?>
 				</header>
 
 				<?php if ($event->price !== null && $event->price != -1): ?>

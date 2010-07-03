@@ -69,7 +69,7 @@ if (isset($url_day)) {
 	onSelect: function(date, inst) {
 		var url = "' . $url_day . '"
 			.replace(":year", inst.selectedYear)
-			.replace(":month", inst.selectedMonth)
+			.replace(":month", inst.selectedMonth + 1)
 			.replace(":day", inst.selectedDay);
 		window.location = url;
 	}}', -1, 1);

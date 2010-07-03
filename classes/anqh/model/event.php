@@ -121,6 +121,8 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'column' => 'views',
 			)),
 
+			'flyer_front_url' => new Field_String,
+			'flyer_back_url' => new Field_String,
 			'flyer_front' => new Field_BelongsTo(array(
 				'column'  => 'flyer_front_image_id',
 				'foreign' => 'image',
@@ -135,6 +137,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'foreign' => 'user',
 				'through' => 'favorites',
 			)),
+			'favorite_count' => new Field_Integer,
 		));
 	}
 
@@ -145,12 +148,19 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $user
 	 */
 	public function add_favorite(Model_User $user) {
-		return $this->loaded()
+		if ($this->loaded()
 			&& !$this->is_favorite($user)
 			&& (bool)Jelly::factory('favorite')->set(array(
 				'user'  => $user,
 				'event' => $this
-			))->save();
+			))->save()) {
+			$this->favorite_count++;
+			$this->save();
+
+			return true;
+		}
+
+		return false;
 	}
 
 
@@ -160,12 +170,19 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $user
 	 */
 	public function delete_favorite(Model_User $user) {
-		return $this->loaded()
+		if ($this->loaded()
 			&& $this->is_favorite($user)
 			&& (bool)Jelly::delete('favorite')
 				->where('user_id', '=', $user->id)
 				->where('event_id', '=', $this->id)
-				->execute();
+				->execute()) {
+			$this->favorite_count--;
+			$this->save();
+
+			return true;
+		}
+
+		return false;
 	}
 
 

@@ -59,7 +59,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$last  = strtotime('+1 week', $first);
 
 		// Load events
-		$events = Jelly::select('event')->between($first, $last)->execute_grouped();
+		$events = Jelly::select('event')->between($first, $last, 'ASC')->execute_grouped();
 		if (count($events)) {
 			$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
@@ -77,6 +77,9 @@ class Anqh_Controller_Events extends Controller_Template {
 			'url_day'   => '/events/:year/:month/:day',
 			'url_month' => '/events/:year/:month',
 		)));
+
+		// Tabs
+		$this->_tabs();
 
 	}
 
@@ -143,8 +146,31 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->page_title = HTML::chars($event->name);
 		$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
 
+		// Event performers and extra info
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
-		Widget::add('side', View_Module::factory('events/event_info', array('user' => self::$user, 'event' => $event)));
+
+		// Event flyers
+		if ($event->flyer_front->id || $event->flyer_back->id || $event->flyer_front_url || $event->flyer_back_url) {
+			Widget::add('side', View_Module::factory('events/flyers', array(
+				'event' => $event,
+			)));
+		}
+
+		// Event quick info
+		Widget::add('side', View_Module::factory('events/event_info', array(
+			'mod_title' => __('Event information'),
+			'event'     => $event
+		)));
+
+		// Favorites
+		if ($event->favorite_count) {
+			Widget::add('side', View_Module::factory('generic/users', array(
+				'mod_title' => _('Favorites'),
+				'viewer'    => self::$user,
+				'users'     => $event->find_favorites()
+			)));
+		}
+
 	}
 
 
@@ -213,6 +239,9 @@ class Anqh_Controller_Events extends Controller_Template {
 			'url_month' => '/events/:year/:month',
 		)));
 
+		// Tabs
+		$this->_tabs();
+
 	}
 
 
@@ -268,6 +297,9 @@ class Anqh_Controller_Events extends Controller_Template {
 			'url_day'   => '/events/:year/:month/:day',
 			'url_month' => '/events/:year/:month',
 		)));
+
+		// Tabs
+		$this->_tabs();
 
 	}
 
@@ -492,6 +524,35 @@ $("#field-venue-name").autocomplete({
 		}
 
 		return $filters;
+	}
+
+
+	/**
+	 * New, updated and hot events
+	 */
+	protected function _tabs() {
+		$tabs = array(
+			'hot' => array('href' => '#events-hot', 'title' => __('Hot events'), 'tab' => View_Module::factory('events/event_list', array(
+				'mod_id'    => 'events-hot',
+				'mod_class' => 'cut tab events',
+				'title'     => __('Hot Events'),
+				'events'    =>  Jelly::select('event')->where('stamp_begin', '>', time())->order_by('favorite_count', 'DESC')->limit(20)->execute(),
+			))),
+			'active' => array('href' => '#events-new', 'title' => __('New events'), 'tab' => View_Module::factory('events/event_list', array(
+				'mod_id'    => 'events-new',
+				'mod_class' => 'cut tab events',
+				'title'     => __('New Events'),
+				'events'    =>  Jelly::select('event')->order_by('id', 'DESC')->limit(20)->execute(),
+			))),
+			'latest' => array('href' => '#events-updated', 'title' => __('Updated events'), 'tab' => View_Module::factory('events/event_list', array(
+				'mod_id'    => 'events-updated',
+				'mod_class' => 'cut tab events',
+				'title'     => __('Updated Events'),
+				'events'    =>  Jelly::select('event')->where('modified', 'IS NOT', null)->order_by('modified', 'DESC')->limit(20)->execute(),
+			))),
+		);
+
+		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'events-tab', 'tabs' => $tabs)));
 	}
 
 }
