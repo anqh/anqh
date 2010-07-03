@@ -293,15 +293,16 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** HOVER CARD *****/
 
-#hovercard                             { border: 1px solid @input-border-color; display: none; position: absolute; }
-#hovercard h4                          { margin-top: 0; }
+#hovercard                             { display: none; position: absolute; width: 182px; }
+.hovercard                             { border: 1px solid @input-border-color; .border-radius(5px); width: 180px; }
+.hovercard h4                          { margin-top: 0; }
 
 /***** /HOVER CARD *****/
 
 
 /***** COMMENTS *****/
 
-.comments #comment                     { width: 300px; }
+.comments input[name=comment]          { width: 300px; }
 .comments form                         { margin-bottom: 10px; }
 .comments article p                    { padding-left: 60px; }
 
