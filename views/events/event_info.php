@@ -30,7 +30,20 @@
 	<dd><?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>, <?php echo HTML::chars($event->venue->city_name) ?></dd>
 	<?php if ($event->venue->latitude && $event->venue->longitude): ?>
 	<dd><?php echo HTML::anchor('#map', __('Toggle map')) ?></dd>
-	<?php endif; ?>
+	<dt id="map" style="display: none"><?php echo __('Map loading') ?></dt>
+	<?php
+		$options = array(
+			'marker'     => HTML::chars($event->venue->name),
+			'infowindow' => HTML::chars($event->venue->address) . '<br />' . HTML::chars($event->venue->city_name),
+			'lat'        => $event->venue->latitude,
+			'long'       => $event->venue->longitude
+		);
+		Widget::add('foot', HTML::script_source('
+		$(function() {
+			$(".event-info a[href=#map]").click(function() { $("#map").toggle("fast", function() { $("#map").googleMap(' .  json_encode($options) . '); }); return false; });
+		});
+		'));
+	endif; ?>
 
 	<?php elseif ($event->venue_name): ?>
 	<dt><?php echo __('Venue') ?></dt><dd><?php echo ($event->venue_url ?
@@ -66,20 +79,3 @@
 	<?php endif ?>
 
 </dl>
-
-<?php if ($event->venue->latitude && $event->venue->longitude): ?>
-<div id="map" style="display: none"><?php echo __('Map loading') ?></div>
-<?php
-$options = array(
-	'marker'     => HTML::chars($event->venue->name),
-	'infowindow' => HTML::chars($event->venue->address) . '<br />' . HTML::chars($event->venue->city_name),
-	'lat'        => $event->venue->latitude,
-	'long'       => $event->venue->longitude
-);
-Widget::add('foot', HTML::script_source('
-$(function() {
-	$(".event-info a[href=#map]").click(function() { $("#map").toggle("fast", function() { $("#map").googleMap(' .  json_encode($options) . '); }); return false; });
-});
-'));
-?>
-<?php endif; ?>
