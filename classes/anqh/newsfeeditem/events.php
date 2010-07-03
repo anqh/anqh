@@ -39,14 +39,18 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 			case self::TYPE_EVENT:
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
-					$text = __('added new event :event', array(':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('title' => $event->name))));
+					$text = __('added new event :event', array(
+						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
+					));
 				}
 				break;
 
 			case self::TYPE_FAVORITE:
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
-					$text = __('added event :event to favorites', array(':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('title' => $event->name))));
+					$text = __('added event :event to favorites', array(
+						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
+					));
 				}
 				break;
 

@@ -201,6 +201,27 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 	/**
+	 * Action: hover card
+	 */
+	public function action_hover() {
+		$this->history = false;
+
+		// Hover card works only with ajax
+		if (!$this->ajax) {
+			return $this->action_event();
+		}
+
+		$event = Jelly::select('event')->load((int)$this->request->param('id'));
+		if ($event->loaded())	{
+			echo View_Module::factory('events/hovercard', array(
+				'mod_title' => HTML::chars($event->name),
+				'event'      => $event
+			));
+		}
+	}
+
+
+	/**
 	 * Controller default action
 	 */
 	public function action_index() {
