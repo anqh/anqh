@@ -92,6 +92,11 @@ class Anqh_Controller_Blog extends Controller_Template {
 			$this->page_actions[] = array('link' => Route::model($entry, 'edit'), 'text' => __('Edit blog entry'), 'class' => 'blog-edit');
 		}
 
+		// Content
+		Widget::add('main', View_Module::factory('blog/entry', array(
+			'entry' => $entry
+		)));
+
 		// Comments section
 		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, self::$user)) {
 			$errors = array();
@@ -126,11 +131,11 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 			}
 
-			$comments = $entry->comments;
 			$view = View_Module::factory('generic/comments', array(
+				'mod_title'  => __('Comments'),
 				'delete'     => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
-				'private'    => false, //Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
-				'comments'   => $comments,
+				'private'    => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
+				'comments'   => $entry->get('comments')->viewer(self::$user)->execute(),
 				'errors'     => $errors,
 				'values'     => $values,
 				'pagination' => null,
@@ -157,11 +162,6 @@ class Anqh_Controller_Blog extends Controller_Template {
 			$entry->view_count++;
 			$entry->save();
 		}
-
-		// Content
-		Widget::add('main', View_Module::factory('blog/entry', array(
-			'entry' => $entry
-		)));
 
 	}
 
@@ -201,6 +201,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 			}
 			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user);
 			$cancel = Route::model($entry);
+			$this->page_title = HTML::chars($entry->name);
 
 		} else {
 
@@ -209,7 +210,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;
-
+			$this->page_title = __('New blog entry');
 			$entry->author = self::$user;
 
 		}
@@ -240,8 +241,8 @@ class Anqh_Controller_Blog extends Controller_Template {
 			'groups' => array(
 				array(
 					'fields' => array(
-						'name'  => array(),
-						'entry' => array(),
+						'name'    => array(),
+						'content' => array(),
 					),
 				),
 			)

@@ -38,12 +38,14 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
+					'label' => __('Title'),
 					'rules' => array(
 						'not_empty'  => null,
 						'max_length' => array(200)
 					),
 				)),
 				'content' => new Field_Text(array(
+					'label'  => __('Content'),
 					'bbcode' => true,
 					'rules'  => array(
 						'max_length' => array(8192),
