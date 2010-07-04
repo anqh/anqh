@@ -34,7 +34,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 				case 'delete':
 			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE, self::$user)) {
 				    $comment->delete();
-				    $entry->num_comments--;
+				    $entry->comment_count--;
 				    $entry->save();
 			    }
 			    break;
@@ -88,21 +88,18 @@ class Anqh_Controller_Blog extends Controller_Template {
 		));
 
 		// Set actions
-		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($entry, 'edit'), 'text' => __('Edit blog entry'), 'class' => 'blog-edit');
 		}
-
-		Widget::add('main', View_Module::factory('blog/entry', array(
-			'entry' => $entry
-		)));
 
 		// Comments section
 		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, self::$user)) {
 			$errors = array();
 			$values = array();
 
-			// Handle comment
-			if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, self::$user) && $_POST) {
+			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, self::$user)) {
+
+				// Handle comment
 				$comment = Jelly::factory('blog_comment');
 				$comment->blog_entry = $entry;
 				$comment->user       = $entry->author;
@@ -110,8 +107,8 @@ class Anqh_Controller_Blog extends Controller_Template {
 				$comment->set(Arr::extract($_POST, Model_Blog_Comment::$editable_fields));
 				try {
 					$comment->save();
-					$entry->num_comments++;
-					$entry->new_comments++;
+					$entry->comment_count++;
+					$entry->new_comment_count++;
 					$entry->save();
 
 					// Newsfeed
@@ -146,6 +143,25 @@ class Anqh_Controller_Blog extends Controller_Template {
 			}
 			Widget::add('main', $view);
 		}
+
+		// Update counts
+		if (self::$user && self::$user->id == $entry->author->id) {
+
+			// Clear new comment counts for owner
+			if ($entry->new_comment_count) {
+				$entry->new_comment_count = 0;
+				$entry->save();
+			}
+
+		} else {
+			$entry->view_count++;
+			$entry->save();
+		}
+
+		// Content
+		Widget::add('main', View_Module::factory('blog/entry', array(
+			'entry' => $entry
+		)));
 
 	}
 
@@ -200,8 +216,8 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 		// Handle post
 		$errors = array();
-		if ($_POST) {
-			$entry->set($_POST);
+		if ($_POST && Security::csrf_valid()) {
+			$entry->set(Arr::extract($_POST, Model_Blog_Entry::$editable_fields));
 			try {
 				$entry->save();
 

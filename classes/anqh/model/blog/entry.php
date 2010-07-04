@@ -19,6 +19,13 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 	 */
 	const PERMISSION_COMMENTS = 'comments';
 
+	/**
+	 * @var  array  User editable fields
+	 */
+	public static $editable_fields = array(
+		'name', 'content'
+	);
+
 
 	/**
 	 * Create new model
@@ -36,7 +43,7 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 						'max_length' => array(200)
 					),
 				)),
-				'entry' => new Field_Text(array(
+				'content' => new Field_Text(array(
 					'bbcode' => true,
 					'rules'  => array(
 						'max_length' => array(8192),
@@ -49,12 +56,10 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 				'modified' => new Field_Timestamp(array(
 					'auto_now_update' => true,
 				)),
-				'num_modifies' => new Field_Integer(array(
-					'column' => 'modifies'
-				)),
-				'new_comments' => new Field_Integer(array(
-					'column' => 'newcomments',
-				)),
+				'modify_count' => new Field_Integer,
+				'comment_count' => new Field_Integer,
+				'new_comment_count' => new Field_Integer,
+				'view_count' => new Field_Integer,
 
 				'author' => new Field_BelongsTo(array(
 					'column'  => 'author_id',
@@ -64,6 +69,19 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 					'foreign' => 'blog_comment'
 				))
 			));
+	}
+
+
+	/**
+	 * Get new blog comments count for user.
+	 * Return array of ids and counts
+	 *
+	 * @static
+	 * @param   Model_User $user
+	 * @return  array
+	 */
+	public static function find_new_comments(Model_User $user) {
+		return Jelly::select('blog_entry')->where('author_id', '=', $user->id)->and_where('new_comment_count', '>', 0)->execute();
 	}
 
 

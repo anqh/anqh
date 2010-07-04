@@ -9,4 +9,4 @@
  */
 ?>
 
-<?= BB::factory($entry->entry)->render() ?>
+<?php echo BB::factory($entry->content)->render() ?>
