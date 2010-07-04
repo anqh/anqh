@@ -264,26 +264,6 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/***** COMMENTS *****/
 
 	/**
-	 * Call after adding/deleting comment
-	 */
-	public function clear_comment_cache() {
-		for ($page = 1; $page <= User_Comment_Model::$cache_max_pages; $page++) {
-			$this->cache->delete($this->cache->key('comments', $this->id, $page));
-		}
-	}
-
-
-	/**
-	 * Get user's total comment count
-	 *
-	 * @return  int
-	 */
-	public function get_comment_count() {
-		return (int)Jelly::select('user_comment')->where('user_id', '=', $this->id)->count();
-	}
-
-
-	/**
 	 * Get user's comments
 	 *
 	 * @param  int    $page_num
@@ -337,6 +317,68 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			*/
 
 		return $comments;
+	}
+
+
+	/**
+	 * Get user's new comment counts
+	 *
+	 * @return  array
+	 */
+	public function find_new_comments() {
+		$new = array();
+
+		// Profile comments
+		if ($this->new_comments) {
+			$new['new-comments'] = HTML::anchor(
+				URL::user($this),
+				__(':commentsC', array(':comments' => $this->new_comments)),
+				array('title' => __('New comments')
+			));
+		}
+
+		// Blog comments
+		$blog_comments = Model_Blog_Entry::find_new_comments($this);
+		if (count($blog_comments)) {
+			$new_comments = 0;
+			foreach ($blog_comments as $blog_entry) {
+				$new_comments += $blog_entry->new_comment_count;
+			}
+			$new['new-blog-comments'] = HTML::anchor(
+				Route::model($blog_entry),
+				__(':commentsB', array(':comments' => $new_comments)),
+				array('title' => __('New blog comments')
+			));
+		}
+		unset($blog_comments);
+
+		// Forum quotes
+		$forum_quotes = Model_Forum_Quote::find_by_user($this);
+		if (count($forum_quotes)) {
+			$new_quotes = count($forum_quotes);
+			$quote = $forum_quotes->current();
+			$new['new-forum-quotes'] = HTML::anchor(
+				Route::get('forum_post')->uri(array('topic_id' => Route::model_id($quote->topic), 'id' => $quote->post->id)) . '#post-' . $quote->post->id,
+				__(':quotesQ', array(':quotes' => $new_quotes)),
+				array('title' => __('Forum quotes')
+			));
+		}
+
+		// Image comments
+
+		// Private messages
+
+		return $new;
+	}
+
+
+	/**
+	 * Get user's total comment count
+	 *
+	 * @return  integer
+	 */
+	public function get_comment_count() {
+		return (int)Jelly::select('user_comment')->where('user_id', '=', $this->id)->count();
 	}
 
 	/***** /COMMENTS *****/

@@ -7,28 +7,20 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-?>
 
-<?php if ($user): // Member ?>
+if ($user):
 
-	<?php echo HTML::avatar($user->avatar, $user->username) ?>
-	<?php echo __('[#:id] :user - :signout', array(
+	// Member
+	echo HTML::avatar($user->avatar, $user->username, true);
+	echo __('[#:id] :user - :signout', array(
 		':id'      => $user->id,
 		':user'    => HTML::user($user),
-		':signout' => HTML::anchor('sign/out', __('Sign out')))) ?><br />
+		':signout' => HTML::anchor('sign/out', __('Sign out')))), '<br />';
 
-	<?php
-$new_messages = array();
-if ($user->newcomments):
-	$new_messages[] = HTML::anchor(
-		URL::user($user),
-		__(':commentsC', array(':comments' => $user->newcomments)),
-		array('title' => __('New comments'), 'class' => 'new-comments')
-	);
-endif;
-if (!empty($new_messages)):
-	echo ' - ', __('New messages: '), implode(' ', $new_messages);
-endif;
+	$new_comments = $user->find_new_comments();
+	if (!empty($new_comments)):
+		echo __('New messages'), ': ', implode(', ', $new_comments);
+	endif;
 
 // Logout also from Facebook
 /*
@@ -43,16 +35,16 @@ if (Kohana::config('site.inviteonly')) {
 				widget::add('dock', ' | ' . html::anchor('sign/up', __('Send invite')));
 }
 */
-?>
 
-<?php else: // Guest ?>
+else:
 
-	<?php echo
+	// Guest
+	echo
 		Form::open(Route::get('sign')->uri(array('action' => 'in'))),
 		Form::input('username', null, array('title' => __('Username'))),
 		Form::password('password', null, array('title' => __('Password'))),
 		Form::submit('signin', __('Sign in')),
-		Form::close(),
-		HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up')); ?>
+		Form::close();
+		//HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up'));
 
-<?php endif; ?>
+endif;

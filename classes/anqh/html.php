@@ -19,11 +19,12 @@ class Anqh_HTML extends Kohana_HTML {
 	 */
 	public static function avatar($avatar, $title = '', $mini = false) {
 		if (empty($avatar) || /*strpos($avatar, ':') ||*/ strpos($avatar, '/') === false) $avatar = 'avatar/unknown.png';
+		$class = $mini ? 'avatar small' : 'avatar';
 
 		if (empty($title)) {
-			return '<div class="avatar">' . HTML::image($avatar, array('alt' => 'Avatar')) . '</div>';
+			return '<div class="' . $class . '">' . HTML::image($avatar, array('alt' => 'Avatar')) . '</div>';
 		} else {
-			return '<div class="avatar">' . HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title))) . '</div>';
+			return '<div class="' . $class . '">' . HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title))) . '</div>';
 		}
 	}
 
