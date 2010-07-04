@@ -87,10 +87,21 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			return;
 		}
 
-		// Update read counter if not owner
+		// Update counts
 		if (!self::$user || $topic->author != self::$user) {
 			$topic->num_reads++;
 			$topic->save();
+		}
+		if (self::$user) {
+			$quotes = Model_Forum_Quote::find_by_user(self::$user);
+			if (count($quotes)) {
+				foreach ($quotes as $quote) {
+					if ($topic->id == $quote->topic->id) {
+						$quote->delete();
+						break;
+					}
+				}
+			}
 		}
 
 		// Set title
@@ -315,6 +326,17 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			try {
 				$post->save();
 				if ($increase) {
+
+					// Quote
+					if ($quote_id && $quote->author->id) {
+						Jelly::factory('forum_quote')
+							->set(array(
+								'user'   => $quote->author,
+								'author' => self::$user,
+								'topic'  => $topic,
+								'post'   => $post))
+							->save();
+					}
 
 					// Topic
 					$topic->num_posts++;
