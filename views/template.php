@@ -23,9 +23,9 @@
 		HTML::style('ui/base.css'),
 		Less::style($skin, null, false, $skin_imports),
 		HTML::style('ui/jquery-ui.css'),
-		HTML::style('ui/dark/jquery-ui.css'),
+		//HTML::style('ui/dark/jquery-ui.css'),
 		HTML::style('ui/site.css'),
-		HTML::style('http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:light');
+		HTML::style('http://fonts.googleapis.com/css?family=Cantarell');
 ?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
