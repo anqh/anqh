@@ -19,19 +19,6 @@
  * H6 14px
  */
 
-/*
- * The fonts included are copyrighted by the vendor listed below.
- *
- * @vendor:     Ralph Oliver du Carrois
- * @vendorurl:  http://www.carrois.com
- * @licenseurl: http://www.fontsquirrel.com/license/Colaborate
- */
-@font-face                             { font-family: 'ColaborateThinRegular'; src: url('/ui/font/ColabThi.eot'); src: local('Colaborate-Thin Regular'), local('Colaborate-Thin'), url('/ui/font/ColabThi.ttf') format('truetype'); }
-@font-face                             { font-family: 'ColaborateLightRegular'; src: url('/ui/font/ColabLig.eot'); src: local('ColaborateLight Regular'), local('Colaborate-Light'), url('/ui/font/ColabLig.ttf') format('truetype'); }
-@font-face                             { font-family: 'ColaborateRegularRegular'; src: url('/ui/font/ColabReg.eot'); src: local('Colaborate-Regular Regular'), local('Colaborate-Regular'), url('/ui/font/ColabReg.ttf') format('truetype'); }
-@font-face                             { font-family: 'ColaborateMediumRegular'; src: url('/ui/font/ColabMed.eot'); src: local('Colaborate-Medium Regular'), local('Colaborate-Medium'), url('/ui/font/ColabMed.ttf') format('truetype'); }
-@font-face                             { font-family: 'ColaborateBoldRegular'; src: url('/ui/font/ColabBol.eot'); src: local('Colaborate-Bold Regular'), local('Colaborate-Bold'), url('/ui/font/ColabBol.ttf') format('truetype'); }
-
 body                                   { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 75%; font-size-adjust: none; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1.665em; }
 
 p                                      { font-weight: 300; }
@@ -44,11 +31,11 @@ h1,
 h2,
 legend,
 h3,
-h4                                     { font-weight: normal; font-family: 'Yanone Kaffeesatz', Arial, sans-serif; }
+h4                                     { font-weight: normal; font-family: Cantarell, Arial, sans-serif; }
 h5,
 h6                                     { font-weight: normal; }
 h1                                     { font-size: 2em; line-height: 1.666em; /*margin-top: 0.833em;*/ }
-h2                                     { font-size: 1.75em; /*line-height: 1.9048em;*/ padding: 0.476em 0; /*margin-bottom: 0.952em;*/ }
+h2                                     { font-size: 1.75em; letter-spacing: -.05em; line-height: 1.25em; padding: .5em 0; }
 legend                                 { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
 h3                                     { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
 h4                                     { font-size: 1.3333em; line-height: 1.25em; padding-top: 1.25em; }
@@ -119,7 +106,7 @@ tt                                     { display: block; margin: 1.667em 0; }
 hr                                     { margin-bottom: 1.667em; }
 
 blockquote                             { font-family: Georgia, serif; font-style: italic; padding: 1.667em; }
-blockquote:before                      { content: "\201C"; font-family: Georgia, serif; font-size: 4em; line-height: 0; margin-left: -0.5em; vertical-align: -0.7em; }
+blockquote:before                      { content: "\201C"; float: left; font-family: Georgia, serif; font-size: 4em; line-height: 0; margin-left: -0.5em; vertical-align: -0.7em; }
 /*blockquote > p                         { padding: 0; margin: 0; }*/
 blockquote em                          { font-style: normal; }
 blockquote cite                        { font-size: 0.9em; margin: 0.1em; opacity: 0.75; padding-left: 2em; }

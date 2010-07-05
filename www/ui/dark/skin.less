@@ -8,13 +8,16 @@
 .box-shadow(@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
 .ajax(@background: transparnet)        { background: @background url(ajax.gif) right center no-repeat; }
 
-@header-font:                          'Yanone Kaffeesatz', Arial, sans-serif;
-
 @body-background-color:                #111;
 @body-background-image:                url(8b.jpg);
 @section-background:                   #121212;
 @section-background-alt:               #111;
 @mod-background:                       black;
+
+@header-color:                         white;
+@header-shadow:                        2px 1px 2px rgba(128, 128, 128, 0.5);
+@header-font:                          Cantarell, Arial, sans-serif;
+@subheader-color:                      #ac3;
 
 @separator-color:                      #333;
 @separator-border:                     1px dotted @separator-color;
@@ -43,8 +46,9 @@
 @midget-border-color:                  #222;
 @midget-border:                        1px solid @midget-border-color;
 
-@header-color:                         #ca3;
-@subheader-color:                      #ac3;
+@tooltip-background:                   rgba(0, 0, 0, 0.9);
+@tooltip-border:                       1px solid @midget-border-color;
+
 @text-color:                           #a7a7a7;
 @link-color:                           #3ac;
 @link-rgba:                            rgba(51, 170, 204, 0.69);
@@ -76,7 +80,16 @@
 @mainmenu-link-background:             rgba(0, 0, 0, 0.5);
 @mainmenu-link-hover-background:       rgba(0, 0, 0, 0.75);
 @mainmenu-color:                       #ccc;
+@mainmenu-text-shadow:                 1px 1px 1px rgba(0, 0, 0, 0.75);
 @mainmenu-hover-color:                 @link-hover-color;
+@mainmenu-selected-color:              white;
+@mainmenu-selected-shadow:             0 0 3px rgba(255, 255, 255, 0.75);
+
+@tab-background:                       @mainmenu-link-background;
+@tab-color:                            @mainmenu-color;
+@tab-text-shadow:                      @mainmenu-text-shadow;
+@tab-selected-color:                   @mainmenu-selected-color;
+@tab-selected-shadow:                  @mainmenu-selected-shadow;
 
 @footer-background:                    black;
 

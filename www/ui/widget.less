@@ -16,7 +16,7 @@ h3 span,
 h4 span,
 h5 span,
 h6 span                                { color: @text-color; }
-h2                                     { color: @header-color; }
+h2                                     { color: @header-color; text-shadow: @header-shadow; }
 article header:first-child h3,
 article header:first-child h4          { padding-top: 0; }
 aside article > header > h3            { padding-bottom: 1.111em; }
@@ -147,6 +147,54 @@ a.expander:after                       { content: '\21D3'; }
 /***** /BUTTONS *****/
 
 
+/***** JQUERY UI *****/
+
+.ui-widget-content                     { background: black; }
+.ui-widget-header                      { /*background: transparent;*/ }
+.ui-widget-header a                    { color: #ca3; }
+.ui-dialog                             { border: 1px solid #222; }
+.ui-tabs-nav                           { /*border-bottom: 1px solid #222;*/ }
+
+/* Interaction states */
+.ui-state-default,
+.ui-widget-content .ui-state-default   { border: 1px solid #222; color: @tab-color; text-shadow: @tab-text-shadow; }
+.ui-tabs .ui-state-default             { border-width: 0; }
+.ui-state-default a,
+.ui-state-default a:link,
+.ui-state-default a:visited            { color: @tab-color; }
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus     { color: #fff; }
+.ui-state-hover a,
+.ui-state-hover a:hover                { color: @tab-hover-color; text-shadow: @tab-hover-shadow; }
+.ui-state-active,
+.ui-widget-content .ui-state-active    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+.ui-tabs-nav .ui-state-default         { border-left: 1px solid #181818; border-right: 1px solid black;}
+.ui-tabs-nav .ui-state-default:first-child { border-left: 0 none; }
+.ui-tabs-nav .ui-state-default:last-child  { border-right: 0 none; }
+.ui-tabs-nav .ui-state-active,
+.ui-tabs-nav .ui-state-hover           { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited             { color: @tab-selected-color; font-weight: bold; text-shadow: @tab-selected-shadow; }
+
+/* Interaction Cues */
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight { border: 1px solid #ca3; background: #222; color: #a7a7a7; }
+.ui-state-highlight a,
+.ui-widget-content .ui-state-highlight a { color: #a7a7a7; }
+.ui-state-error,
+.ui-widget-content .ui-state-error     { border: 1px solid #c33; background: black; color: #c33; }
+.ui-state-error a,
+.ui-widget-content .ui-state-error a,
+.ui-state-error-text,
+.ui-widget-content .ui-state-error-text { color: #c33; }
+
+/* Overlays */
+.ui-widget-overlay                     { background: #333; }
+.ui-widget-shadow                      { background: black; }
+
 /***** ICONS *****/
 
 li.icon,
@@ -248,7 +296,7 @@ a:hover img                            { opacity: 1; }
 
 /***** TOOLTIP *****/
 
-.tooltip                               { background: @midget-background; border: @midget-border; .box-shadow(0 0 10px black); .border-radius(3px); padding: 10px; }
+.tooltip                               { background: @tooltip-background; border: @tooltip-border; .box-shadow(0 0 10px black); .border-radius(3px); padding: 10px; }
 
 /***** /TOOLTIP *****/
 
@@ -266,12 +314,13 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpResizeHandle:hover            { border-bottom-color: @input-border-hover-color; }
 
 .markItUpHeader ul li                  { float: left; margin: 0; position: relative; }
+.markItUpHeader ul li:hover            { top: 1px; }
 .markItUpHeader ul li:hover > ul       { display: block; }
 .markItUpHeader ul li a                { background: transparent no-repeat center center; display: block; height: 16px; padding: 2px 0.5em; text-indent: -9999px; width: 16px; }
 .markItUpHeader ul .markItUpDropMenu   {  }
 .markItUpHeader ul .markItUpDropMenu > a::after { content: '\25BC'; padding-left: 0.5em; }
 .markItUpHeader ul .markItUpDropMenu li { margin-right:0px; }
-.markItUpHeader ul ul                  { background: @section-background; display: none; left: 0; position: absolute; top: 1.6667em; }
+.markItUpHeader ul ul                  { /*background: @section-background;*/ display: none; left: 0; position: absolute; top: 1.6667em; }
 .markItUpHeader ul ul li               { float: none; width: auto; }
 
 .markItUpHeader .button-bold a         { background-image: url(/ui/icon/text_bold.png); }
@@ -289,6 +338,8 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpHeader .button-quote a        { background-image: url(/ui/icon/text_quote.png); }
 .markItUpHeader .button-code a         { background-image: url(/ui/icon/page_white_code.png); }
 .markItUpHeader .button-clear a        { background-image: url(/ui/icon/page_white_code_red.png); }
+
+.markItUpContainer textarea            { margin-top: -2em; padding-top: 2em; }
 
 /***** /BBCODE *****/
 
