@@ -17,8 +17,8 @@
 		<header>
 			<div class="unit size5of6"><?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name)) ?></div>
 			<ul class="details unit size1of6">
-				<!-- <li class="unit size1of2"><?php echo HTML::icon_value(array(':views' => $topic->num_reads), ':views view', ':views views', 'views') ?></li> -->
-				<li class="unit size1of1"><?php echo HTML::icon_value(array(':replies' => $topic->num_posts - 1), ':replies reply', ':replies replies', 'posts') ?></li>
+				<!-- <li class="unit size1of2"><?php echo HTML::icon_value(array(':views' => $topic->read_count), ':views view', ':views views', 'views') ?></li> -->
+				<li class="unit size1of1"><?php echo HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts') ?></li>
 			</ul>
 		</header>
 		<footer>

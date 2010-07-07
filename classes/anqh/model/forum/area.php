@@ -59,6 +59,13 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 	 */
 	const WRITE_ADMINS = 1;
 
+	/**
+	 * @var  array  User editable fields
+	 */
+	public static $editable_fields = array(
+		'group', 'name', 'description', 'sort', 'access_read', 'access_write', 'status', 'type', 'bind'
+	);
+
 
 	/**
 	 * Create new model
@@ -66,7 +73,8 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta->sorting(array('sort' => 'ASC'))
+		$meta
+			->sorting(array('sort' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'group' => new Field_BelongsTo(array(
@@ -80,17 +88,11 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 						'not_empty' => array(true),
 						'max_length' => array(64),
 					),
-					'filters' => array(
-						'trim' => null,
-					),
 				)),
 				'description' => new Field_String(array(
 					'label' => __('Description'),
 					'rules' => array(
 						'max_length' => array(250),
-					),
-					'filters' => array(
-						'trim' => null,
 					),
 				)),
 				'sort' => new Field_Integer(array(
@@ -104,7 +106,6 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
-				'bind' => new Field_String,
 
 				'access_read' => new Field_Enum(array(
 					'label'   => __('Read access'),
@@ -114,10 +115,11 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 						self::READ_NORMAL  => 'Everybody',
 					),
 					'rules'   => array(
-						'not_empty' => array(true),
+						'not_empty' => null,
 					)
 				)),
 				'access_write' => new Field_Enum(array(
+					'null'    => true,
 					'label'   => __('Write access'),
 					'default' => self::WRITE_NORMAL,
 					'choices' => array(
@@ -125,7 +127,7 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 						self::WRITE_NORMAL => 'Members',
 					),
 					'rules'   => array(
-						'not_empty' => array(true),
+						'not_empty' => null,
 					)
 				)),
 				'status' => new Field_Enum(array(
@@ -136,7 +138,7 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 						self::STATUS_NORMAL => 'Normal',
 					),
 					'rules'   => array(
-						'not_empty' => array(true),
+						'not_empty' => null,
 					)
 				)),
 				'type' => new Field_Enum(array(
@@ -149,14 +151,18 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 						self::TYPE_NORMAL  => 'Normal',
 					),
 					'rules'   => array(
-						'not_empty' => array(true),
+						'not_empty' => null,
 					)
 				)),
+				'bind' => new Field_Enum(array(
+					'label'   => __('Bind config'),
+					'choices' => array('' => __('None')) + self::get_binds(),
+				)),
 
-				'num_posts' => new Field_Integer(array(
+				'post_count' => new Field_Integer(array(
 					'column' => 'posts',
 				)),
-				'num_topics' => new Field_Integer(array(
+				'topic_count' => new Field_Integer(array(
 					'column' => 'topics',
 				)),
 				'last_topic' => new Field_BelongsTo(array(
@@ -167,6 +173,37 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 					'foreign' => 'forum_topic'
 				))
 			));
+	}
+
+
+	/**
+	 * Get list of possible model bindings
+	 *
+	 * @param   boolean|string  true = short list, false = full list, string = specific bind
+	 * @return  array
+	 */
+	public static function get_binds($bind = true) {
+		$config = Kohana::config('forum.binds');
+		if ($bind === true) {
+
+			// Short list for selects etc
+			$list = array();
+			foreach ($config as $type => $data) {
+				$list[$type] = $data['name'];
+			}
+			return $list;
+
+		} else if ($bind === false) {
+
+			// Full bind config
+			return $config;
+
+		} else if (is_string($bind)) {
+
+			// Specific config
+			return Arr::get($config, $bind);
+
+		}
 	}
 
 

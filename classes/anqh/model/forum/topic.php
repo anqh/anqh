@@ -90,10 +90,10 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				)),
 				'last_posted' => new Field_Integer,
 				'last_poster' => new Field_String,
-				'num_reads'   => new Field_Integer(array(
+				'read_count'   => new Field_Integer(array(
 					'column' => 'reads'
 				)),
-				'num_posts'   => new Field_Integer(array(
+				'post_count'   => new Field_Integer(array(
 					'column' => 'posts',
 				)),
 				'votes'       => new Field_Integer,
@@ -158,7 +158,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		$this->last_posted = $last_post->created;
 		$this->last_poster = $last_post->author_name;
 
-		$this->num_posts = count($this->posts);
+		$this->post_count = count($this->posts);
 
 		if ($save) {
 			$this->save();

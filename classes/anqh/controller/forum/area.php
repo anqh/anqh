@@ -10,6 +10,16 @@
 class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 	/**
+	 * Construct controller
+	 */
+	public function before() {
+		parent::before();
+
+		$this->tab_id = 'areas';
+	}
+
+
+	/**
 	 * Action: add
 	 */
 	public function action_add() {
@@ -41,7 +51,6 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	 */
 	public function action_edit() {
 		$this->history = false;
-		$this->tabs = null;
 
 		// Load area
 		$area_id = (int)$this->request->param('id');
@@ -98,19 +107,20 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 						'group'       => array(),
 						'name'        => array(),
 						'description' => array(),
-						),
+						'sort'        => array(),
 					),
+				),
 				array(
 					'header' => __('Settings'),
 					'fields' => array(
 						'access_read'  => array(),
 						'access_write' => array(),
 						'type'         => array(),
+						'bind'         => array(),
 						'status'       => array(),
-						'sort'         => array(),
-					)
-				)
-			)
+					),
+				),
+			),
 		);
 
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
@@ -121,7 +131,6 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	 * Action: index
 	 */
 	public function action_index() {
-		$this->tab_id = 'areas';
 
 		// Load area
 		$area_id = (int)$this->request->param('id');
@@ -144,16 +153,15 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		}
 
 		// Pagination
-		$per_page = 20;
 		$pagination = Pagination::factory(array(
-			'items_per_page' => $per_page,
-			'total_items'    => $area->num_topics,
+			'items_per_page' => Kohana::config('forum.topics_per_page'),
+			'total_items'    => $area->topic_count,
 		));
 
 		// Posts
 		Widget::add('main', View_Module::factory('forum/topics', array(
 			'mod_class'  => 'topics articles',
-			'topics'     => $posts = $area->get('topics')->active()->pagination($pagination)->execute(),
+			'topics'     => $area->get('topics')->active()->pagination($pagination)->execute(),
 			'pagination' => $pagination
 		)));
 

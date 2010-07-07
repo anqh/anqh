@@ -89,7 +89,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Update counts
 		if (!self::$user || $topic->author != self::$user) {
-			$topic->num_reads++;
+			$topic->read_count++;
 			$topic->save();
 		}
 		if (self::$user) {
@@ -115,11 +115,30 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$this->page_actions[] = array('link' => '#reply', 'text' => __('Reply to topic'), 'class' => 'topic-post');
 		}
 
+		// Bound model
+		if ($topic->area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
+			if ($bind = Model_Forum_Area::get_binds($topic->area->bind)) {
+				$model = Jelly::select($bind['model'])->load($topic->bind_id);
+				if ($model->loaded()) {
+
+					// Set actions
+					$this->page_actions[] = array('link' => Route::model($model), 'text' => $bind['link']);
+
+					// Set views
+					foreach ((array)$bind['view'] as $view) {
+						Widget::add('side', View_Module::factory($view, array(
+							$bind['model'] => $model,
+						)));
+					}
+
+				}
+			}
+		}
+
 		// Pagination
-		$per_page = 20;
 		$pagination = Pagination::factory(array(
-			'items_per_page' => $per_page,
-			'total_items'    => max(1, $topic->num_posts),
+			'items_per_page' => Kohana::config('forum.posts_per_page'),
+			'total_items'    => max(1, $topic->post_count),
 		));
 		if (Arr::get($_GET, 'page') == 'last') {
 			$pagination->last();
@@ -153,6 +172,20 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				'form'   => $form
 			)));
 		}
+
+		// Bound model
+		if ($topic->area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
+			if ($bind = Model_Forum_Area::get_binds($topic->area->bind)) {
+				$model = Jelly::select($bind['model'])->load($topic->bind_id);
+				if ($model->loaded()) {
+					foreach ((array)$bind['view'] as $view)
+					Widget::add('side', View_Module::factory($view, array(
+						$bind['model'] => $model,
+					)));
+				}
+			}
+		}
+
 
 		$this->side_views();
 	}
@@ -206,7 +239,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		$post->delete();
 		$topic->refresh();
-		$topic->area->num_posts--;
+		$topic->area->post_count--;
 		$topic->area->save();
 
 		if ($this->ajax) {
@@ -234,10 +267,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user);
 
 		$area  = $topic->area;
-		$posts = $topic->num_posts;
+		$posts = $topic->post_count;
 		$topic->delete();
-		$area->num_posts -= $posts;
-		$area->num_topics--;
+		$area->post_count -= $posts;
+		$area->topic_count--;
 		$area->save();
 
 		$this->request->redirect(Route::model($area));
@@ -339,7 +372,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					}
 
 					// Topic
-					$topic->num_posts++;
+					$topic->post_count++;
 					$topic->last_post   = $post;
 					$topic->last_posted = $post->created;
 					$topic->last_poster = $post->author_name;
@@ -347,7 +380,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 					// Area
 					$area = $topic->area;
-					$area->num_posts++;
+					$area->post_count++;
 					$area->last_topic = $topic;
 					$area->save();
 
@@ -513,13 +546,13 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$topic->first_post  = $topic->last_post   = $post;
 					$topic->last_poster = self::$user->username;
 					$topic->last_posted = time();
-					$topic->num_posts   = 1;
+					$topic->post_count   = 1;
 					$topic->save();
 
 					// Area
 					$area->last_topic = $topic;
-					$area->num_posts++;
-					$area->num_topics++;
+					$area->post_count++;
+					$area->topic_count++;
 					$area->save();
 
 					// User
@@ -566,8 +599,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$this->page_subtitle = __('Area :area. ', array(
 			':area' => HTML::anchor(Route::model($topic->area), HTML::chars($topic->area->name), array('title' => strip_tags($topic->area->description)))
 		));
-		$this->page_subtitle .= HTML::icon_value(array(':views' => $topic->num_reads), ':views view', ':views views', 'views');
-		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->num_posts - 1), ':replies reply', ':replies replies', 'posts');
+		$this->page_subtitle .= HTML::icon_value(array(':views' => $topic->read_count), ':views view', ':views views', 'views');
+		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts');
 	}
 
 }

@@ -15,7 +15,7 @@
 <ul>
 
 	<?php foreach ($topics as $topic): ?>
-	<li><?php echo HTML::anchor(Route::model($topic, '?page=last#last'), $topic->name) ?></li>
+	<li><?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('title' => HTML::chars($topic->name))) ?></li>
 	<?php endforeach; ?>
 
 </ul>
