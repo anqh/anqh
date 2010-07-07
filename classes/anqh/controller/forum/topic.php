@@ -173,20 +173,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			)));
 		}
 
-		// Bound model
-		if ($topic->area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
-			if ($bind = Model_Forum_Area::get_binds($topic->area->bind)) {
-				$model = Jelly::select($bind['model'])->load($topic->bind_id);
-				if ($model->loaded()) {
-					foreach ((array)$bind['view'] as $view)
-					Widget::add('side', View_Module::factory($view, array(
-						$bind['model'] => $model,
-					)));
-				}
-			}
-		}
-
-
 		$this->side_views();
 	}
 
