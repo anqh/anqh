@@ -30,10 +30,10 @@
 
 			<?php	foreach ($city_events as $event): ?>
 
-			<article class="event event-<?php echo $event->id ?>">
+			<article>
 
 				<header>
-					<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name)) ?>
+					<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event')) ?>
 				</header>
 
 				<?php if ($event->price !== null && $event->price != -1): ?>
