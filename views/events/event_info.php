@@ -27,7 +27,7 @@
 
 	<?php if ($event->venue->id): ?>
 	<dt><?php echo __('Venue') ?></dt>
-	<dd><?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>, <?php echo HTML::chars($event->venue->city_name) ?></dd>
+	<dd><?php echo HTML::anchor(Route::model($event->venue), HTML::chars($event->venue->name)) ?>, <?php echo HTML::chars($event->venue->city_name) ?></dd>
 	<?php if ($event->venue->latitude && $event->venue->longitude): ?>
 	<dd><?php echo HTML::anchor('#map', __('Toggle map')) ?></dd>
 	<dt id="map" style="display: none"><?php echo __('Map loading') ?></dt>
@@ -47,7 +47,7 @@
 
 	<?php elseif ($event->venue_name): ?>
 	<dt><?php echo __('Venue') ?></dt><dd><?php echo ($event->venue_url ?
-		HTML::anchor($event->venue_url, $event->venue_name) :
+		HTML::anchor($event->venue_url, HTML::chars($event->venue_name)) :
 		HTML::chars($event->venue_name)) .
 		($event->city_name ? ', ' . HTML::chars($event->city_name) : '') ?></dd>
 	<?php elseif ($event->city_name): ?>
