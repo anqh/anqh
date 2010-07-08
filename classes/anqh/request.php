@@ -39,7 +39,11 @@ abstract class Anqh_Request extends Kohana_Request {
 		static $host_name;
 
 		if (!is_string($host_name)) {
-			$host_name = (self::$client_ip == '0.0.0.0') ? self::$client_ip : gethostbyaddr(self::$client_ip);
+			try {
+				$host_name = (self::$client_ip == '0.0.0.0') ? self::$client_ip : gethostbyaddr(self::$client_ip);
+			} catch (ErrorException $e) {
+				$host_name = self::$client_ip;
+			}
 		}
 
 		return $host_name;
