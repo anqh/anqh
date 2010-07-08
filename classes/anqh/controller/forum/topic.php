@@ -114,6 +114,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			return;
 		}
 
+		// Add new tab
+		$this->tab_id = 'area';
+		$this->tabs['area'] = array('url' => Route::model($topic->area), 'text' => __('Area'));
+
 		// Update counts
 		if (!self::$user || $topic->author != self::$user) {
 			$topic->read_count++;

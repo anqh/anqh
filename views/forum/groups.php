@@ -16,11 +16,12 @@
 	<?php if (count($groups) > 1): ?>
 	<header>
 		<h3><?php echo HTML::anchor(Route::model($group), $group->name) ?></h3>
-		<p><?= HTML::chars($group->description) ?></p>
+		<p><?php echo HTML::chars($group->description) ?></p>
 	</header>
 	<?php endif; ?>
 
 	<?php if (count($group->areas)): ?>
+
 		<?php foreach ($group->areas as $area): ?>
 
 			<?php if (Permission::has($area, Model_Forum_Area::PERMISSION_READ)): ?>
@@ -33,9 +34,10 @@
 						<li class="unit size1of2"><?php echo HTML::icon_value(array(':posts' => $area->post_count), ':posts post', ':posts posts', 'posts') ?></li>
 					</ul>
 				</header>
+				<?php echo $area->description ?>
 				<footer>
 					<?php if ($area->topic_count > 0): ?>
-					<?= __('Last post in :area by :user :ago', array(
+					<?php echo __('Last post in :area by :user :ago', array(
 						':area' => HTML::anchor(Route::model($area->last_topic, '?page=last#last'), Text::limit_chars(HTML::chars($area->last_topic->name), 20, '&hellip;', true), array('title' => HTML::chars($area->last_topic->name))),
 						':user' => HTML::user(null, $area->last_topic->last_poster),
 						':ago'  => HTML::time(Date::fuzzy_span($area->last_topic->last_posted), $area->last_topic->last_posted),
