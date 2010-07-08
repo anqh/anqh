@@ -498,7 +498,35 @@ $("#field-venue-name").autocomplete({
 };
 '));
 
-		Widget::add('foot', HTML::script_source('$("#field-stamp-begin-date").datepicker({ dateFormat: "d.m.yy", firstDay: 1, changeFirstDay: false, showOtherMonths: true, showWeeks: true, showStatus: true, showOn: "both" });'));
+		$options = array(
+			'changeMonth'     => true,
+			'changeYear'      => true,
+			'dateFormat'      => 'd.m.yy',
+			'dayNames'        => array(
+				__('Sunday'), __('Monday'), __('Tuesday'), __('Wednesday'), __('Thursday'), __('Friday'), __('Saturday')
+			),
+			'dayNamesMin'    => array(
+				__('Su'), __('Mo'), __('Tu'), __('We'), __('Th'), __('Fr'), __('Sa')
+			),
+			'firstDay'        => 1,
+			'monthNames'      => array(
+				__('January'), __('February'), __('March'), __('April'),
+				__('May'), __('June'), __('July'), __('August'),
+				__('September'), __('October'), __('November'), __('December')
+			),
+			'monthNamesShort' => array(
+				__('Jan'), __('Feb'), __('Mar'), __('Apr'),
+				__('May'), __('Jun'), __('Jul'), __('Aug'),
+				__('Sep'), __('Oct'), __('Nov'), __('Dec')
+			),
+			'nextText'        => __('&raquo;'),
+			'prevText'        => __('&laquo;'),
+			'showWeek'        => true,
+			'showOtherMonths' => true,
+			'weekHeader'      => __('Wk'),
+		);
+
+		Widget::add('foot', HTML::script_source('$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');'));
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
