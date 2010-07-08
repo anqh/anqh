@@ -133,6 +133,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Set actions
 		$this->page_actions[] = array('link' => Route::get('forum_event')->uri(array('id' => $event->id)), 'text' => __('Forum discussion'));
+		$this->page_actions[] = array('link' => Route::get('gallery_event')->uri(array('id' => $event->id)), 'text' => __('Gallery'));
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
 			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(), 'text' => __('Remove favorite'), 'class' => 'favorite-delete');
