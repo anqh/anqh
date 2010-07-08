@@ -68,6 +68,20 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find gallery by event id
+	 *
+	 * @param   integer  $event_id
+	 * @return  Model_Gallery
+	 */
+	public static function find_by_event($event_id) {
+		return Jelly::select('gallery')
+			->where('event_id', '=', (int)$event_id)
+			->limit(1)
+			->execute();
+	}
+
+
+	/**
 	 * Find gallery by image id
 	 *
 	 * @param   integer  $image_id

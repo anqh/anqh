@@ -112,6 +112,27 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
+	 * Action: event
+	 */
+	public function action_event() {
+		$event_id = (int)$this->request->param('id');
+
+		$event = Jelly::select('event')->load($event_id);
+		if (!$event->loaded()) {
+			throw new Model_Exception($event, $event_id);
+		}
+
+		// Redirect
+		$gallery = Model_Gallery::find_by_event($event->id);
+		if ($gallery->loaded()) {
+			$this->request->redirect(Route::model($gallery));
+		} else {
+			$this->request->redirect(Route::get('galleries')->uri());
+		}
+	}
+
+
+	/**
 	 * Action: gallery
 	 */
 	public function action_gallery() {
@@ -124,16 +145,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
 
-		// Set title and tabs
-		$this->_set_gallery($gallery);
-
-		// Pictures
-		Widget::add('main', View_Module::factory('galleries/gallery', array(
-			'gallery' => $gallery,
-		)));
-
 		// Event info
 		if ($gallery->event) {
+
+			// Set actions
+			$this->page_actions[] = array('link' => Route::model($gallery->event), 'text' => __('Show event'));
+
 			// Event flyers
 			if ($gallery->event->flyer_front->id || $gallery->event->flyer_back->id || $gallery->event->flyer_front_url || $gallery->event->flyer_back_url) {
 				Widget::add('side', View_Module::factory('events/flyers', array(
@@ -146,6 +163,15 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'user'  => self::$user,
 			)));
 		}
+
+		// Set title and tabs
+		$this->_set_gallery($gallery);
+
+		// Pictures
+		Widget::add('main', View_Module::factory('galleries/gallery', array(
+			'gallery' => $gallery,
+		)));
+
 	}
 
 

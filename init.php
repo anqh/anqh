@@ -13,6 +13,11 @@ Route::set('gallery_image_comment', 'gallery/comment/<id>/<commentaction>', arra
 		'controller' => 'galleries',
 		'action'     => 'comment',
 	));
+Route::set('gallery_event', 'event/<id>/gallery')
+	->defaults(array(
+		'controller' => 'galleries',
+		'action'     => 'event'
+	));
 Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'delete', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
