@@ -107,6 +107,59 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 
 
 	/**
+	 * Load topic by bound model
+	 *
+	 * @static
+	 * @param   Jelly_Model  $bind_model  Bound model
+	 * @param   string       $bind_name   Bind config if multiple binds per model
+	 * @return  Model_Forum_Topic
+	 */
+	public static function find_by_bind(Jelly_Model $bind_model, $bind_name = null) {
+		$model = Jelly::class_name($bind_model);
+
+		// Get correct bind config
+		if (!$bind_name) {
+			foreach (Model_Forum_Area::get_binds(false) as $bind_name => $bind_config) {
+				if ($bind_config['model'] == $model) {
+					$config = $bind_config;
+					break;
+				}
+			}
+		} else {
+			$config = Model_Forum_Area::get_binds($bind_name);
+		}
+
+		if ($config) {
+
+			// Get area
+			$area = Jelly::select('forum_area')
+				->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
+				->and_where('bind', '=', $bind_name)
+				->limit(1)
+				->execute();
+
+			if ($area->loaded()) {
+
+				// Get topic
+				$topic = Jelly::select('forum_topic')
+					->where('forum_area_id', '=', $area->id)
+					->and_where('bind_id', '=', $bind_model->id())
+					->limit(1)
+					->execute();
+
+				// If topic found, go there!
+				if ($topic->loaded()) {
+					return $topic;
+				}
+
+			}
+		}
+
+		return null;
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission

@@ -30,6 +30,11 @@ Route::set('forum_area', 'forum/<id>(/<action>)', array('action' => 'edit|delete
 	->defaults(array(
 		'controller' => 'forum_area',
 	));
+Route::set('forum_event', 'topic/event/<id>(/<time>)', array('time' => 'before|after'))
+	->defaults(array(
+		'controller' => 'forum_topic',
+		'action'     => 'event'
+	));
 Route::set('forum_topic', 'topic/<id>(/<action>)', array('action' => 'add|edit|reply|delete'))
 	->defaults(array(
 		'controller' => 'forum_topic',

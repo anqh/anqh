@@ -54,6 +54,33 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 
 	/**
+	 * Action: event
+	 */
+	public function action_event() {
+		$event_id   = (int)$this->request->param('id');
+
+		$event = Jelly::select('event')->load($event_id);
+		if (!$event->loaded()) {
+			throw new Model_Exception($event, $event_id);
+		}
+
+		// Go to before or after event discussion?
+		$time = $this->request->param('time');
+		if (!$time) {
+			$time = $event->stamp_begin > time() ? 'before' : 'after';
+		}
+		$bind = $time == 'before' ? 'events_upcoming' : 'events_past';
+
+		// Redirect
+		if ($topic = Model_Forum_Topic::find_by_bind($event, $bind)) {
+			$this->request->redirect(Route::model($topic));
+		} else {
+			$this->request->redirect(Route::get('forum')->uri());
+		}
+	}
+
+
+	/**
 	 * Action: index
 	 */
 	public function action_index() {
@@ -107,15 +134,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Set title
 		$this->_set_title($topic);
 
-		// Set actions
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
-		}
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
-			$this->page_actions[] = array('link' => '#reply', 'text' => __('Reply to topic'), 'class' => 'topic-post');
-		}
-
-		// Bound model
+		// Model binding
 		if ($topic->area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
 			if ($bind = Model_Forum_Area::get_binds($topic->area->bind)) {
 				$model = Jelly::select($bind['model'])->load($topic->bind_id);
@@ -133,6 +152,14 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 				}
 			}
+		}
+
+		// Set actions
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
+		}
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
+			$this->page_actions[] = array('link' => '#reply', 'text' => __('Reply to topic'), 'class' => 'topic-post');
 		}
 
 		// Pagination
