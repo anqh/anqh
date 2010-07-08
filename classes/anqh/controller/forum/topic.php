@@ -57,7 +57,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 * Action: event
 	 */
 	public function action_event() {
-		$event_id   = (int)$this->request->param('id');
+		$event_id = (int)$this->request->param('id');
 
 		$event = Jelly::select('event')->load($event_id);
 		if (!$event->loaded()) {
@@ -155,11 +155,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Set actions
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
-		}
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
 			$this->page_actions[] = array('link' => '#reply', 'text' => __('Reply to topic'), 'class' => 'topic-post');
+		}
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
 		}
 
 		// Pagination
