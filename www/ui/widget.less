@@ -19,12 +19,14 @@ h6 span                                { color: @text-color; }
 h2                                     { color: @header-color; text-shadow: @header-shadow; }
 article header:first-child h3,
 article header:first-child h4          { padding-top: 0; }
-aside article > header > h3            { padding-bottom: 1.111em; }
+header h3,
+header h4                              { padding-bottom: 1.111em; }
 legend,
 h3,
 h4,
 h5,
 h3 a,
+h4 a,
 label,
 dt,
 h5 a                                   { color: @subheader-color; }
@@ -98,6 +100,7 @@ form .notice input                     { border-color: @info-background; }
 
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 a.action                               { margin: 5px 2px; }
+button:::-moz-focus-inner              { border: 0; padding: 0; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
 input[type=submit],
@@ -153,7 +156,6 @@ a.expander:after                       { content: '\21D3'; }
 .ui-widget-header                      { /*background: transparent;*/ }
 .ui-widget-header a                    { color: #ca3; }
 .ui-dialog                             { border: 1px solid #222; }
-.ui-tabs-nav                           { /*border-bottom: 1px solid #222;*/ }
 
 /* Interaction states */
 .ui-state-default,
@@ -165,19 +167,21 @@ a.expander:after                       { content: '\21D3'; }
 .ui-state-hover,
 .ui-widget-content .ui-state-hover,
 .ui-state-focus,
-.ui-widget-content .ui-state-focus     { color: #fff; }
+.ui-widget-content .ui-state-focus     { color: white; }
+a.ui-state-hover,
 .ui-state-hover a,
-.ui-state-hover a:hover                { color: @tab-hover-color; text-shadow: @tab-hover-shadow; }
+.ui-state-hover a:hover                { color: @tab-hover-color; text-decoration: none; text-shadow: @tab-hover-shadow; }
 .ui-state-active,
 .ui-widget-content .ui-state-active    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
-.ui-tabs-nav .ui-state-default         { border-left: 1px solid #181818; border-right: 1px solid black;}
-.ui-tabs-nav .ui-state-default:first-child { border-left: 0 none; }
-.ui-tabs-nav .ui-state-default:last-child  { border-right: 0 none; }
-.ui-tabs-nav .ui-state-active,
+.ui-tabs-nav .ui-state-default         { border-bottom: 1px solid #181818; }
+.ui-tabs-nav .ui-state-default a       { border-bottom: 1px solid black; border-left: 1px solid #181818; border-right: 1px solid black; }
+.ui-tabs-nav .ui-state-default:first-child a { border-left: 0 none; }
+.ui-tabs-nav .ui-state-default:last-child a  { border-right: 0 none; }
 .ui-tabs-nav .ui-state-hover           { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+.ui-tabs-nav .ui-state-active,
 .ui-state-active a,
 .ui-state-active a:link,
-.ui-state-active a:visited             { color: @tab-selected-color; font-weight: bold; text-shadow: @tab-selected-shadow; }
+.ui-state-active a:visited             { border-bottom-color: transparent; color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
 
 /* Interaction Cues */
 .ui-state-highlight,
@@ -194,6 +198,26 @@ a.expander:after                       { content: '\21D3'; }
 /* Overlays */
 .ui-widget-overlay                     { background: #333; }
 .ui-widget-shadow                      { background: black; }
+
+/* Dialog */
+.ui-dialog                             { padding: 2px; position: relative; width: 300px; }
+.ui-dialog .ui-dialog-titlebar         { color: @subheader-color; font-family: @header-font; padding: .5em 10px .3em 10px; position: relative;  }
+.ui-dialog .ui-dialog-title            { float: left; }
+.ui-dialog .ui-dialog-titlebar-close   { position: absolute; right: 10px; top: 50%; width: 16px; margin: -8px 0 0 0; height: 16px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; }
+.ui-dialog .ui-dialog-titlebar-close:hover,
+.ui-dialog .ui-dialog-titlebar-close:focus {  }
+.ui-dialog .ui-dialog-content          { border: 0; padding: .5em 10px; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane       { border-width: 1px 0 0 0; margin: .5em 0 0 0; padding: .3em 10px 10px 10px; text-align: left; }
+.ui-dialog .ui-dialog-buttonpane button { float: right; }
+.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
+
+
+/* Autocomplete */
+.ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; z-index: 99999; }
+.ui-autocomplete li                    { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; text-shadow: @tab-text-shadow; }
+.ui-autocomplete-loading               { .ajax(@input-background); }
 
 /***** ICONS *****/
 
@@ -275,23 +299,6 @@ a:hover img                            { opacity: 1; }
 .lightboxed a.active img               { outline: 1px solid @link-color; position: relative; z-index: 9999; }
 
 /***** /LIGHTBOX *****/
-
-
-/***** AUTO COMPLETE *****/
-
-.ac_loading                            { background: @input-background; }
-.ui-autocomplete,
-.ac_results                            { background: @input-background; border: 1px solid @input-border-focus-color; overflow: hidden; padding: 0; z-index: 99999; }
-.ui-autocomplete,
-.ac_results ul                         { list-style-position: outside; list-style: none; margin: 0; padding: 0; }
-.ui-autocomplete li,
-.ac_results li                         { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; }
-.ac_odd                                { background-color: @input-background-alt; }
-.ac_over                               { background-color: @input-hint-color; color: @input-border-focus-color; }
-.ac_over strong                        { color: @link-color; }
-.ui-autocomplete-loading               { .ajax(@input-background); }
-
-/***** /AUTO COMPLETE *****/
 
 
 /***** TOOLTIP *****/
@@ -392,7 +399,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 .events ol.days                        { list-style: none; }
 .events ol.days li                     { overflow: hidden; }
-.events ol.days li article             { padding: 10px 0; }
+/*.events ol.days li article             { padding: 10px 0; }*/
 
 .event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
 
