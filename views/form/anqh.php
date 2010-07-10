@@ -21,9 +21,11 @@ foreach ($form['groups'] as $group_name => $group):
 		<?php if (isset($group['header'])): ?> <legend><?php echo HTML::chars($group['header']) ?></legend<?php endif; ?>
 
 		<ul>
-		<?php foreach ($group['fields'] as $field_name => $field): $model = Arr::get($field, 'model', $form['values']); ?>
+		<?php foreach ($group['fields'] as $field_name => $field):
+			$model = Arr::get($field, 'model', $form['values']);
+			$name  = Arr::get($field, 'column', $field_name)?>
 
-			<?php if ($model) echo $model->input($field_name, 'form/anqh', $field + array('errors' => Arr::get($form, 'errors'))) ?>
+			<?php if ($model) echo $model->input($name, 'form/anqh', $field + array('errors' => Arr::get($form, 'errors'))) ?>
 
 		<?php endforeach; ?>
 		</ul>

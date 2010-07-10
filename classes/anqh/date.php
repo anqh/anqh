@@ -93,6 +93,43 @@ class Anqh_Date extends Kohana_Date {
 
 
 	/**
+	 * Get time list. Typically used as a shortcut for generating a
+	 * list that can be used in a form.
+	 *
+	 *     $times = Date::hours_minutes(); // 01:00, 01:30, 02:00, ..., 11:00, 11:30, 12:00
+	 *
+	 * @param   integer  amount to increment each step by, minutes
+	 * @param   boolean  use 24-hour time
+	 * @param   integer  the hour to start at
+	 * @return  array    A mirrored (foo => foo) array from start-12 or start-23.
+	 */
+	public static function hours_minutes($step = 30, $long = false, $start = null) {
+
+		// Default values
+		$step  = (int)$step;
+		$long  = (bool)$long;
+		$times = array();
+
+		// Set the default start if none was specified.
+		if ($start === null) {
+			$start = $long ? 0 : 1;
+		}
+
+		// 24-hour time has 24 hours, instead of 12
+		$hours = $long ? 24 : 12;
+
+		$size = $hours * 60 - 1;
+
+		for ($i = $start; $i <= $size; $i += $step) {
+			$time = sprintf('%02d:%02d', floor($i / 60), $i % 60);
+			$times[$time] = $time;
+		}
+
+		return $times;
+	}
+
+
+	/**
 	 * Returns time difference in human readable format with only the largest span
 	 *
 	 * @param		int|string	$time1
