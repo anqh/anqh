@@ -33,6 +33,7 @@ class Anqh_View_Module extends View {
 			'class'      => 'mod ' . Arr::get_once($this->_data, 'mod_class', strtr(basename($this->_file, '.php'), '_', '-')),
 			'id'         => Arr::get_once($this->_data, 'mod_id'),
 			'title'      => Arr::get_once($this->_data, 'mod_title'),
+			'sub_title'  => Arr::get_once($this->_data, 'mod_subtitle'),
 			'pagination' => Arr::get_once($this->_data, 'pagination'),
 			'content'    => parent::render($file),
 		));
