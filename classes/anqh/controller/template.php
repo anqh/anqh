@@ -139,36 +139,6 @@ abstract class Anqh_Controller_Template extends Controller {
 			// Controller name as the default page id if none set
 			empty($this->page_id) && $this->page_id = $this->request->controller;
 
-			// Skin
-			$skin_path = 'ui/' . Kohana::config('site.skin') . '/';
-			$skin = $skin_path . 'skin.less';
-			$skin_imports = array(
-				'ui/layout.less',
-				'ui/widget.less',
-/*				'ui/jquery-ui.css',
-				'ui/site.css',
-				$skin_path . 'jquery-ui.css',*/
-			);
-
-			// Do some CSS magic to page class
-			$page_class = explode(' ',
-				$this->language . ' ' .                      // Language
-				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
-				$session->get('page_main', 'left') . ' ' .   // Left/right aligned layout
-				$this->request->action . ' ' .               // Controller method
-				$this->page_class);                          // Controller set classes
-			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
-
-			// Bind the generic page variables
-			$this->template
-				->set('skin',          $skin)
-				->set('skin_imports',  $skin_imports)
-				->set('language',      $this->language)
-				->set('page_id',       $this->page_id)
-				->set('page_class',    $page_class)
-				->set('page_title',    $this->page_title)
-				->set('page_subtitle', $this->page_subtitle);
-
 			// Generic views
 			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb, 'last' => !$this->history)));
 			Widget::add('actions',    View::factory('generic/actions',    array('actions' => $this->page_actions)));
@@ -200,6 +170,15 @@ abstract class Anqh_Controller_Template extends Controller {
 				'entries'   => Jelly::select('blog_entry')->limit(10)->execute(),
 			)));
 
+
+			// Skin
+			$skins = Kohana::config('site.skins');
+			$skin = $session->get('skin', 'dark');
+			$skin_imports = array(
+				'ui/layout.less',
+				'ui/widget.less',
+			);
+
 			// Dock
 			$classes = array(
 				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").addClass("fixed").removeClass("liquid"); $.get(this.href); return false;')),
@@ -207,7 +186,19 @@ abstract class Anqh_Controller_Template extends Controller {
 				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").addClass("left").removeClass("right"); $.get(this.href); return false;')),
 				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").addClass("right").removeClass("left"); $.get(this.href); return false;')),
 			);
-			Widget::add('dock2', __('Layout: ') . implode(', ', $classes));
+			foreach ($skins as $skin_name => &$skin_config) {
+				$skin_config['path'] = 'ui/' . $skin_name . '/skin.less';
+				$classes[] = HTML::anchor(
+					Route::get('setting')->uri(array('action' => 'skin', 'value' => $skin_name)),
+					$skin_config['name'],
+					array(
+						'class' => 'theme',
+						'rel'   => $skin_name,
+						'title' => $skin_config['name'],
+					));
+			}
+
+			Widget::add('dock', __('Layout: ') . implode(', ', $classes));
 
 			// Language selection
 			$available_languages  = Kohana::config('locale.languages');
@@ -216,7 +207,7 @@ abstract class Anqh_Controller_Template extends Controller {
 				foreach ($available_languages as $lang => $locale) {
 					$languages[] = HTML::anchor('set/lang/' . $lang, HTML::chars($locale[2]));
 				}
-				Widget::add('dock2', ' | ' . __('Language: ') . implode(', ', $languages));
+				Widget::add('dock', ' | ' . __('Language: ') . implode(', ', $languages));
 			}
 
 			// Search
@@ -231,7 +222,7 @@ abstract class Anqh_Controller_Template extends Controller {
 
 				// Admin functions
 				if (self::$user->has_role('admin')) {
-					Widget::add('dock2', ' | ' . __('Admin: ')
+					Widget::add('dock', ' | ' . __('Admin: ')
 						. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
 						. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
 						. HTML::anchor('#debug', __('Profiler'), array('onclick' => '$("div.kohana").toggle();'))
@@ -241,7 +232,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// Pin
-			Widget::add('dock2', ' | ' . HTML::anchor('#pin', __('Pin'), array('class' => 'pin', 'onclick' => '$("#dock").toggleClass("pinned"); return false;')));
+			Widget::add('dock', ' | ' . HTML::anchor('#pin', __('Pin'), array('class' => 'pin', 'onclick' => '$("#dock").toggleClass("pinned"); return false;')));
 
 			// End
 			Widget::add('end', View::factory('generic/end'));
@@ -271,6 +262,26 @@ abstract class Anqh_Controller_Template extends Controller {
 				Widget::add('foot', View::factory('generic/debug'));
 				Widget::add('foot', View::factory('profiler/stats'));
 			}
+
+			// Do some CSS magic to page class
+			$page_class = explode(' ',
+				$this->language . ' ' .                      // Language
+				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
+				$session->get('page_main', 'left') . ' ' .   // Left/right aligned layout
+				$this->request->action . ' ' .               // Controller method
+				$this->page_class);                          // Controller set classes
+			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
+
+			// Bind the generic page variables
+			$this->template
+				->set('skin',          $skin)
+				->set('skins',         $skins)
+				->set('skin_imports',  $skin_imports)
+				->set('language',      $this->language)
+				->set('page_id',       $this->page_id)
+				->set('page_class',    $page_class)
+				->set('page_title',    $this->page_title)
+				->set('page_subtitle', $this->page_subtitle);
 
 			if ($this->auto_render === true) {
 				$this->request->response = $this->template;

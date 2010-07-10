@@ -41,6 +41,25 @@ class Anqh_Controller_Set extends Controller {
 
 
 	/**
+	 * Set page skin
+	 */
+	public function action_skin() {
+		$skin = $this->request->param('value');
+		$skins = Kohana::config('site.skins');
+
+		if (isset($skins[$skin])) {
+			Session::instance()->set('skin', $skin);
+		}
+
+		if ($this->ajax) {
+			return;
+		}
+
+		Request::back();
+	}
+
+
+	/**
 	 * Set page width
 	 */
 	public function action_width() {

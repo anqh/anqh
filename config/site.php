@@ -12,7 +12,7 @@ return array(
 	/**
 	 * Site name
 	 */
-	'site_name'    => 'Anqh',
+	'site_name' => 'Anqh',
 
 	/**
 	 * Domain name for static images, for CDN like
@@ -22,7 +22,7 @@ return array(
 	/**
 	 * Set the site as invite only
 	 */
-	'inviteonly'   => false,
+	'inviteonly' => false,
 
 	/**
 	 * E-mail address of the invitation sending
@@ -39,14 +39,14 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home'    => array('url' => '/', 'text' => __('Home')),
+		'home' => array('url' => '/', 'text' => __('Home')),
 		/*
-		'events'  => array('url' => 'events',  'text' => __('Events')),
-		'venues'  => array('url' => 'venues',  'text' => __('Venues')),
-		'music'   => array('url' => 'music',   'text' => __('Music')),
+		'events'  => array('url' => Route::get('events')->uri(),  'text' => __('Events')),
+		'venues'  => array('url' => Route::get('venues')->uri(),  'text' => __('Venues')),
+		'music'   => array('url' => Route::get('music')->uri(),   'text' => __('Music')),
 		'forum'   => array('url' => Route::get('forum')->uri(),   'text' => __('Forum')),
-		'blogs'   => array('url' => 'blogs',   'text' => __('Blogs')),
-		'members' => array('url' => 'members', 'text' => __('Members')),
+		'blogs'   => array('url' => Route::get('blogs')->uri(),   'text' => __('Blogs')),
+		'members' => array('url' => Route::get('members')->uri(), 'text' => __('Members')),
 		*/
 	),
 

@@ -20,13 +20,22 @@
 		HTML::style('ui/boot.css'),
 		HTML::style('ui/grid.css'),
 		HTML::style('ui/typo.css'),
-		HTML::style('ui/base.css'),
-		Less::style($skin, null, false, $skin_imports),
+		HTML::style('ui/base.css');
+	foreach ($skins as $skin_name => $available_skin) echo Less::style(
+		$available_skin['path'],
+		array(
+			'title' => $skin_name,
+			'rel'   => $skin_name == $skin ? 'stylesheet' : 'alternate stylesheet',
+		),
+		false,
+		$skin_imports
+	);
+		//Less::style($skin, null, false, $skin_imports),
+	echo
 		HTML::style('ui/jquery-ui.css'),
-		//HTML::style('ui/dark/jquery-ui.css'),
 		HTML::style('ui/site.css'),
 		HTML::style('http://fonts.googleapis.com/css?family=Cantarell');
-?>
+	?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
 	<?php echo
@@ -49,7 +58,7 @@
 		<div class="content">
 
 			<section id="logo" class="unit size1of6">
-				<h1><?php echo html::anchor('/', Kohana::config('site.site_name')) ?></h1>
+				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
 			</section>
 
 			<section id="search" class="unit size1of2">
@@ -68,6 +77,7 @@
 	</header><!-- #header -->
 
 	<!-- /HEADER -->
+
 
 <?php echo Widget::get('ad_top') ?>
 
@@ -148,16 +158,10 @@
 
 	<section id="dock" class="pinned">
 		<div class="content">
-			<div class="unit size2of5">
 
 <?php echo Widget::get('dock') ?>
 
-			</div>
-			<div class="unit size3of5 extra-actions">
-
-<?php echo Widget::get('dock2') ?>
-
-			</div>
+			<span id="customize" class="icon customize"><?php echo __('Customize') ?></span>
 		</div>
 	</section><!-- #dock -->
 
