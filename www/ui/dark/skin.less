@@ -1,12 +1,13 @@
 /*
  * Dark skin
  *
- * Copyright 2008 - 2009 Anqh
+ * Copyright (c) 2008 - 2010 Anqh
  */
 
+.ajax(@background: transparent)        { background: @background url(ajax.gif) right center no-repeat; }
 .border-radius(@radius: 5px)           { border-radius: @radius; -moz-border-radius: @radius; -webkit-border-radius: @radius; }
 .box-shadow(@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
-.ajax(@background: transparnet)        { background: @background url(ajax.gif) right center no-repeat; }
+.transition(@transition: all 1s ease-in-out) { transition: @transition; -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; }
 
 @body-background-color:                #111;
 @body-background-image:                url(8b.jpg);
@@ -21,12 +22,15 @@
 
 @separator-color:                      #333;
 @separator-border:                     1px dotted @separator-color;
+@separator-light-border:               1px dotted @body-background-color;
 
 @input-background:                     #222;
 @input-background-alt:                 #222;
 @input-color:                          #f2f2f2;
 @input-hint-color:                     #666;
 @input-border-bottom:                  #333;
+@input-border-left:                    @input-background;
+@input-border-right:                   @input-background;
 @input-border-top:                     #111;
 @input-border-color:                   @input-border-bottom;
 @input-border-hover-color:             #999;
@@ -37,6 +41,8 @@
 @button-bottom:                        #111;
 @button-border-top:                    #404040;
 @button-border-bottom:                 #111;
+@button-color:                         @link-color;
+@button-rgba:                          @link-rgba;
 
 @widget-background:                    #111;
 @widget-border-color:                  @input-border-color;
@@ -45,6 +51,7 @@
 @midget-background:                    rgba(0, 0, 0, 0.8);
 @midget-border-color:                  #222;
 @midget-border:                        1px solid @midget-border-color;
+.midget-shadow                         { .box-shadow(0 0 10px black); }
 
 @tooltip-background:                   rgba(0, 0, 0, 0.9);
 @tooltip-border:                       1px solid @midget-border-color;
@@ -72,7 +79,7 @@
 @badge-background:                     #222;
 @badge-background-alt:                 #333;
 
-@dock-background:                      rgba(0, 0, 0, 0.75);
+@dock-background:                      black;
 @dock-separator:                       1px solid #333;
 @dock-color:                           #f2f2f2;
 
@@ -90,6 +97,9 @@
 @tab-text-shadow:                      @mainmenu-text-shadow;
 @tab-selected-color:                   @mainmenu-selected-color;
 @tab-selected-shadow:                  @mainmenu-selected-shadow;
+
+@groove-light:                         #181818;
+@groove-shadow:                        black;
 
 @footer-background:                    black;
 

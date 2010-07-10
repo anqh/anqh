@@ -61,7 +61,7 @@ input[type="radio"] + label,
 
 input,
 textarea,
-select                                 { background: @input-background; border: 1px solid @input-background; border-bottom: 1px solid @input-border-bottom; .border-radius(5px); border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; }
+select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(5px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
 select                                 { border-bottom-color: @input-border-top; border-top-color: @input-border-bottom; }
 input:hover,
 select:hover,
@@ -104,7 +104,7 @@ button:::-moz-focus-inner              { border: 0; padding: 0; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
 input[type=submit],
-a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); }
+a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
 button.small,
 input[type=submit].small,
 a.action.small                         { font-size: 0.909em; padding: 0 0.667em; }
@@ -126,7 +126,7 @@ section article:hover .actions         { opacity: 1; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default:hover,
 button:hover,
 input[type="submit"]:hover,
-a.action:hover                         { color: @link-color; .box-shadow(0 0 5px @link-rgba); text-shadow: 0 0 5px @link-rgba; }
+a.action:hover                         { color: @button-color; .box-shadow(0 0 5px @button-rgba); text-shadow: 0 0 5px @button-rgba; }
 section article:hover .actions a[class*="-private"]:hover,
 a[class*="-private"]:hover             { color: @private-color; .box-shadow(0 0 4px @private-rgba); text-shadow: 0 0 5px @private-rgba; }
 section article:hover .actions a[class*="-add"]:hover,
@@ -152,7 +152,7 @@ a.expander:after                       { content: '\21D3'; }
 
 /***** JQUERY UI *****/
 
-.ui-widget-content                     { background: black; }
+.ui-widget-content                     { background: @widget-background; }
 .ui-widget-header                      { /*background: transparent;*/ }
 .ui-widget-header a                    { color: #ca3; }
 .ui-dialog                             { border: 1px solid #222; }
@@ -173,8 +173,8 @@ a.ui-state-hover,
 .ui-state-hover a:hover                { color: @tab-hover-color; text-decoration: none; text-shadow: @tab-hover-shadow; }
 .ui-state-active,
 .ui-widget-content .ui-state-active    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
-.ui-tabs-nav .ui-state-default         { border-bottom: 1px solid #181818; }
-.ui-tabs-nav .ui-state-default a       { border-bottom: 1px solid black; border-left: 1px solid #181818; border-right: 1px solid black; }
+.ui-tabs-nav .ui-state-default         { border-bottom: 1px solid @groove-light; }
+.ui-tabs-nav .ui-state-default a       { border-bottom: 1px solid @groove-shadow; border-left: 1px solid @groove-light; border-right: 1px solid @groove-shadow; }
 .ui-tabs-nav .ui-state-default:first-child a { border-left: 0 none; }
 .ui-tabs-nav .ui-state-default:last-child a  { border-right: 0 none; }
 .ui-tabs-nav .ui-state-hover           { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
@@ -221,17 +221,22 @@ a.ui-state-hover,
 
 /***** ICONS *****/
 
+span.icon,
 li.icon,
-var.icon                               { font-size: 0.75em; padding-left: 16px; }
+var.icon                               { /*font-size: 0.75em;*/ opacity: .75; padding-left: 20px; .transition(opacity .25s ease-in-out); }
+span.icon:hover,
+li.icon:hover,
+var.icon:hover                         { opacity: 1; }
 .icon[title]                           { cursor: help; }
-.icon.images                           { background: url(/ui/icon/image.gif) no-repeat left center; }
+.icon.images                           { background: url(16/picture.png) no-repeat left center; }
 .icon.comments,
-.icon.posts                            { background: url(/ui/icon/comment.gif) no-repeat left center; }
-.icon.rate                             { background: url(/ui/icon/rate.gif) no-repeat left center; }
-.icon.rate-half                        { background: url(/ui/icon/rate_half.png) no-repeat left center; }
-.icon.rate-empty                       { background: url(/ui/icon/rate_empty.png) no-repeat left center; }
-.icon.topics                           { background: url(/ui/icon/comments.gif) no-repeat left center; }
-.icon.views                            { background: url(/ui/icon/eye.gif) no-repeat left center; }
+.icon.posts                            { background: url(16/spechbubble.png) no-repeat left center; }
+.icon.customize                        { background: url(16/page_layout.png) no-repeat 5px center; }
+.icon.rate                             { background: url(16/star_fav.png) no-repeat left center; }
+.icon.rate-half                        { background: url(16/star_fav_half.png) no-repeat left center; }
+.icon.rate-empty                       { background: url(16/star_fav_empty.png) no-repeat left center; }
+.icon.topics                           { background: url(16/spechbubble_2.png) no-repeat left center; }
+.icon.views                            { background: url(16/eye.png) no-repeat left center; }
 
 /***** /ICONS *****/
 
@@ -240,7 +245,7 @@ var.icon                               { font-size: 0.75em; padding-left: 16px; 
 
 ol.rating                              { list-style: none; }
 ol.rating li                           { display: inline; }
-ol.rating .icon                        { display: inline-block; height: 1em; width: 0; }
+ol.rating .icon                        { display: inline-block; height: 1em; min-height: 16px; width: 0; }
 
 /***** /RATING *****/
 

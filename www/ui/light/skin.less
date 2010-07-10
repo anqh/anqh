@@ -1,0 +1,107 @@
+/*
+ * Light skin
+ *
+ * Copyright (c) 2010 Anqh
+ */
+
+.ajax(@background: transparent)        { background: @background url(ajax.gif) right center no-repeat; }
+.border-radius(@radius: 5px)           { border-radius: @radius; -moz-border-radius: @radius; -webkit-border-radius: @radius; }
+.box-shadow(@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
+.transition(@transition: all 1s ease-in-out) { transition: @transition; -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; }
+
+@body-background-color:                white;
+@body-background-image:                none;
+@section-background:                   white;
+@section-background-alt:               white;
+@mod-background:                       white;
+
+@header-color:                         #181818;
+@header-shadow:                        none;
+@header-font:                          Cantarell, Arial, sans-serif;
+@subheader-color:                      #181818;
+
+@separator-color:                      #333;
+@separator-border:                     1px dotted @separator-color;
+@separator-light-border:               1px dotted #a0a0a0;
+
+@input-background:                     white;
+@input-background-alt:                 white;
+@input-color:                          black;
+@input-hint-color:                     #a0a0a0;
+@input-border-bottom:                  #a0a0a0;
+@input-border-left:                    @input-border-bottom;
+@input-border-right:                   @input-border-bottom;
+@input-border-top:                     @input-border-bottom;
+@input-border-color:                   #9c1f20;
+@input-border-hover-color:             #9c1f20;
+@input-border-focus-color:             #9c1f20;
+
+@button-background:                    #a6a49e;
+@button-top:                           #a6a49e;
+@button-bottom:                        #404040;
+@button-border-top:                    #a6a49e;
+@button-border-bottom:                 #404040;
+@button-color:                         #3ac;
+@button-rgba:                          rgba(51, 170, 204, 0.69);
+
+@widget-background:                    white;
+@widget-border-color:                  @input-border-color;
+@widget-border:                        1px solid @widget-border-color;
+
+@midget-background:                    white;
+@midget-border-color:                  transparent;
+@midget-border:                        1px solid @midget-border-color;
+.midget-shadow                         { }
+
+@tooltip-background:                   rgba(0, 0, 0, 0.9);
+@tooltip-border:                       1px solid @midget-border-color;
+
+@text-color:                           #6f6e67;
+@link-color:                           #a02020;
+@link-rgba:                            rgba(160, 32, 32, 0.69);
+@link-hover-color:                     #a0a0a0;
+@action-background:                    #222;
+@action-link-color:                    black;
+@positive-color:                       #ac3;
+@positive-rgba:                        rgba(170, 204, 51, 0.69);
+@negative-color:                       #c33;
+@negative-rgba:                        rgba(204, 51, 51, 69);
+@error-background:                     red;
+@info-background:                      green;
+@error-color:                          @action-link-color;
+@info-color:                           @action-link-color;
+@tip-color:                            #999;
+@owner-color:                          #a9ba6d;
+@my-color:                             #b0a88a;
+@private-color:                        #a3a;
+@private-rgba:                         rgba(170, 51, 170, 69);
+
+@badge-background:                     #222;
+@badge-background-alt:                 #333;
+
+@dock-background:                      #d8d7d2;
+@dock-separator:                       1px solid #404040;
+@dock-color:                           @text-color;
+
+@mainmenu-background:                  #a6a49e;
+@mainmenu-link-background:             @mainmenu-background;
+@mainmenu-link-hover-background:       @mainmenu-background;
+@mainmenu-color:                       white;
+@mainmenu-text-shadow:                 none;
+@mainmenu-hover-color:                 @link-hover-color;
+@mainmenu-selected-color:              white;
+@mainmenu-selected-shadow:             none;
+
+@tab-background:                       @mainmenu-link-background;
+@tab-color:                            @header-color;
+@tab-text-shadow:                      @mainmenu-text-shadow;
+@tab-selected-color:                   @header-color;
+@tab-selected-shadow:                  @mainmenu-selected-shadow;
+
+@groove-light:                         #d8d7d2;
+@groove-shadow:                        #d8d7d2;
+
+@footer-background:                    #c0beb6;
+
+@import "../layout.less";
+@import "../widget.less";

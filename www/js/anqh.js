@@ -82,6 +82,26 @@ function hovercard(tip) {
 }
 
 
+// Theme switcher
+jQuery.fn.skinSwitcher = function() {
+
+	$(this).click(function() {
+		loadSkin($(this).attr('rel'));
+		$.ajax({ url: $(this).attr('href') });
+		return false;
+	});
+
+	function loadSkin(skin) {
+		$('link[@rel*=style][title]').each(function(i) {
+			this.disabled = true;
+			if ($(this).attr('title') == skin) {
+				this.disabled = false;
+			}
+		});
+	}
+
+};
+
 $(function() {
 
 	// Google Maps
@@ -102,6 +122,9 @@ $(function() {
 		position: 'top center'
 	});
 
+
+	// Theme
+	$('#dock a.theme').skinSwitcher();
 
 	// Delete comment
 	$("a.comment-delete").each(function(i) {
