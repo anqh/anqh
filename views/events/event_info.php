@@ -16,6 +16,7 @@
 
 	<dt><?php echo __('Opening hours') ?></dt>
 	<dd><?php echo HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true) ?></dd>
+	<?php if ($event->stamp_begin != $event->stamp_end): ?>
 	<dd><?php echo $event->stamp_end ?
 			__('From :from to :to', array(
 				':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
@@ -24,6 +25,7 @@
 			__('From :from onwards', array(
 				':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
 			)) ?></dd>
+	<?php endif; ?>
 
 	<?php if ($event->venue->id): ?>
 	<dt><?php echo __('Venue') ?></dt>

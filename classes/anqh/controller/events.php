@@ -58,6 +58,11 @@ class Anqh_Controller_Events extends Controller_Template {
 		$first = mktime(0, 0, 0, $month, $day, $year);
 		$last  = strtotime('+1 week', $first);
 
+		// Set actions
+		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
+		}
+
 		// Load events
 		$events = Jelly::select('event')->between($first, $last, 'ASC')->execute_grouped();
 		if (count($events)) {
@@ -345,10 +350,13 @@ class Anqh_Controller_Events extends Controller_Template {
 			Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
 			$cancel = Request::back(Route::model($event), true);
 
+			$this->page_title = HTML::chars($event->name);
+
 			// Set actions
 			if (Permission::has($event, Model_Event::PERMISSION_DELETE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($event, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete event'), 'class' => 'event-delete');
 			}
+
 
 		} else {
 
@@ -357,6 +365,8 @@ class Anqh_Controller_Events extends Controller_Template {
 			Permission::required($event, Model_Event::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
+			$this->page_title = __('New event');
+
 			$event->author = self::$user;
 			$newsfeed = true;
 
@@ -364,19 +374,40 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Handle post
 		$errors = array();
-		if ($_POST) {
+		if ($_POST && Security::csrf_valid()) {
 			$post = Arr::extract($_POST, Model_Event::$editable_fields);
 			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time'])) {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
 			$event->set($post);
+
+			// GeoNames
+			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
+				$event->city = $city;
+			}
+
 			try {
+				$validation = 'event';
 				$event->validate();
+
+				// Add venue?
+				if (empty($_POST['venue']) && $_POST['venue_name']) {
+					$venue = Jelly::factory('venue');
+					$venue->name = $_POST['venue_name'];
+					$venue->address = $_POST['address'];
+					$venue->city_name = $_POST['city_name'];
+					$venue->city = $city;
+					$venue->event_host = true;
+					$validation = 'venue';
+					$venue->save();
+					$event->venue = $venue;
+				}
 
 				// Make sure end time is after start time, i.e. the next day
 				if ($event->stamp_end < $event->stamp_begin) {
 					$event->stamp_end += 60 * 60 * 24;
 				}
+				$validation = 'event';
 				$event->save();
 
 				// News feed
@@ -387,6 +418,9 @@ class Anqh_Controller_Events extends Controller_Template {
 				$this->request->redirect(Route::model($event));
 			} catch (Validate_Exception $e) {
 				$errors = $e->array->errors('validation');
+				if ($validation == 'venue' && isset($errors['name'])) {
+					$errors['venue_name'] = Arr::get_once($errors, 'name');
+				}
 			}
 		}
 
@@ -396,7 +430,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			'errors' => $errors,
 			'cancel' => $cancel,
 			'hidden' => array(
-				'city'  => $event->city ? $event->city->id : 0,
+				'city_id'  => $event->city ? $event->city->id : 0,
 				'venue' => $event->venue ? $event->venue->id : 0,
 			),
 			'groups' => array(
@@ -408,18 +442,17 @@ class Anqh_Controller_Events extends Controller_Template {
 					),
 				),
 				'when' => array(
-					'header' => __('When?'),
-					'fields' => array(
-						'stamp_begin' => array(),
-						'stamp_end'   => array(),
-					)
-				),
-				'where' => array(
-					'header' => __('Where?'),
-					'fields' => array(
-						'venue_name' => array(),
-						'city_name'  => array(),
-						'age'        => array(),
+					'header'     => __('When?'),
+					'attributes' => array(
+						'class' => 'horizontal',
+					),
+					'fields'     => array(
+						'stamp_begin' => array(
+							'default_time' => '22:00',
+						),
+						'stamp_end'   => array(
+							'default_time' => '04:00',
+						),
 					)
 				),
 				'tickets' => array(
@@ -428,6 +461,17 @@ class Anqh_Controller_Events extends Controller_Template {
 						'price'  => array('attributes' => array('title' => __('Set to zero for free entry'))),
 						'price2' => array(),
 					),
+				),
+				'where' => array(
+					'header' => __('Where?'),
+					'fields' => array(
+						'venue_name' => array(),
+						'address'    => array(
+							'model' => $event->venue,
+						),
+						'city_name'  => array(),
+						'age'        => array(),
+					)
 				),
 				'who' => array(
 					'header' => __('Who?'),
@@ -475,11 +519,13 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 		Widget::add('foot', HTML::script_source('
 var venues = ' . json_encode($hosts) . ';
+var venue = "";
 $("#field-venue-name").autocomplete({
 	minLength: 0,
 	source: venues,
 	focus: function(event, ui) {
 		$("input[name=venue_name]").val(ui.item.label);
+		venue = ui.item.label;
 		return false;
 	},
 	select: function(event, ui) {
@@ -488,6 +534,11 @@ $("#field-venue-name").autocomplete({
 		$("input[name=city_name]").val(ui.item.city);
 		$("input[name=city]").val(ui.item.city_id);
 		return false;
+	},
+	close: function(event, ui) {
+		if ($("input[name=venue_name]").val() != venue) {
+			$("input[name=venue]").val("");
+		}
 	}
 })
 .data("autocomplete")._renderItem = function(ul, item) {
