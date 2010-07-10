@@ -18,6 +18,7 @@ body                                   { background: @body-background-color @bod
 
 #dock                                  { background: @dock-background; .box-shadow(0 0 10px @dock-background); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
 #dock                                  { margin-top: -25px; .transition(margin-top .25s ease-in-out); }
+#dock.open,
 #dock:hover                            { margin-top: 0; }
 #dock.pinned                           { position: fixed; }
 #dock label,
@@ -108,12 +109,6 @@ section article + article              { border-top: 1px solid @separator-color;
 .mod article header ul.details li      { border-left: 1px solid @body-background-color; float: left; margin: 0 -5px 0 -6px; padding: 0 5px; }
 
 .mod[class*="-edit"] .container        { overflow: visible; }
-/*section article + aside,
-section article + article,
-ul.contentlist li + li                 { border-top: @separator-border; padding-top: 0.8333em; }
-li.line + li.line                      { border-top: @separator-border; }
-section aside + article                { padding-top: 0.8333em; }
-*/
 
 #title,
 #main .mod,
@@ -130,7 +125,6 @@ aside h5                               { text-shadow: @mainmenu-text-shadow; }
 aside .mod .container li               { border-top: 1px solid @groove-light; border-bottom: 1px solid @groove-shadow; text-shadow: @mainmenu-text-shadow; }
 aside .mod .container form li          { border-top: 0 none; border-bottom: 0 none; }
 aside .mod .container li.group         { border: 0 none; }
-/*aside .mod .container li a             { display: block; }*/
 aside .mod .container li:first-child   { border-top: 0 none; }
 aside .mod .container li:last-child    { border-bottom: 0 none; }
 

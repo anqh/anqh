@@ -86,16 +86,16 @@ function hovercard(tip) {
 jQuery.fn.skinSwitcher = function() {
 
 	$(this).click(function() {
-		loadSkin($(this).attr('rel'));
+		switchSkin($(this).attr('rel'));
 		$.ajax({ url: $(this).attr('href') });
 		return false;
 	});
 
-	function loadSkin(skin) {
+	function switchSkin(skin) {
+		$('link[@rel*=style][title=' + skin + ']').first().disabled = false;
 		$('link[@rel*=style][title]').each(function(i) {
-			this.disabled = true;
-			if ($(this).attr('title') == skin) {
-				this.disabled = false;
+			if ($(this).attr('title') != skin) {
+				this.disabled = true;
 			}
 		});
 	}

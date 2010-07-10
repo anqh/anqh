@@ -19,6 +19,7 @@ h6 span                                { color: @text-color; }
 h2                                     { color: @header-color; text-shadow: @header-shadow; }
 article header:first-child h3,
 article header:first-child h4          { padding-top: 0; }
+legend,
 header h3,
 header h4                              { padding-bottom: 1.111em; }
 legend,
@@ -62,6 +63,9 @@ input[type="radio"] + label,
 input,
 textarea,
 select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(5px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
+fieldset.horizontal input,
+fieldset.horizontal textarea,
+fieldset.horizontal select             { margin: 0 0.5em; }
 select                                 { border-bottom-color: @input-border-top; border-top-color: @input-border-bottom; }
 input:hover,
 select:hover,
@@ -81,6 +85,10 @@ input.hint                             { color: @input-hint-color; font-style: i
 input.private                          { border-color: @private-color; }
 
 fieldset a                             { vertical-align: middle; }
+
+input.date                             { width: 8em; }
+input.time                             { width: 4em; }
+select.time                            { width: 6em; }
 
 form .notice .info,
 form .error .info                      { float: right; .border-radius(4px 4px 0 0); padding: 0 0.5em; }
@@ -335,21 +343,21 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpHeader ul ul                  { /*background: @section-background;*/ display: none; left: 0; position: absolute; top: 1.6667em; }
 .markItUpHeader ul ul li               { float: none; width: auto; }
 
-.markItUpHeader .button-bold a         { background-image: url(/ui/icon/text_bold.png); }
-.markItUpHeader .button-italic a       { background-image: url(/ui/icon/text_italic.png); }
-.markItUpHeader .button-underline a    { background-image: url(/ui/icon/text_underline.png); }
-.markItUpHeader .button-size a         { background-image: url(/ui/icon/text_size.png); }
-.markItUpHeader .button-small a        { background-image: url(/ui/icon/text_size_small.png); }
-.markItUpHeader .button-normal a       { background-image: url(/ui/icon/text_size_normal.png); }
-.markItUpHeader .button-big a          { background-image: url(/ui/icon/text_size_big.png); }
-.markItUpHeader .button-picture a      { background-image: url(/ui/icon/photo_link.png); }
-.markItUpHeader .button-link a         { background-image: url(/ui/icon/world_link.png); }
-.markItUpHeader .button-list-bullets a { background-image: url(/ui/icon/text_list_numbers.png); }
-.markItUpHeader .button-list-numbers a { background-image: url(/ui/icon/text_list_bullets.png); }
-.markItUpHeader .button-list-item a    { background-image: url(/ui/icon/text_list_item.png); }
-.markItUpHeader .button-quote a        { background-image: url(/ui/icon/text_quote.png); }
-.markItUpHeader .button-code a         { background-image: url(/ui/icon/page_white_code.png); }
-.markItUpHeader .button-clear a        { background-image: url(/ui/icon/page_white_code_red.png); }
+.markItUpHeader .button-bold a         { background-image: url(16/font_bold.png); }
+.markItUpHeader .button-italic a       { background-image: url(16/font_italic.png); }
+.markItUpHeader .button-underline a    { background-image: url(16/font_underline.png); }
+.markItUpHeader .button-size a         { background-image: url(16/font_size.png); }
+.markItUpHeader .button-small a        { background-image: url(16/sq_minus.png); }
+.markItUpHeader .button-normal a       { background-image: url(16/square_shape.png); }
+.markItUpHeader .button-big a          { background-image: url(16/sq_plus.png); }
+.markItUpHeader .button-picture a      { background-image: url(16/picture.png); }
+.markItUpHeader .button-link a         { background-image: url(16/link.png); }
+.markItUpHeader .button-list-bullets a { background-image: url(16/list_bullets.png); }
+.markItUpHeader .button-list-numbers a { background-image: url(16/list_num.png); }
+.markItUpHeader .button-list-item a    { background-image: url(16/indent_increase.png); }
+.markItUpHeader .button-quote a        { background-image: url(16/spechbubble_sq_line.png); }
+.markItUpHeader .button-code a         { background-image: url(16/brackets.png); }
+.markItUpHeader .button-clear a        { background-image: url(16/brush.png); }
 
 .markItUpContainer textarea            { margin-top: -2em; padding-top: 2em; }
 
