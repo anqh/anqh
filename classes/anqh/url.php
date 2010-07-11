@@ -31,10 +31,11 @@ abstract class Anqh_URL extends Kohana_URL {
 	/**
 	 * Get URL for user
 	 *
-	 * @param   mixed  $user
+	 * @param   mixed   $user
+	 * @param   string  $action
 	 * @return  string
 	 */
-	public static function user($user) {
+	public static function user($user, $action = null) {
 
 		// User id given
 		if (is_numeric($user) && (int)$user > 0) {
@@ -50,7 +51,7 @@ abstract class Anqh_URL extends Kohana_URL {
 
 		// Username given
 		if (is_string($user)) {
-			return Route::get('user')->uri(array('username' => urlencode($user)));
+			return Route::get('user')->uri(array('username' => urlencode($user), 'action' => $action));
 		}
 
 		return null;

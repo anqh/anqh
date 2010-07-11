@@ -26,7 +26,7 @@ class Anqh_Controller_User extends Controller_Template {
 				case 'delete':
 			    if (Permission::has($comment, Model_User_Comment::PERMISSION_DELETE, self::$user)) {
 				    $comment->delete();
-				    $user->num_comments--;
+				    $user->comment_count--;
 				    $user->save();
 			    }
 			    break;
@@ -55,24 +55,21 @@ class Anqh_Controller_User extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
+		$user = $this->_get_user();
 
-		// Get our user, default to logged in user if no username given
-		$username = urldecode((string)$this->request->param('username'));
-		$user = ($username == '') ? self::$user : Model_User::find_user($username);
-		if (!$user)	{
-			$this->request->redirect(Route::get('users')->uri());
-		}
+		// Set generic page parameters
+		$this->_set_page($user);
 
 		// Helper variables
 		$owner = (self::$user && self::$user->id == $user->id);
 
-		$this->page_title = HTML::chars($user->username);
-		if ($user->title) {
-			$this->page_subtitle = HTML::chars($user->title);
-		}
-
 		// Portrait
 		Widget::add('side', View_Module::factory('user/image', array(
+			'user' => $user,
+		)));
+
+		// Info
+		Widget::add('side', View_Module::factory('user/info', array(
 			'user' => $user,
 		)));
 
@@ -91,14 +88,14 @@ class Anqh_Controller_User extends Controller_Template {
 					$comment->save();
 
 					// Receiver
-					$user->num_comments++;
+					$user->comment_count++;
 					if (!$owner) {
-						$user->new_comments++;
+						$user->new_comment_count++;
 					}
 					$user->save();
 
 					// Sender
-					self::$user->num_comments_left++;
+					self::$user->left_comment_count++;
 					self::$user->save();
 
 					// Newsfeed
@@ -159,6 +156,202 @@ class Anqh_Controller_User extends Controller_Template {
 				'user'      => $user
 			));
 		}
+	}
+
+
+	/**
+	 * Action: settings
+	 */
+	public function action_settings() {
+		$this->history = false;
+
+		$user = $this->_get_user();
+		Permission::required($user, Model_User::PERMISSION_UPDATE, self::$user);
+
+		// Set generic page parameters
+		$this->_set_page($user);
+
+		// Handle post
+		$errors = array();
+		if ($_POST && Security::csrf_valid()) {
+			foreach (Model_User::$editable_fields as $field) {
+				if (isset($_POST[$field])) {
+					$user->$field = $_POST[$field];
+				}
+			}
+
+			// GeoNames
+			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
+				$user->city = $city;
+			}
+
+			$user->modified = time();
+
+			try {
+				$user->save();
+				$this->request->redirect(URL::user($user));
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
+			}
+		}
+
+		// Build form
+		$form = array(
+			'values' => $user,
+			'errors' => $errors,
+			'cancel' => URL::user($user),
+			'hidden' => array(
+				'city_id'   => $user->city ? $user->city->id : 0,
+				'latitude'  => $user->latitude,
+				'longitude' => $user->longitude,
+			),
+			'groups' => array(
+				'basic' => array(
+					'header' => __('Basic information'),
+					'fields' => array(
+						'name'   => array(),
+						'gender' => array(
+							'input' => 'radio',
+						),
+						'dob' => array(
+							'pretty_format' => 'j.n.Y',
+						),
+						'title'       => array(),
+						'description' => array(
+							'attributes' => array(
+								'rows' => 5
+							)
+						),
+					),
+				),
+				'contact' => array(
+					'header' => __('Contact information'),
+					'fields' => array(
+						'email'    => array(),
+						'homepage' => array(),
+						'address_street' => array(),
+						'address_zip'    => array(),
+						'address_city'   => array(),
+					),
+				),
+				'forum' => array(
+					'header' => __('Forum settings'),
+					'fields' => array(
+						'signature' => array(
+							'attributes' => array(
+								'rows' => 5
+							)
+						),
+					)
+				)
+			)
+		);
+
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+
+		// Autocomplete
+		$this->autocomplete_city('address_city', 'city_id');
+
+		// Date picker
+		$options = array(
+			'changeMonth'     => true,
+			'changeYear'      => true,
+			'dateFormat'      => 'd.m.yy',
+			'defaultDate'     => date('j.n.Y', $user->dob),
+			'dayNames'        => array(
+				__('Sunday'), __('Monday'), __('Tuesday'), __('Wednesday'), __('Thursday'), __('Friday'), __('Saturday')
+			),
+			'dayNamesMin'    => array(
+				__('Su'), __('Mo'), __('Tu'), __('We'), __('Th'), __('Fr'), __('Sa')
+			),
+			'firstDay'        => 1,
+			'monthNames'      => array(
+				__('January'), __('February'), __('March'), __('April'),
+				__('May'), __('June'), __('July'), __('August'),
+				__('September'), __('October'), __('November'), __('December')
+			),
+			'monthNamesShort' => array(
+				__('Jan'), __('Feb'), __('Mar'), __('Apr'),
+				__('May'), __('Jun'), __('Jul'), __('Aug'),
+				__('Sep'), __('Oct'), __('Nov'), __('Dec')
+			),
+			'nextText'        => __('&raquo;'),
+			'prevText'        => __('&laquo;'),
+			'showWeek'        => true,
+			'showOtherMonths' => true,
+			'weekHeader'      => __('Wk'),
+			'yearRange'       => '1900:+0',
+		);
+		Widget::add('foot', HTML::script_source('$("#field-dob").datepicker(' . json_encode($options) . ');'));
+
+		// Maps
+		Widget::add('foot', HTML::script_source('
+$(function() {
+	$("#fields-contact ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
+
+	$("#map").googleMap(' . ($user->latitude ? json_encode(array('marker' => true, 'lat' => $user->latitude, 'long' => $user->longitude)) : '') . ');
+
+	$("input[name=address_street], input[name=address_city]").blur(function(event) {
+		var address = $("input[name=address_street]").val();
+		var city = $("input[name=address_city]").val();
+		if (address != "" && city != "") {
+			var geocode = address + ", " + city;
+			geocoder.geocode({ address: geocode }, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK && results.length) {
+				  map.setCenter(results[0].geometry.location);
+				  $("input[name=latitude]").val(results[0].geometry.location.lat());
+				  $("input[name=longitude]").val(results[0].geometry.location.lng());
+				  var marker = new google.maps.Marker({
+				    position: results[0].geometry.location,
+				    map: map
+				  });
+				}
+			});
+		}
+	});
+
+});
+'));
+	}
+
+
+	/**
+	 * Get user or redirect to user list
+	 *
+	 * @param   boolean  $redirect
+	 * @return  Model_User
+	 */
+	protected function _get_user($redirect = true) {
+
+		// Get our user, default to logged in user if no username given
+		$username = urldecode((string)$this->request->param('username'));
+		$user = ($username == '') ? self::$user : Model_User::find_user($username);
+		if (!$user && $redirect)	{
+			$this->request->redirect(Route::get('users')->uri());
+		}
+
+		return $user;
+	}
+
+
+	/**
+	 * Set generic page parameters
+	 *
+	 * @param   Model_User  $user
+	 */
+	protected function _set_page(Model_User $user) {
+
+		// Set page title
+		$this->page_title = HTML::chars($user->username);
+		if ($user->title) {
+			$this->page_subtitle = HTML::chars($user->title);
+		}
+
+		// Set actions
+		if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array('link' => URL::user($user, 'settings'), 'text' => __('Settings'), 'class' => 'settings');
+		}
+
 	}
 
 }

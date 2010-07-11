@@ -29,6 +29,13 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	protected static $_users = array();
 
+	public static $editable_fields = array(
+		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage',
+		'image', 'name', 'password', 'password_confirm', 'picture', 'signature',
+		'street_address', 'street_zip', 'street_city', 'title', 'username',
+	);
+
+
 	/**
 	 * Create new model
 	 *
@@ -42,6 +49,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			->fields(array(
 				'id' => new Field_Primary,
 				'username' => new Field_String(array(
+					'label'  => __('Username'),
 					'unique' => true,
 					'rules'  => array(
 						'not_empty'  => array(true),
@@ -53,27 +61,30 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'username_clean' => new Field_String(array(
 					'unique' => true,
 					'rules'  => array(
-						'not_empty' => array(true),
+						'not_empty' => null,
 					)
 				)),
 				'password' => new Field_Password(array(
+					'label'     => __('Password'),
 					'hash_with' => array($visitor, 'hash_password'),
 					'rules'     => array(
-						'not_empty'  => array(true),
+						'not_empty'  => null,
 						'min_length' => array(5),
 					)
 				)),
 				'password_confirm' => new Field_Password(array(
+					'label'     => __('Password confirmation'),
 					'in_db'     => false,
 					'callbacks' => array(
 						'matches' => array('Anqh_Model_User', '_check_password_matches')
 					),
 					'rules' => array(
-						'not_empty'  => array(true),
+						'not_empty'  => null,
 						'min_length' => array(max((int)$visitor->get_config('password.length_min'), 1)),
 					)
 				)),
 				'email' => new Field_Email(array(
+					'label'  => __('Email'),
 					'unique' => true,
 					'filters' => array(
 						'mb_strtolower' => null,
@@ -81,55 +92,86 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				)),
 
 				'name' => new Field_String(array(
+					'label' => __('Name'),
 					'rules' => array(
 						'min_length' => array(1),
 						'max_length' => array(50),
 					),
 				)),
+				'dob' => new Field_Date(array(
+					'label'  => __('Date of Birth'),
+					'format' => 'Y-m-d',
+					'pretty_format' => 'j.n.Y',
+				)),
+				'gender' => new Field_Enum(array(
+					'label'   => __('Gender'),
+					'choices' => array(
+						'f' => __('Female'),
+						'm' => __('Male'),
+					)
+				)),
+				'avatar' => new Field_String(array(
+					'label' => __('Avatar'),
+				)),
 				'address_street' => new Field_String(array(
+					'label' => __('Street address'),
 					'rules' => array(
 						'max_length' => array(50),
 					),
 				)),
 				'address_zip' => new Field_String(array(
+					'label' => __('Zip code'),
 					'rules' => array(
 						'min_length' => array(4),
 						'max_length' => array(5),
-						'digit'      => array()
+						'digit'      => null
 					),
 				)),
 				'address_city' => new Field_String(array(
-					'rules' => array(
+					'label'   => __('City'),
+					'rules'   => array(
 						'max_length' => array(50)
 					),
 				)),
-				'city' => new Field_BelongsTo,
-				'dob'  => new Field_String,
-				'gender' => new Field_Enum(array(
-					'choices' => array('m', 'f')
+				'city'        => new Field_BelongsTo(array(
+					'column'  => 'city_id',
+					'foreign' => 'geo_city',
 				)),
-				'avatar'    => new Field_String,
-				'title'     => new Field_String,
-				'signature' => new Field_String,
+				'latitude'    => new Field_Float,
+				'longitude'   => new Field_Float,
+				'title'       => new Field_String(array(
+					'label' => __('Title'),
+				)),
+				'signature'   => new Field_Text(array(
+					'label' => __('Signature'),
+				)),
+				'description' => new Field_Text(array(
+					'label' => __('Description'),
+				)),
+				'homepage'    => new Field_URL(array(
+					'label' => __('Homepage'),
+				)),
 
-				//'image' => new Field_File()          => array('upload::valid', 'upload::type[gif,jpg,png]', 'upload::size[400K]'),
-
+				'login_count' => new Field_Integer(array(
+					'column' => 'logins',
+				)),
 				'last_login' => new Field_Timestamp,
 				'created'    => new Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
+				'modified' => new Field_Timestamp,
 
 				// Foreign values, should make own models?
-				'num_posts' => new Field_Integer(array(
+				'post_count' => new Field_Integer(array(
 					'column' => 'posts',
 				)),
-				'new_comments' => new Field_Integer(array(
+				'new_comment_count' => new Field_Integer(array(
 					'column' => 'newcomments',
 				)),
-				'num_comments' => new Field_Integer(array(
+				'comment_count' => new Field_Integer(array(
 					'column' => 'comments',
 				)),
-				'num_comments_left' => new Field_Integer(array(
+				'left_comment_count' => new Field_Integer(array(
 					'column' => 'commentsleft',
 				)),
 
@@ -139,6 +181,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'roles' => new Field_ManyToMany,
 
 				'picture' => new Field_String,
+				//'image'   => new Field_File,
 				'images'  => new Field_ManyToMany,
 				'friends' => new Field_HasMany(array(
 					'foreign' => 'friend',
@@ -329,10 +372,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		$new = array();
 
 		// Profile comments
-		if ($this->new_comments) {
+		if ($this->new_comment_count) {
 			$new['new-comments'] = HTML::anchor(
 				URL::user($this),
-				__(':commentsC', array(':comments' => $this->new_comments)),
+				__(':commentsC', array(':comments' => $this->new_comment_count)),
 				array('title' => __('New comments')
 			));
 		}

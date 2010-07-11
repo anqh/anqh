@@ -10,6 +10,16 @@
 class Anqh_Validate extends Kohana_Validate {
 
 	/**
+	 * Tests if a string is a valid date string.
+	 *
+	 * @param   string|integer  $date
+	 * @return  boolean
+	 */
+	public static function date($date) {
+		return is_numeric($date) || (strtotime($date) !== FALSE);
+	}
+
+	/**
 	 * Validate time
 	 *
 	 * @static

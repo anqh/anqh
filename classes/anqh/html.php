@@ -240,7 +240,7 @@ class Anqh_HTML extends Kohana_HTML {
 			}
 		}
 
-		return empty($nick) ? __('Unknown') : html::anchor(url::user($nick), $nick, array('class' => implode(' ', $class)));
+		return empty($nick) ? __('Unknown') : HTML::anchor(URL::user($nick), $nick, array('class' => implode(' ', $class)));
 	}
 
 }
