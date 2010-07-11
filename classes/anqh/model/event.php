@@ -29,8 +29,8 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'          => new Field_Primary,
-			'name'        => new Field_String(array(
+			'id'   => new Field_Primary,
+			'name' => new Field_String(array(
 				'label' => __('Name'),
 				'rules' => array(
 					'not_empty'  => array(true),
@@ -38,8 +38,8 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 					'max_length' => array(100),
 				),
 			)),
-			'title'       => new Field_String,
-			'homepage'    => new Field_URL(array(
+			'title'    => new Field_String,
+			'homepage' => new Field_URL(array(
 				'label' => __('Homepage'),
 			)),
 			'stamp_begin' => new Field_DateTime(array(
@@ -50,7 +50,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 					'not_empty' => null,
 				),
 			)),
-			'stamp_end'   => new Field_DateTime(array(
+			'stamp_end' => new Field_DateTime(array(
 				'label'      => __('To'),
 				'label_time' => __('To'),
 				'show_date'  => false,
@@ -58,58 +58,59 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 					'not_empty' => null,
 				),
 			)),
-			'venue'       => new Field_BelongsTo(array(
-				'null'    => true,
+			'venue' => new Field_BelongsTo(array(
+				'null' => true,
 			)),
 			'venue_name'  => new Field_String(array(
 				'label' => __('Venue'),
 			)),
-			'venue_url'   => new Field_URL,
-			'city'        => new Field_BelongsTo(array(
+			'venue_url' => new Field_URL,
+			'city'      => new Field_BelongsTo(array(
 				'foreign' => 'geo_city',
 				'null'    => true,
 			)),
-			'city_name'   => new Field_String(array(
+			'city_name' => new Field_String(array(
 				'label' => __('City'),
 				'rules' => array(
 					'not_empty' => null,
 				),
 			)),
-			'country'     => new Field_BelongsTo(array(
+			'country' => new Field_BelongsTo(array(
 				'foreign' => 'geo_country',
 				'null'    => true,
 			)),
 
-			'dj'          => new Field_Text(array(
+			'dj' => new Field_Text(array(
 				'label' => __('Performers'),
 			)),
-			'info'        => new Field_Text(array(
-				'label' => __('Other information'),
+			'info' => new Field_Text(array(
+				'label'  => __('Other information'),
+				'bbcode' => true,
 			)),
-			'age'         => new Field_Integer(array(
+			'age' => new Field_Integer(array(
 				'label' => __('Age limit'),
 				'null'  => true,
 				'rules' => array(
 					'range' => array(0, 99),
 				)
 			)),
-			'price'       => new Field_Float(array(
+			'price' => new Field_Float(array(
 				'label' => __('At the door'),
 				'null'  => true,
 			)),
-			'price2'      => new Field_Float(array(
+			'price2' => new Field_Float(array(
 				'label' => __('Presale'),
 				'null'  => true,
 			)),
-			'music'       => new Field_Text,
+			'music' => new Field_Text,
 
-			'created'     => new Field_Timestamp(array(
+			'created' => new Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
-			'modified'    => new Field_Timestamp(array(
+			'modified' => new Field_Timestamp(array(
 				'auto_now_update' => true,
 			)),
-			'author'      => new Field_BelongsTo(array(
+			'author' => new Field_BelongsTo(array(
 				'column'  => 'author_id',
 				'foreign' => 'user',
 			)),
@@ -117,7 +118,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			'num_modifies' => new Field_Integer(array(
 				'column' => 'modifies',
 			)),
-			'num_views'    => new Field_Integer(array(
+			'num_views' => new Field_Integer(array(
 				'column' => 'views',
 			)),
 
@@ -127,13 +128,13 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'column'  => 'flyer_front_image_id',
 				'foreign' => 'image',
 			)),
-			'flyer_back'  => new Field_BelongsTo(array(
+			'flyer_back' => new Field_BelongsTo(array(
 				'column'  => 'flyer_back_image_id',
 				'foreign' => 'image',
 			)),
-			'tags'        => new Field_ManyToMany,
-			'images'      => new Field_ManyToMany,
-			'favorites'   => new Field_ManyToMany(array(
+			'tags'      => new Field_ManyToMany,
+			'images'    => new Field_ManyToMany,
+			'favorites' => new Field_ManyToMany(array(
 				'foreign' => 'user',
 				'through' => 'favorites',
 			)),

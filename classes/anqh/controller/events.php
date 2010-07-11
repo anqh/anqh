@@ -340,6 +340,9 @@ class Anqh_Controller_Events extends Controller_Template {
 	protected function _edit_event($event_id = null) {
 		$this->history = false;
 
+		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
+		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
+
 		if ($event_id) {
 
 			// Editing old
