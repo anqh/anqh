@@ -402,7 +402,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$area->save();
 
 					// User
-					self::$user->num_posts++;
+					self::$user->post_count++;
 					self::$user->save();
 
 					// News feed
@@ -573,7 +573,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$area->save();
 
 					// User
-					self::$user->num_posts++;
+					self::$user->post_count++;
 					self::$user->save();
 
 					// News feed

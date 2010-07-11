@@ -63,8 +63,9 @@ $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 			<?php echo __('Replying to :parent', array(
 				':parent' => HTML::anchor(
 					Route::get('forum_post')->uri(array(
-						'id'       => Route::model_id($post->parent),
-						'topic_id' => Route::model_id($topic))) . '#post-' . $post->parent->id,
+						'topic_id' => Route::model_id($topic),
+						'id'       => $post->parent->id,
+					)) . '#post-' . $post->parent->id,
 					HTML::chars($post->parent->topic->name)))) ?>
 			<?php endif; ?>
 			</span>
@@ -76,4 +77,9 @@ $owners = ($topic->author_id && $post->author_id == $topic->author_id);
 <?php echo BB::factory($post->post)->render() ?>
 
 		</section>
+
+		<footer>
+			<?php echo $post->author->signature ? BB::factory("\n--\n" . $post->author->signature)->render() : '' ?>
+
+		</footer>
 	</article>
