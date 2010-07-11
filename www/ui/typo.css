@@ -99,7 +99,7 @@ pre,
 code                                   { margin: 1.667em 0; white-space: pre; }
 pre,
 code,
-tt                                     { font: 1em monospace; line-height: 1.5; }
+tt                                     { font: 1em/1.5 monospace; }
 time,
 var                                    { /*font-family: Georgia, Times New Roman, Times, serif;*/ font-style: normal; }
 tt                                     { display: block; margin: 1.667em 0; }

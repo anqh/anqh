@@ -163,11 +163,11 @@ a.expander:after                       { content: '\21D3'; }
 .ui-widget-content                     { background: @widget-background; }
 .ui-widget-header                      { /*background: transparent;*/ }
 .ui-widget-header a                    { color: #ca3; }
-.ui-dialog                             { border: 1px solid #222; }
+.ui-dialog                             { border: 1px solid @widget-border-color; }
 
 /* Interaction states */
 .ui-state-default,
-.ui-widget-content .ui-state-default   { border: 1px solid #222; color: @tab-color; text-shadow: @tab-text-shadow; }
+.ui-widget-content .ui-state-default   { border: 1px solid @widget-border-color; color: @tab-color; text-shadow: @tab-text-shadow; }
 .ui-tabs .ui-state-default             { border-width: 0; }
 .ui-state-default a,
 .ui-state-default a:link,
@@ -181,6 +181,11 @@ a.ui-state-hover,
 .ui-state-hover a:hover                { color: @tab-hover-color; text-decoration: none; text-shadow: @tab-hover-shadow; }
 .ui-state-active,
 .ui-widget-content .ui-state-active    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+
+/* Datepicker */
+.ui-datepicker a.ui-state-active       { background: @widget-border-color; }
+
+/* Tabs */
 .ui-tabs-nav .ui-state-default         { border-bottom: 1px solid @groove-light; }
 .ui-tabs-nav .ui-state-default a       { border-bottom: 1px solid @groove-shadow; border-left: 1px solid @groove-light; border-right: 1px solid @groove-shadow; }
 .ui-tabs-nav .ui-state-default:first-child a { border-left: 0 none; }
@@ -193,11 +198,11 @@ a.ui-state-hover,
 
 /* Interaction Cues */
 .ui-state-highlight,
-.ui-widget-content .ui-state-highlight { border: 1px solid #ca3; background: #222; color: #a7a7a7; }
+.ui-widget-content .ui-state-highlight { border: 1px solid #ca3; background: @widget-border-color; color: #a7a7a7; }
 .ui-state-highlight a,
 .ui-widget-content .ui-state-highlight a { color: #a7a7a7; }
 .ui-state-error,
-.ui-widget-content .ui-state-error     { border: 1px solid #c33; background: black; color: #c33; }
+.ui-widget-content .ui-state-error     { border: 1px solid #c33; background: @widget-background; color: #c33; }
 .ui-state-error a,
 .ui-widget-content .ui-state-error a,
 .ui-state-error-text,
@@ -221,11 +226,13 @@ a.ui-state-hover,
 .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 
-
 /* Autocomplete */
 .ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; z-index: 99999; }
 .ui-autocomplete li                    { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; text-shadow: @tab-text-shadow; }
 .ui-autocomplete-loading               { .ajax(@input-background); }
+
+/***** /JQUERY UI *****/
+
 
 /***** ICONS *****/
 
@@ -426,6 +433,8 @@ blockquote                             { color: #777; }
 aside.post-old                         { color: @separator-color; text-align: center; }
 section.mod .divider                   { border-bottom: 1px dotted @body-background-color; border-top: 1px dotted @body-background-color; margin: 2px 0; text-align: center; }
 /*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
+#field-signature                       { font: 1em/1.5 monospace; }
+article.post footer                    { font: 1em/1.5 monospace; opacity: .75; }
 
 /***** /forum *****/
 
