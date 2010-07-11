@@ -7,6 +7,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+// Google Maps
 var map;
 var geocoder;
 $.fn.googleMap = function(options) {
@@ -63,44 +64,68 @@ function confirm_delete(title, action) {
 }
 
 
-// Hover card loader
-function hovercard(tip) {
-	var $tip = tip.getTip();
-	var href = tip.getTrigger().attr('href');
-	var cache = $tip.data('cache');
-	if (!cache[href]) {
-		$tip.text('Loading...');
-		$.get(href + '/hover', function(response) {
-			tip.hide();
-			$tip.html(cache[href] = response);
-			tip.show();
-		});
-		$tip.data('cache', cache);
-		return;
+// Hovercards
+jQuery.fn.hovercard = function() {
+
+	$(this).tooltip({
+		effect: 'slide',
+		predelay: 500,
+		tip: '#hovercard',
+		lazy: false,
+		position: 'top center',
+		onBeforeShow: function() {
+			hovercard(this);
+		}
+	}).dynamic({
+		top: {
+			direction: 'up',
+			bounce: true
+		}
+	});
+
+	function hovercard(tip) {
+		var $tip = tip.getTip();
+		var href = tip.getTrigger().attr('href');
+		var cache = $tip.data('cache');
+		if (!cache[href]) {
+			$tip.text('Loading...');
+			$.get(href + '/hover', function(response) {
+				tip.hide();
+				$tip.html(cache[href] = response);
+				tip.show();
+			});
+			$tip.data('cache', cache);
+			return;
+		}
+		$tip.html(cache[href]);
 	}
-	$tip.html(cache[href]);
-}
+
+	return this;
+};
 
 
 // Theme switcher
-jQuery.fn.skinSwitcher = function() {
+jQuery.fn.skinswitcher = function() {
 
 	$(this).click(function() {
-		switchSkin($(this).attr('rel'));
+		switchskin($(this).attr('rel'));
 		$.ajax({ url: $(this).attr('href') });
 		return false;
 	});
 
-	function switchSkin(skin) {
-		$('link[@rel*=style][title=' + skin + ']').first().disabled = false;
+	function switchskin(skin) {
+		//$('link[@rel*=style][title=' + skin + ']').first().disabled = false;
 		$('link[@rel*=style][title]').each(function(i) {
-			if ($(this).attr('title') != skin) {
-				this.disabled = true;
+			this.disabled = true;
+			if ($(this).attr('title') == skin) {
+				this.disabled = false;
 			}
 		});
 	}
 
+	return this;
 };
+
 
 $(function() {
 
@@ -123,8 +148,17 @@ $(function() {
 	});
 
 
+	// Hover card
+	if ($('#hovercard').length == 0) {
+		$('body').append('<div id="hovercard"></div>');
+		$('#hovercard').data('cache', []);
+	}
+
+	$('a.user, .avatar a, a.event').hovercard();
+
+
 	// Theme
-	$('#dock a.theme').skinSwitcher();
+	$('#dock a.theme').skinswitcher();
 
 	// Delete comment
 	$("a.comment-delete").each(function(i) {
@@ -176,29 +210,6 @@ $(function() {
 			confirm_delete(action.text(), function() { window.location = action.attr('href'); });
 		} else {
 			confirm_delete(action.text(), function() { action.parent('form').submit(); });
-		}
-	});
-
-
-	// Hover card
-	if ($('#hovercard').length == 0) {
-		$('body').append('<div id="hovercard"></div>');
-		$('#hovercard').data('cache', []);
-	}
-
-	$('a.user, .avatar a, a.event').tooltip({
-		effect: 'slide',
-		predelay: 500,
-		tip: '#hovercard',
-		lazy: false,
-		position: 'top center',
-		onBeforeShow: function() {
-			hovercard(this);
-		}
-	}).dynamic({
-		top: {
-			direction: 'up',
-			bounce: true
 		}
 	});
 
