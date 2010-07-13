@@ -89,11 +89,11 @@ Kohana::modules(array(
 	'postgresql' => MODPATH . 'postgresql', // PostgreSQL
 	// 'formo'    => MODPATH . 'formo',       // Form module
 	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
+	'image'      => MODPATH . 'image',      // Image manipulation
 	'pagination' => MODPATH . 'pagination', // Paging of results
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	// 'image'      => MODPATH.'image',      // Image manipulation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 ));
