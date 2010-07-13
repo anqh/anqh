@@ -72,7 +72,7 @@ jQuery.fn.hovercard = function() {
 		predelay: 500,
 		tip: '#hovercard',
 		lazy: false,
-		position: 'top center',
+		position: 'center left',
 		onBeforeShow: function() {
 			hovercard(this);
 		}
@@ -153,7 +153,6 @@ $(function() {
 		$('body').append('<div id="hovercard"></div>');
 		$('#hovercard').data('cache', []);
 	}
-
 	$('a.user, .avatar a, a.event').hovercard();
 
 
