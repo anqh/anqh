@@ -40,11 +40,11 @@ class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface 
 				'program'   => new Field_String,
 				'metering'  => new Field_String,
 				'latitude'  => new Field_Float,
-				'latitude_ref' => new Field_String,
+				'latitude_ref'  => new Field_String,
 				'longitude' => new Field_Float,
 				'longitude_ref' => new Field_String,
 				'altitude'  => new Field_String,
-				'altitude_ref' => new Field_String,
+				'altitude_ref'  => new Field_String,
 				'lens'      => new Field_String,
 			));
 	}
@@ -66,6 +66,52 @@ class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface 
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Read image exif data and save if found
+	 *
+	 * @throws  Kohana_Exception
+	 * @return  boolean  true if data found
+	 */
+	public function read() {
+
+		// Image required
+		$image = $this->image;
+		if (!$image->loaded()) {
+			throw new Kohana_Exception('Image required for exif data');
+		}
+
+		// Read data and save if found
+		$file = $image->get_filename('original');
+		$exif = Image_Exif::factory($file)->read();
+		if (empty($exif)) {
+			throw new Kohana_Exception('No exif data found for :file', array(':file' => $file));
+		}
+
+		$this->set($exif);
+	}
+
+
+	/**
+	 * Creates or updates the current exif data
+	 *
+	 * If $key is passed, the record will be assumed to exist
+	 * and an update will be executed, even if the model isn't loaded().
+	 *
+	 * @param   mixed  $key
+	 * @return  $this
+	 */
+	public function save($key = null) {
+
+		// If new EXIF data, try to read from image
+		if (!$this->loaded() && !$key) {
+			$this->read();
+		}
+
+		// If was new and no exif data was found it will not be saved
+		parent::save($key);
 	}
 
 }
