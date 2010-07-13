@@ -14,10 +14,10 @@ abstract class Anqh_NewsfeedItem implements NewsfeedItem_Interface {
 	 * Add news feed item
 	 *
 	 * @static
-	 * @param   Model_User  $user_id
-	 * @param   string      $class    e.g. 'user'
-	 * @param   string      $type     e.g. 'login'
-	 * @param   array       $data     Data to be user with item
+	 * @param   Model_User  $user
+	 * @param   string      $class  e.g. 'user'
+	 * @param   string      $type   e.g. 'login'
+	 * @param   array       $data   Data to be user with item
 	 * @return  boolean
 	 */
 	protected static function add(Model_User $user, $class, $type, array $data = null) {

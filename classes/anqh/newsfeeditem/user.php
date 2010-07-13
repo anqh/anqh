@@ -10,6 +10,13 @@
 class Anqh_NewsfeedItem_User extends NewsfeedItem implements NewsfeedItem_Interface {
 
 	/**
+	 * Changes new default image
+	 *
+	 * Data: image_id
+	 */
+	const TYPE_DEFAULT_IMAGE = 'default_image';
+
+	/**
 	 * Add a user to friends
 	 *
 	 * Data: friend_id
@@ -33,6 +40,13 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem implements NewsfeedItem_Interf
 		$text = '';
 		switch ($item->type) {
 
+			case self::TYPE_DEFAULT_IMAGE:
+		    $image = Jelly::select('image')->load($item->data['image_id']);
+		    if ($image->loaded()) {
+			    $text = __('changed their default image');
+		    }
+		    break;
+			
 			case self::TYPE_FRIEND:
 				$friend = Jelly::select('user')->load($item->data['friend_id']);
 				if ($friend->loaded()) {
@@ -47,6 +61,20 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem implements NewsfeedItem_Interf
 		}
 
 		return $text;
+	}
+
+
+	/**
+	 * Change default image
+	 *
+	 * @static
+	 * @param  Model_User   $user
+	 * @param  Model_Image  $image
+	 */
+	public static function default_image(Model_User $user = null, Model_Image $image = null) {
+		if ($user && $image) {
+			parent::add($user, 'user', self::TYPE_DEFAULT_IMAGE, array('image_id' => $image->id));
+		}
 	}
 
 

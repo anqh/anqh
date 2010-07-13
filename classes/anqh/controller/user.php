@@ -106,6 +106,20 @@ class Anqh_Controller_User extends Controller_Template {
 				$user->add('images', $image);
 				$user->default_image = $image;
 				$user->save();
+
+				// Newsfeed
+				NewsfeedItem_User::default_image($user, $image);
+
+				if ($this->ajax) {
+					echo View_Module::factory('user/image', array(
+						'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
+							? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit'))
+							: null,
+						'user' => $user,
+					));
+					return;
+				}
+
 				$this->request->redirect(URL::user($user));
 
 			} catch (Validate_Exception $e) {
