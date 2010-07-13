@@ -19,6 +19,17 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	const THUMB    = 'thumb';
 
 	/**
+	 * @var  string  Normal size image config
+	 */
+	public $normal = 'main';
+
+	/**
+	 * @var  array  Thumbnail configs
+	 */
+	public $thumbnails = array('thumbnail', 'icon');
+
+
+	/**
 	 * Create new model
 	 *
 	 * @param  Jelly_Meta  $meta
@@ -37,7 +48,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			)),
 			'description' => new Field_String,
 			'format'      => new Field_String,
-			'created' => new Field_Timestamp(array(
+			'created'     => new Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
 			'view_count' => new Field_Integer(array(
@@ -57,19 +68,125 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			'thumb_width'     => new Field_Integer,
 			'thumb_height'    => new Field_Integer,
 
+			'postfix' => new Field_String,
+			'file'    => new Field_File(array(
+				'label' => __('Image'),
+				'path'  => Kohana::config('image.upload_path'),
+			)),
 			'legacy_filename' => new Field_String,
 
-			'author'   => new Field_BelongsTo(array(
+			'author' => new Field_BelongsTo(array(
 				'column'  => 'author_id',
 				'foreign' => 'user',
 			)),
-			'exif'     => new Field_HasOne(array(
+			'exif' => new Field_HasOne(array(
 				'foreign' => 'image_exif',
 			)),
 			'comments' => new Field_HasMany(array(
 				'foreign' => 'image_comment',
 			)),
 		));
+	}
+
+
+	/**
+	 * Generate normal size and thumbnails
+	 *
+	 * @param   string  $original
+	 * @return  array   of generated images
+	 *
+	 * @throws  Kohana_Exception
+	 */
+	protected function _generate_images($original) {
+
+		// Update image information
+		$image = Image::factory($original);
+		$this->original_width  = $image->width;
+		$this->original_height = $image->height;
+		$this->original_size   = filesize($original);
+
+		$path  = rtrim(realpath(pathinfo($original, PATHINFO_DIRNAME)), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$sizes = Kohana::config('image.sizes');
+		$queue = array_merge((array)$this->normal, $this->thumbnails);
+		foreach ($queue as $size => $config) {
+
+			// Load config if required
+			if (!is_array($config)) {
+				$size = $config;
+				$config = Arr::get($sizes, $size);
+			}
+			if (!is_array($config)) {
+				throw new Kohana_Exception('Config not found for image size :size', array(':size' => $size));
+			}
+
+			// Destination file
+			$dest  = $path . Arr::get($config, 'prefix') . $this->id . ($this->postfix ? '_' . $this->postfix : '') . '.jpg';
+			!isset($image) and $image = Image::factory($original);
+
+			// Run configured methods in correct order
+			foreach ($config as $method => $args) {
+				if (in_array($method, array('resize', 'crop')) && $args) {
+
+					// Resize/crop only if needed
+					if ($args[0] < $this->width || $args[1] < $this->height) {
+						call_user_func_array(array($image, $method), $args);
+					}
+
+				}
+			}
+
+			$image->save($dest, Arr::get($config, 'quality', Kohana::config('image.quality')));
+
+			// If no prefix, assumed to be the default size
+			if (!isset($config['prefix'])) {
+				$this->width  = $image->width;
+				$this->height = $image->height;
+			}
+
+			unset($image);
+		}
+
+		parent::save();
+	}
+
+
+	/**
+	 * Get full path and filename of specific image size or empty for default
+	 *
+	 * @param   string   $size
+	 * @return  string
+	 */
+	public function get_filename($size = null) {
+		if (!$this->loaded()) {
+			return null;
+		}
+
+		// Saved image, based on ID
+		$path = Kohana::config('image.path') . URL::id($this->id);
+		$path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$prefix = $size == 'original' ? Kohana::config('image.prefix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.prefix');
+
+		return $path . $prefix . $this->id . ($this->postfix ? '_' . $this->postfix : '') . '.jpg';
+	}
+
+
+	/**
+	 * Get url of specific image size or empty for default
+	 *
+	 * @param   string   $size
+	 * @return  string
+	 */
+	public function get_url($size = null) {
+		if (!$this->loaded()) {
+			return null;
+		}
+
+		// Saved image, based on ID
+		$server = Kohana::config('site.image_server');
+		$url    = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
+		$prefix = $size == 'original' ? Kohana::config('image.prefix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.prefix');
+
+		return $url . $prefix . $this->id . ($this->postfix ? '_' . $this->postfix : '') . '.jpg';
 	}
 
 
@@ -89,6 +206,57 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Creates or updates the current image
+	 *
+	 * If $key is passed, the record will be assumed to exist
+	 * and an update will be executed, even if the model isn't loaded().
+	 *
+	 * @param   mixed  $key
+	 * @return  $this
+	 */
+	public function save($key = null) {
+		$new = !$this->loaded() && !$key;
+
+		parent::save($key);
+
+		// Some magic on created images only
+		if ($new) {
+
+			// Make sure we have the new target directory
+			$new_path = Kohana::config('image.path') . URL::id($this->id);
+			if (!is_dir($new_path)) {
+				mkdir($new_path, 0777, true);
+				chmod($new_path, 0777);
+			}
+			if (is_writable($new_path)) {
+				$new_path = rtrim($new_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+			} else {
+				throw new Kohana_Exception(get_class($this) . ' can not write to directory');
+			}
+
+			// New file name with some random postfix for hard to guess filenames
+			!$this->postfix and $this->postfix = Text::random('alnum', 8);
+			$new_file = Kohana::config('image.prefix_original') . $this->id . '_' . $this->postfix . '.jpg';
+
+			// Rename and move to correct directory using image id
+			$old_path = Kohana::config('image.upload_path');
+			$old_file = $this->file;
+			if (!rename($old_path . $old_file, $new_path . $new_file)) {
+				throw new Kohana_Exception(get_class($this) . ' could not move uploaded image');
+			}
+			$this->file = $new_file;
+
+			// Start creating images
+			$this->_generate_images($new_path . $new_file);
+
+			parent::save();
+		}
+
+		return $this;
 	}
 
 

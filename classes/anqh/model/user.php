@@ -181,7 +181,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'roles' => new Field_ManyToMany,
 
 				'picture' => new Field_String,
-				//'image'   => new Field_File,
+				'default_image' => new Field_BelongsTo(array(
+					'foreign' => 'image',
+					'column'  => 'default_image_id',
+				)),
 				'images'  => new Field_ManyToMany,
 				'friends' => new Field_HasMany(array(
 					'foreign' => 'friend',
@@ -270,6 +273,11 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		// Login starts out invalid
 		$status = false;
 
+		// Log login attempt
+		$login = Jelly::factory('login')->set(array(
+			'username' => $array['username'],
+			'password' => !empty($array['password']),
+		));
 
 		if ($this->validate($array, false, array(), array(), array('rules' => 'login'))) {
 

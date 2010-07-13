@@ -52,6 +52,94 @@ class Anqh_Controller_User extends Controller_Template {
 
 
 	/**
+	 * Action: hover card
+	 */
+	public function action_hover() {
+
+		// Hover card works only with ajax
+		if (!$this->ajax) {
+			return $this->action_index();
+		}
+
+		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
+		if ($user)	{
+			echo View_Module::factory('user/hovercard', array(
+				'mod_title' => HTML::chars($user->username),
+				'user'      => $user
+			));
+		}
+	}
+
+
+	/**
+	 * Action: image
+	 */
+	public function action_image() {
+		$this->history = false;
+
+		$user = $this->_get_user();
+		Permission::required($user, Model_User::PERMISSION_UPDATE, self::$user);
+
+		if (!$this->ajax) {
+			$this->_set_page($user);
+		}
+
+		$image = Jelly::factory('image')->set(array(
+			'author' => $user,
+		));
+
+		// Handle post
+		$errors = array();
+		if ($_POST && $_FILES && Security::csrf_valid()) {
+			$image->file = $_FILES['file'];
+			try {
+				$image->save();
+
+				// Add exif, silently continue if failed - not critical
+				try {
+					Jelly::factory('image_exif')
+						->set(array('image' => $image))
+						->save();
+				} catch (Kohana_Exception $e) {}
+
+				// Set the image as user image
+				$user->add('images', $image);
+				$user->default_image = $image;
+				$user->save();
+				$this->request->redirect(URL::user($user));
+
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
+			}
+		}
+
+		// Build form
+		$form = array(
+			'values' => $image,
+			'errors' => $errors,
+			'attributes' => array('enctype' => 'multipart/form-data'),
+			'cancel' => URL::user($user),
+			'groups' => array(
+				array(
+					'fields' => array(
+						'file' => array(),
+					),
+				),
+			)
+		);
+
+		$view = View_Module::factory('form/anqh', array('form' => $form));
+
+		if ($this->ajax) {
+			echo $view;
+			return;
+		}
+
+		Widget::add('main', $view);
+	}
+
+
+	/**
 	 * Controller default action
 	 */
 	public function action_index() {
@@ -62,16 +150,6 @@ class Anqh_Controller_User extends Controller_Template {
 
 		// Helper variables
 		$owner = (self::$user && self::$user->id == $user->id);
-
-		// Portrait
-		Widget::add('side', View_Module::factory('user/image', array(
-			'user' => $user,
-		)));
-
-		// Info
-		Widget::add('side', View_Module::factory('user/info', array(
-			'user' => $user,
-		)));
 
 		// Comments section
 		if (Permission::has($user, Model_User::PERMISSION_COMMENTS, self::$user)) {
@@ -136,26 +214,20 @@ class Anqh_Controller_User extends Controller_Template {
 			}
 			Widget::add('main', $view);
 		}
-	}
 
+		// Portrait
+		Widget::add('side', View_Module::factory('user/image', array(
+			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
+				? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit'))
+				: null,
+			'user' => $user,
+		)));
 
-	/**
-	 * Action: hover card
-	 */
-	public function action_hover() {
+		// Info
+		Widget::add('side', View_Module::factory('user/info', array(
+			'user' => $user,
+		)));
 
-		// Hover card works only with ajax
-		if (!$this->ajax) {
-			return $this->action_index();
-		}
-
-		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
-		if ($user)	{
-			echo View_Module::factory('user/hovercard', array(
-				'mod_title' => HTML::chars($user->username),
-				'user'      => $user
-			));
-		}
 	}
 
 
