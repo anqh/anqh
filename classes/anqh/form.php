@@ -295,11 +295,12 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   array   $hidden             hidden fields
 	 * @return  string
 	 */
-	public static function submit_wrap($name, $value, array $attributes = null, $cancel = null, $cancel_attributes = null, array $hidden = null) {
+	public static function submit_wrap($name, $value, array $attributes = null, $cancel = null, array $cancel_attributes = null, array $hidden = null) {
 		$wrap = Form::submit($name, $value, $attributes);
 
 		// Cancel link
 		if ($cancel) {
+			$cancel_attributes['class'] = trim(Arr::get($cancel_attributes, 'class') . ' cancel');
 			$wrap .= "\n" . HTML::anchor($cancel, __('Cancel'), $cancel_attributes);
 		}
 

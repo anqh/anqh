@@ -8,7 +8,16 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-echo Form::open(Arr::get($form, 'action'), Arr::get($form, 'attributes'));
+// Add ajaxify class?
+$form_attributes = Arr::get($form, 'attributes', array());
+if (Arr::get($form, 'ajaxify')) {
+	$form_attributes['class'] = trim(Arr::get($form_attributes, 'class') . ' ajaxify');
+	$cancel_attributes = array('class' => 'ajaxify');
+} else {
+	$cancel_attributes = null;
+}
+
+echo Form::open(Arr::get($form, 'action'), $form_attributes);
 
 foreach ($form['groups'] as $group_name => $group):
 	$group_attributes = Arr::get($group, 'attributes', array());
@@ -35,7 +44,7 @@ foreach ($form['groups'] as $group_name => $group):
 	<fieldset>
 
 		<?php echo Form::csrf(Arr::path($form, 'csrf.id'), Arr::path($form, 'csrf.action')) ?>
-		<?php echo Form::submit_wrap('save', __('Save'), Arr::path($form, 'save.attributes'), Arr::get($form, 'cancel'), null, Arr::get($form, 'hidden')) ?>
+		<?php echo Form::submit_wrap('save', __('Save'), Arr::path($form, 'save.attributes'), Arr::get($form, 'cancel'), $cancel_attributes, Arr::get($form, 'hidden')) ?>
 
 	</fieldset>
 

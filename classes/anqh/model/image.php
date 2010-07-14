@@ -221,6 +221,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	public function save($key = null) {
 		$new = !$this->loaded() && !$key;
 
+		if (!$this->file || ($new && (!Upload::not_empty($this->file) || !Upload::type($this->file, array('jpg', 'jpeg', 'gif', 'png'))))) {
+			throw new Kohana_Exception('Image required');
+		}
+
 		parent::save($key);
 
 		// Some magic on created images only

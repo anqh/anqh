@@ -82,6 +82,14 @@ class Anqh_Controller_User extends Controller_Template {
 
 		if (!$this->ajax) {
 			$this->_set_page($user);
+		} else if (isset($_REQUEST['cancel'])) {
+			echo View_Module::factory('user/image', array(
+				'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
+					? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit ajaxify'))
+					: null,
+				'user' => $user,
+			));
+			return;
 		}
 
 		$image = Jelly::factory('image')->set(array(
@@ -91,7 +99,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && $_FILES && Security::csrf_valid()) {
-			$image->file = $_FILES['file'];
+			$image->file = Arr::get($_FILES, 'file');
 			try {
 				$image->save();
 
@@ -100,11 +108,12 @@ class Anqh_Controller_User extends Controller_Template {
 					Jelly::factory('image_exif')
 						->set(array('image' => $image))
 						->save();
-				} catch (Kohana_Exception $e) {}
+				} catch (Kohana_Exception $e) { }
 
 				// Set the image as user image
 				$user->add('images', $image);
 				$user->default_image = $image;
+				$user->picture = $image->get_url(); // @TODO: Legacy, will be removed after migration
 				$user->save();
 
 				// Newsfeed
@@ -113,7 +122,7 @@ class Anqh_Controller_User extends Controller_Template {
 				if ($this->ajax) {
 					echo View_Module::factory('user/image', array(
 						'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
-							? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit'))
+							? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit ajaxify'))
 							: null,
 						'user' => $user,
 					));
@@ -124,16 +133,19 @@ class Anqh_Controller_User extends Controller_Template {
 
 			} catch (Validate_Exception $e) {
 				$errors = $e->array->errors('validation');
+			} catch (Kohana_Exception $e) {
+				$errors = array('file' => __('Failed with image'));
 			}
 		}
 
 		// Build form
 		$form = array(
-			'values' => $image,
-			'errors' => $errors,
+			'ajaxify'    => $this->ajax,
+			'values'     => $image,
+			'errors'     => $errors,
 			'attributes' => array('enctype' => 'multipart/form-data'),
-			'cancel' => URL::user($user),
-			'groups' => array(
+			'cancel'     => $this->ajax ? URL::user($user, 'image') . '?cancel' : URL::user($user),
+			'groups'     => array(
 				array(
 					'fields' => array(
 						'file' => array(),
@@ -232,7 +244,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Portrait
 		Widget::add('side', View_Module::factory('user/image', array(
 			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
-				? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit'))
+				? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit ajaxify'))
 				: null,
 			'user' => $user,
 		)));
