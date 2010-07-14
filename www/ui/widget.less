@@ -63,9 +63,12 @@ input[type="radio"] + label,
 input,
 textarea,
 select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(5px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
+fieldset.horizontal li label           { margin-right: 0.5em; }
+fieldset.horizontal li + li label      { margin-left: 0.5em; }
+/*
 fieldset.horizontal input,
 fieldset.horizontal textarea,
-fieldset.horizontal select             { margin: 0 0.5em; }
+fieldset.horizontal select             { margin: 0 0.5em; }*/
 select                                 { border-bottom-color: @input-border-top; border-top-color: @input-border-bottom; }
 input:hover,
 select:hover,
@@ -236,6 +239,7 @@ a.ui-state-hover,
 
 /***** ICONS *****/
 
+div.loading                            { .ajax(); height: 16px; position: absolute; right: 5px; top: 5px; width: 16px; }
 span.icon,
 li.icon,
 var.icon                               { /*font-size: 0.75em;*/ opacity: .75; padding-left: 20px; .transition(opacity .25s ease-in-out); }

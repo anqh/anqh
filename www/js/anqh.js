@@ -65,7 +65,7 @@ function confirm_delete(title, action) {
 
 
 // Hovercards
-jQuery.fn.hovercard = function() {
+$.fn.hovercard = function() {
 
 	$(this).tooltip({
 		effect: 'slide',
@@ -105,7 +105,7 @@ jQuery.fn.hovercard = function() {
 
 
 // Theme switcher
-jQuery.fn.skinswitcher = function() {
+$.fn.skinswitcher = function() {
 
 	$(this).click(function() {
 		switchskin($(this).attr('rel'));
@@ -126,6 +126,36 @@ jQuery.fn.skinswitcher = function() {
 	return this;
 };
 
+
+$.fn.ajaxified = function(url, data, type) {
+	var $target = $(this);
+	type = (type == 'post' || type == 'POST') ? 'POST' : 'GET';
+	$.ajax({
+		type: type,
+		url: url,
+		data: data,
+		timeout: 2500,
+		success: function(data) {
+			$target
+				.slideUp('fast', function() {
+					$target
+						.replaceWith(data)
+						.slideDown('fast');
+			});
+		},
+		error: function(req, err) {
+			if (err === 'error') {
+				err = req.statusText;
+			}
+			alert('Fail: ' + err);
+			$target.find('div.loading').remove();
+		},
+		beforeSend: function() {
+			$target.append('<div class="loading"></div>');
+		}
+	});
+
+};
 
 $(function() {
 
@@ -195,6 +225,7 @@ $(function() {
 		$.post($(this).attr("action"), $(this).serialize(), function(data) {
 			comment.replaceWith(data);
 		});
+
 		return false;
 	});
 
@@ -210,6 +241,19 @@ $(function() {
 		} else {
 			confirm_delete(action.text(), function() { action.parent('form').submit(); });
 		}
+	});
+
+
+	// Ajaxify actions
+	$('a.ajaxify').live('click', function() {
+		$link = $(this);
+		$link.closest('section.mod').ajaxified($link.attr('href'));
+
+		return false;
+	});
+	$('form.ajaxify').live('submit', function() {
+		$form = $(this);
+		$(this).closest('section.mod').ajaxified($form.attr('action'), $form.serialize(), $form.attr('method'));
 	});
 
 });
