@@ -10,7 +10,11 @@
 ?>
 
 <?php if ($user->default_image->id): ?>
-<?php echo HTML::image($user->default_image->get_url(), array('width' => 290)) ?>
+
+<div id="slideshow-image">
+	<?php echo HTML::image($user->default_image->get_url(), array('width' => 290)) ?>
+</div>
+
 <?php elseif (Validate::url($user->picture)): ?>
 <?php echo HTML::image($user->picture) ?>
 <?php endif; ?>

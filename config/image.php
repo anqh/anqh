@@ -19,7 +19,7 @@ return array(
 	'url'  => '',
 
 	// Prefix for original image
-	'prefix_original' => 'o_',
+	'postfix_original' => '_o',
 
 	// Default image quality,
 	'quality' => 95,
@@ -50,7 +50,7 @@ return array(
 
 		// Thumbnail
 		'thumbnail' => array(
-			'prefix'  => 't_',
+			'postfix' => '_t',
 			'width'   => 140,
 			'height'  => 140,
 			'quality' => 90,
@@ -60,7 +60,7 @@ return array(
 
 		// Square
 		'icon' => array(
-			'prefix'  => 'i_',
+			'postfix' => '_i',
 			'width'   => 50,
 			'height'  => 50,
 			'quality' => 85,

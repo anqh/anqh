@@ -90,6 +90,42 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Deletes a single image and files
+	 *
+	 * @param   $key  A key to use for non-loaded records
+	 * @return  boolean
+	 **/
+	public function delete($key = null) {
+		if (!$key && $this->loaded()) {
+
+			// Delete default
+			if (is_file($this->get_filename())) {
+				unlink($this->get_filename());
+			}
+
+			// Delete original
+			if (is_file($this->get_filename('original'))) {
+				unlink($this->get_filename('original'));
+			}
+
+			// Delete other sizes
+			$sizes = Kohana::config('image.sizes');
+			foreach ($sizes as $size => $config) {
+				if (isset($config['postfix']) && is_file($this->get_filename($size))) {
+					unlink($this->get_filename($size));
+				}
+			}
+
+			// Delete exif
+			$this->exif->delete();
+			
+		}
+
+		return parent::delete($key);
+	}
+
+
+	/**
 	 * Generate normal size and thumbnails
 	 *
 	 * @param   string  $original
@@ -120,7 +156,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			}
 
 			// Destination file
-			$dest  = $path . Arr::get($config, 'prefix') . $this->id . ($this->postfix ? '_' . $this->postfix : '') . '.jpg';
+			$dest  = $path . $this->id . ($this->postfix ? '_' . $this->postfix : '') . Arr::get($config, 'postfix') . '.jpg';
 			!isset($image) and $image = Image::factory($original);
 
 			// Run configured methods in correct order
@@ -164,9 +200,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 		// Saved image, based on ID
 		$path = Kohana::config('image.path') . URL::id($this->id);
 		$path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$prefix = $size == 'original' ? Kohana::config('image.prefix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.prefix');
+		$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
 
-		return $path . $prefix . $this->id . ($this->postfix ? '_' . $this->postfix : '') . '.jpg';
+		return $path . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 	}
 
 
@@ -184,9 +220,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 		// Saved image, based on ID
 		$server = Kohana::config('site.image_server');
 		$url    = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
-		$prefix = $size == 'original' ? Kohana::config('image.prefix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.prefix');
+		$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
 
-		return $url . $prefix . $this->id . ($this->postfix ? '_' . $this->postfix : '') . '.jpg';
+		return $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 	}
 
 
@@ -221,7 +257,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	public function save($key = null) {
 		$new = !$this->loaded() && !$key;
 
-		if (!$this->file || ($new && (!Upload::not_empty($this->file) || !Upload::type($this->file, array('jpg', 'jpeg', 'gif', 'png'))))) {
+		if ($new && (!$this->file || !Upload::not_empty($this->file) || !Upload::type($this->file, array('jpg', 'jpeg', 'gif', 'png')))) {
 			throw new Kohana_Exception('Image required');
 		}
 
@@ -244,7 +280,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 			// New file name with some random postfix for hard to guess filenames
 			!$this->postfix and $this->postfix = Text::random('alnum', 8);
-			$new_file = Kohana::config('image.prefix_original') . $this->id . '_' . $this->postfix . '.jpg';
+			$new_file = $this->id . '_' . $this->postfix . Kohana::config('image.postfix_original') . '.jpg';
 
 			// Rename and move to correct directory using image id
 			$old_path = Kohana::config('image.upload_path');

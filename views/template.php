@@ -187,21 +187,24 @@
 	<!-- /FOOTER -->
 
 
+	<div class="lightbox" id="slideshow">
+		<div id="slideshow-images">
+			<div class="items">
+				<div>
+					<div class="info"></div>
+				</div>
+			</div>
+		</div>
+		<a class="navi prev" title="<?= __('Previous') ?>">&laquo;</a>
+		<a class="navi next" title="<?= __('Next') ?>">&raquo;</a>
+		<a class="action close" title="<?= __('Close') ?>">&#10006;</a>
+	</div>
+
+	
 <?php echo
 	HTML::script('js/jquery.form.js'),
 	HTML::script('js/jquery.text-overflow.js'),
 	HTML::script('js/anqh.js'); ?>
-
-<script>
-//<![CDATA[
-
-$(function() {
-
-
-
-});
-//]]>
-</script>
 
 <?php echo Widget::get('foot') ?>
 

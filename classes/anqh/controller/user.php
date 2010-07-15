@@ -82,14 +82,37 @@ class Anqh_Controller_User extends Controller_Template {
 
 		if (!$this->ajax) {
 			$this->_set_page($user);
-		} else if (isset($_REQUEST['cancel'])) {
-			echo View_Module::factory('user/image', array(
-				'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
-					? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit ajaxify'))
-					: null,
-				'user' => $user,
-			));
-			return;
+		}
+
+		// Change existing
+		if (isset($_REQUEST['default'])) {
+			$image = Jelly::select('image')->load((int)$_REQUEST['default']);
+			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image)) {
+				$user->default_image = $image;
+				$user->save();
+			}
+			$cancel = true;
+		}
+
+		// Delete existing
+		if (isset($_REQUEST['delete'])) {
+			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
+			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image->id && $user->has('images', $image)) {
+				$user->remove('images', $image);
+				$user->save();
+				$image->delete();
+			}
+			$cancel = true;
+		}
+
+		// Cancel change
+		if (isset($cancel) || isset($_REQUEST['cancel'])) {
+			if ($this->ajax) {
+				echo $this->_get_mod_image($user);
+				return;
+			}
+
+			$this->request->redirect(URL::user($user));
 		}
 
 		$image = Jelly::factory('image')->set(array(
@@ -120,12 +143,7 @@ class Anqh_Controller_User extends Controller_Template {
 				NewsfeedItem_User::default_image($user, $image);
 
 				if ($this->ajax) {
-					echo View_Module::factory('user/image', array(
-						'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
-							? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit ajaxify'))
-							: null,
-						'user' => $user,
-					));
+					echo $this->_get_mod_image($user);
 					return;
 				}
 
@@ -154,7 +172,10 @@ class Anqh_Controller_User extends Controller_Template {
 			)
 		);
 
-		$view = View_Module::factory('form/anqh', array('form' => $form));
+		$view = View_Module::factory('form/anqh', array(
+			'mod_title' => __('Add image'),
+			'form'      => $form
+		));
 
 		if ($this->ajax) {
 			echo $view;
@@ -202,11 +223,6 @@ class Anqh_Controller_User extends Controller_Template {
 					self::$user->left_comment_count++;
 					self::$user->save();
 
-					// Newsfeed
-					if (!$comment->private) {
-						//NewsfeedItem_Blog::comment(self::$user, $entry);
-					}
-
 					if (!$this->ajax) {
 						$this->request->redirect(Route::get('user')->uri(array('username' => urlencode($user->username))));
 					}
@@ -241,13 +257,15 @@ class Anqh_Controller_User extends Controller_Template {
 			Widget::add('main', $view);
 		}
 
+		// Slideshow
+		if (count($user->images)) {
+			Widget::add('side', View_Module::factory('user/image_slideshow', array(
+				'user' => $user,
+			)));
+		}
+
 		// Portrait
-		Widget::add('side', View_Module::factory('user/image', array(
-			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
-				? array(array('link' => URL::user($user, 'image'), 'text' => __('Change image'), 'class' => 'image-edit ajaxify'))
-				: null,
-			'user' => $user,
-		)));
+		Widget::add('side', $this->_get_mod_image($user));
 
 		// Info
 		Widget::add('side', View_Module::factory('user/info', array(
@@ -410,6 +428,26 @@ $(function() {
 
 });
 '));
+	}
+
+
+	/**
+	 * Get image mod
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Module
+	 */
+	protected function _get_mod_image(Model_User $user) {
+		return View_Module::factory('user/image', array(
+			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
+				? array(
+						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
+						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-default disabled'),
+						array('link' => URL::user($user, 'image'), 'text' => __('Add image'), 'class' => 'image-edit ajaxify')
+					)
+				: null,
+			'user' => $user,
+		));
 	}
 
 
