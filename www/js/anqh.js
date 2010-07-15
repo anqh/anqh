@@ -127,7 +127,8 @@ $.fn.skinswitcher = function() {
 };
 
 
-$.fn.ajaxified = function(url, data, type) {
+// Ajaxified mod requests
+$.fn.ajaxify = function(url, data, type) {
 	var $target = $(this);
 	type = (type == 'post' || type == 'POST') ? 'POST' : 'GET';
 	$.ajax({
@@ -148,14 +149,52 @@ $.fn.ajaxified = function(url, data, type) {
 				err = req.statusText;
 			}
 			alert('Fail: ' + err);
-			$target.find('div.loading').remove();
+			$target.loading(true);
 		},
 		beforeSend: function() {
-			$target.append('<div class="loading"></div>');
+			$target.loading();
 		}
 	});
 
+	return this;
 };
+
+
+// Ajax loader
+$.fn.loading = function(loaded) {
+	if (loaded) {
+		$(this).find('div.loading').remove();
+	} else {
+		$(this).append('<div class="loading"></div>');
+	}
+
+	return this;
+}
+
+
+// Slideshow
+$.fn.slideshow = function() {
+	var $images = $(this).find('a');
+	$images.click(function() {
+		var $link = $(this);
+		if ($link.hasClass('active')) { return false; }
+
+		var url = $(this).attr('href');
+		var wrap = $('#slideshow-image').fadeTo('fast', 0.5).loading();
+		var loader = new Image();
+		loader.onload = function() {
+			wrap.fadeTo('fast', 1).loading(true);
+			wrap.find('img').attr('src', url);
+		};
+		loader.src = url;
+
+		$images.removeClass('active');
+		$(this).addClass('active');
+
+		return false;
+	});
+};
+
 
 $(function() {
 
@@ -247,13 +286,34 @@ $(function() {
 	// Ajaxify actions
 	$('a.ajaxify').live('click', function() {
 		$link = $(this);
-		$link.closest('section.mod').ajaxified($link.attr('href'));
+		$link.closest('section.mod').ajaxify($link.attr('href'));
 
 		return false;
 	});
 	$('form.ajaxify').live('submit', function() {
 		$form = $(this);
-		$(this).closest('section.mod').ajaxified($form.attr('action'), $form.serialize(), $form.attr('method'));
+		$(this).closest('section.mod').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
+	});
+
+
+	// Slideshows, scrollables
+	$('div.scrollable').scrollable();
+	$('div.slideshow').slideshow();
+
+
+	// User default picture
+	$('section.image-slideshow a[data-image-id]').click(function() {
+		var $default = $('a.image-default');
+		if ($default.length) {
+			$default.toggleClass('disabled', $(this).hasClass('default'));
+			$default.attr('href', $default.attr('href').replace(/default.*$/, 'default=' + $(this).attr('data-image-id')));
+		}
+
+		var $delete = $('a.image-delete');
+		if ($delete.length) {
+			$delete.toggleClass('disabled', $(this).hasClass('default'));
+			$delete.attr('href', $delete.attr('href').replace(/delete.*$/, 'delete=' + $(this).attr('data-image-id')));
+		}
 	});
 
 });

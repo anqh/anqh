@@ -142,6 +142,7 @@ section article:hover .actions a[class*="-private"]:hover,
 a[class*="-private"]:hover             { color: @private-color; .box-shadow(0 0 4px @private-rgba); text-shadow: 0 0 5px @private-rgba; }
 section article:hover .actions a[class*="-add"]:hover,
 a[class*="-add"]:hover                 { color: @positive-color; .box-shadow(0 0 4px @positive-rgba); text-shadow: 0 0 5px @positive-rgba; }
+a.action.disabled                      { visibility: hidden; }
 .confirm-delete .ui-dialog-buttonpane button:first-of-type:hover,
 section article:hover .actions a[class*="-delete"]:hover,
 a.action.close:hover,
@@ -235,6 +236,25 @@ a.ui-state-hover,
 .ui-autocomplete-loading               { .ajax(@input-background); }
 
 /***** /JQUERY UI *****/
+
+
+/***** JQUERY TOOLS ****/
+
+.scrollable                            { overflow: hidden; position: relative; }
+.scrollable.icons                      { height: 52px; }
+.scrollable .items                     { position: absolute; width: 20000em; }
+.scrollable .items a,
+.scrollable .items div                 { display: block; float: left; }
+.scrollable .items img                 { border: 1px solid transparent; margin-right: 5px; }
+.scrollable .items .active img         { opacity: .25; }
+.scrollable .items .default img        { border: 1px solid @button-rgba; }
+.scrollable-action                     { display: block; }
+.scrollable-action.prev                { float: left; margin-right: 5px; }
+.scrollable-action.next                { clear: right; float: right; margin-left: 5px; }
+
+#slideshow-image                       { position: relative; }
+
+/***** /JQUERY TOOLS ****/
 
 
 /***** ICONS *****/
