@@ -22,4 +22,10 @@
 <?php echo HTML::chars($event->city_name) ?>
 <?php endif; ?>
 
-<?php if (Validate::url($event->flyer_front_url)) echo HTML::image($event->flyer_front_url, array('width' => 160)) . '<br />'; ?>
+<?php if ($event->flyer_front->id): ?>
+	<?php echo HTML::image($event->flyer_front->get_url('thumbnail')) ?>
+<?php elseif ($event->flyer_back->id): ?>
+	<?php echo HTML::image($event->flyer_back->get_url('thumbnail')) ?>
+<?php elseif (Validate::url($event->flyer_front_url)): ?>
+	<?php echo HTML::image($event->flyer_front_url, array('width' => 160)) ?>
+<?php endif; ?>

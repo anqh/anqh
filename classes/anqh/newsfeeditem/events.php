@@ -17,6 +17,13 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 	const TYPE_EVENT = 'event';
 
 	/**
+	 * Edit an event
+	 *
+	 * Data: event_id
+	 */
+	const TYPE_EVENT_EDIT = 'event_edit';
+
+	/**
 	 * Add an event to favorites
 	 *
 	 * Data: event_id
@@ -40,6 +47,15 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('added new event :event', array(
+						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
+					));
+				}
+				break;
+
+			case self::TYPE_EVENT_EDIT:
+				$event = Jelly::select('event')->load($item->data['event_id']);
+				if ($event->loaded()) {
+					$text = __('updated event :event', array(
 						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
 					));
 				}
@@ -69,6 +85,19 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 	public static function event(Model_User $user = null, Model_Event $event = null) {
 		if ($user && $event) {
 			parent::add($user, 'events', self::TYPE_EVENT, array('event_id' => (int)$event->id));
+		}
+	}
+
+
+	/**
+	 * Edit an event
+	 *
+	 * @param  Model_User   $user
+	 * @param  Model_Event  $event
+	 */
+	public static function event_edit(Model_User $user = null, Model_Event $event = null) {
+		if ($user && $event) {
+			parent::add($user, 'events', self::TYPE_EVENT_EDIT, array('event_id' => (int)$event->id));
 		}
 	}
 
