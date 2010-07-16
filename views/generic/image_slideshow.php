@@ -9,16 +9,16 @@
  */
 ?>
 
-<?php if (count($user->images)): $images = array(); foreach ($user->images as $image) $images[] = $image; ?>
+<?php if (count($images)): ?>
 <a class="scrollable-action action prev">&laquo;</a>
 <a class="scrollable-action action next">&raquo;</a>
 <div class="scrollable slideshow icons">
 	<div class="items">
-		<?php foreach (array_reverse($images) as $image):
+		<?php foreach ($images as $image):
 			echo HTML::anchor(
 				$image->get_url(),
 				HTML::image($image->get_url('icon')),
-				$user->default_image->id == $image->id
+				isset($default_id) && $default_id == $image->id
 					? array('data-image-id' => $image->id, 'class' => 'default active')
 					: array('data-image-id' => $image->id)
 			);

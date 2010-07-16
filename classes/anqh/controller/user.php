@@ -258,9 +258,12 @@ class Anqh_Controller_User extends Controller_Template {
 		}
 
 		// Slideshow
-		if (count($user->images)) {
-			Widget::add('side', View_Module::factory('user/image_slideshow', array(
-				'user' => $user,
+		if (count($user->images) > 1) {
+			$images = array();
+			foreach ($user->images as $image) $images[] = $image;
+			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
+				'images'     => array_reverse($images),
+				'default_id' => $user->default_image->id,
 			)));
 		}
 
@@ -438,7 +441,15 @@ $(function() {
 	 * @return  View_Module
 	 */
 	protected function _get_mod_image(Model_User $user) {
-		return View_Module::factory('user/image', array(
+		if ($user->default_image->id) {
+			$image = $user->default_image;
+		} else if (Validate::url($user->picture)) {
+			$image = $user->picture;
+		} else {
+			$image = null;
+		}
+
+		return View_Module::factory('generic/side_image', array(
 			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
 				? array(
 						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
@@ -446,7 +457,7 @@ $(function() {
 						array('link' => URL::user($user, 'image'), 'text' => __('Add image'), 'class' => 'image-edit ajaxify')
 					)
 				: null,
-			'user' => $user,
+			'image' => $image,
 		));
 	}
 
