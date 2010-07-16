@@ -99,6 +99,7 @@ class Anqh_Controller_User extends Controller_Template {
 			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
 			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image->id && $user->has('images', $image)) {
 				$user->remove('images', $image);
+				$user->picture = null;
 				$user->save();
 				$image->delete();
 			}
@@ -454,7 +455,7 @@ $(function() {
 				? array(
 						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
 						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-default disabled'),
-						array('link' => URL::user($user, 'image'), 'text' => __('Add image'), 'class' => 'image-edit ajaxify')
+						array('link' => URL::user($user, 'image'), 'text' => __('Add image'), 'class' => 'image-add ajaxify')
 					)
 				: null,
 			'image' => $image,
