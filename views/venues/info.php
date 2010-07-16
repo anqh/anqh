@@ -9,12 +9,6 @@
  */
 ?>
 
-<?php if ($venue->default_image_id): ?>
-<article class="logo">
-	<?php echo HTML::img($venue->default_image, 'normal', array('title' => __('Logo'), 'width' => '100%')) ?>
-</article>
-<?php endif; ?>
-
 <?php	if ($venue->homepage || $venue->description || $venue->info || $venue->hours || $venue->tags): ?>
 <article class="information">
 	<header>
@@ -74,41 +68,3 @@ $(function() {
 	<?php endif; ?>
 
 </article>
-
-<?php if (count($venue->images)): ?>
-<article class="pictures lightboxed">
-	<header>
-		<h3><?php echo __('Pictures') ?></h3>
-	</header>
-
-	<?php foreach ($venue->images as $image): if ($image->id != $venue->default_image->id): ?>
-		<?php echo HTML::anchor($image->url('normal'), HTML::img($image, 'thumb',__('Picture')), array('title' => HTML::chars($venue->name))) ?>
-	<?php endif; endforeach; ?>
-
-</article>
-<?php endif; ?>
-
-<div class="lightbox" id="slideshow">
-	<a class="prev" title="<?php echo __('Previous') ?>">&laquo;</a>
-	<a class="next" title="<?php echo __('Next') ?>">&raquo;</a>
-	<a class="action close" title="<?php echo __('Close') ?>">&#10006;</a>
-	<div class="info"></div>
-</div>
-<?php
-return;
-
-echo HTML::script_source('
-$(function() {
-	$(".lightboxed a").overlay({
-		effect: "apple",
-		target: "#slideshow",
-		expose: {
-			color: "#222",
-			loadSpeed: 200,
-			opacity: 0.75
-		}
-	}).gallery({
-		template: "<strong>${title}</strong> <span class=\"details\">' . __('Image ${index} of ${total}') . '</span>"
-	});
-});
-');

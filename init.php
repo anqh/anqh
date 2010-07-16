@@ -23,7 +23,7 @@ Route::set('venue_category', 'venues/<id>(/<action>)', array('action' => 'editca
 		'controller' => 'venues',
 		'action'     => 'category',
 	));
-Route::set('venue', 'venue/<id>(/<action>)', array('action' => 'venue|edit|delete'))
+Route::set('venue', 'venue/<id>(/<action>(/<param>))', array('action' => 'venue|edit|delete|image'))
 	->defaults(array(
 		'controller' => 'venues',
 		'action'     => 'venue',

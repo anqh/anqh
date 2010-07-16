@@ -136,6 +136,126 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 
 	/**
+	 * Action: image
+	 */
+	public function action_image() {
+		$this->history = false;
+
+		// Load venue
+		$venue_id = (int)$this->request->param('id');
+		$venue = Jelly::select('venue')->load($venue_id);
+		if (!$venue->loaded()) {
+			throw new Model_Exception($venue, $venue_id);
+		}
+		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
+
+		if (!$this->ajax) {
+			$this->page_title    = HTML::chars($venue->name);
+			$this->page_subtitle = __('Category :category', array(
+				':category' => HTML::anchor(Route::model($venue->category), $venue->category->name, array('title' => $venue->category->description))
+			));
+		}
+
+		// Change existing
+		if (isset($_REQUEST['default'])) {
+			$image = Jelly::select('image')->load((int)$_REQUEST['default']);
+			if (Security::csrf_valid() && $image->loaded() && $venue->has('images', $image)) {
+				$venue->default_image = $image;
+				$venue->save();
+			}
+			$cancel = true;
+		}
+
+		// Delete existing
+		if (isset($_REQUEST['delete'])) {
+			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
+			if (Security::csrf_valid() && $image->loaded() && $image->id != $venue->default_image->id && $venue->has('images', $image)) {
+				$venue->remove('images', $image);
+				$venue->save();
+				$image->delete();
+			}
+			$cancel = true;
+		}
+
+		// Cancel change
+		if (isset($cancel) || isset($_REQUEST['cancel'])) {
+			if ($this->ajax) {
+				echo $this->_get_mod_image($venue);
+				return;
+			}
+
+			$this->request->redirect(Route::model($venue));
+		}
+
+		$image = Jelly::factory('image')->set(array(
+			'author' => self::$user,
+		));
+
+		// Handle post
+		$errors = array();
+		if ($_POST && $_FILES && Security::csrf_valid()) {
+			$image->file = Arr::get($_FILES, 'file');
+			try {
+				$image->save();
+
+				// Add exif, silently continue if failed - not critical
+				try {
+					Jelly::factory('image_exif')
+						->set(array('image' => $image))
+						->save();
+				} catch (Kohana_Exception $e) { }
+
+				// Set the image as user image
+				$venue->add('images', $image);
+				$venue->default_image = $image;
+				$venue->save();
+
+				if ($this->ajax) {
+					echo $this->_get_mod_image($venue);
+					return;
+				}
+
+				$this->request->redirect(Route::model($venue));
+
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
+			} catch (Kohana_Exception $e) {
+				echo Kohana::debug($e);
+				$errors = array('file' => __('Failed with image'));
+			}
+		}
+
+		// Build form
+		$form = array(
+			'ajaxify'    => $this->ajax,
+			'values'     => $image,
+			'errors'     => $errors,
+			'attributes' => array('enctype' => 'multipart/form-data'),
+			'cancel'     => $this->ajax ? Route::model($venue, 'image') . '?cancel' : Route::model($venue),
+			'groups'     => array(
+				array(
+					'fields' => array(
+						'file' => array(),
+					),
+				),
+			)
+		);
+
+		$view = View_Module::factory('form/anqh', array(
+			'mod_title' => __('Add image'),
+			'form'      => $form
+		));
+
+		if ($this->ajax) {
+			echo $view;
+			return;
+		}
+
+		Widget::add('main', $view);
+	}
+
+
+	/**
 	 * Controller default action
 	 */
 	public function action_index() {
@@ -190,6 +310,19 @@ class Anqh_Controller_Venues extends Controller_Template {
 				'events'    => $events,
 			)));
 		}
+
+		// Slideshow
+		if (count($venue->images) > 1) {
+			$images = array();
+			foreach ($venue->images as $image) $images[] = $image;
+			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
+				'images'     => array_reverse($images),
+				'default_id' => $venue->default_image->id,
+			)));
+		}
+
+		// Default image
+		Widget::add('side', $this->_get_mod_image($venue));
 
 		// Venue info
 		Widget::add('side', View_Module::factory('venues/info', array(
@@ -405,6 +538,26 @@ $(function() {
 
 });
 '));
+	}
+
+
+	/**
+	 * Get image mod
+	 *
+	 * @param   Model_Venue  $venue
+	 * @return  View_Module
+	 */
+	protected function _get_mod_image(Model_Venue $venue) {
+		return View_Module::factory('generic/side_image', array(
+			'mod_actions2' => Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)
+				? array(
+						array('link' => Route::model($venue, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
+						array('link' => Route::model($venue, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-default disabled'),
+						array('link' => Route::model($venue, 'image'), 'text' => __('Add image'), 'class' => 'image-edit ajaxify')
+					)
+				: null,
+			'image' => $venue->default_image->id ? $venue->default_image : null,
+		));
 	}
 
 }
