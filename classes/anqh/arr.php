@@ -39,7 +39,7 @@ abstract class Anqh_Arr extends Kohana_Arr {
 
 		// Initialize
 		if (is_null($xml)) {
-			$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?><' . $root . ' />');
+			$xml = simplexml_load_string('<?xml version="1.0" encoding="' . Kohana::$charset . '"?><' . $root . ' />');
 		}
 
 		foreach ($array as $key => $value) {
@@ -59,7 +59,7 @@ abstract class Anqh_Arr extends Kohana_Arr {
 				$node = true || Arr::is_assoc($value) || $numeric ? $xml->addChild($key) : $xml;
 				self::xml($value, $key, $node);
 			} else {
-				$xml->addChild($key, htmlentities($value));
+				$xml->addChild($key, htmlspecialchars($value));
 			}
 
 		}
