@@ -8,6 +8,11 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+Route::set('api_events', 'api/<version>/events/<action>(<format>)', array('version' => 'v[0-9\.]+', 'action' => 'search|event', 'format' => '\.\w+'))
+	->defaults(array(
+		'controller' => 'events_api',
+		'version'    => 'v1',
+	));
 Route::set('event', 'event/<id>(/<action>(/<param>))', array('action' => 'edit|delete|favorite|unfavorite|hover|image'))
 	->defaults(array(
 		'controller' => 'events',
