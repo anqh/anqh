@@ -43,6 +43,21 @@ class Anqh_Controller_API extends Controller {
 	 */
 	public function before() {
 
+		// Log request
+		Jelly::factory('api_request')->set(array(
+			'ip'      => Request::$client_ip,
+			'request' => $this->request->uri . (empty($_GET) ? '' : '?' . http_build_query($_GET)),
+		))->save();
+
+		// Rate limit
+		$rate_span = Kohana::config('api.rate_span');
+		$rate_limit = Kohana::config('api.rate_limit');
+		$requests = Model_API_Request::request_count(time() - $rate_span, Request::$client_ip);
+		$requests_left = $rate_limit - $requests;
+		if ($requests_left < 0) {
+			throw new Controller_API_Exception('Request limit reached');
+		}
+
 		// Check version
 		$this->version = $this->request->param('version');
 		if (!in_array($this->version, self::$_versions)) {
@@ -58,6 +73,9 @@ class Anqh_Controller_API extends Controller {
 		// Set result defaults
 		$this->data = array(
 			'version' => $this->version,
+			'requests' => $requests,
+			'requests_left' => $requests_left,
+			'request_window' => $rate_span,
 		);
 
 		return parent::before();
