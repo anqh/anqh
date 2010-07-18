@@ -98,4 +98,26 @@ class Anqh_Controller_API extends Controller {
 		}
 	}
 
+
+	/**
+	 * Prepare order parameters
+	 *
+	 * @param   string  $order
+	 * @param   array   $orderable  Orderable fields
+	 * @return  array
+	 */
+	protected function _prepare_order($order, array $orderable = null) {
+		$orders = array();
+
+		// Build order array, field:order => field => order
+		foreach (explode(':', $order) as $_order) {
+			$_order = explode('.', $_order);
+			if (empty($orderable) || in_array($_order[0], $orderable)) {
+				$orders[$_order[0]] = isset($_order[1]) && ($_order[1] == 'asc' || $_order[1] == 'desc') ? $_order[1] : 'asc';
+			}
+		}
+
+		return $orders;
+	}
+
 }
