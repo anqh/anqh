@@ -14,6 +14,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	const NOT_ACCEPTED = 'n';
 	const VISIBLE      = 'v';
 
+	// Deprecated
 	const NORMAL   = 'normal';
 	const ORIGINAL = '';
 	const THUMB    = 'thumb';
@@ -118,7 +119,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 			// Delete exif
 			$this->exif->delete();
-			
+
 		}
 
 		return parent::delete($key);
@@ -174,7 +175,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			$image->save($dest, Arr::get($config, 'quality', Kohana::config('image.quality')));
 
 			// If no prefix, assumed to be the default size
-			if (!isset($config['prefix'])) {
+			if (!isset($config['postfix'])) {
 				$this->width  = $image->width;
 				$this->height = $image->height;
 			}
