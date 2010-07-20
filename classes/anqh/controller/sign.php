@@ -70,13 +70,19 @@ class Anqh_Controller_Sign extends Controller_Template {
 
 
 	/**
-	 * Sign out
+	 * Action: sign out
 	 */
 	public function action_out() {
+
+		// Remove from online list
+		Jelly::factory('user_online')->delete(session_id());
+
+		// Logout visitor
 		Visitor::instance()->logout();
 
-		// Redirect back to the login page
+		// Redirect back
 		Request::back();
+
 	}
 
 
