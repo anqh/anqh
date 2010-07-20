@@ -44,7 +44,7 @@ foreach ($form['groups'] as $group_name => $group):
 	<fieldset>
 
 		<?php echo Form::csrf(Arr::path($form, 'csrf.id'), Arr::path($form, 'csrf.action')) ?>
-		<?php echo Form::submit_wrap('save', __('Save'), Arr::path($form, 'save.attributes'), Arr::get($form, 'cancel'), $cancel_attributes, Arr::get($form, 'hidden')) ?>
+		<?php echo Form::submit_wrap('save', Arr::path($form, 'save.label', __('Save')), Arr::path($form, 'save.attributes'), Arr::get($form, 'cancel'), $cancel_attributes, Arr::get($form, 'hidden')) ?>
 
 	</fieldset>
 
