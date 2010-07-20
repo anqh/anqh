@@ -294,11 +294,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
-			foreach (Model_User::$editable_fields as $field) {
-				if (isset($_POST[$field])) {
-					$user->$field = $_POST[$field];
-				}
-			}
+			$user->set(Arr::extract($_POST, Model_User::$editable_fields));
 
 			// GeoNames
 			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {

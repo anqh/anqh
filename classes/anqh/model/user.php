@@ -29,10 +29,13 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	protected static $_users = array();
 
+	/**
+	 * @var  array  User editable fields
+	 */
 	public static $editable_fields = array(
 		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage',
-		'image', 'name', 'password', 'password_confirm', 'picture', 'signature',
-		'street_address', 'street_zip', 'street_city', 'title', 'username',
+		'image', 'name', 'picture', 'signature',
+		'address_street', 'address_zip', 'address_city', 'title',
 	);
 
 
