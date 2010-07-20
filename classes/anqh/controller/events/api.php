@@ -98,7 +98,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$events->where_open();
 			foreach ($searches as $search) {
 				if ($search == 'venue' || $search == 'city') $search .= '_name';
-				$events->or_where($search, 'LIKE', '%' . $term . '%');
+				$events->or_where($search, 'ILIKE', '%' . $term . '%');
 			}
 			$events->where_close();
 

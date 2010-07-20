@@ -541,7 +541,6 @@ class Anqh_Controller_Events extends Controller_Template {
 					$validation = 'venue';
 					$venue->save();
 					$event->venue = $venue;
-					$event->venue_name = $venue->name;
 				}
 
 				// Make sure end time is after start time, i.e. the next day
@@ -660,7 +659,7 @@ class Anqh_Controller_Events extends Controller_Template {
 var venues = ' . json_encode($hosts) . ';
 var venue = "";
 $("#field-venue-name").autocomplete({
-	minLength: 0,
+	minLength: 1,
 	source: venues,
 	focus: function(event, ui) {
 		$("input[name=venue_name]").val(ui.item.label);
