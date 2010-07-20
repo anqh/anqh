@@ -23,12 +23,12 @@ Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('actio
 		'controller' => 'galleries',
 		'action'     => 'image',
 	));
-Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'add'))
+Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'upload'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'gallery',
 	));
-Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'browse', 'year' => '\d{4}', 'month' => '\d{1,2}'))
+Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'browse|upload', 'year' => '\d{4}', 'month' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'galleries',
 	));

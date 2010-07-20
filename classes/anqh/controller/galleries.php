@@ -305,6 +305,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	public function action_index() {
 		$this->tab_id = 'latest';
 
+		// Set actions
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::get('galleries')->uri(array('action' => 'upload')), 'text' => __('Upload images'), 'class' => 'images-add');
+		}
+
 		$galleries = Jelly::select('gallery')->latest()->limit(10)->execute();
 		if (count($galleries)) {
 			Widget::add('wide', View_Module::factory('galleries/galleries', array(
@@ -312,6 +317,239 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			)));
 		}
 	}
+
+
+	/**
+	 * Action: upload
+	 */
+	public function action_upload() {
+		Widget::add('head', HTML::script('js/jquery.html5_upload.js'));
+
+		// Load existing gallery if any
+		$gallery_id = (int)$this->request->param('gallery_id');
+		if (!$gallery_id) {
+			$gallery_id = (int)$this->request->param('id');
+		}
+		if ($gallery_id) {
+			$gallery = Jelly::select('gallery')->load($gallery_id);
+			if (!$gallery->loaded()) {
+				throw new Model_Exception($gallery, $gallery_id);
+			}
+		} else {
+			$this->page_title = __('Upload images');
+
+			return $this->_edit_gallery();
+		}
+
+		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user);
+
+		// Handle post
+		$errors = array();
+		if ($_FILES) {
+			$file = Arr::get($_FILES, 'file');
+			if ($file) {
+
+				// We need to flatten our file one level as jax uploaded files are set up funnily.
+				// Support for ajax uploads one by one for now..
+				foreach ($file as $key => $value) {
+					is_array($value) and $file[$key] = $value[0];
+				}
+
+				// Save image
+				try {
+					$image = Jelly::factory('image')
+						->set(array(
+							'author' => self::$user,
+							'file'   => $file,
+							'status' => Model_Image::NOT_ACCEPTED,
+						))
+						->save();
+
+					// Save exif
+					try {
+						Jelly::factory('image_exif')
+							->set(array('image' => $image))
+							->save();
+					} catch (Kohana_Exception $e) { }
+
+					// Set the image as gallery image
+					$gallery->add('images', $image);
+					$gallery->save();
+
+					// Show image if uploaded with ajax
+					if ($this->ajax) {
+						echo json_encode(array(
+							'ok'        => true,
+							'thumbnail' => HTML::anchor(
+								Route::get('gallery_image')->uri(array(
+									'gallery_id' => Route::model_id($gallery),
+									'id'         => $image->id,
+									'action'     => '',
+								)),
+								HTML::image($image->get_url('thumbnail'))
+							)
+						));
+						return;
+					}
+
+					$this->request->redirect(Route::model($gallery));
+
+				} catch (Validate_Exception $e) {
+					$errors = $e->array->errors('validation');
+				} catch (Kohana_Exception $e) {
+					$errors = array('file' => __('Failed with image'));
+				}
+
+			}
+		}
+
+		// Show errors if uploading with ajax, skip form
+		if ($this->ajax && !empty($errors)) {
+			echo json_encode(array('error' => Arr::get($errors, 'file')));
+			return;
+		}
+
+		$this->_set_gallery($gallery);
+
+		// Build simplified form
+		$form = array(
+			'ajaxify' => $this->ajax,
+			'errors'  => $errors,
+			'cancel'  => Request::back(Route::get('galleries')->uri(), true),
+			'field' => array(
+				'name' => 'file'
+			),
+		);
+
+		Widget::add('main', View_Module::factory('form/multiple_upload', array(
+			'mod_title' => __('Upload images'),
+			'form'      => $form,
+		)));
+	}
+
+
+	/**
+	 * Edit gallery
+	 *
+	 * @param  integer  $gallery_id
+	 */
+	protected function _edit_gallery($gallery_id = null) {
+		$this->history = false;
+
+		if ($gallery_id) {
+
+			// Editing old
+			$gallery = Jelly::select('gallery')->load($gallery_id);
+			if (!$gallery->loaded()) {
+				throw new Model_Exception($gallery, $gallery_id);
+			}
+			Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
+			$cancel = Route::model($gallery);
+			$save   = null;
+			$upload = false;
+
+		} else {
+
+			// Creating new
+			$gallery = Jelly::factory('gallery');
+			Permission::required($gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
+			$cancel = Request::back(Route::get('galleries')->uri(), true);
+			$save   = __('Search');
+			$upload = true;
+
+		}
+
+		// Handle post
+		$errors = array();
+		if ($_POST) {
+			$event_id = (int)Arr::get($_POST, 'event');
+			$event = Jelly::select('event')->load($event_id);
+
+			// Redirect to existing gallery if trying to create duplicate
+			if (!$gallery->loaded() && $event->loaded()) {
+				$old = Model_Gallery::find_by_event($event_id);
+				if ($old->loaded()) {
+					$this->request->redirect(Route::model($old, 'upload'));
+				}
+			}
+
+			$gallery->set(Arr::extract($_POST, Model_Gallery::$editable_fields));
+			if ($event->loaded()) {
+				$gallery->event = $event;
+				$gallery->date = $event->stamp_begin;
+			}
+			try {
+				$gallery->save();
+				$this->request->redirect(Route::model($gallery, $upload ? 'upload' : null));
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
+			}
+		}
+
+		// Build form
+		$form = array(
+			'values' => $gallery,
+			'errors' => $errors,
+			'cancel' => $cancel,
+			'save'   => array(
+				'label' => $save,
+			),
+			'hidden' => array('event' => $gallery->event->id ? $gallery->event->id : ''),
+			'groups' => array(
+				array(
+					'fields' => array(
+						'name'  => array(
+							'label' => __('Event name'),
+							'tip'   => __('Enter at least 3 characters')
+						),
+					),
+				),
+			)
+		);
+
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+
+		// Name autocomplete
+		Widget::add('foot', HTML::script_source('
+$("#field-name")
+	.autocomplete({
+		minLength: 3,
+		source: function(request, response) {
+			$.ajax({
+				url: "/api/v1/events/search/" + request.term,
+				dataType: "json",
+				data: {
+					limit: 25,
+					filter: "past",
+					search: "name",
+					field: "id:name:city:stamp_begin",
+					order: "stamp_begin.desc"
+				},
+				success: function(data) {
+					console.debug(data);
+					response($.map(data.events, function(item) {
+						return {
+							label: item.name,
+							stamp: item.stamp_begin,
+							city: item.city,
+							value: item.name,
+							id: item.id
+						}
+					}))
+				}
+			});
+		},
+		select: function(event, ui) {
+			$("input[name=event]").val(ui.item.id);
+		},
+	})
+	.data("autocomplete")._renderItem = function(ul, item) {
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append("<a>" + $.datepicker.formatDate("dd.mm.yy", new Date(item.stamp * 1000)) + " " + item.label + ", " + item.city + "</a>")
+			.appendTo(ul);
+	};
+'));	}
 
 
 	/**
@@ -329,6 +567,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Set title
 		$this->page_title = HTML::chars($gallery->name);
 		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
+
+		// Set actions
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::model($gallery, 'upload'), 'text' => __('Upload images'), 'class' => 'images-add');
+		}
 
 	}
 

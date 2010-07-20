@@ -18,6 +18,18 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * Permission to read comments
 	 */
 	const PERMISSION_COMMENTS = 'comments';
+	
+	/**
+	 * Permission to upload images
+	 */
+	const PERMISSION_UPLOAD = 'upload';
+
+	/**
+	 * @var  array  User editable fields
+	 */
+	public static $editable_fields = array(
+		'name', 'event'
+	);
 
 
 	/**
@@ -29,6 +41,7 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 		$meta->fields(array(
 			'id' => new Field_Primary,
 			'name' => new Field_String(array(
+				'label' => __('Name'),
 				'rules' => array(
 					'not_empty'  => null,
 					'min_length' => array(3),
@@ -158,6 +171,7 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			case self::PERMISSION_COMMENTS:
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_UPDATE:
+			case self::PERMISSION_UPLOAD:
 		    return (bool)$user;
 
 			case self::PERMISSION_READ:
