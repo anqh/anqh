@@ -53,9 +53,6 @@ section article:hover .hidden          { visibility: visible; }
 */
 
 .aside a.action { float: right; }
-.calendar table               { margin-bottom: 0; }
-table.calendar th,
-table.calendar td            { padding: 0; }
 
 /***** /ELEMENTS *****/
 
@@ -112,7 +109,7 @@ table.calendar td            { padding: 0; }
 
 .calendar table                        { width: 100%; }
 .calendar table th,
-.calendar table td                     { padding: 0; text-align: right; width: 12.5%; }
+.calendar table td                     { text-align: right; }
 .calendar table .prev                  { text-align: left; }
 .calendar table .month                 { text-align: center; }
 .calendar table .inactive              { opacity: 0.50; }

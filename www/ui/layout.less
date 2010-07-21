@@ -22,8 +22,9 @@ body                                   { background: @body-background-color @bod
 #dock:hover                            { margin-top: 0; }
 #dock.pinned                           { position: fixed; }
 #dock label,
-#dock div                              { color: @dock-color; }
+#dock div                              { color: @dock-color; text-shadow: @dock-text-shadow; }
 #dock form                             { float: left; }
+#dock a                                { color: @dock-link-color; }
 #visitor label,
 #visitor input,
 #dock label,
@@ -133,8 +134,9 @@ aside .mod .container li:last-child    { border-bottom: 0 none; }
 
 /***** FOOTER *****/
 
-#footer                                { background: @footer-background; margin-top: 2em; }
+#footer                                { background: @footer-background; color: @footer-color; margin-top: 2em; text-shadow: @footer-text-shadow; }
 #footer .mod                           { background: none; margin-bottom: 1em; }
+#footer a                              { color: @footer-link-color; }
 #footer p,
 #footer nav ul                         { text-align: center; }
 #footer nav li                         { display: inline; padding: 0 6px; }

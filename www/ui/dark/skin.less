@@ -55,6 +55,7 @@
 
 @tooltip-background:                   rgba(0, 0, 0, 0.9);
 @tooltip-border:                       1px solid @midget-border-color;
+@tooltip-shadow:                       0 0 10px black;
 
 @text-color:                           #a7a7a7;
 @link-color:                           #3ac;
@@ -75,13 +76,18 @@
 @my-color:                             #b0a88a;
 @private-color:                        #a3a;
 @private-rgba:                         rgba(170, 51, 170, 69);
+@pill-checked-color:                   @action-link-color;
 
 @badge-background:                     #222;
 @badge-background-alt:                 #333;
+@badge-border:                         0 none;
+@badge-border-radius:                  0;
 
 @dock-background:                      black;
 @dock-separator:                       1px solid #333;
 @dock-color:                           #f2f2f2;
+@dock-link-color:                      @link-color;
+@dock-text-shadow:                     none;
 
 @mainmenu-background:                  #121212;
 @mainmenu-link-background:             rgba(0, 0, 0, 0.5);
@@ -102,6 +108,9 @@
 @groove-shadow:                        black;
 
 @footer-background:                    black;
+@footer-color:                         @dock-color;
+@footer-link-color:                    @dock-link-color;
+@footer-text-shadow:                   @dock-text-shadow;
 
 @import "../layout.less";
 @import "../widget.less";

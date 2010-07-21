@@ -9,64 +9,65 @@
 .box-shadow(@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
 .transition(@transition: all 1s ease-in-out) { transition: @transition; -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; }
 
-@body-background-color:                white;
+@body-background-color:                #f0efe5;
 @body-background-image:                none;
-@section-background:                   white;
-@section-background-alt:               white;
-@mod-background:                       white;
+@section-background:                   @body-background-color;
+@section-background-alt:               @body-background-color;
+@mod-background:                       @body-background-color;
 
-@header-color:                         #181818;
-@header-shadow:                        none;
+@header-color:                         #555;
+@header-shadow:                        1px 1px 0 white;
 @header-font:                          Cantarell, Arial, sans-serif;
-@subheader-color:                      #181818;
+@subheader-color:                      #737272;
 
-@separator-color:                      #333;
+@separator-color:                      @subheader-color;
 @separator-border:                     1px dotted @separator-color;
-@separator-light-border:               1px dotted #a0a0a0;
+@separator-light-border:               1px dotted #dfded5;
 
-@input-background:                     white;
-@input-background-alt:                 white;
-@input-color:                          black;
-@input-hint-color:                     #a0a0a0;
-@input-border-bottom:                  #a0a0a0;
+@input-background:                     #f8f7f2;
+@input-background-alt:                 #ebebd9;
+@input-color:                          inherit;
+@input-hint-color:                     #8e8d8d;
+@input-border-bottom:                  #e0dfd7;
 @input-border-left:                    @input-border-bottom;
 @input-border-right:                   @input-border-bottom;
 @input-border-top:                     @input-border-bottom;
-@input-border-color:                   #9c1f20;
-@input-border-hover-color:             #9c1f20;
-@input-border-focus-color:             #9c1f20;
+@input-border-color:                   #d4d4b2;
+@input-border-hover-color:             @input-border-color;
+@input-border-focus-color:             @input-border-hover-color;
 
-@button-background:                    #a6a49e;
-@button-top:                           #a6a49e;
-@button-bottom:                        #404040;
-@button-border-top:                    #a6a49e;
-@button-border-bottom:                 #404040;
-@button-color:                         #3ac;
-@button-rgba:                          rgba(51, 170, 204, 0.69);
+@button-background:                    #cdbd9e;
+@button-top:                           #e2d1b3;
+@button-bottom:                        #b09f81;
+@button-border-top:                    @button-top;
+@button-border-bottom:                 @button-bottom;
+@button-color:                         #5aa8d0;
+@button-rgba:                          rgba(90, 168, 208, 0.69);
 
-@widget-background:                    white;
+@widget-background:                    @body-background-color;
 @widget-border-color:                  @input-border-color;
 @widget-border:                        1px solid @widget-border-color;
 
-@midget-background:                    white;
+@midget-background:                    @body-background-color;
 @midget-border-color:                  transparent;
 @midget-border:                        1px solid @midget-border-color;
 .midget-shadow                         { }
 
-@tooltip-background:                   rgba(0, 0, 0, 0.9);
-@tooltip-border:                       1px solid @midget-border-color;
+@tooltip-background:                   rgba(249, 247, 243, 1);
+@tooltip-border:                       1px solid #d8d8cf;
+@tooltip-shadow:                       0 0 10px rgba(216, 216, 207, 1);
 
-@text-color:                           #6f6e67;
-@link-color:                           #a02020;
-@link-rgba:                            rgba(160, 32, 32, 0.69);
+@text-color:                           #555;
+@link-color:                           #ca7246;
+@link-rgba:                            rgba(202, 114, 70, 0.69);
 @link-hover-color:                     #a0a0a0;
 @action-background:                    #222;
 @action-link-color:                    black;
-@positive-color:                       #ac3;
-@positive-rgba:                        rgba(170, 204, 51, 0.69);
-@negative-color:                       #c33;
-@negative-rgba:                        rgba(204, 51, 51, 69);
-@error-background:                     red;
+@positive-color:                       #4f6155;
+@positive-rgba:                        rgba(79, 97, 85, 0.69);
+@negative-color:                       @link-color;
+@negative-rgba:                        @link-rgba;
+@error-background:                     @link-color;
 @info-background:                      green;
 @error-color:                          @action-link-color;
 @info-color:                           @action-link-color;
@@ -75,33 +76,41 @@
 @my-color:                             #b0a88a;
 @private-color:                        #a3a;
 @private-rgba:                         rgba(170, 51, 170, 69);
+@pill-checked-color:                   white;
 
-@badge-background:                     #222;
-@badge-background-alt:                 #333;
+@badge-background:                     @input-background;
+@badge-background-alt:                 #dcdfe0;
+@badge-border:                         1px solid @badge-background-alt;
+@badge-border-radius:                  5px;
 
-@dock-background:                      #d8d7d2;
+@dock-background:                      #c1bbab;
 @dock-separator:                       1px solid #404040;
-@dock-color:                           @text-color;
+@dock-color:                           #4b4b4b;
+@dock-link-color:                      #107174;
+@dock-text-shadow:                     0 1px 0 #ccc;
 
-@mainmenu-background:                  #a6a49e;
+@mainmenu-background:                  #dedcd0;
 @mainmenu-link-background:             @mainmenu-background;
 @mainmenu-link-hover-background:       @mainmenu-background;
-@mainmenu-color:                       white;
-@mainmenu-text-shadow:                 none;
+@mainmenu-color:                       #575757;
+@mainmenu-text-shadow:                 1px 1px 0 white;
 @mainmenu-hover-color:                 @link-hover-color;
-@mainmenu-selected-color:              white;
+@mainmenu-selected-color:              @link-color;
 @mainmenu-selected-shadow:             none;
 
 @tab-background:                       @mainmenu-link-background;
 @tab-color:                            @header-color;
 @tab-text-shadow:                      @mainmenu-text-shadow;
-@tab-selected-color:                   @header-color;
+@tab-selected-color:                   @mainmenu-selected-color;
 @tab-selected-shadow:                  @mainmenu-selected-shadow;
 
-@groove-light:                         #d8d7d2;
-@groove-shadow:                        #d8d7d2;
+@groove-light:                         @input-background;
+@groove-shadow:                        @input-border-bottom;
 
-@footer-background:                    #c0beb6;
+@footer-background:                    @dock-background;
+@footer-color:                         @dock-color;
+@footer-link-color:                    @dock-link-color;
+@footer-text-shadow:                   @dock-text-shadow;
 
 @import "../layout.less";
 @import "../widget.less";

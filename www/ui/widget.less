@@ -72,10 +72,10 @@ fieldset.horizontal select             { margin: 0 0.5em; }*/
 select                                 { border-bottom-color: @input-border-top; border-top-color: @input-border-bottom; }
 input:hover,
 select:hover,
-textarea:hover                         { border-color: @input-border-color; }
+textarea:hover                         { background: @input-background-alt; border-color: @input-border-color; }
 input:focus,
 select:focus,
-textarea:focus                         { border-color: @input-border-focus-color; outline: none; }
+textarea:focus                         { background: @input-background-alt; border-color: @input-border-focus-color; outline: none; }
 input[type="checkbox"],
 input[type="radio"]                    { color: @text-color; margin: 0; width: 20px; }
 input[type="text"],
@@ -155,7 +155,7 @@ form .buttons                          { display: block; margin-bottom: 1em; mar
 .pills li label                        { background: @input-background; .border-radius(5px); color: @text-color; cursor: pointer; display: inline; padding: 0 0.5em; }
 .pills li label:hover                  { background: @link-hover-color; color: @action-link-color; }
 .pills li input[type="checkbox"]       { display: none; }
-.pills li input[type="checkbox"]:checked + label { background: @positive-color; color: @action-link-color; }
+.pills li input[type="checkbox"]:checked + label { background: @positive-color; color: @pill-checked-color; }
 
 a.expander:after                       { content: '\21D3'; }
 
@@ -179,7 +179,7 @@ a.expander:after                       { content: '\21D3'; }
 .ui-state-hover,
 .ui-widget-content .ui-state-hover,
 .ui-state-focus,
-.ui-widget-content .ui-state-focus     { color: white; }
+.ui-widget-content .ui-state-focus     { color: @tab-selected-color; }
 a.ui-state-hover,
 .ui-state-hover a,
 .ui-state-hover a:hover                { color: @tab-hover-color; text-decoration: none; text-shadow: @tab-hover-shadow; }
@@ -293,11 +293,11 @@ ol.rating .icon                        { display: inline-block; height: 1em; min
 
 .step                                  { font-family: Georgia, serif; font-size: 3em; line-height: 1.5em; }
 .step,
-time.date                              { display: block; width: 70px; }
+time.date                              { background: @badge-background; border: @badge-border; .border-radius(@badge-border-radius); display: block; width: 70px; }
 time.date *                            { display: block; text-align: center; }
 .step,
 time.date .day                         { color: @subheader-color; font-family: Georgia, serif; font-size: 2em; line-height: 0.833em; }
-time.date span                         { background: @badge-background; }
+time.date span                         { }
 time.date .weekday                     { background: @badge-background-alt; /*.border-radius(5px 0 0 0);*/ font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
 time.date .month                       { /*.border-radius(0 0 5px 5px);*/ text-transform: uppercase; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
 time.date.today .weekday               { background: @subheader-color; color: @action-link-color; }
@@ -347,7 +347,7 @@ a:hover img                            { opacity: 1; }
 
 /***** TOOLTIP *****/
 
-.tooltip                               { background: @tooltip-background; border: @tooltip-border; .box-shadow(0 0 10px black); .border-radius(3px); padding: 10px; }
+.tooltip                               { background: @tooltip-background; border: @tooltip-border; .box-shadow(@tooltip-shadow); .border-radius(3px); padding: 10px; }
 
 /***** /TOOLTIP *****/
 
@@ -397,8 +397,8 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** HOVER CARD *****/
 
-#hovercard                             { display: none; position: absolute; width: 182px; }
-.hovercard                             { border: 1px solid @input-border-color; .border-radius(5px); width: 180px; }
+#hovercard                             { background: @tooltip-background; .box-shadow(@tooltip-shadow); display: none; position: absolute; width: 182px; }
+.hovercard                             { border: @tooltip-border; .border-radius(5px); width: 180px; }
 .hovercard h4                          { margin-top: 0; }
 
 /***** /HOVER CARD *****/
