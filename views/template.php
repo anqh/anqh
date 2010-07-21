@@ -102,10 +102,11 @@
 
 			<!-- /SIDE NARROW -->
 
+			<section id="main-wide" class="unit size5of6">
 
 			<!-- MAIN -->
 
-			<section id="<?php echo ($wide = Widget::get('wide')) ? 'wide' : 'main' ?>" class="unit <?php echo $wide ? 'size5of6' : 'size1of2' ?>">
+			<section id="<?php echo ($wide = Widget::get('wide')) ? 'wide' : 'main' ?>" class="unit <?php echo $wide ? 'size1of1' : 'size3of5' ?>">
 				<header id="title">
 
 <?php //echo Widget::get('breadcrumb') ?>
@@ -125,7 +126,7 @@
 			</section><!-- <?php echo $wide ? 'wide' : 'main' ?> -->
 
 			<?php if ($wide && $main = Widget::get('main')): ?>
-			<section id="main" class="unit size1of2">
+			<section id="main" class="unit size3of5">
 
 				<?php echo $main ?>
 
@@ -138,7 +139,7 @@
 
 			<!-- SIDE -->
 
-			<aside id="side" class="unit size1of3">
+			<aside id="side" class="unit size2of5">
 
 <?php echo Widget::get('side') ?>
 
@@ -147,6 +148,9 @@
 			<!-- /SIDE -->
 
 			<?php endif; ?>
+
+			</section><!-- #main-wide -->
+
 
 		</div>
 	</section><!-- #body -->
@@ -200,7 +204,7 @@
 		<a class="action close" title="<?= __('Close') ?>">&#10006;</a>
 	</div>
 
-	
+
 <?php echo
 	HTML::script('js/jquery.form.js'),
 	HTML::script('js/jquery.text-overflow.js'),
