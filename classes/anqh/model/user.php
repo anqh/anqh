@@ -418,6 +418,19 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			));
 		}
 
+		// Images waiting for approval
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, $this)) {
+			$gallery_approvals = Model_Gallery::find_pending(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, $this) ? null : $this);
+			if (count($gallery_approvals)) {
+				$new_approvals = count($gallery_approvals);
+				$new['new-gallery-approvals'] = HTML::anchor(
+					Route::get('galleries')->uri(array('action' => 'approval')),
+					__(':galleriesG', array(':galleries' => $new_approvals)),
+					array('title' => __('Galleries waiting for approval')
+				));
+			}
+		}
+
 		// Image comments
 
 		// Private messages
