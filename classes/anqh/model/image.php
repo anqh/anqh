@@ -213,17 +213,29 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * @param   string   $size
 	 * @return  string
 	 */
-	public function get_url($size = null) {
+	public function get_url($size = null, $legacy_dir = null) {
 		if (!$this->loaded()) {
 			return null;
 		}
 
 		// Saved image, based on ID
 		$server = Kohana::config('site.image_server');
-		$url    = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
-		$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+		if ($this->legacy_filename) {
+			if ($size == 'thumbnail') {
+				$size = 'thumb_';
+			} elseif ($size == 'original') {
+				$size = '';
+			} else {
+				$size = 'normal_';
+			}
+			$url = ($server ? 'http://' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
+		} else {
+			$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+			$url     = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
+			$url     = $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
+		}
 
-		return $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
+		return $url;
 	}
 
 
