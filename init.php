@@ -18,17 +18,17 @@ Route::set('gallery_event', 'event/<id>/gallery')
 		'controller' => 'galleries',
 		'action'     => 'event'
 	));
-Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'delete', 'id' => '\d+'))
+Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'image',
 	));
-Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'upload'))
+Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'upload|pending'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'gallery',
 	));
-Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'browse|upload', 'year' => '\d{4}', 'month' => '\d{1,2}'))
+Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'browse|upload|approval', 'year' => '\d{4}', 'month' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'galleries',
 	));

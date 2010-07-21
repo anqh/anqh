@@ -24,6 +24,41 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
+	 * Action: approve single image
+	 */
+	public function action_approve() {
+		$this->history = false;
+
+		return $this->action_image();
+	}
+
+
+	/**
+	 * Action: approval
+	 */
+	public function action_approval() {
+		$this->history = false;
+
+		// Can we see galleries with un-approved images?
+		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
+
+		// Can we see all of them and approve?
+		$approve = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+
+		// Load galleries we have access to
+		$galleries = Model_Gallery::find_pending($approve ? null : $this);
+
+		if (count($galleries)) {
+			Widget::add('wide', View_Module::factory('galleries/galleries', array(
+				'galleries' => $galleries,
+				'approval'  => $approve,
+				'user'      => self::$user,
+			)));
+		}
+	}
+
+
+	/**
 	 * Action: browse
 	 */
 	public function action_browse() {
@@ -143,13 +178,24 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
-		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
+
+		// Are we approving pending images?
+		if ($this->request->action == 'pending') {
+
+			// Can we see galleries with un-approved images?
+			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
+
+			// Can we see all of them and approve?
+			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+
+		} else {
+
+			Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
+
+		}
 
 		// Event info
 		if ($gallery->event) {
-
-			// Set actions
-			$this->page_actions[] = array('link' => Route::model($gallery->event), 'text' => __('Show event'));
 
 			// Event flyers
 			if ($gallery->event->flyer_front->id || $gallery->event->flyer_back->id || $gallery->event->flyer_front_url || $gallery->event->flyer_back_url) {
@@ -169,7 +215,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Pictures
 		Widget::add('main', View_Module::factory('galleries/gallery', array(
-			'gallery' => $gallery,
+			'gallery'  => $gallery,
+			'approval' => isset($approve) ? $approve : null,
+			'user'     => self::$user,
 		)));
 
 	}
@@ -182,10 +230,27 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$gallery_id = (int)$this->request->param('gallery_id');
 		$image_id   = $this->request->param('id');
 
-		// Load gallery
+		/** @var  Model_Gallery  $gallery */
 		$gallery = Jelly::select('gallery')->load($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		// Are we approving pending images?
+		if ($this->request->action == 'approve') {
+
+			// Can we see galleries with un-approved images?
+			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
+
+			// Can we see all of them and approve?
+			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+			$images = $gallery->find_images_pending($approve ? null : self::$user);
+
+		} else {
+
+			Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
+			$images = $gallery->find_images();
+
 		}
 
 		// Set title and tabs
@@ -193,7 +258,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Find current, previous and next images
 		$i = 0;
-		$images = $gallery->find_images();
 		$previous = $next = $current = null;
 		foreach ($images as $image) {
 			$i++;
@@ -221,7 +285,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if (!is_null($current)) {
 
 			// Comments section
-			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
+			if (!isset($approve) && Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
 				$errors = array();
 				$values = array();
 
@@ -276,8 +340,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			}
 
 			// Image
-			$current->view_count++;
-			$current->save();
+			if (!isset($approve)) {
+				$current->view_count++;
+				$current->save();
+			}
 			Widget::add('wide', View_Module::factory('galleries/image', array(
 				'mod_class' => 'gallery-image',
 				'gallery'   => $gallery,
@@ -285,7 +351,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'current'   => $i,
 				'image'     => $current,
 				'next'      => $next,
-				'previous'  => $previous
+				'previous'  => $previous,
+				'approve'   => isset($approve) ? $approve : null,
 			)));
 
 			// Image info
@@ -316,6 +383,16 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'galleries' => $galleries,
 			)));
 		}
+	}
+
+
+	/**
+	 * Action: pending
+	 */
+	public function action_pending() {
+		$this->history = false;
+
+		return $this->action_gallery();
 	}
 
 
@@ -572,6 +649,7 @@ $("#field-name")
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($gallery, 'upload'), 'text' => __('Upload images'), 'class' => 'images-add');
 		}
+		$this->page_actions[] = array('link' => Route::model($gallery->event), 'text' => __('Show event'));
 
 	}
 

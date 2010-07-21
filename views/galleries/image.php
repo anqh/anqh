@@ -7,13 +7,15 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
+
+$approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 ?>
 
 <nav>
 
 	<?php if ($previous): ?>
 	<?php echo HTML::anchor(
-		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => '')),
+		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve)),
 		'&laquo; ' . __('Previous'),
 		array('title' => __('Previous image'), 'class' => 'prev')) ?>
 	<?php else: ?>
@@ -24,7 +26,7 @@
 
 	<?php if ($next): ?>
 	<?php echo HTML::anchor(
-		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => '')),
+		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)),
 		__('Next') . ' &raquo;',
 		array('title' => __('Next image'), 'class' => 'next')) ?>
 	<?php else: ?>
@@ -35,13 +37,13 @@
 
 <?php if ($next): ?>
 <?php echo HTML::anchor(
-	Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => '')),
-	HTML::image('http://' . Kohana::config('site.image_server') . '/kuvat/' . $gallery->dir . '/pieni_' . $image->legacy_filename),
+	Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)),
+	HTML::image($image->get_url(null, $gallery->dir)),
 	array('title' => __('Next image'))) ?>
 <?php else: ?>
 <?php echo HTML::anchor(
-	Route::model($gallery),
-	HTML::image('http://' . Kohana::config('site.image_server') . '/kuvat/' . $gallery->dir . '/pieni_' . $image->legacy_filename),
+	Route::model($gallery, $approve),
+	HTML::image($image->get_url(null, $gallery->dir)),
 	array('title' => __('Back to gallery'))) ?>
 <?php endif ?>
 

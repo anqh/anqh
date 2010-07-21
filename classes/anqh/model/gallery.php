@@ -10,6 +10,16 @@
 class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 	/**
+	 * Permission to approve images
+	 */
+	const PERMISSION_APPROVE = 'approve';
+
+	/**
+	 * Permission to see images waiting for approval
+	 */
+	const PERMISSION_APPROVE_WAITING = 'approve_waiting';
+
+	/**
 	 * Permission to post comments
 	 */
 	const PERMISSION_COMMENT = 'comment';
@@ -18,7 +28,7 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * Permission to read comments
 	 */
 	const PERMISSION_COMMENTS = 'comments';
-	
+
 	/**
 	 * Permission to upload images
 	 */
@@ -121,6 +131,25 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get gallery images waiting for approval
+	 *
+	 * @param   Model_User  $user  image owner or null for all
+	 * @return  Jelly_Collection
+	 */
+	public function find_images_pending(Model_User $user = null) {
+		$images = $this->get('images')
+			->where('status', 'IN', array(Model_Image::HIDDEN, Model_Image::NOT_ACCEPTED))
+			->order_by('author_id');
+
+		if ($user) {
+			$images->and_where('author_id', '=', $user->id);
+		}
+
+		return $images->execute();
+	}
+
+
+	/**
 	 * Get months with galleries.
 	 * Returns array of years => months => count
 	 *
@@ -156,6 +185,31 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get galleries with images waiting for approval
+	 *
+	 * @static
+	 * @param   Model_User  $user  Null for all
+	 * @return  Jelly_Collection
+	 */
+	public static function find_pending(Model_User $user = null) {
+		$galleries = DB::select('gallery_id')
+			->distinct(true)
+			->from('galleries_images')
+			->join('images', 'INNER')
+			->on('images.id', '=', 'image_id')
+			->where('images.status', 'IN', array(Model_Image::NOT_ACCEPTED, Model_Image::HIDDEN))
+			->order_by('gallery_id', 'ASC');
+
+		// If checking only one user
+		if ($user) {
+			$galleries->where('author_id', '=', $user->id);
+		}
+
+		return Jelly::select('gallery')->where('id', 'IN', $galleries)->execute();
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
@@ -164,6 +218,12 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 */
 	public function has_permission($permission, $user) {
 		switch ($permission) {
+			case self::PERMISSION_APPROVE:
+		    return $user && $user->has_role(array('admin', 'photo moderator'));
+
+			case self::PERMISSION_APPROVE_WAITING:
+		    return $user && $user->has_role(array('photo', 'admin', 'photo moderator'));
+
 			case self::PERMISSION_DELETE:
 		    return $user && $user->has_role('admin');
 
