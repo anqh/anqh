@@ -247,7 +247,7 @@ class Anqh_Form extends Kohana_Form {
 		$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
 		foreach ($values as $radio_value => $radio_title) {
 			$id = self::input_id($name) . '-' . $radio_value;
-			$input .= '<li>';
+			$input .= '<li' . HTML::attributes($attributes) . '>';
 			$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $id));
 			$input .= Form::label($id, $radio_title);
 			$input .= "</li>\n";
