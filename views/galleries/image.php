@@ -39,12 +39,12 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 <?php echo HTML::anchor(
 	Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)),
 	HTML::image($image->get_url(null, $gallery->dir)),
-	array('title' => __('Next image'))) ?>
+	array('title' => __('Next image'), 'class' => 'image')) ?>
 <?php else: ?>
 <?php echo HTML::anchor(
 	Route::model($gallery, $approve),
 	HTML::image($image->get_url(null, $gallery->dir)),
-	array('title' => __('Back to gallery'))) ?>
+	array('title' => __('Back to gallery'), 'class' => 'image')) ?>
 <?php endif ?>
 
 <?php if ($image->description): ?>

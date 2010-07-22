@@ -147,6 +147,76 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
+	 * Action: default
+	 */
+	public function action_default() {
+		$this->history = false;
+
+		$gallery_id = (int)$this->request->param('gallery_id');
+		$image_id   = $this->request->param('id');
+
+		/** @var  Model_Gallery  $gallery */
+		$gallery = Jelly::select('gallery')->load($gallery_id);
+		if (!$gallery->loaded()) {
+			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
+
+		if (Security::csrf_valid()) {
+			foreach ($gallery->images as $image) {
+				if ($image->id == $image_id) {
+					$gallery->default_image = $image_id;
+					$gallery->save();
+					break;
+				}
+			}
+		}
+
+		Request::back(Route::model($gallery));
+	}
+
+
+	/**
+	 * Action: delete
+	 */
+	public function action_delete() {
+		$this->history = false;
+
+		$gallery_id = (int)$this->request->param('gallery_id');
+		$image_id   = $this->request->param('id');
+
+		/** @var  Model_Gallery  $gallery */
+		$gallery = Jelly::select('gallery')->load($gallery_id);
+		if (!$gallery->loaded()) {
+			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		/** @var  Model_Image  $image */
+		$image = Jelly::select('image')->load($image_id);
+		if (!$image->loaded()) {
+			throw new Model_Exception($image, $image_id);
+		}
+
+		Permission::required($image, Model_Image::PERMISSION_DELETE, self::$user);
+
+		if (Security::csrf_valid()) {
+			foreach ($gallery->images as $image) {
+				if ($image->id == $image_id) {
+					$gallery->remove('images', $image);
+					$gallery->image_count--;
+					$gallery->save();
+					$image->delete();
+					break;
+				}
+			}
+		}
+
+		$this->request->redirect(Route::model($gallery));
+	}
+
+
+	/**
 	 * Action: event
 	 */
 	public function action_event() {
@@ -172,7 +242,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 */
 	public function action_gallery() {
 
-		// Load gallery
+		/** @var  Model_Gallery  $gallery */
 		$gallery_id = (int)$this->request->param('id');
 		$gallery = Jelly::select('gallery')->load($gallery_id);
 		if (!$gallery->loaded()) {
@@ -187,6 +257,44 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			// Can we see all of them and approve?
 			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+
+			// Handle images?
+			if ($approve && $_POST && Security::csrf_valid()) {
+				$pending = $gallery->find_images_pending();
+				$images  = (array)Arr::get($_POST, 'image_id');
+				if (count($pending) && count($images)) {
+					foreach ($pending as $image) {
+						$action = Arr::Get($images, $image->id, 'wait');
+						switch ($action) {
+
+							case 'approve':
+								$gallery->image_count++;
+						    $image->status = Model_Image::VISIBLE;
+						    $image->save();
+						    break;
+
+							case 'deny':
+								$gallery->remove('images', $image->id);
+						    $image->delete();
+
+						}
+					}
+
+					// Set default image if none set
+					if (!$gallery->default_image->id) {
+						$gallery->default_image = $gallery->find_images()->current();
+					}
+					$gallery->save();
+
+					// Redirect to normal gallery if all images approved/denied
+					if (!count($gallery->find_images_pending())) {
+						$this->request->redirect(Route::model($gallery));
+					} else {
+						$this->request->redirect(Route::model($gallery, 'pending'));
+					}
+
+				}
+			}
 
 		} else {
 
@@ -344,8 +452,18 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$current->view_count++;
 				$current->save();
 			}
+
+			// Image actions
+			$actions = array();
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+				$actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(), 'text' => __('Default'), 'class' => 'image-default');
+			}
+			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
+				$actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(), 'text' => __('Delete'), 'class' => 'image-delete');
+			}
 			Widget::add('wide', View_Module::factory('galleries/image', array(
 				'mod_class' => 'gallery-image',
+				'mod_actions2' => $actions ? $actions : null,
 				'gallery'   => $gallery,
 				'images'    => count($images),
 				'current'   => $i,
@@ -461,7 +579,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 								Route::get('gallery_image')->uri(array(
 									'gallery_id' => Route::model_id($gallery),
 									'id'         => $image->id,
-									'action'     => '',
+									'action'     => 'approve',
 								)),
 								HTML::image($image->get_url('thumbnail'))
 							)

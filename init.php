@@ -18,7 +18,7 @@ Route::set('gallery_event', 'event/<id>/gallery')
 		'controller' => 'galleries',
 		'action'     => 'event'
 	));
-Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete', 'id' => '\d+'))
+Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'image',
