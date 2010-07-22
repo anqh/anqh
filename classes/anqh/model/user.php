@@ -425,7 +425,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				$new_approvals = count($gallery_approvals);
 				$new['new-gallery-approvals'] = HTML::anchor(
 					Route::get('galleries')->uri(array('action' => 'approval')),
-					__(':galleriesG', array(':galleries' => $new_approvals)),
+					__(':galleriesA', array(':galleries' => $new_approvals)),
 					array('title' => __('Galleries waiting for approval')
 				));
 			}
