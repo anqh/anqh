@@ -249,9 +249,15 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	public function has_permission($permission, $user) {
 		switch ($permission) {
 			case self::PERMISSION_CREATE:
+		    return (bool)$user;
+
 			case self::PERMISSION_DELETE:
-			case self::PERMISSION_READ:
 			case self::PERMISSION_UPDATE:
+		    return $user && ($user->id == $this->author->id || $user->has_role('admin', 'photo moderator'));
+
+			case self::PERMISSION_READ:
+		    return true;
+
 		}
 
 		return false;
