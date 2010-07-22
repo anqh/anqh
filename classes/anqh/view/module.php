@@ -32,8 +32,10 @@ class Anqh_View_Module extends View {
 		return (string)View::factory('generic/mod', array(
 			'class'      => 'mod ' . Arr::get_once($this->_data, 'mod_class', strtr(basename($this->_file, '.php'), '_', '-')),
 			'id'         => Arr::get_once($this->_data, 'mod_id'),
+			'actions'    => isset($this->_data['mod_actions'])  ? (string)View::factory('generic/actions', array('actions' => Arr::get_once($this->_data, 'mod_actions'))) : null,
+			'actions2'   => isset($this->_data['mod_actions2']) ? (string)View::factory('generic/actions', array('actions' => Arr::get_once($this->_data, 'mod_actions2'))) : null,
 			'title'      => Arr::get_once($this->_data, 'mod_title'),
-			'sub_title'  => Arr::get_once($this->_data, 'mod_subtitle'),
+			'subtitle'   => Arr::get_once($this->_data, 'mod_subtitle'),
 			'pagination' => Arr::get_once($this->_data, 'pagination'),
 			'content'    => parent::render($file),
 		));

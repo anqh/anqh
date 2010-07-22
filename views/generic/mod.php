@@ -16,15 +16,19 @@
 		<header>
 			<h4><?php echo $title ?></h4>
 			<?php if (isset($subtitle)) echo '<span class="subtitle">' . $subtitle . '</span>' ?>
-			
+
 		</header>
 		<?php endif; ?>
+
+<?php if ($actions) echo $actions; ?>
 
 <?php if ($pagination) echo $pagination; ?>
 
 <?php echo $content ?>
 
 <?php if ($pagination) echo $pagination; ?>
+
+<?php if ($actions2) echo $actions2; ?>
 
 	</div>
 </section><!-- <?php echo $id ? '#' . $id : '.' . $class ?> -->
