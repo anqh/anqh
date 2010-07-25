@@ -141,9 +141,9 @@ section article:hover .hidden          { visibility: visible; }
 
 #galleries .galleries li               { margin-bottom: 1em; }
 #galleries .galleries li h4            { padding-top: 0; }
-#galleries .gallery li                 { margin-bottom: 1.6667em; text-align: center; }
+#galleries .gallery li                 { margin-bottom: 1.6667em; margin-top: 0; text-align: center; }
 #galleries .galleries li .thumb,
-#galleries .gallery li .thumb          { height: 100px; text-align: center; }
+#galleries .gallery li .thumb          { height: 150px; text-align: center; }
 .gallery-image                         { text-align: center; }
 .gallery-image a img                   { opacity: 1; }
 

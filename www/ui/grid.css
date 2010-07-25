@@ -188,5 +188,9 @@ footer:after,
 .size4of5                              { width: 80%; }
 .size1of6                              { width: 16.66667%; }
 .size5of6                              { width: 83.33333%; }
+.size1of12                             { width: 8.33333%; }
+.size5of12                             { width: 41.66666%; }
+.size7of12                             { width: 58.33333%; }
+.size11of12                            { width: 91.66666%; }
 
 /***** /OOCSS *****/

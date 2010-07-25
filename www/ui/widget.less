@@ -34,6 +34,7 @@ h5 a                                   { color: @subheader-color; }
 #title h3                              { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 1em; }
 time[title]:not([class*="date"]),
 abbr[title]                            { border-bottom: 1px dotted @separator-color; margin-bottom: -1px; }
+textarea                               { resize: vertical; }
 
 span.user,
 a.user                                 { font-weight: bold; }
@@ -267,6 +268,9 @@ span.icon:hover,
 li.icon:hover,
 var.icon:hover                         { opacity: 1; }
 .icon[title]                           { cursor: help; }
+.icon.approve                          { background: url(16/checkmark.png) no-repeat left center; }
+.icon.delete,
+.icon.deny                             { background: url(16/delete.png) no-repeat left center; }
 .icon.images                           { background: url(16/picture.png) no-repeat left center; }
 .icon.comments,
 .icon.posts                            { background: url(16/spechbubble.png) no-repeat left center; }
@@ -276,6 +280,7 @@ var.icon:hover                         { opacity: 1; }
 .icon.rate-empty                       { background: url(16/star_fav_empty.png) no-repeat left center; }
 .icon.topics                           { background: url(16/spechbubble_2.png) no-repeat left center; }
 .icon.views                            { background: url(16/eye.png) no-repeat left center; }
+.icon.wait                             { background: url(16/playback_pause.png) no-repeat left center; }
 
 /***** /ICONS *****/
 
@@ -312,7 +317,8 @@ time.date.today .weekday               { background: @subheader-color; color: @a
 .avatar img                            { max-height: 50px; max-width: 50px; }
 .avatar.small                          { height: 25px; width: 25px; }
 .avatar.small img                      { max-height: 25px; max-width: 25px; }
-.thumb a                               { display: block; }
+.thumb a,
+a.image                                { display: block; }
 a img                                  { opacity: .9; }
 a:hover img                            { opacity: 1; }
 
@@ -466,5 +472,22 @@ article.post footer                    { font: 1em/1.5 monospace; opacity: .75; 
 /***** galleries *****/
 
 .galleries article                     { min-height: 10em; }
+.gallery #form-image-approval li:last-of-type { clear: both; }
+.gallery input[value=approve],
+.gallery input[value=deny],
+.gallery input[value=wait]             { display: none; }
+.gallery input[value=approve] + label,
+.gallery input[value=deny] + label,
+.gallery input[value=wait] + label     { cursor: pointer; display: inline-block; .opacity(.25); overflow: hidden; padding: 0 0 0 20px; .transition(opacity .15s ease-in-out); vertical-align: middle; width: 0; }
+.gallery input[name=all] + label       { .opacity(1); width: auto; }
+.gallery input[value=approve] + label  { background: url(16/checkmark.png) no-repeat left center; }
+.gallery input[value=deny] + label     { background: url(16/delete.png) no-repeat left center; }
+.gallery input[value=wait] + label     { background: url(16/playback_pause.png) no-repeat left center; }
+.gallery input[value=approve]:checked + label,
+.gallery input[value=deny]:checked + label,
+.gallery input[value=wait]:checked + label { .opacity(1); }
+.gallery input[value=approve] + label:hover,
+.gallery input[value=deny] + label:hover,
+.gallery input[value=wait] + label:hover { .opacity(1); }
 
 /***** /galleries *****/
