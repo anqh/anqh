@@ -284,6 +284,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					if (!$gallery->default_image->id) {
 						$gallery->default_image = $gallery->find_images()->current();
 					}
+					$gallery->modified = time();
 					$gallery->save();
 
 					// Redirect to normal gallery if all images approved/denied
@@ -461,6 +462,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
 				$actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(), 'text' => __('Delete'), 'class' => 'image-delete');
 			}
+
 			Widget::add('wide', View_Module::factory('galleries/image', array(
 				'mod_class' => 'gallery-image',
 				'mod_actions2' => $actions ? $actions : null,
@@ -544,7 +546,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$file = Arr::get($_FILES, 'file');
 			if ($file) {
 
-				// We need to flatten our file one level as jax uploaded files are set up funnily.
+				// We need to flatten our file one level as ajax uploaded files are set up funnily.
 				// Support for ajax uploads one by one for now..
 				foreach ($file as $key => $value) {
 					is_array($value) and $file[$key] = $value[0];
@@ -557,8 +559,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 							'author' => self::$user,
 							'file'   => $file,
 							'status' => Model_Image::NOT_ACCEPTED,
-						))
-						->save();
+						));
+
+					// Create bigger normal image
+					$image->normal = 'wide';
+					$image->save();
 
 					// Save exif
 					try {

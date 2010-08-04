@@ -126,7 +126,11 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public function find_images() {
-		return $this->get('images')->where('status', '=', Model_Image::VISIBLE)->order_by('id', 'DESC')->execute();
+		return $this
+			->get('images')
+			->where('status', '=', Model_Image::VISIBLE)
+			->order_by('id', 'ASC')
+			->execute();
 	}
 
 
