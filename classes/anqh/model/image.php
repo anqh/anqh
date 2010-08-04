@@ -162,10 +162,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 			// Run configured methods in correct order
 			foreach ($config as $method => $args) {
-				if (in_array($method, array('resize', 'crop')) && $args) {
+				if (in_array($method, array('resize', 'crop')) && is_array($args)) {
 
 					// Resize/crop only if needed
-					if ($args[0] < $this->width || $args[1] < $this->height) {
+					if ($args[0] < $image->width || $args[1] < $image->height) {
 						call_user_func_array(array($image, $method), $args);
 					}
 
@@ -226,7 +226,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			} elseif ($size == 'original') {
 				$size = '';
 			} else {
-				$size = 'normal_';
+				$size = 'pieni_';
 			}
 			$url = ($server ? 'http://' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
 		} else {
