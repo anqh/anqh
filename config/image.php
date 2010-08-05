@@ -31,21 +31,21 @@ return array(
 		'wide' => array(
 			'width'  => 760,
 			'height' => 550,
-			'resize' => array(760, 570, Image::AUTO), // 760x570 for wide, 440x330 for main, 290x580 for side
+			'resize' => array(760, 570), // Wide column
 		),
 
 		// Main column
 		'main' => array(
 			'width'  => 440,
 			'height' => 590,
-			'resize' => array(440, 590, Image::AUTO), // Used for side column too, resized in browser
+			'resize' => array(440, 590), // Used for side column too, resized in browser
 		),
 
 		// Side column
 		'side' => array(
 			'width'  => 290,
 			'height' => 580,
-			'resize' => array(290, 580, Image::AUTO),
+			'resize' => array(290, 580),
 		),
 
 		// Thumbnail
