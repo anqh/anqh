@@ -24,6 +24,12 @@ return array(
 	// Default image quality,
 	'quality' => 95,
 
+	// Maximum filesize
+	'filesize' => '1M',
+
+	// Allowed file types
+	'filetypes' => array('jpg', 'jpeg', 'gif', 'png'),
+
 	// Different image sizes
 	'sizes' => array(
 

@@ -276,8 +276,14 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	public function save($key = null) {
 		$new = !$this->loaded() && !$key;
 
-		if ($new && (!$this->file || !Upload::not_empty($this->file) || !Upload::type($this->file, array('jpg', 'jpeg', 'gif', 'png')))) {
-			throw new Kohana_Exception('Image required');
+		if ($new) {
+			if (!$this->file || !Upload::not_empty($this->file)) {
+				throw new Kohana_Exception(__('No image'));
+			} else if (!Upload::size($this->file, Kohana::config('image.filesize'))) {
+				throw new Kohana_Exception(__('Image too big (limit :size)', array(':size' => Kohana::config('image.filesize'))));
+			} else if (!Upload::type($this->file, Kohana::config('image.filetypes'))) {
+				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::config('image.filetypes')))));
+			}
 		}
 
 		parent::save($key);

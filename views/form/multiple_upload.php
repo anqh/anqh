@@ -15,7 +15,18 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 
 	<fieldset>
 		<ul>
-			<?php echo Form::file_wrap($field_name, array('id' => $field_id, 'multiple' => 'multiple')) ?>
+			<?php echo Form::file_wrap(
+				$field_name,
+				array(
+					'id'       => $field_id,
+					'multiple' => 'multiple'),
+				null,
+				null,
+				__('Allowed image types: :types, maximum image size: :size', array(
+					':types' => implode(', ', Kohana::config('image.filetypes')),
+					':size'  => Kohana::config('image.filesize')
+				))
+			) ?>
 		</ul>
 	</fieldset>
 
@@ -30,7 +41,7 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 
 <div id="progress-report">
 	<ol id="progress-files"></ol>
-	<span id="progress-report-status"></span> <span id="progress-report-name"></span> 
+	<span id="progress-report-status"></span> <span id="progress-report-name"></span>
 	<div id="progress-report-bar-container" style="width: 90%; height: 5px;">
 		<div id="progress-report-bar" style="background-color: blue; width: 0; height: 100%;"></div>
 	</div>
