@@ -128,8 +128,10 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	public function find_images() {
 		return $this
 			->get('images')
+			->with('author')
 			->where('status', '=', Model_Image::VISIBLE)
-			->order_by('id', 'ASC')
+			->order_by('username', 'ASC')
+			->order_by('images.id', 'ASC')
 			->execute();
 	}
 
@@ -223,6 +225,7 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	public function has_permission($permission, $user) {
 		switch ($permission) {
 			case self::PERMISSION_APPROVE:
+			case self::PERMISSION_UPDATE:
 		    return $user && $user->has_role(array('admin', 'photo moderator'));
 
 			case self::PERMISSION_APPROVE_WAITING:
@@ -234,7 +237,6 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			case self::PERMISSION_COMMENT:
 			case self::PERMISSION_COMMENTS:
 			case self::PERMISSION_CREATE:
-			case self::PERMISSION_UPDATE:
 			case self::PERMISSION_UPLOAD:
 		    return (bool)$user;
 
@@ -243,6 +245,23 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Update copyright info
+	 *
+	 * @return  Model_Gallery
+	 */
+	public function update_copyright() {
+		$copyrights = array();
+		$authors    = $this->get('images')->select('author_id');
+		$copyright  = Jelly::select('user')->where('id', 'IN', $authors)->execute();
+		foreach ($copyright as $author) $copyrights[$author->username_clean] = $author->username;
+		ksort($copyrights);
+		$this->copyright = implode(', ', $copyrights);
+
+		return $this;
 	}
 
 }

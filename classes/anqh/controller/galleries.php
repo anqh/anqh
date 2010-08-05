@@ -262,6 +262,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			if ($approve && $_POST && Security::csrf_valid()) {
 				$pending = $gallery->find_images_pending();
 				$images  = (array)Arr::get($_POST, 'image_id');
+				$authors = array();
 				if (count($pending) && count($images)) {
 					foreach ($pending as $image) {
 						$action = Arr::Get($images, $image->id, 'wait');
@@ -269,6 +270,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 							case 'approve':
 								$gallery->image_count++;
+								$authors[$image->author->id] = $image->author->username;
 						    $image->status = Model_Image::VISIBLE;
 						    $image->save();
 						    break;
@@ -284,6 +286,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					if (!$gallery->default_image->id) {
 						$gallery->default_image = $gallery->find_images()->current();
 					}
+
+					$gallery->update_copyright();
 					$gallery->modified = time();
 					$gallery->save();
 
@@ -513,6 +517,30 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->history = false;
 
 		return $this->action_gallery();
+	}
+
+
+	/**
+	 * Action: update
+	 */
+	public function action_update() {
+		$this->history = false;
+
+		/** @var  Model_Gallery  $gallery */
+		$gallery_id = (int)$this->request->param('id');
+		$gallery = Jelly::select('gallery')->load($gallery_id);
+		if (!$gallery->loaded()) {
+			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
+
+		// Update copyrights
+		$gallery
+			->update_copyright()
+			->save();
+
+		Request::back(Route::get('galleries')->uri());
 	}
 
 
@@ -769,8 +797,11 @@ $("#field-name")
 		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
 		// Set actions
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($gallery, 'upload'), 'text' => __('Upload images'), 'class' => 'images-add');
+		}
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::model($gallery, 'update'), 'text' => __('Update gallery'), 'class' => 'gallery-update');
 		}
 		$this->page_actions[] = array('link' => Route::model($gallery->event), 'text' => __('Show event'));
 

@@ -16,11 +16,23 @@ $images = $approve
 	: $gallery->find_images();
 
 if ($approve && $approval) echo Form::open(null, array('id' => 'form-image-approval'));
+
+$copyright = $multiple = null;
 ?>
 
-<ul>
-
 	<?php foreach ($images as $image): ?>
+
+		<?php if ($image->author->id != $copyright): $copyright = $image->author->id; ?>
+			<?php if ($multiple): ?>
+
+</ul>
+
+			<?php else: $multiple = true; endif; ?>
+
+<header><?php echo '&copy; ' . HTML::user($copyright) ?></header>
+<ul class="line">
+
+		<?php endif; ?>
 
 	<li class="unit size1of3">
 		<div class="thumb">
