@@ -625,7 +625,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				} catch (Validate_Exception $e) {
 					$errors = $e->array->errors('validation');
 				} catch (Kohana_Exception $e) {
-					$errors = array('file' => __('Failed with image'));
+					$errors = array('file' => $e->getMessage());
 				}
 
 			}
