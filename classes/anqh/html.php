@@ -215,12 +215,12 @@ class Anqh_HTML extends Kohana_HTML {
 	/**
 	 * Returns user link
 	 *
-	 * @param	  mixed   $user  Model_User, uid or username
-	 * @param	  string  $nick
-	 * @param   string  $class
+	 * @param   mixed   $user  Model_User, uid or username
+	 * @param   string  $nick
+	 * @param   array   $attributes
 	 * @return  string
 	 */
-	public static function user($user, $nick = null, $class = null) {
+	public static function user($user, $nick = null, array $attributes = null) {
 		static $viewer = false;
 
 		// Load current user for friend styling
@@ -228,19 +228,19 @@ class Anqh_HTML extends Kohana_HTML {
 			$viewer = Visitor::instance()->get_user();
 		}
 
-		$class = $class ? array($class, 'user') : array('user');
-
-		if ($user instanceof Model_user || $user && $user = Model::factory('user')->find_user($user)) {
+		$class = 'user ';
+		if ($user instanceof Model_user || $user && $user = Model_User::find_user($user)) {
 			$nick = $user->username;
 			if ($viewer && $viewer->is_friend($user)) {
-				$class[] = 'friend';
+				$class .= 'friend ';
 			}
 			if ($user->gender) {
-				$class[] = $user->gender == 'f' ? 'female' : 'male';
+				$class .= $user->gender == 'f' ? 'female ' : 'male ';
 			}
 		}
+		$attributes['class'] = trim($class . Arr::get($attributes, 'class'));
 
-		return empty($nick) ? __('Unknown') : HTML::anchor(URL::user($nick), $nick, array('class' => implode(' ', $class)));
+		return empty($nick) ? __('Unknown') : HTML::anchor(URL::user($nick), $nick, $attributes);
 	}
 
 }
