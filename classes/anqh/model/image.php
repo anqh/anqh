@@ -53,13 +53,19 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				'auto_now_create' => true,
 			)),
 			'view_count' => new Field_Integer(array(
+				'default' => 0,
 				'column' => 'views',
 			)),
 			'comment_count' => new Field_Integer(array(
+				'default' => 0,
 				'column' => 'comments',
 			)),
-			'rate_count' => new Field_Integer,
-			'rate_total' => new Field_Integer,
+			'rate_count' => new Field_Integer(array(
+				'default' => 0,
+			)),
+			'rate_total' => new Field_Integer(array(
+				'default' => 0,
+			)),
 
 			'original_size'   => new Field_Integer,
 			'original_width'  => new Field_Integer,
