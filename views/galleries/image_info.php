@@ -17,11 +17,14 @@ $info = array(
 );
 
 if ($image->exif):
-	if ($image->exif->make || $image->exif->model)
-		$info[__('Camera')] = ($image->exif->make ? HTML::chars($image->exif->make) . ' ' : '') . ($image->exif->model ? HTML::chars($image->exif->model) . ' ' : '');
+	if ($image->exif->make || $image->exif->model):
+		$info[__('Camera')] =
+			($image->exif->make ? HTML::chars($image->exif->make) : '') .
+			($image->exif->model ? ($image->exif->make ? '<br />' : '') . HTML::chars($image->exif->model) : '');
+	endif;
 	if ($image->exif->exposure)  $info[__('Exposure')] = HTML::chars($image->exif->exposure);
-	if ($image->exif->aperture)  $info[__('Aperture')] = 'f/' . HTML::chars($image->exif->aperture);
-	if ($image->exif->focal)     $info[__('Focal length')] = HTML::chars($image->exif->focal) . 'mm';
+	if ($image->exif->aperture)  $info[__('Aperture')] = HTML::chars($image->exif->aperture);
+	if ($image->exif->focal)     $info[__('Focal length')] = HTML::chars($image->exif->focal);
 	if ($image->exif->iso)       $info[__('ISO speed')] = HTML::chars($image->exif->iso);
 	if ($image->exif->taken)     $info[__('Taken')] = Date::format('DMYYYY_HM', $image->exif->taken);
 	if ($image->exif->flash)     $info[__('Flash')] = HTML::chars($image->exif->flash);
