@@ -102,9 +102,9 @@ abstract class Anqh_Controller_Template extends Controller {
 
 		// Online users
 		if (!$this->internal) {
-			$online = Jelly::select('user_online')->load(session_id());
+			$online = Jelly::select('user_online')->load(Session::instance()->id());
 			if (!$online->loaded()) {
-				$online->id = session_id();
+				$online->id = Session::instance()->id();
 			}
 			$online->user = self::$user;
 			try {
@@ -258,7 +258,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// And finally the profiler stats
-			if (in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {
+			if (self::$user && self::$user->has_role('admin')) { //in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {
 				Widget::add('foot', View::factory('generic/debug'));
 				Widget::add('foot', View::factory('profiler/stats'));
 			}

@@ -9,7 +9,7 @@
  */
 
 $groups = array(
-	'Session' => $_SESSION,
+	'Session' => Session::instance()->as_array(),
 	'Cookies'  => $_COOKIE,
 )
 ?>
