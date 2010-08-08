@@ -432,6 +432,19 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		}
 
 		// Image comments
+		$image_comments = Model_Image::find_new_comments($this);
+		if (count($image_comments)) {
+			$new_comments = 0;
+			foreach ($image_comments as $image) {
+				$new_comments += $image->new_comment_count;
+			}
+			$new['new-image-comments'] = HTML::anchor(
+				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($image->id)), 'id' => $image->id, 'action' => '')),
+				__(':commentsI', array(':comments' => $new_comments)),
+				array('title' => __('New image comments')
+			));
+		}
+		unset($image_comments);
 
 		// Private messages
 
@@ -617,6 +630,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Load one user.
 	 *
+	 * @static
 	 * @param   mixed  $user  id, username, email, Model_User, user array or false for current session
 	 * @return  Model_User  or null
 	 */
