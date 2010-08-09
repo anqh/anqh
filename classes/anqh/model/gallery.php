@@ -121,6 +121,21 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find multiple galleries by image ids
+	 *
+	 * @param   array  $image_ids
+	 * @return  Jelly_Collection
+	 */
+	public static function find_by_images($image_ids) {
+		return Jelly::select('gallery')
+			->join('galleries_images')
+			->on('gallery.:primary_key', '=', 'galleries_images.gallery:foreign_key')
+			->where('image_id', 'IN', $image_ids)
+			->execute();
+	}
+
+
+	/**
 	 * Get visible gallery images
 	 *
 	 * @return  Jelly_Collection

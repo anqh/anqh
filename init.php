@@ -23,7 +23,7 @@ Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('actio
 		'controller' => 'galleries',
 		'action'     => 'image',
 	));
-Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|upload|pending'))
+Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'convert|update|upload|pending'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'gallery',

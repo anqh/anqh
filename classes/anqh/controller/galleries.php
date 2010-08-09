@@ -20,6 +20,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			'latest' => array('url' => Route::get('galleries')->uri(), 'text' => __('Latest updates')),
 			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
 		);
+
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user)) {
+			$this->tabs['convert'] = array('url' => Route::get('galleries')->uri(array('action' => 'converting')), 'text' => __('Convert galleries'));
+		}
 	}
 
 
@@ -143,6 +147,104 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if (!$this->ajax) {
 			Request::back('galleries');
 		}
+	}
+
+
+	/**
+	 * Action: convert
+	 */
+	public function action_convert() {
+		$this->history = false;
+
+		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+
+		$gallery_id = (int)$this->request->param('id');
+		$gallery = Jelly::select('gallery')->load($gallery_id);
+		if (!$gallery->loaded()) {
+			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		ignore_user_abort(true);
+		set_time_limit(0);
+
+		$start = time();
+		$images = $converted = $exif = 0;
+		foreach ($gallery->images as $image) {
+			$images++;
+			if (!$image->postfix) {
+				$converted++;
+				$image->normal = 'wide';
+				$image->convert('images/kuvat/' . $gallery->dir . '/');
+				sleep(2);
+
+				if ($image->exif && $image->exif->loaded()) {
+					try {
+						$exif++;
+						$image->exif->read();
+						$image->exif->save();
+					} catch (Kohana_Exception $e) {}
+				}
+
+			}
+		}
+		if ($converted) {
+			$gallery->mainfile = null;
+			$gallery->save();
+		}
+
+		//echo $gallery->name . ' - images: ' . $images . ', converted: ' . $converted . ', exifs: ' . $exif . ', time: ' . (time() - $start) . 's';
+		$galleries = DB::query(Database::SELECT, "
+SELECT g.id
+FROM galleries g
+	INNER JOIN galleries_images gi ON (g.id = gi.gallery_id)
+	INNER JOIN images i ON (i.id = gi.image_id)
+WHERE i.status = 'v'
+GROUP BY g.id
+HAVING COUNT(i.postfix) < COUNT(i.id)
+ORDER BY g.id DESC
+")->execute();
+
+		if (count($galleries)) {
+			$next = $galleries->current();
+			$this->request->redirect(Route::get('gallery')->uri(array('id' => $next['id'], 'action' => 'convert')));
+		}
+		exit;
+	}
+
+
+	/**
+	 * Action: convert
+	 */
+	public function action_converting() {
+		//$this->history = false;
+
+		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+
+		$galleries = DB::query(Database::SELECT, '
+SELECT g.id, g.name, g.image_count, COUNT(i.postfix) converted, COUNT(i.id) images
+FROM galleries g
+	INNER JOIN galleries_images gi ON (g.id = gi.gallery_id)
+	INNER JOIN images i ON (i.id = gi.image_id)
+WHERE i.status = \'v\'
+GROUP BY g.id, g.name, g.image_count
+HAVING COUNT(i.postfix) < COUNT(i.id)
+ORDER BY g.id DESC
+')->execute();
+
+		$html  = count($galleries) . ' galleries with unconverted images.';
+		$html .= '<ul>';
+		foreach ($galleries as $gallery) {
+			$html .= '<li>';
+			$html .= HTML::anchor(Route::get('gallery')->uri(array('id' => $gallery['id'], 'action' => '')), HTML::chars($gallery['name']));
+			$html .= ' (' . $gallery['converted'] . '/' . $gallery['images'] . ' done) ';
+			if ($gallery['converted'] < $gallery['images']) {
+				$html .= HTML::anchor(Route::get('gallery')->uri(array('id' => $gallery['id'], 'action' => 'convert')), __('Convert'));
+			}
+			$html .= "</li>\n";
+		}
+		$html .= '</ul>';
+
+		Widget::add('main', $html);
 	}
 
 
@@ -413,8 +515,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));
 					try {
 						$comment->save();
-						$image->comment_count++;
-						$image->save();
+						$current->comment_count++;
+						if ($current->author->id != self::$user->id) {
+							$current->new_comment_count++;
+						}
+						$current->save();
 						$gallery->comment_count++;
 						$gallery->save();
 
@@ -430,6 +535,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						$errors = $e->array->errors('validation');
 						$values = $comment;
 					}
+
+				} else if (self::$user && $current->author->id == self::$user->id && $current->new_comment_count > 0) {
+
+					// Clear new comment count?
+					$current->new_comment_count = 0;
+					$current->save();
 
 				}
 
@@ -450,7 +561,22 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					return;
 				}
 				Widget::add('main', $view);
+
+			} else if (!self::$user) {
+
+				// Guest user
+				$view = View_Module::factory('generic/comments_guest', array(
+					'mod_title'  => __('Comments'),
+					'comments'   => $current->comment_count,
+				));
+				if ($this->ajax) {
+					echo $view;
+					return;
+				}
+				Widget::add('main', $view);
+
 			}
+
 
 			// Image
 			if (!isset($approve)) {
@@ -459,17 +585,16 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			}
 
 			// Image actions
-			$actions = array();
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
-				$actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(), 'text' => __('Default'), 'class' => 'image-default');
+				$this->page_actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(), 'text' => __('Default'), 'class' => 'image-default');
 			}
 			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
-				$actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(), 'text' => __('Delete'), 'class' => 'image-delete');
+				$this->page_actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(), 'text' => __('Delete'), 'class' => 'image-delete');
 			}
 
 			Widget::add('wide', View_Module::factory('galleries/image', array(
+				'mod_id'    => 'image',
 				'mod_class' => 'gallery-image',
-				'mod_actions2' => $actions ? $actions : null,
 				'gallery'   => $gallery,
 				'images'    => count($images),
 				'current'   => $i,
@@ -582,6 +707,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				// Save image
 				try {
+
+					// Make sure we don't timeout. An external queue would be better thuough.
+					set_time_limit(0);
+					ignore_user_abort(true);
+
 					$image = Jelly::factory('image')
 						->set(array(
 							'author' => self::$user,
@@ -682,7 +812,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$gallery = Jelly::factory('gallery');
 			Permission::required($gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('galleries')->uri(), true);
-			$save   = __('Search');
+			$save   = __('Continue');
 			$upload = true;
 
 		}
@@ -716,11 +846,18 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Build form
 		$form = array(
+			'attributes' => array(
+				'onclick' => 'return $("#button-continue").attr("disabled") != "disabled";',
+			),
 			'values' => $gallery,
 			'errors' => $errors,
 			'cancel' => $cancel,
 			'save'   => array(
 				'label' => $save,
+				'attributes' => array(
+					'id'       => 'button-continue',
+					'disabled' => 'disabled',
+				),
 			),
 			'hidden' => array('event' => $gallery->event->id ? $gallery->event->id : ''),
 			'groups' => array(
@@ -769,6 +906,7 @@ $("#field-name")
 		},
 		select: function(event, ui) {
 			$("input[name=event]").val(ui.item.id);
+			$("input[name=save]").attr("disabled", null);
 		},
 	})
 	.data("autocomplete")._renderItem = function(ul, item) {
