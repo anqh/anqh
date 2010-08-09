@@ -60,6 +60,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				'default' => 0,
 				'column' => 'comments',
 			)),
+			'new_comment_count' => new Field_Integer(array(
+				'default' => 0,
+			)),
 			'rate_count' => new Field_Integer(array(
 				'default' => 0,
 			)),
@@ -93,6 +96,35 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				'foreign' => 'image_comment',
 			)),
 		));
+	}
+
+
+	public function convert($old_path) {
+
+		// Make sure we have the new target directory
+		$new_path = Kohana::config('image.path') . URL::id($this->id);
+		if (!is_dir($new_path)) {
+			mkdir($new_path, 0777, true);
+			chmod($new_path, 0777);
+		}
+		if (is_writable($new_path)) {
+			$new_path = rtrim($new_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		} else {
+			throw new Kohana_Exception(get_class($this) . ' can not write to directory');
+		}
+
+		// New file name with some random postfix for hard to guess filenames
+		!$this->postfix and $this->postfix = Text::random('alnum', 8);
+		$new_file = $this->id . '_' . $this->postfix . Kohana::config('image.postfix_original') . '.jpg';
+
+		// Rename and copy to correct directory using image id
+		if (!copy($old_path . $this->legacy_filename, $new_path . $new_file)) {
+			throw new Kohana_Exception(get_class($this) . ' could not copy old image');
+		}
+		$this->file = $new_file;
+
+		// Start creating images
+		$this->_generate_images($new_path . $new_file);
 	}
 
 
@@ -194,6 +226,22 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get new image comments count for user.
+	 * Return array of ids and counts
+	 *
+	 * @static
+	 * @param   Model_User $user
+	 * @return  array
+	 */
+	public static function find_new_comments(Model_User $user) {
+		return Jelly::select('image')
+			->where('author_id', '=', $user->id)
+			->and_where('new_comment_count', '>', 0)
+			->execute();
+	}
+
+
+	/**
 	 * Get full path and filename of specific image size or empty for default
 	 *
 	 * @param   string   $size
@@ -226,7 +274,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 		// Saved image, based on ID
 		$server = Kohana::config('site.image_server');
-		if ($this->legacy_filename) {
+		if ($this->legacy_filename && !$this->postfix) {
 			if ($size == 'thumbnail') {
 				$size = 'thumb_';
 			} elseif ($size == 'original') {
