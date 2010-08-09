@@ -29,7 +29,7 @@
 			STATUSES: {
 				'STARTED': 'Uploading...',
 				'PROGRESS': 'Progress',
-				'LOADED': 'Loaded',
+				'LOADED': 'Processing',
 				'FINISHED': 'Finished'
 			},
 

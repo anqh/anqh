@@ -117,27 +117,30 @@ button:::-moz-focus-inner              { border: 0; padding: 0; }
 button,
 input[type=submit],
 a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
+button[disabled=disabled],
+input[disabled=disabled],
+a.action.disabled                      { cursor: default; font-style: italic; .opacity(.5); }
 button.small,
 input[type=submit].small,
 a.action.small                         { font-size: 0.909em; padding: 0 0.667em; }
 /*a.action                               { line-height: 1; }*/
 /*a.action:before                        { .border-radius(5px); content: ' '; position: absolute; left: -1px; top: -2px; bottom: -2px; right: -1px; z-index: -1; border: 1px solid #222; }*/
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
-input[type=submit]                   { /*border-width: 0 0 1px 0; padding: 1px 1em 0;*/ }
+input[type=submit]                     { /*border-width: 0 0 1px 0; padding: 1px 1em 0;*/ }
 .ui-widget .ui-dialog-buttonpane .ui-state-default:active,
 button:active,
 input[type=submit]:active,
 a.action:active                        { outline: none; top: 1px; }
 .ui-widget .ui-dialog-buttonpane .ui-state-hover,
-button:hover,
-input[type=submit]:hover,
-a.action:hover                         { opacity: 1; text-decoration: none; }
+button:not([disabled=disabled]):hover,
+input[type=submit]:not([disabled=disabled]):hover,
+a.action:not(.disabled):hover          { .opacity(1); text-decoration: none; }
 
-section article .actions               { opacity: 0.1; }
-section article:hover .actions         { opacity: 1; }
+section article .actions               { .opacity(.1); }
+section article:hover .actions         { .opacity(1); }
 .ui-widget .ui-dialog-buttonpane .ui-state-default:hover,
 button:hover,
-input[type="submit"]:hover,
+input[type=submit]:hover,
 a.action:hover                         { color: @button-color; .box-shadow(0 0 5px @button-rgba); text-shadow: 0 0 5px @button-rgba; }
 section article:hover .actions a[class*="-private"]:hover,
 a[class*="-private"]:hover             { color: @private-color; .box-shadow(0 0 4px @private-rgba); text-shadow: 0 0 5px @private-rgba; }
@@ -232,9 +235,11 @@ a.ui-state-hover,
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 
 /* Autocomplete */
-.ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; z-index: 99999; }
+.ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; .border-radius(0 0 4px 4px); list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; z-index: 99999; }
 .ui-autocomplete li                    { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; text-shadow: @tab-text-shadow; }
-.ui-autocomplete-loading               { .ajax(@input-background); }
+.ui-autocomplete-loading,
+.ui-autocomplete-loading:focus,
+.ui-autocomplete-loading:hover         { .ajax(@input-background); }
 
 /***** /JQUERY UI *****/
 
