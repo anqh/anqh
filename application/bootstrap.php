@@ -59,7 +59,7 @@ if (isset($_ENV['ENVIRONMENT'])) {
 Kohana::init(array(
 	'base_url'   => '/',
 	'index_file' => false,
-	'profile'    => in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
+	'profile'    => true, //in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 	'caching'    => !in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 ));
 
@@ -72,6 +72,11 @@ Kohana::$log->attach(new Kohana_Log_File(APPPATH . 'logs'));
  * Attach a file reader to config. Multiple readers are supported.
  */
 Kohana::$config->attach(new Kohana_Config_File);
+
+/**
+ * Set session handler
+ */
+Session::$default = 'database';
 
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
