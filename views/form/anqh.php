@@ -20,6 +20,13 @@ if (Arr::get($form, 'ajaxify')) {
 echo Form::open(Arr::get($form, 'action'), $form_attributes);
 
 foreach ($form['groups'] as $group_name => $group):
+
+	// Print HTML block if any
+	if (isset($group['html'])):
+		echo $group['html'];
+		continue;
+	endif;
+
 	$group_attributes = Arr::get($group, 'attributes', array());
 	if (is_string($group_name)) {
 		$group_attributes += array('id' => 'fields-' . $group_name);
