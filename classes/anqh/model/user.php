@@ -102,6 +102,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 					),
 				)),
 				'dob' => new Field_Date(array(
+					'null'   => true,
 					'label'  => __('Date of Birth'),
 					'format' => 'Y-m-d',
 					'pretty_format' => 'j.n.Y',
