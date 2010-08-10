@@ -869,6 +869,9 @@ ORDER BY g.id DESC
 						),
 					),
 				),
+				array(
+					'html' => '<div id="selected-event">' . __('Selected event') . ': <var>' . __('None') . '</var>',
+				),
 			)
 		);
 
@@ -892,7 +895,6 @@ $("#field-name")
 					order: "stamp_begin.desc"
 				},
 				success: function(data) {
-					console.debug(data);
 					response($.map(data.events, function(item) {
 						return {
 							label: item.name,
@@ -908,6 +910,7 @@ $("#field-name")
 		select: function(event, ui) {
 			$("input[name=event]").val(ui.item.id);
 			$("input[name=save]").attr("disabled", null);
+			$("#selected-event var").text($.datepicker.formatDate("dd.mm.yy", new Date(ui.item.stamp * 1000)) + " " + ui.item.label + ", " + ui.item.city);
 		},
 	})
 	.data("autocomplete")._renderItem = function(ul, item) {
