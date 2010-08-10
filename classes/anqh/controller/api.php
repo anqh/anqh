@@ -9,8 +9,8 @@
  */
 class Anqh_Controller_API extends Controller {
 
-	const FORMAT_JSON = '.json';
-	const FORMAT_XML  = '.xml';
+	const FORMAT_JSON = 'json';
+	const FORMAT_XML  = 'xml';
 
 	/**
 	 * @var  string  Output format
@@ -65,7 +65,8 @@ class Anqh_Controller_API extends Controller {
 		}
 
 		// Check format
-		$this->format = $this->request->param('format', self::FORMAT_JSON);
+		$this->format = $this->request->param('format');
+		!$this->format and $this->format = self::FORMAT_JSON;
 		if (!in_array($this->format, self::$_formats)) {
 			throw new Controller_API_Exception('Invalid format');
 		}
