@@ -8,7 +8,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-Route::set('api_events', 'api/<version>/events/<action>(/<param>)(<format>)', array('version' => 'v[0-9\.]+', 'action' => 'search|event', 'format' => '\.\w+'))
+Route::set('api_events', 'api/<version>/events/<action>(.<format>)', array('version' => 'v[0-9\.]+', 'action' => 'search|event', 'format' => 'xml|json'))
 	->defaults(array(
 		'controller' => 'events_api',
 		'version'    => 'v1',

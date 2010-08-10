@@ -38,7 +38,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 	 * Action: event
 	 */
 	public function action_event() {
-		$event_id = (int)$this->request->param('param');
+		$event_id = Arr::get($_REQUEST, 'id');
 
 		// Load event
 		$event = Jelly::select('event')->load($event_id);
@@ -57,7 +57,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 	public function action_search() {
 		$this->data['events'] = array();
 
-		$term   = trim($this->request->param('param'));
+		$term   = trim(Arr::get($_REQUEST, 'q', ''));
 		$search = explode(':', Arr::get($_REQUEST, 'search', 'name'));
 		$limit  = (int)Arr::get($_REQUEST, 'limit', 25);
 		$order  = Arr::get($_REQUEST, 'order', 'name.asc');
@@ -138,8 +138,6 @@ class Anqh_Controller_Events_API extends Controller_API {
 				case 'price2':
 				case 'created':
 				case 'modified':
-				case 'flyer_front':
-				case 'flyer_back':
 				case 'favorite_count':
 					$data[$field] = $event->$field;
 					break;
@@ -153,6 +151,10 @@ class Anqh_Controller_Events_API extends Controller_API {
 			    break;
 				case 'country':
 					$data[$field] = $event->country->id ? $event->country->name : '';
+			    break;
+				case 'flyer_front':
+				case 'flyer_back':
+			    $data[$field] = $event->$field->id ? $event->$field->get_url() : '';
 			    break;
 
 			}
