@@ -111,6 +111,30 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find new venues
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_new($limit = 20) {
+		return Jelly::select('venue')->order_by('id', 'DESC')->limit((int)$limit)->execute();
+	}
+
+
+	/**
+	 * Find updated venues
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_updated($limit = 20) {
+		return Jelly::select('venue')->where('modified', 'IS NOT', null)->order_by('modified', 'DESC')->limit((int)$limit)->execute();
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission

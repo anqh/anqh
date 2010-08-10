@@ -58,13 +58,12 @@ class Anqh_Controller_Venues extends Controller_Template {
 		$this->page_title   .= ': ' . HTML::chars($category->name);
 		$this->page_subtitle = HTML::chars($category->description);
 
-		// Organize by city
-
-
 		Widget::add('main', View_Module::factory('venues/venues', array(
 			'mod_class' => 'venues articles',
 			'venues'    => $category->find_venues_by_city(),
 		)));
+
+		$this->_tabs();
 	}
 
 
@@ -205,7 +204,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 						->save();
 				} catch (Kohana_Exception $e) { }
 
-				// Set the image as user image
+				// Set the image as venue image
 				$venue->add('images', $image);
 				$venue->default_image = $image;
 				$venue->save();
@@ -268,6 +267,8 @@ class Anqh_Controller_Venues extends Controller_Template {
 		Widget::add('main', View_Module::factory('venues/categories', array(
 			'categories' => Jelly::select('venue_category')->execute(),
 		)));
+
+		$this->_tabs();
 	}
 
 
@@ -553,11 +554,35 @@ $(function() {
 				? array(
 						array('link' => Route::model($venue, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
 						array('link' => Route::model($venue, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-default disabled'),
-						array('link' => Route::model($venue, 'image'), 'text' => __('Add image'), 'class' => 'image-edit ajaxify')
+						array('link' => Route::model($venue, 'image'), 'text' => __('Add image'), 'class' => 'image-add ajaxify')
 					)
 				: null,
 			'image' => $venue->default_image->id ? $venue->default_image : null,
 		));
 	}
+
+
+	/**
+	 * New and updated venues
+	 */
+	protected function _tabs() {
+		$tabs = array(
+			'new' => array('href' => '#venues-new', 'title' => __('New venues'), 'tab' => View_Module::factory('venues/list', array(
+				'mod_id'    => 'venues-new',
+				'mod_class' => 'cut tab venues',
+				'title'     => __('New Venues'),
+				'venues'    => Model_Venue::find_new(20),
+			))),
+			'updated' => array('href' => '#venues-updated', 'title' => __('Updated venues'), 'tab' => View_Module::factory('venues/list', array(
+				'mod_id'    => 'venues-updated',
+				'mod_class' => 'cut tab venues',
+				'title'     => __('Updated Venues'),
+				'venues'    => Model_Venue::find_updated(20),
+			))),
+		);
+
+		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'venues-tab', 'tabs' => $tabs)));
+	}
+
 
 }
