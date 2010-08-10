@@ -881,9 +881,10 @@ $("#field-name")
 		minLength: 3,
 		source: function(request, response) {
 			$.ajax({
-				url: "/api/v1/events/search/" + request.term,
+				url: "/api/v1/events/search",
 				dataType: "json",
 				data: {
+					q: request.term,
 					limit: 25,
 					filter: "past",
 					search: "name",
