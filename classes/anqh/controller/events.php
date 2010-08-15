@@ -536,7 +536,7 @@ class Anqh_Controller_Events extends Controller_Template {
 					$venue->name = $_POST['venue_name'];
 					$venue->address = $_POST['address'];
 					$venue->city_name = $_POST['city_name'];
-					$venue->city = $city;
+					isset($city) and $venue->city = $city;
 					$venue->event_host = true;
 					$validation = 'venue';
 					$venue->save();
