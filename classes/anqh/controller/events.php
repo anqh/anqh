@@ -137,8 +137,9 @@ class Anqh_Controller_Events extends Controller_Template {
 		Permission::required($event, Model_Event::PERMISSION_READ, self::$user);
 
 		// Set actions
-		$this->page_actions[] = array('link' => Route::get('forum_event')->uri(array('id' => $event->id)), 'text' => __('Forum discussion'));
-		$this->page_actions[] = array('link' => Route::get('gallery_event')->uri(array('id' => $event->id)), 'text' => __('Gallery'));
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
+		}
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
 			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(), 'text' => __('Remove favorite'), 'class' => 'favorite-delete');
@@ -146,9 +147,8 @@ class Anqh_Controller_Events extends Controller_Template {
 				$this->page_actions[] = array('link' => Route::model($event, 'favorite') . '?token=' . Security::csrf(), 'text' => __('Add favorite'), 'class' => 'favorite-add');
 			}
 		}
-		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
-		}
+		$this->page_actions[] = array('link' => Route::get('forum_event')->uri(array('id' => $event->id)), 'text' => __('Forum'));
+		$this->page_actions[] = array('link' => Route::get('gallery_event')->uri(array('id' => $event->id)), 'text' => __('Gallery'));
 
 		$this->page_title = HTML::chars($event->name);
 		$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
