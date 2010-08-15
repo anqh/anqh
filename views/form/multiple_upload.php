@@ -40,7 +40,7 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 <?php echo Form::close(); ?>
 
 <div id="progress-report">
-	<ol id="progress-files"></ol>
+	<ul id="progress-files"></ul>
 	<span id="progress-report-status"></span> <span id="progress-report-name"></span>
 	<div id="progress-report-bar-container" style="width: 90%; height: 5px;">
 		<div id="progress-report-bar" style="background-color: blue; width: 0; height: 100%;"></div>
