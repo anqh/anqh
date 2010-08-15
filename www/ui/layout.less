@@ -122,12 +122,13 @@ aside .mod                             { background: @midget-background; border:
 .mod .mod                              { background: transparent; border: 0 none; .box-shadow(none); .border-radius(0); margin-bottom: 0; }
 
 aside h4,
-aside h5                               { text-shadow: @mainmenu-text-shadow; }
-aside .mod .container li               { border-top: 1px solid @groove-light; border-bottom: 1px solid @groove-shadow; text-shadow: @mainmenu-text-shadow; }
+aside h5,
+aside .mod .container li               { text-shadow: @mainmenu-text-shadow; }
+aside .mod .container ul li            { border-top: 1px solid @groove-light; border-bottom: 1px solid @groove-shadow; }
+aside .mod .container ul li.group      { border: 0 none; }
+aside .mod .container ul li:first-child { border-top: 0 none; }
+aside .mod .container ul li:last-child { border-bottom: 0 none; }
 aside .mod .container form li          { border-top: 0 none; border-bottom: 0 none; }
-aside .mod .container li.group         { border: 0 none; }
-aside .mod .container li:first-child   { border-top: 0 none; }
-aside .mod .container li:last-child    { border-bottom: 0 none; }
 
 /***** /BODY *****/
 

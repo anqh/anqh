@@ -119,7 +119,7 @@ input[type=submit],
 a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
 button[disabled=disabled],
 input[disabled=disabled],
-a.action.disabled                      { cursor: default; font-style: italic; .opacity(.5); }
+a.action.disabled                      { cursor: default; font-style: italic; .opacity(.25); }
 button.small,
 input[type=submit].small,
 a.action.small                         { font-size: 0.909em; padding: 0 0.667em; }
@@ -132,9 +132,12 @@ button:active,
 input[type=submit]:active,
 a.action:active                        { outline: none; top: 1px; }
 .ui-widget .ui-dialog-buttonpane .ui-state-hover,
-button:not([disabled=disabled]):hover,
-input[type=submit]:not([disabled=disabled]):hover,
-a.action:not(.disabled):hover          { .opacity(1); text-decoration: none; }
+button:hover,
+input[type=submit]:hover,
+a.action:hover                         { .opacity(1); text-decoration: none; }
+button[disabled=disabled]:hover,
+input[disabled=disabled]:hover,
+a.action.disabled:hover                { .opacity(.25); }
 
 section article .actions               { .opacity(.1); }
 section article:hover .actions         { .opacity(1); }

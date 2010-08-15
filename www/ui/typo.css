@@ -57,6 +57,7 @@ textarea,
 select,
 option                                 { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
 
+ol                                     { list-style-position: outside; margin-left: 1.667em; }
 ul.bullet                              { list-style: disc; }
 ul.circle                              { list-style: circle; }
 ul.square                              { list-style: square; }
