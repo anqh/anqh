@@ -20,10 +20,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			'latest' => array('url' => Route::get('galleries')->uri(), 'text' => __('Latest updates')),
 			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
 		);
-
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user)) {
-			$this->tabs['convert'] = array('url' => Route::get('galleries')->uri(array('action' => 'converting')), 'text' => __('Convert galleries'));
-		}
 	}
 
 
@@ -151,104 +147,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
-	 * Action: convert
-	 */
-	public function action_convert() {
-		$this->history = false;
-
-		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
-
-		$gallery_id = (int)$this->request->param('id');
-		$gallery = Jelly::select('gallery')->load($gallery_id);
-		if (!$gallery->loaded()) {
-			throw new Model_Exception($gallery, $gallery_id);
-		}
-
-		ignore_user_abort(true);
-		set_time_limit(0);
-
-		$start = time();
-		$images = $converted = $exif = 0;
-		foreach ($gallery->images as $image) {
-			$images++;
-			if (!$image->postfix) {
-				$converted++;
-				$image->normal = 'wide';
-				$image->convert('images/kuvat/' . $gallery->dir . '/');
-				sleep(2);
-
-				if ($image->exif && $image->exif->loaded()) {
-					try {
-						$exif++;
-						$image->exif->read();
-						$image->exif->save();
-					} catch (Kohana_Exception $e) {}
-				}
-
-			}
-		}
-		if ($converted) {
-			$gallery->mainfile = null;
-			$gallery->save();
-		}
-
-		//echo $gallery->name . ' - images: ' . $images . ', converted: ' . $converted . ', exifs: ' . $exif . ', time: ' . (time() - $start) . 's';
-		$galleries = DB::query(Database::SELECT, "
-SELECT g.id
-FROM galleries g
-	INNER JOIN galleries_images gi ON (g.id = gi.gallery_id)
-	INNER JOIN images i ON (i.id = gi.image_id)
-WHERE i.status = 'v'
-GROUP BY g.id
-HAVING COUNT(i.postfix) < COUNT(i.id)
-ORDER BY g.id DESC
-")->execute();
-
-		if (count($galleries)) {
-			$next = $galleries->current();
-			$this->request->redirect(Route::get('gallery')->uri(array('id' => $next['id'], 'action' => 'convert')));
-		}
-		exit;
-	}
-
-
-	/**
-	 * Action: convert
-	 */
-	public function action_converting() {
-		//$this->history = false;
-
-		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
-
-		$galleries = DB::query(Database::SELECT, '
-SELECT g.id, g.name, g.image_count, COUNT(i.postfix) converted, COUNT(i.id) images
-FROM galleries g
-	INNER JOIN galleries_images gi ON (g.id = gi.gallery_id)
-	INNER JOIN images i ON (i.id = gi.image_id)
-WHERE i.status = \'v\'
-GROUP BY g.id, g.name, g.image_count
-HAVING COUNT(i.postfix) < COUNT(i.id)
-ORDER BY g.id DESC
-')->execute();
-
-		$html  = count($galleries) . ' galleries with unconverted images.';
-		$html .= '<ul>';
-		foreach ($galleries as $gallery) {
-			$html .= '<li>';
-			$html .= HTML::anchor(Route::get('gallery')->uri(array('id' => $gallery['id'], 'action' => '')), HTML::chars($gallery['name']));
-			$html .= ' (' . $gallery['converted'] . '/' . $gallery['images'] . ' done) ';
-			if ($gallery['converted'] < $gallery['images']) {
-				$html .= HTML::anchor(Route::get('gallery')->uri(array('id' => $gallery['id'], 'action' => 'convert')), __('Convert'));
-			}
-			$html .= "</li>\n";
-		}
-		$html .= '</ul>';
-
-		Widget::add('main', $html);
-	}
-
-
-	/**
 	 * Action: default
 	 */
 	public function action_default() {
@@ -334,7 +232,7 @@ ORDER BY g.id DESC
 		if ($gallery->loaded()) {
 			$this->request->redirect(Route::model($gallery));
 		} else {
-			$this->request->redirect(Route::get('galleries')->uri());
+			$this->request->redirect(Route::get('galleries')->uri(array('action' => 'upload')) . '?event=' . $event->id);
 		}
 	}
 
@@ -673,7 +571,10 @@ ORDER BY g.id DESC
 	 * Action: upload
 	 */
 	public function action_upload() {
-		Widget::add('head', HTML::script('js/jquery.html5_upload.js'));
+		Widget::add('side', View_Module::factory('galleries/help_upload', array(
+			'mod_title' => __('Instructions'),
+			'mod_class' => 'help',
+		)));
 
 		// Load existing gallery if any
 		$gallery_id = (int)$this->request->param('gallery_id');
@@ -688,7 +589,7 @@ ORDER BY g.id DESC
 		} else {
 			$this->page_title = __('Upload images');
 
-			return $this->_edit_gallery();
+			return $this->_edit_gallery(null, Arr::get($_REQUEST, 'event'));
 		}
 
 		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user);
@@ -779,6 +680,7 @@ ORDER BY g.id DESC
 			),
 		);
 
+		Widget::add('head', HTML::script('js/jquery.html5_upload.js'));
 		Widget::add('main', View_Module::factory('form/multiple_upload', array(
 			'mod_title' => __('Upload images'),
 			'form'      => $form,
@@ -790,8 +692,9 @@ ORDER BY g.id DESC
 	 * Edit gallery
 	 *
 	 * @param  integer  $gallery_id
+	 * @param  integer  $event_id
 	 */
-	protected function _edit_gallery($gallery_id = null) {
+	protected function _edit_gallery($gallery_id = null, $event_id = null) {
 		$this->history = false;
 
 		if ($gallery_id) {
@@ -815,27 +718,38 @@ ORDER BY g.id DESC
 			$save   = __('Continue');
 			$upload = true;
 
+			if ($event_id) {
+				/** @var  Model_Event  $event */
+				$event = Jelly::select('event')->load($event_id);
+			}
 		}
 
 		// Handle post
 		$errors = array();
-		if ($_POST) {
-			$event_id = (int)Arr::get($_POST, 'event');
+		if ($_POST || isset($_GET['from'])) {
+			$event_id = $_POST ? (int)Arr::get($_POST, 'event') : (int)Arr::get($_GET, 'from');
 			$event = Jelly::select('event')->load($event_id);
 
-			// Redirect to existing gallery if trying to create duplicate
 			if (!$gallery->loaded() && $event->loaded()) {
+
+				// Redirect to existing gallery if trying to create duplicate
 				$old = Model_Gallery::find_by_event($event_id);
 				if ($old->loaded()) {
 					$this->request->redirect(Route::model($old, 'upload'));
 				}
+
+				// Fill gallery info from event when creating new
+				$gallery->name = $event->name;
+				$gallery->date = $event->stamp_begin;
+				$gallery->event = $event;
+
+			} else if ($gallery->loaded()) {
+
+				// Editing old
+				$gallery->set(Arr::extract($_POST, Model_Gallery::$editable_fields));
+
 			}
 
-			$gallery->set(Arr::extract($_POST, Model_Gallery::$editable_fields));
-			if ($event->loaded()) {
-				$gallery->event = $event;
-				$gallery->date = $event->stamp_begin;
-			}
 			try {
 				$gallery->save();
 				$this->request->redirect(Route::model($gallery, $upload ? 'upload' : null));
@@ -847,19 +761,12 @@ ORDER BY g.id DESC
 		// Build form
 		$form = array(
 			'attributes' => array(
-				'onclick' => 'return $("#button-continue").attr("disabled") != "disabled";',
+				'onsubmit' => 'return false;',
 			),
 			'values' => $gallery,
 			'errors' => $errors,
 			'cancel' => $cancel,
-			'save'   => array(
-				'label' => $save,
-				'attributes' => array(
-					'id'       => 'button-continue',
-					'disabled' => 'disabled',
-				),
-			),
-			'hidden' => array('event' => $gallery->event->id ? $gallery->event->id : ''),
+			'save'   => false,
 			'groups' => array(
 				array(
 					'fields' => array(
@@ -869,13 +776,19 @@ ORDER BY g.id DESC
 						),
 					),
 				),
-				array(
-					'html' => '<div id="selected-event">' . __('Selected event') . ': <var>' . __('None') . '</var>',
-				),
 			)
 		);
 
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+
+		$data = (isset($event) && $event->loaded())
+			? array(
+				'mod_title' => HTML::chars($event->name),
+				'mod_subtitle' => HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true),
+				'event' => $event,
+			)
+			: array();
+		Widget::add('main', View_Module::factory('galleries/event', $data));
 
 		// Name autocomplete
 		Widget::add('foot', HTML::script_source('
@@ -908,9 +821,7 @@ $("#field-name")
 			});
 		},
 		select: function(event, ui) {
-			$("input[name=event]").val(ui.item.id);
-			$("input[name=save]").attr("disabled", null);
-			$("#selected-event var").text($.datepicker.formatDate("dd.mm.yy", new Date(ui.item.stamp * 1000)) + " " + ui.item.label + ", " + ui.item.city);
+			window.location = "' .  URL::site(Route::get('galleries')->uri(array('action' => 'upload'))) . '?from=" + ui.item.id;
 		},
 	})
 	.data("autocomplete")._renderItem = function(ul, item) {
