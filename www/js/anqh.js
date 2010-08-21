@@ -21,6 +21,18 @@ $.fn.googleMap = function(options) {
 	};
 
 	options = $.extend(defaults, options || {});
+
+	if (options.address && options.city && options.address != '' && options.city != '') {
+		var geocode = options.address + ", " + options.city;
+		geocoder.geocode({ address: geocode }, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK && results.length) {
+				options.lat = results[0].geometry.location.lat();
+				options.long = results[0].geometry.location.lng();
+				options.marker = true;
+			}
+		});
+	}
+
 	var center = new google.maps.LatLng(options.lat, options.long);
 
 	map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
