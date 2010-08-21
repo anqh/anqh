@@ -531,16 +531,30 @@ class Anqh_Controller_Events extends Controller_Template {
 				$event->validate();
 
 				// Add venue?
-				if (empty($_POST['venue']) && $_POST['venue_name']) {
-					$venue = Jelly::factory('venue');
-					$venue->name = $_POST['venue_name'];
-					$venue->address = $_POST['address'];
-					$venue->city_name = $_POST['city_name'];
-					isset($city) and $venue->city = $city;
-					$venue->event_host = true;
-					$validation = 'venue';
-					$venue->save();
-					$event->venue = $venue;
+				if ($_POST['venue_name']) {
+
+					// Check for duplicate
+					$duplicate = false;
+					if (!empty($_POST['venue'])) {
+						$venue = Jelly::select('venue')->load((int)$_POST['venue']);
+						if ($venue->loaded() && $venue->name == $_POST['venue_name']) {
+							$event->venue = $venue;
+							$duplicate = true;
+						}
+					}
+					if (!$duplicate) {
+						$venue = Jelly::factory('venue');
+						$venue->name = $_POST['venue_name'];
+						$venue->address = $_POST['address'];
+						$venue->city_name = $_POST['city_name'];
+						$venue->latitude = $_POST['latitude'];
+						$venue->longitude = $_POST['longitude'];
+						isset($city) and $venue->city = $city;
+						$venue->event_host = true;
+						$validation = 'venue';
+						$venue->save();
+						$event->venue = $venue;
+					}
 				}
 
 				// Make sure end time is after start time, i.e. the next day
@@ -568,8 +582,10 @@ class Anqh_Controller_Events extends Controller_Template {
 			'errors' => $errors,
 			'cancel' => $cancel,
 			'hidden' => array(
-				'city_id'  => $event->city ? $event->city->id : 0,
-				'venue' => $event->venue ? $event->venue->id : 0,
+				'city_id'   => $event->city ? $event->city->id : 0,
+				'venue'     => $event->venue ? $event->venue->id : 0,
+				'latitude'  => $event->venue ? $event->venue->latitude : '',
+				'longitude' => $event->venue ? $event->venue->longitude : '',
 			),
 			'groups' => array(
 				'event' => array(
@@ -598,6 +614,7 @@ class Anqh_Controller_Events extends Controller_Template {
 					'fields' => array(
 						'price'  => array('attributes' => array('title' => __('Set to zero for free entry'))),
 						'price2' => array(),
+						'age'    => array(),
 					),
 				),
 				'where' => array(
@@ -608,7 +625,6 @@ class Anqh_Controller_Events extends Controller_Template {
 							'model' => $event->venue,
 						),
 						'city_name'  => array(),
-						'age'        => array(),
 					)
 				),
 				'who' => array(
@@ -648,10 +664,13 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (count($venues)) {
 			foreach ($venues as $venue) {
 				$hosts[] = array(
-					'value'   => $venue->id,
-					'label'   => HTML::chars($venue->name),
-					'city'    => HTML::chars($venue->city->name),
-					'city_id' => $venue->city->id,
+					'value'     => $venue->id,
+					'label'     => HTML::chars($venue->name),
+					'address'   => HTML::chars($venue->address),
+					'city'      => HTML::chars($venue->city->name),
+					'city_id'   => $venue->city->id,
+					'latitude'  => $venue->latitude,
+					'longitude' => $venue->longitude,
 				);
 			}
 		}
@@ -669,8 +688,10 @@ $("#field-venue-name").autocomplete({
 	select: function(event, ui) {
 		$("input[name=venue_name]").val(ui.item.label);
 		$("input[name=venue]").val(ui.item.value);
+		$("input[name=address]").val(ui.item.address);
 		$("input[name=city_name]").val(ui.item.city);
 		$("input[name=city]").val(ui.item.city_id);
+		$("#map").googleMap({ marker: true, lat: ui.item.latitude, long: ui.item.longitude });
 		return false;
 	},
 	close: function(event, ui) {
@@ -685,6 +706,35 @@ $("#field-venue-name").autocomplete({
 		.append("<a>" + item.label + ", " + item.city + "</a>")
 		.appendTo(ul);
 };
+'));
+
+		// Maps
+		Widget::add('foot', HTML::script_source('
+$(function() {
+	$("#fields-where ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
+
+	$("#map").googleMap(' . ($event->venue->latitude ? json_encode(array('marker' => true, 'lat' => $event->venue->latitude, 'long' => $event->venue->longitude)) : '') . ');
+
+	$("input[name=address], input[name=city_name]").blur(function(event) {
+		var address = $("input[name=address]").val();
+		var city = $("input[name=city_name]").val();
+		if (address != "" && city != "") {
+			var geocode = address + ", " + city;
+			geocoder.geocode({ address: geocode }, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK && results.length) {
+				  map.setCenter(results[0].geometry.location);
+				  $("input[name=latitude]").val(results[0].geometry.location.lat());
+				  $("input[name=longitude]").val(results[0].geometry.location.lng());
+				  var marker = new google.maps.Marker({
+				    position: results[0].geometry.location,
+				    map: map
+				  });
+				}
+			});
+		}
+	});
+
+});
 '));
 
 		$options = array(
