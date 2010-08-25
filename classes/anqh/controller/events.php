@@ -489,6 +489,26 @@ class Anqh_Controller_Events extends Controller_Template {
 			Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
 			$cancel = Request::back(Route::model($event), true);
 
+			// Old version
+			/*
+			if (!count($event->tags) && $event->music) {
+				$tag_group = Jelly::select('tag_group')->where('name', '=', 'Music')->limit(1)->execute();
+				if ($tag_group->loaded() && count($tag_group->tags)) {
+					$tags = array();
+					foreach ($tag_group->tags as $tag) {
+						$tags[$tag->name()] = $tag->id();
+					}
+				}
+				$musics = explode(',', $event->music);
+				foreach ($musics as $music) {
+					$music = trim($music);
+					if ($tags[$music]) {
+						$event->add('tag', $tags[$music]);
+					}
+				}
+			}
+			 */
+
 			$this->page_title = HTML::chars($event->name);
 
 			// Set actions
@@ -520,6 +540,15 @@ class Anqh_Controller_Events extends Controller_Template {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
 			$event->set($post);
+
+			// Old version
+			if (count($event->tags)) {
+				$music = array();
+				foreach ($event->tags as $tag) {
+					$music[] = $tag->name;
+				}
+				$event->music = implode(', ', $music);
+			}
 
 			// GeoNames
 			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
