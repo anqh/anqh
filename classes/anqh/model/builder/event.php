@@ -96,7 +96,7 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 	 * @return  Jelly_Builder
 	 */
 	public function upcoming() {
-		return $this->where('stamp_begin', '>=', time())->order_by('stamp_begin', 'ASC')->order_by('city_name', 'ASC');
+		return $this->where('stamp_begin', '>=', strtotime('today'))->order_by('stamp_begin', 'ASC')->order_by('city_name', 'ASC');
 	}
 
 }
