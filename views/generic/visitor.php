@@ -44,7 +44,7 @@ else:
 		Form::input('username', null, array('title' => __('Username'))),
 		Form::password('password', null, array('title' => __('Password'))),
 		Form::submit('signin', __('Sign in')),
-		Form::close();
-		//HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up'));
+		Form::close(),
+		HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up'));
 
 endif;

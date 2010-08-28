@@ -75,14 +75,44 @@ class Anqh_Controller_Sign extends Controller_Template {
 	public function action_out() {
 
 		// Remove from online list
-		Jelly::factory('user_online')->delete(session_id());
+		Jelly::factory('user_online')->delete(Session::instance()->id());
 
 		// Logout visitor
 		Visitor::instance()->logout();
 
-		// Redirect back
 		Request::back();
+	}
 
+
+	/**
+	 * Action: sign up
+	 */
+	public function action_up() {
+		$this->history = false;
+
+		if (self::$user) {
+			Request::back();
+		}
+
+		$this->page_title = __('Sign up');
+
+		// Check invitation code
+		$code = trim(Arr::get($_REQUEST, 'code'));
+		if ($code) {
+			$invitation = Model_Invitation::find_by_code($code);
+
+			return $invitation->loaded() ? $this->_join($invitation) : $this->_invite($code);
+		}
+
+		// Check if we got the code from the form
+		if (!$code && $_POST) {
+			$code = Arr::get($_POST, 'code');
+			if ($code) {
+				$this->request->redirect(Route::get('sign')->uri(array('action' => 'up')) . '?code=' . $code);
+			}
+		}
+
+		$this->_invite();
 	}
 
 
@@ -91,132 +121,184 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 *
 	 * @param  string  $code  Invalid code given?
 	 */
-	public function _invite($code = null) {
-		$invitation = new Invitation_Model();
+	protected function _invite($code = null) {
 
-		$form_values = $invitation->as_array();
-		$form_errors = array();
-		$form_message = '';
+		/** @var  Model_Invitation  $invitation */
+		$invitation = Jelly::factory('invitation');
 
+		$errors = array();
+		$message = '';
 		if ($code) {
 
 			// Invalid code given
-			$form_errors = array('code' => 'default');
-			$form_values['code'] = $code;
+			$errors = array('code' => __('Invalid invitation code'));
+			$invitation->code = $code;
 
-		} else if (request::method() == 'post') {
+		} else if ($_POST && !empty($_POST['email'])) {
 
 	 		// Handle post
-			$post = $this->input->post();
-
-			// Validate email
-			if ($invitation->validate($post, false)) {
+			$invitation->email = Arr::get($_POST, 'email');
+			$invitation->code = $invitation->code();
+			try {
+				$invitation->validate();
 
 				// Send invitation
-				$code = $invitation->code();
 				$subject = __(':site invite', array(':site' => Kohana::config('site.site_name')));
-				$mail = __("Your invitation code is: :code\n\nOr click directly to sign up: :url", array(':code' => $code, ':url' => url::site('/sign/up/' . $code)));
+				$mail = __(
+					"Your invitation code is: :code\n\nOr click directly to sign up: :url",
+					array(
+						':code' => $invitation->code,
+						':url'  => URL::site(Route::get('sign')->uri(array('action' => 'up')) . '?code=' . $invitation->code, true),
+					)
+				);
 
 				// Send invitation
-				if (email::send($post->email, Kohana::config('site.email_invitation'), $subject, $mail)) {
-					$invitation->code = $code;
+				if (Email::send($invitation->email, Kohana::config('site.email_invitation'), $subject, $mail)) {
 					$invitation->save();
 
-					$form_message = __('Invitation sent, you can proceed to Step 2 when you receive your mail.');
+					$message = '<p>' . __('Invitation sent, you can proceed to Step 2 when you receive your mail.') . '<p>';
 				} else {
-					$form_message =__('Could not send email to :email', array(':email' => $post->email));
+					$message = '<p>' . __('Could not send invite to :email', array(':email' => $invitation->email)) . '<p>';
 				}
 
-			} else {
-				$form_errors = $post->errors();
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
 			}
-			$form_values = arr::overwrite($form_values, $post->as_array());
 		}
 
-		widget::add('main', View::factory('member/invite', array('values' => $form_values, 'errors' => $form_errors, 'message' => $form_message)));
+		// Send invitation
+		$form = array(
+			'values' => $invitation,
+			'errors' => $errors,
+			'cancel' => Request::back('/', true),
+			'save'   => array(
+				'label' => __('Send invitation')
+			),
+			'groups' => array(
+				array(
+					'html'   => '<p>' . $message . '</p>',
+				),
+				'invite' => array(
+					'header' => __('Not yet invited?'),
+					'fields' => array(
+						'email' => array(
+							'label' => __('Send an invitation to'),
+							'tip'   => __('Please remember: sign up is available only with a valid, invited email.'),
+							'attributes' => array(
+								'title' => __('john.doe@domain.tld'),
+							),
+						),
+					),
+				),
+			),
+		);
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+
+		// Enter invitation
+		$form = array(
+			'values' => Jelly::factory('invitation'),
+			'errors' => $errors,
+			'cancel' => Request::back('/', true),
+			'save'   => array(
+				'label' => __('Final step!')
+			),
+			'hidden' => array(
+				'signup' => true,
+			),
+			'groups' => array(
+				'invited' => array(
+					'header' => __('Got my invitation!'),
+					'fields' => array(
+						'code' => array(
+							'label' => __('Enter your invitation code'),
+							'tip'   => __('Your invitation code is included in the mail you received, 16 characters.'),
+							'attributes' => array(
+								'title' => __('M0573XC3LL3N751R'),
+							),
+						),
+					),
+				),
+			),
+		);
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+
 	}
 
 
 	/**
 	 * Register with code
 	 *
-	 * @param  Invitation_Model  $invitation
+	 * @param  Model_Invitation  $invitation
 	 */
-	public function _join(Invitation_Model $invitation) {
-		$user = new User_Model();
-		$form_values = $user->as_array();
-		$form_errors = array();
+	public function _join(Model_Invitation $invitation) {
+		$user = Jelly::factory('user');
+		$user->email = $invitation->email;
 
-		// handle post
-		if (request::method() == 'post') {
-			$post = $this->input->post();
-			$post['email'] = $invitation->email;
-			$post['username_clean'] = utf8::clean($post['username']);
-			if ($user->validate($post, false, null, null, array('rules' => 'register', 'callbacks' => 'register'))) {
+		// Handle post
+		$errors = array();
+		if ($_POST && !Arr::get($_POST, 'signup')) {
+			$user->set($_POST, array('username', 'password', 'password_confirm'));
+			$user->username_clean = Text::clean(Arr::get($_POST, 'username'));
+			$user->add('roles', 1);
+			try {
+				$user->save();
 				$invitation->delete();
 
-				$user->add(ORM::factory('role', 'login'));
-				$user->save();
+				Visitor::instance()->login($user, $_POST['password']);
 
-				$this->visitor->login($user, $post->password);
-
-				url::back();
-			} else {
-				$form_errors = $post->errors();
-				$form_values = arr::overwrite($form_values, $post->as_array());
-			}
-
-		}
-
-		widget::add('main', View::factory('member/signup', array('values' => $form_values, 'errors' => $form_errors, 'invitation' => $invitation)));
-	}
-
-
-	/**
-	 * Sign up
-	 *
-	 * @param  string  $code
-	 */
-	public function up($code = false) {
-		$this->page_title = __('Sign up');
-
-		// Check invitation code
-		if ($code) {
-			$invitation = new Invitation_Model($code);
-			if ($invitation->email) {
-
-				// Valid invitation code found, sign up form
-				$this->_join($invitation);
-
-			} else {
-
-				// Invite only hook
-				if (Kohana::config('site.inviteonly')) {
-					url::redirect('/');
-					return;
-				}
-
-				$this->_invite($code);
-			}
-			return;
-		}
-
-		// Invite only hook
-		if (Kohana::config('site.inviteonly') && !Visitor::instance()->logged_in()) {
-			url::redirect('/');
-			return;
-		}
-
-		// Check if we got the code from the form
-		if (!$code && request::method() == 'post') {
-			$code = $this->input->post('code');
-			if ($code) {
-				url::redirect('/sign/up/' . $code);
-				return;
+				$this->request->redirect(Route::model($user));
+			} catch (Validate_Exception $e) {
+				$user->password = $user->password_confirm = null;
+				$errors = $e->array->errors('validation');
 			}
 		}
 
-		$this->_invite();
+		// Build form
+		$form = array(
+			'values' => $user,
+			'errors' => $errors,
+			'cancel' => Request::back('/', true),
+			'save'   => array(
+				'label' => __('Sign up!'),
+			),
+			'hidden' => array(
+				'code' => $invitation->code,
+			),
+			'groups' => array(
+				array(
+					'header' => __('Almost there!'),
+					'fields' => array(
+
+						'username' => array(
+							'attributes' => array(
+								'title' => __('JohnDoe'),
+							),
+							'tip' => __(
+								'Choose a unique username with at least <var>:length</var> characters. No special characters, thank you.',
+								array(':length' => Kohana::config('visitor.username.length_min'))
+							),
+						),
+
+						'password' => array(),
+						'password_confirm' => array(
+							'label' => __('Confirm'),
+							'tip' => __(
+								'Try to use letters, numbers and special characters for a stronger password, with at least <var>8</var> characters.'
+							),
+						),
+
+						'email' => array(
+							'attributes' => array(
+								'disabled' => 'disabled',
+								'title'    => __('john.doe@domain.tld'),
+							),
+						)
+					),
+				),
+			)
+		);
+
+		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
 }

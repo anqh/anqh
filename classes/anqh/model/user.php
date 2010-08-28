@@ -55,10 +55,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 					'label'  => __('Username'),
 					'unique' => true,
 					'rules'  => array(
-						'not_empty'  => array(true),
-						'min_length' => array(max((int)$visitor->get_config('username.length_min'), 1)),
-						'max_length' => array(min((int)$visitor->get_config('username.length_max'), 30)),
-						'regex'      => array('/^[' . $visitor->get_config('username.chars') . ']+/ui'),
+						'not_empty'  => null,
+						'min_length' => array(max((int)Kohana::config('visitor.username.length_min'), 1)),
+						'max_length' => array(min((int)Kohana::config('visitor.username.length_max'), 30)),
+						'regex'      => array('/^[' . Kohana::config('visitor.username.chars') . ']+$/ui'),
 					),
 				)),
 				'username_clean' => new Field_String(array(
@@ -72,14 +72,14 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 					'hash_with' => array($visitor, 'hash_password'),
 					'rules'     => array(
 						'not_empty'  => null,
-						'min_length' => array(5),
+						'min_length' => array(6),
 					)
 				)),
 				'password_confirm' => new Field_Password(array(
 					'label'     => __('Password confirmation'),
 					'in_db'     => false,
 					'callbacks' => array(
-						'matches' => array('Anqh_Model_User', '_check_password_matches')
+						'matches' => array('Model_User', '_check_password_matches')
 					),
 					'rules' => array(
 						'not_empty'  => null,
@@ -157,7 +157,8 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				)),
 
 				'login_count' => new Field_Integer(array(
-					'column' => 'logins',
+					'column'  => 'logins',
+					'default' => 0,
 				)),
 				'last_login' => new Field_Timestamp,
 				'created'    => new Field_Timestamp(array(
@@ -167,16 +168,20 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 				// Foreign values, should make own models?
 				'post_count' => new Field_Integer(array(
-					'column' => 'posts',
+					'column'  => 'posts',
+					'default' => 0,
 				)),
 				'new_comment_count' => new Field_Integer(array(
-					'column' => 'newcomments',
+					'column'  => 'newcomments',
+					'default' => 0,
 				)),
 				'comment_count' => new Field_Integer(array(
-					'column' => 'comments',
+					'column'  => 'comments',
+					'default' => 0,
 				)),
 				'left_comment_count' => new Field_Integer(array(
-					'column' => 'commentsleft',
+					'column'  => 'commentsleft',
+					'default' => 0,
 				)),
 
 				'tokens' => new Field_HasMany(array(
@@ -228,14 +233,16 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Validate callback wrapper for checking password match
 	 *
+	 * @static
 	 * @param  Validate  $array
 	 * @param  string    $field
 	 */
 	public static function _check_password_matches(Validate $array, $field) {
-		if ($array['password'] !== $array[$field]) {
+		if (empty($array['password']) || $array['password'] !== $array[$field]) {
 			$array->error($field, 'matches', array('param1' => 'password'));
 		}
 	}
+
 
 	/***** AUTH *****/
 
