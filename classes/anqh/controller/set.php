@@ -16,8 +16,8 @@ class Anqh_Controller_Set extends Controller {
 		$language = $this->request->param('value');
 
 		$locale = Kohana::config('locale');
-		if (isset($locale['locales'][$language])) {
-			Session::instance()->set('language', $locale['locales'][$language]['language'][0]);
+		if (isset($locale['languages'][$language])) {
+			Session::instance()->set('language', $locale['languages'][$language][2]);
 		}
 
 		Request::back();
