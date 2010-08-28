@@ -92,10 +92,10 @@ Kohana::modules(array(
 	'database'   => MODPATH . 'database',   // Database access
 	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
 	'postgresql' => MODPATH . 'postgresql', // PostgreSQL
-	// 'formo'    => MODPATH . 'formo',       // Form module
 	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
 	'image'      => MODPATH . 'image',      // Image manipulation
 	'pagination' => MODPATH . 'pagination', // Paging of results
+	'email'      => MODPATH . 'email',      // Email module
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool

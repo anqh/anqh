@@ -40,3 +40,6 @@
 [submodule "modules/postgresql"]
 	path = modules/postgresql
 	url = http://github.com/cbandy/kohana-postgresql.git
+[submodule "modules/email"]
+	path = modules/email
+	url = http://github.com/banks/kohana-email.git
