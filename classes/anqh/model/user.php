@@ -394,7 +394,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($this->new_comment_count) {
 			$new['new-comments'] = HTML::anchor(
 				URL::user($this),
-				__(':commentsC', array(':comments' => $this->new_comment_count)),
+				__(':comments', array(':comments' => '<div></div><var>' . $this->new_comment_count . '</var>')),
 				array('title' => __('New comments')
 			));
 		}
@@ -408,7 +408,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			}
 			$new['new-blog-comments'] = HTML::anchor(
 				Route::model($blog_entry),
-				__(':commentsB', array(':comments' => $new_comments)),
+				__(':comments', array(':comments' => '<div></div><var>' . $new_comments . '</var>')),
 				array('title' => __('New blog comments')
 			));
 		}
@@ -421,7 +421,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			$quote = $forum_quotes->current();
 			$new['new-forum-quotes'] = HTML::anchor(
 				Route::get('forum_post')->uri(array('topic_id' => Route::model_id($quote->topic), 'id' => $quote->post->id)) . '#post-' . $quote->post->id,
-				__(':quotesQ', array(':quotes' => $new_quotes)),
+				__(':quotes', array(':quotes' => '<div></div><var>' . $new_quotes . '</var>')),
 				array('title' => __('Forum quotes')
 			));
 		}
@@ -433,7 +433,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				$new_approvals = count($gallery_approvals);
 				$new['new-gallery-approvals'] = HTML::anchor(
 					Route::get('galleries')->uri(array('action' => 'approval')),
-					__(':galleriesA', array(':galleries' => $new_approvals)),
+					__(':galleries', array(':galleries' => '<div></div><var>' . $new_approvals . '</var>')),
 					array('title' => __('Galleries waiting for approval')
 				));
 			}
@@ -448,7 +448,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			}
 			$new['new-image-comments'] = HTML::anchor(
 				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($image->id)), 'id' => $image->id, 'action' => '')),
-				__(':commentsI', array(':comments' => $new_comments)),
+				__(':comments', array(':comments' => '<div></div><var>' . $new_comments . '</var>')),
 				array('title' => __('New image comments')
 			));
 		}

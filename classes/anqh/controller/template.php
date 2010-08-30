@@ -181,10 +181,10 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Dock
 			$classes = array(
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").addClass("fixed").removeClass("liquid"); $.get(this.href); return false;')),
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'wide')),   __('Wide'),   array('onclick' => '$("body").addClass("liquid").removeClass("narrow"); $.get(this.href); return false;')),
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").addClass("left").removeClass("right"); $.get(this.href); return false;')),
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").addClass("right").removeClass("left"); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").toggleClass("fixed", true).toggleClass("liquid", false); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'wide')),   __('Wide'),   array('onclick' => '$("body").toggleClass("liquid", true).toggleClass("narrow", false); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").toggleClass("left", true).toggleClass("right", false); $.get(this.href); return false;')),
+				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").toggleClass("right", true).toggleClass("left", false); $.get(this.href); return false;')),
 			);
 			foreach ($skins as $skin_name => &$skin_config) {
 				$skin_config['path'] = 'ui/' . $skin_name . '/skin.less';
@@ -211,11 +211,15 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// Search
-			Widget::add('search', View_Module::factory('generic/search'));
+			Widget::add('search', View_Module::factory('generic/search', array(
+				'mod_id' => 'search'
+			)));
 
 			// Visitor card
 			Widget::add('visitor', View_Module::factory('generic/visitor', array(
-				'user' => self::$user,
+				'mod_id'    => 'visitor',
+				'mod_title' => self::$user ? __('Welcome') : __('Sign in'),
+				'user'      => self::$user,
 			)));
 
 			if (self::$user) {

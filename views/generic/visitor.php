@@ -11,15 +11,27 @@
 if ($user):
 
 	// Member
-	echo HTML::avatar($user->avatar, $user->username, true);
-	echo __('[#:id] :user - :signout', array(
+	echo __(':user <var class="uid">[#:id]</var>', array(
 		':id'      => $user->id,
 		':user'    => HTML::user($user),
-		':signout' => HTML::anchor('sign/out', __('Sign out')))), '<br />';
+	)), '<br />';
+	echo HTML::avatar($user->avatar, $user->username);
+?>
+<ul>
+	<li><?php echo HTML::anchor(URL::user($user, 'settings'), __('Settings')) ?></li>
+	<li><?php echo HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out')) ?></li>
+</ul>
+<?php
 
 	$new_comments = $user->find_new_comments();
 	if (!empty($new_comments)):
-		echo __('New messages'), ': ', implode(', ', $new_comments);
+?>
+<ul class="new-messages">
+	<?php foreach ($new_comments as $class => $link): ?>
+	<li class="<?php echo $class ?>"><?php echo $link ?></li>
+	<?php endforeach; ?>
+</ul>
+<?php
 	endif;
 
 // Logout also from Facebook
@@ -30,12 +42,6 @@ if (FB::enabled() && Visitor::instance()->get_provider()) {
 */
 //}
 
-/*
-if (Kohana::config('site.inviteonly')) {
-				widget::add('dock', ' | ' . html::anchor('sign/up', __('Send invite')));
-}
-*/
-
 else:
 
 	// Guest
@@ -43,8 +49,11 @@ else:
 		Form::open(Route::get('sign')->uri(array('action' => 'in'))),
 		Form::input('username', null, array('title' => __('Username'))),
 		Form::password('password', null, array('title' => __('Password'))),
+		Form::checkbox('remember', 'true', false, array('disabled' => 'disabled')),
+		Form::label('remember', __('Remember me')),
 		Form::submit('signin', __('Sign in')),
-		Form::close(),
-		HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up'));
+		Form::close();
+
+	echo HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add'));
 
 endif;

@@ -51,109 +51,95 @@
 
 <body id="<?php echo $page_id ?>" class="<?php echo $page_class ?>">
 
+	<!-- BODY -->
 
-	<!-- HEADER -->
+	<div id="body" class="colmask leftmenu">
+		<div class="colright">
+			<div class="col1wrap">
 
-	<header id="header">
-		<div class="content">
 
-			<section id="logo" class="unit size1of6">
-				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
-			</section>
+				<!-- CONTENT -->
 
-			<section id="search" class="unit size1of2">
+				<section id="main-wide" class="col1">
+
+<?php echo Widget::get('ad_top') ?>
+
+					<!-- MAIN -->
+
+					<section id="<?php echo ($wide = Widget::get('wide')) ? 'wide' : 'main' ?>" class="unit <?php echo $wide ? 'size1of1' : 'size3of5' ?>">
+						<header id="title">
+
+<?php //echo Widget::get('breadcrumb') ?>
+
+							<hgroup>
+								<h2><?php echo $page_title ?></h2>
+								<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
+							</hgroup>
+
+<?php echo Widget::get('actions') ?>
+
+						</header><!-- #title -->
+
+<?php echo Widget::get('error') ?>
+<?php echo $wide ? $wide : Widget::get('main') ?>
+
+					</section><!-- <?php echo $wide ? 'wide' : 'main' ?> -->
+
+<?php if ($wide && $main = Widget::get('main')): ?>
+					<section id="main" class="unit size3of5">
+
+<?php echo $main ?>
+
+					</section><!-- main -->
+<?php endif; ?>
+
+					<!-- /MAIN -->
+
+<?php if (!$wide || $main): ?>
+
+					<!-- SIDE -->
+
+					<aside id="side" class="unit size2of5">
+
+<?php echo Widget::get('side') ?>
+
+<?php echo Widget::get('ad_side') ?>
+
+					</aside><!-- #side -->
+
+					<!-- /SIDE -->
+
+<?php endif; ?>
+
+				</section><!-- #main-wide -->
+
+				<!-- /CONTENT -->
+
+
+			</div>
+
+
+			<!-- SIDEBAR -->
+
+			<section id="side-narrow" class="col2">
+
+				<section id="logo">
+					<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
+				</section>
+
+
+<?php echo Widget::get('navigation') ?>
 
 <?php echo Widget::get('search') ?>
-
-			</section>
-
-			<section id="visitor" class="unit size1of3">
 
 <?php echo Widget::get('visitor') ?>
 
 			</section>
 
-		</div>
-	</header><!-- #header -->
-
-	<!-- /HEADER -->
-
-
-<?php echo Widget::get('ad_top') ?>
-
-
-	<!-- BODY -->
-
-	<section id="body">
-		<div class="content">
-
-
-			<!-- SIDE NARROW -->
-
-			<section id="side-narrow" class="unit size1of6">
-
-<?php echo Widget::get('navigation') ?>
-
-<?php //echo Widget::get('tabs') ?>
-
-<?php echo Widget::get('ad_side') ?>
-
-			</section><!-- #side-narrow -->
-
-			<!-- /SIDE NARROW -->
-
-			<section id="main-wide" class="unit size5of6">
-
-			<!-- MAIN -->
-
-			<section id="<?php echo ($wide = Widget::get('wide')) ? 'wide' : 'main' ?>" class="unit <?php echo $wide ? 'size1of1' : 'size3of5' ?>">
-				<header id="title">
-
-<?php //echo Widget::get('breadcrumb') ?>
-
-					<hgroup>
-						<h2><?php echo $page_title ?></h2>
-						<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
-					</hgroup>
-
-<?php echo Widget::get('actions') ?>
-
-				</header><!-- #title -->
-
-				<?php echo Widget::get('error') ?>
-				<?php echo $wide ? $wide : Widget::get('main') ?>
-
-			</section><!-- <?php echo $wide ? 'wide' : 'main' ?> -->
-
-			<?php if ($wide && $main = Widget::get('main')): ?>
-			<section id="main" class="unit size3of5">
-
-				<?php echo $main ?>
-
-			</section><!-- main -->
-			<?php endif; ?>
-
-			<!-- /MAIN -->
-
-			<?php if (!$wide || $main): ?>
-
-			<!-- SIDE -->
-
-			<aside id="side" class="unit size2of5">
-
-<?php echo Widget::get('side') ?>
-
-			</aside><!-- #side -->
-
-			<!-- /SIDE -->
-
-			<?php endif; ?>
-
-			</section><!-- #main-wide -->
-
+			<!-- /SIDEBAR -->
 
 		</div>
-	</section><!-- #body -->
+	</div>
 
 	<!-- /BODY -->
 
