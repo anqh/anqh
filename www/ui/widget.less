@@ -64,6 +64,7 @@ input[type="radio"] + label,
 input,
 textarea,
 select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(5px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
+input:-webkit-autofill                 { color: inherit; }
 fieldset.horizontal li label           { margin-right: 0.5em; }
 fieldset.horizontal li + li label      { margin-left: 0.5em; }
 /*
@@ -290,6 +291,8 @@ var.icon:hover                         { opacity: 1; }
 .icon.views                            { background: url(16/eye.png) no-repeat left center; }
 .icon.wait                             { background: url(16/playback_pause.png) no-repeat left center; }
 
+input.search                           { background-image: url(16/zoom.png); background-position: right center; background-repeat: no-repeat; }
+
 /***** /ICONS *****/
 
 
@@ -429,6 +432,8 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** USERS LIST *****/
 
+.user.male                             { color: #73aebe; }
+.user.female                           { color: #be7391; }
 .users .long                           { display: none; }
 
 /***** /USERS LIST *****/

@@ -194,3 +194,41 @@ footer:after,
 .size11of12                            { width: 91.66666%; }
 
 /***** /OOCSS *****/
+
+
+/***** Matthew James Taylor, 160px column, 10px gutter *****/
+
+.colmask                               { clear: both; float: left; overflow: hidden; position: relative; width: 100%; }
+.col1wrap                              { float: left; padding-bottom: 10px; position: relative; width: 50%; }
+.colleft                               { float: left; position: relative; width: 100%; }
+.colmid                                { float: left; position: relative; right: 100%; width: 200%; }
+.col1                                  { overflow: hidden; position: relative; }
+.col2,
+.col3                                  { float: right; position: relative; width: 140px ; }
+
+.leftmenu .colright                    { float: left; left: 160px; position: relative; width: 200%; }
+.leftmenu .col1wrap                    { float: right; right: 160px; }
+.leftmenu .col1                        { margin: 0 10px 0 170px; right: 100%; width: 100%; }
+.leftmenu .col2                        { float: left; right: 150px; }
+
+.rightmenu .colleft                    { margin-left: -160px; right: 100%; width: 200%; }
+.rightmenu .col1wrap                   { left: 50%; }
+.rightmenu .col1                       { margin: 0 10px 0 170px; }
+.rightmenu .col2                       { left: 150px; }
+
+.holgrail .colmid                      { margin-left: 160px; }
+.holygrail .colleft                    { left: 320px; margin-left: -50%; }
+.holygrail .col1wrap                   { right: 160px; }
+.holygrail .col1                       { left: 200%; margin: 0 170px; }
+.holygrail .col2                       { right: 10px; }
+.holygrail .col3                       { left: 50%; margin-right: 30px; }
+
+.blogstyle .colmid,
+.blogstyle .colleft                    { margin-left: -160px; }
+.blogstyle .col1                       { left: 100%; margin: 0 10px 0 330px; }
+.blogstyle .col2                       { left: 150px; }
+.blogstyle .col3                       { left: 450px; }
+
+.fullpage .col1                        { margin: 0 10px; }
+
+/***** /Matthew James Taylor *****/

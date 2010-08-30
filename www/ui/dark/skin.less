@@ -6,15 +6,15 @@
 
 .ajax (@background: transparent)       { background: @background url(ajax.gif) right center no-repeat; }
 .border-radius (@radius: 5px)          { border-radius: @radius; -moz-border-radius: @radius; -webkit-border-radius: @radius; }
-.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
+.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -o-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
 .opacity (@opacity: 1)                  { opacity: @opacity; -moz-opacity: @opacity; filter:alpha(opacity=@opacity * 100); }
 .transition (@transition: all 1s ease-in-out) { transition: @transition; -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; }
 
-@body-background-color:                #111;
-@body-background-image:                url(8b.jpg);
-@section-background:                   #121212;
+@body-background-color:                #090909;
+@body-background-image:                none;
+@section-background:                   #090909;
 @section-background-alt:               #111;
-@mod-background:                       black;
+@mod-background:                       transparent;
 
 @header-color:                         white;
 @header-shadow:                        2px 1px 2px rgba(128, 128, 128, 0.5);
@@ -45,11 +45,11 @@
 @button-color:                         @link-color;
 @button-rgba:                          @link-rgba;
 
-@widget-background:                    #111;
+@widget-background:                    transparent;
 @widget-border-color:                  @input-border-color;
 @widget-border:                        1px solid @widget-border-color;
 
-@midget-background:                    rgba(0, 0, 0, 0.8);
+@midget-background:                    transparent;
 @midget-border-color:                  #222;
 @midget-border:                        1px solid @midget-border-color;
 .midget-shadow                         { .box-shadow(0 0 10px black); }
@@ -93,11 +93,10 @@
 @mainmenu-background:                  #121212;
 @mainmenu-link-background:             rgba(0, 0, 0, 0.5);
 @mainmenu-link-hover-background:       rgba(0, 0, 0, 0.75);
-@mainmenu-color:                       #ccc;
-@mainmenu-text-shadow:                 1px 1px 1px rgba(0, 0, 0, 0.75);
-@mainmenu-hover-color:                 @link-hover-color;
-@mainmenu-selected-color:              white;
-@mainmenu-selected-shadow:             0 0 3px rgba(255, 255, 255, 0.75);
+@mainmenu-color:                       #777;
+@mainmenu-text-shadow:                 1px 1px 0 rgba(0, 0, 0, 0.75);
+@mainmenu-hover-color:                 white;
+@mainmenu-selected-color:              #f6f6f6;
 
 @tab-background:                       @mainmenu-link-background;
 @tab-color:                            @mainmenu-color;

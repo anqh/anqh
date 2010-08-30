@@ -6,9 +6,11 @@
 
 /***** PAGE *****/
 
-body                                   { background: @body-background-color @body-background-image; color: @text-color; }
+.colright,
+body                                   { background: @body-background-color; color: @text-color; }
 .fixed .content                        { width: 960px; }
 .liquid .content                       { margin: 0 25px; width: auto; }
+.fixed .col1                           { width: 800px; }
 .kohana                                { display: none; }
 
 /***** /PAGE *****/
@@ -28,47 +30,54 @@ body                                   { background: @body-background-color @bod
 #visitor label,
 #visitor input,
 #dock label,
-#dock input                            { display: inline; margin-left: 0; margin-right: 10px; }
-#visitor input[type="text"],
-#visitor input[type="password"]        { width: 30%; }
-#dock input[type="text"],
-#dock input[type="password"]           { width: 100px; }
+#dock input                            { display: inline; margin-left: 0; }
 #customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -20px; }
 
 /***** /DOCK *****/
 
 
-/***** HEADER *****/
+/***** SIDEBAR *****/
 
 #header                                { margin-top: 20px; margin-bottom: 10px; }
-h1 a                                   { display: block; }
+h1 a                                   { display: block; .opacity(.2); }
+h1                                     { .opacity(.2); .transition(opacity .25s ease-in-out); }
+h1:hover                               { .opacity(1); }
 
-#header .mod                           { margin-left: 10px; }
+.leftmenu                              { background: #333; text-shadow: @mainmenu-text-shadow; }
+.colright                              { .box-shadow(0 0 10px rgba(0, 0, 0, .5)); }
 
-#header nav ul                         { display: block; float: right; }
-#header nav ul li                      { background: @mainmenu-link-background; display: block; float: left; margin-right: 1px; }
-#header nav ul li:hover,
-#header nav ul li.selected             { background: @mainmenu-background; .box-shadow(0 0 10px @mainmenu-background); }
-#header nav ul li a                    { color: @mainmenu-color; display: block; font-family: @header-font; font-size: 1.333em; height: 1em; padding: 1.5em 2.1875em 0.625em 0.625em; vertical-align: middle; }
-#header nav ul li.selected a           { color: @header-color; }
-#header nav ul li a:hover              { color: @mainmenu-hover-color; text-decoration: none; }
+#side-narrow nav                       { border-bottom: 1px solid #111; }
+#side-narrow .mod                      { border-bottom: 1px solid #111; border-top: 1px solid #444; }
+#side-narrow .mod:last-child           { border-bottom: 0 none; }
 
-#side-narrow nav ul                    { display: block; }
-#side-narrow nav ul li                 { background: @mainmenu-link-background; display: block; margin-bottom: 1px; .transition(margin-left .15s ease-in-out); width: 100%; }
-#side-narrow nav ul li:hover,
-#side-narrow nav ul li.selected        { .box-shadow(0 0 5px @mainmenu-background); margin-left: 10px; }
-#side-narrow nav ul li a               { color: @mainmenu-color; display: block; height: 1em; padding: 0.667em; text-shadow: @mainmenu-text-shadow; vertical-align: middle; }
-#side-narrow nav ul li.selected > a    { color: @mainmenu-selected-color; font-weight: bold; text-shadow: @mainmenu-selected-shadow; }
-#side-narrow nav ul li a:hover         { color: @mainmenu-selected-color; text-decoration: none; text-shadow: @mainmenu-selected-shadow; }
-#side-narrow nav ul.submenu li         { background: transparent; /*text-align: right;*/ }
+#side-narrow a                         { color: @mainmenu-color; }
+#side-narrow a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
+#side-narrow nav ul,
+#side-narrow nav ul li                 { display: block; }
+#side-narrow nav ul li a               { color: @mainmenu-color; display: block; font-size: 1.1667em; height: 1.7857em; .transition(color .25s ease-in-out); vertical-align: middle; }
+#side-narrow nav ul li.selected > a    { color: @mainmenu-selected-color; }
+#side-narrow nav ul.submenu li         { background: transparent; }
 #side-narrow nav ul.submenu li a       { padding-left: 20px; }
-#side-narrow nav ul li li:hover,
-#side-narrow nav ul li li.selected     { .box-shadow(0 0 0 transparent); margin-left: 0; }
-#side-narrow nav ul.submenu a          { color: @mainmenu-color; }
-#side-narrow nav ul.submenu li:hover a,
-#side-narrow nav ul.submenu li.selected a { color: @mainmenu-selected-color; text-shadow: @mainmenu-selected-shadow; }
+#side-narrow .user                     { color: @mainmenu-selected-color; }
+#side-narrow input                     { margin-bottom: 10px; margin-left: 0; }
+#side-narrow input:last-child          { margin-bottom: 0; }
+#side-narrow input[type=submit]        { margin-left: 2px; }
 
-/***** /HEADER *****/
+.new-messages                          { clear: both; }
+/*.new-messages li                       { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }*/
+.new-messages li a                     { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }
+.new-messages li a div                 { height: 100%; .opacity(.2); width: 100%; }
+.new-messages li a:hover div           { .opacity(1); }
+.new-messages li a var                 { background: rgba(0, 0, 0, .75); .border-radius(5px); color: @mainmenu-selected-color; left: 0; padding: 0 4px; position: absolute; top: 0; }
+.new-messages {
+  .new-comments div                    { background: url(32/spechbubble.png) no-repeat center center; }
+  .new-blog-comments div               { background: url(32/notepad_2.png) no-repeat center center; }
+  .new-forum-quotes div                { background: url(32/spechbubble_2.png) no-repeat center center; }
+  .new-gallery-approvals div           { background: url(32/cert.png) no-repeat center center; }
+  .new-image-comments div              { background: url(32/photo.png) no-repeat center center; }
+}
+
+/***** /SIDEBAR *****/
 
 
 /***** BODY *****/
@@ -81,9 +90,8 @@ body.right #main                       { float: right; }
 .cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 .tab                                   { background: none; margin: 0; padding: 0; }
 
-#title                                 { background: @mod-background; /*margin-bottom: 10px;*/ padding: 0 5px; position: relative; }
+#title                                 { background: @mod-background; padding: 0 5px; position: relative; }
 #title .container                      { padding: 0 10px; }
-#title .actions                        { /*bottom: 10px; position: absolute; right: 10px;*/ }
 #title nav                             { overflow: hidden; }
 #title nav li                          { background: black; border-right: 1px solid #111; float: left; }
 #title nav li a                        { display: block; padding: 0.8333em 1em; }
@@ -115,11 +123,12 @@ section article + article              { border-top: 1px solid @separator-color;
 #main .mod,
 #wide .mod,
 #header .mod,
-aside .mod                             { background: @midget-background; border: @midget-border; .midget-shadow; .border-radius(5px); margin-bottom: 10px; }
+aside .mod                             { background: @midget-background; margin-bottom: 10px; }
 #title,
 #wide .mod,
-#main .mod                             { background: @mod-background;/* margin-bottom: 0; */}
-.mod .mod                              { background: transparent; border: 0 none; .box-shadow(none); .border-radius(0); margin-bottom: 0; }
+#main .mod                             { background: @mod-background; }
+.mod .mod                              { background: transparent; margin-bottom: 0; }
+#side-narrow .mod .container           { padding-left: 0; }
 
 aside h4,
 aside h5,
@@ -135,7 +144,7 @@ aside .mod .container form li          { border-top: 0 none; border-bottom: 0 no
 
 /***** FOOTER *****/
 
-#footer                                { background: @footer-background; color: @footer-color; margin-top: 2em; text-shadow: @footer-text-shadow; }
+#footer                                { background: @footer-background; clear: both; color: @footer-color; float: left; text-shadow: @footer-text-shadow; width: 100%; }
 #footer .mod                           { background: none; margin-bottom: 1em; }
 #footer a                              { color: @footer-link-color; }
 #footer p,
