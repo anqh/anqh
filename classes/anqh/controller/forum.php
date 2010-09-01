@@ -59,7 +59,7 @@ class Anqh_Controller_Forum extends Controller_Template {
 				'title'     => __('New topics'),
 				'topics'    =>  Jelly::select('forum_topic')->latest()->limit(20)->execute(),
 			))),
-			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => in_array($this->tab_id, array('active', 'latest')), 'tab' => View_Module::factory('forum/grouplist', array(
+			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => $this->tab_id == 'index', 'tab' => View_Module::factory('forum/grouplist', array(
 				'mod_id'    => 'forum-areas',
 				'mod_class' => 'cut tab areas',
 				'title'     => __('Forum areas'),
