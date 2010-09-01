@@ -222,6 +222,13 @@ abstract class Anqh_Controller_Template extends Controller {
 				'user'      => self::$user,
 			)));
 
+			// Online
+			Widget::add('sidebar', View_Module::factory('user/online', array(
+				'mod_id'    => 'online-users',
+				'viewer'    => self::$user,
+			)));
+
+
 			if (self::$user) {
 
 				// Admin functions
