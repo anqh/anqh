@@ -36,8 +36,8 @@ time[title]:not([class*="date"]),
 abbr[title]                            { border-bottom: 1px dotted @separator-color; margin-bottom: -1px; }
 textarea                               { resize: vertical; }
 
-span.user,
-a.user                                 { font-weight: bold; }
+/*span.user,
+a.user                                 { font-weight: bold; }*/
 
 .tip                                   { color: @tip-color; font-size: 0.9em; font-style: italic; line-height: 1.552em; }
 .my                                    { color: @my-color; }
@@ -387,7 +387,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpHeader ul li a                { background: transparent no-repeat center center; display: block; height: 16px; padding: 2px 0.5em; text-indent: -9999px; width: 16px; }
 .markItUpHeader ul .markItUpDropMenu   {  }
 .markItUpHeader ul .markItUpDropMenu > a::after { content: '\25BC'; padding-left: 0.5em; }
-.markItUpHeader ul .markItUpDropMenu li { margin-right:0px; }
+.markItUpHeader ul .markItUpDropMenu li { margin-right: 0; }
 .markItUpHeader ul ul                  { /*background: @section-background;*/ display: none; left: 0; position: absolute; top: 1.6667em; }
 .markItUpHeader ul ul li               { float: none; width: auto; }
 
@@ -414,7 +414,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** HOVER CARD *****/
 
-#hovercard                             { background: @tooltip-background; .box-shadow(@tooltip-shadow); display: none; position: absolute; width: 182px; }
+#hovercard                             { background: @tooltip-background; .box-shadow(@tooltip-shadow); .border-radius(5px); display: none; position: absolute; width: 182px; }
 .hovercard                             { border: @tooltip-border; .border-radius(5px); width: 180px; }
 .hovercard h4                          { margin-top: 0; }
 
@@ -435,6 +435,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .user                                  { color: @user-color; }
 .user.male                             { color: @male-color; }
 .user.female                           { color: @female-color; }
+.user.friend                           { font-weight: bold; letter-spacing: -1px; }
 .users .long                           { display: none; }
 
 /***** /USERS LIST *****/
@@ -450,6 +451,13 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .month-browser ol li:hover ol          { display: block; }
 
 /***** /MONTH BROWSER *****/
+
+
+/***** online *****/
+
+#online-users .totals                  { background: url(32/users.png) no-repeat 10px center; height: 40px; padding-left: 60px; }
+
+/***** /online *****/
 
 
 /***** shout *****/
@@ -473,12 +481,12 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 /***** forum *****/
 
 span.locked                            { color: #333; font-variant: small-caps; }
-blockquote                             { color: #777; }
+blockquote                             { color: @text-color-alt; }
 aside.post-old                         { color: @separator-color; text-align: center; }
 section.mod .divider                   { border-bottom: 1px dotted @body-background-color; border-top: 1px dotted @body-background-color; margin: 2px 0; text-align: center; }
 /*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
 #field-signature                       { font: 1em/1.5 monospace; }
-article.post footer                    { font: 1em/1.5 monospace; opacity: .75; }
+article.post footer                    { font: 1em/1.5 monospace; .opacity(.75); padding-left: 10px; ; }
 
 /***** /forum *****/
 

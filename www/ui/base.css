@@ -6,15 +6,15 @@
 
 .groups .group + .group,
 ul.grouped li.group + li.group         { padding-top: 1.6667em; }
-/*section .mod,*/
 li.line,
-/*section article                        { padding: 0.8333em 10px; }*/
-.groups .group                         { border: none; /*min-height: 5em;*/ padding-bottom: 0; padding-top: 0; }
+.groups .group                         { border: none; padding-bottom: 0; padding-top: 0; }
 
+/*
 section .divider,
 section article .details               { opacity: .5; }
 section .divider:hover,
 section article:hover .details         { opacity: 1; }
+*/
 
 section article .hidden                { float: right; visibility: hidden; }
 section article:hover .hidden          { visibility: visible; }

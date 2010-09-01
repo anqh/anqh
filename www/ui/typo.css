@@ -22,7 +22,7 @@
 body                                   { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 75%; font-size-adjust: none; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1.665em; }
 
 p                                      { font-weight: 300; }
-p + p                                  { padding: 1.666em 0 0; text-indent: 1.666em; }
+p + p                                  { padding: 1.666em 0 0; /*text-indent: 1.666em;*/ }
 p.first:first-letter                   { float: left; font-family: Baskerville, Palatino Linotype, serif; font-size: 3em; font-weight: 700; line-height: 1em; padding: 0.2em 0.1em 0 0; }
 p img                                  { float: left; margin: 0.5em 0.833em 0.833em 0; padding: 0; }
 p img.right                            { float: right; margin: 0.5em 0 0.833em 0.833em }

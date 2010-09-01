@@ -51,6 +51,7 @@ h1:hover                               { .opacity(1); }
 #side-narrow .mod                      { border-bottom: 1px solid #111; border-top: 1px solid #444; }
 #side-narrow .mod:last-child           { border-bottom: 0 none; }
 
+#side-narrow var,
 #side-narrow a                         { color: @mainmenu-color; }
 #side-narrow a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
 #side-narrow nav ul,
@@ -112,11 +113,14 @@ section article                        {/* border-bottom: 1px solid @body-backgr
 section .divider + article,
 section article + article              { border-top: 1px solid @separator-color; }
 
-.mod article header                    { border-bottom: @separator-light-border; margin-bottom: 0.6667em; overflow: hidden; }
+.mod article header                    { border-bottom: @separator-light-border; /*margin-bottom: 0.6667em;*/ overflow: hidden; }
 .mod article header h4                 { float: left; }
 .mod article header h4 a               { padding-right: 10px; }
 .mod article header ul.details         { float: right; }
 .mod article header ul.details li      { border-left: 1px solid @body-background-color; float: left; margin: 0 -5px 0 -6px; padding: 0 5px; }
+
+section .divider,
+section article .details               { color: @text-color-alt; }
 
 .mod[class*="-edit"] .container        { overflow: visible; }
 
