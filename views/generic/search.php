@@ -10,7 +10,7 @@
 ?>
 
 <?php echo
-	Form::open(),
+	Form::open(null, array('role' => 'search')),
 	Form::input('search', null, array('title' => __('Search'), 'disabled' => 'disabled', 'class' => 'search')),
 	Form::close();
 

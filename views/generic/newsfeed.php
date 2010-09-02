@@ -12,11 +12,11 @@
 <ul>
 	<?php foreach ($newsfeed as $item): ?>
 
-		<li class="clearfix">
+		<li class="group">
 			<?php echo HTML::avatar($item['user']->avatar, $item['user']->username) ?>
 			<?php echo HTML::user($item['user']) ?>
+			<small class="ago"><?php echo HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
 			<?php echo $item['text'] ?>
-			<?php echo HTML::time(Date::fuzzy_span($item['stamp']), $item['stamp']) ?>
 		</li>
 	<?php endforeach; ?>
 

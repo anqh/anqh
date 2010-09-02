@@ -67,6 +67,8 @@ class Anqh_Controller_User extends Controller_Template {
 				'mod_title' => HTML::chars($user->username),
 				'user'      => $user
 			));
+		} else {
+			echo __('Member not found o_O');
 		}
 	}
 

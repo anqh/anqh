@@ -9,7 +9,7 @@
  */
 ?>
 
-<nav>
+<nav role="navigation">
 	<ul>
 	<?php	foreach ($items as $id => $link): ?>
 		<li class="menu-<?php echo $id . ($selected == $id ? ' selected' : '') ?>">

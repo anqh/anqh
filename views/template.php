@@ -41,7 +41,7 @@
 	<?php echo
 		//HTML::script('http://www.google.com/jsapi?key=' . Kohana::config('site.google_api_key')),
 		HTML::script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'),
-		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'),
+		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js'),
 		HTML::script('http://maps.google.com/maps/api/js?sensor=false'),
 		HTML::script('js/jquery.tools.min.js'); ?>
 
@@ -60,7 +60,7 @@
 
 				<!-- CONTENT -->
 
-				<section id="main-wide" class="col1">
+				<section id="main-wide" class="col1" role="main">
 
 <?php echo Widget::get('ad_top') ?>
 
@@ -99,7 +99,7 @@
 
 					<!-- SIDE -->
 
-					<aside id="side" class="unit size2of5">
+					<aside id="side" class="unit size2of5" role="complementary">
 
 <?php echo Widget::get('side') ?>
 
@@ -123,7 +123,7 @@
 
 			<section id="side-narrow" class="col2">
 
-				<section id="logo">
+				<section id="logo" role="banner">
 					<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
 				</section>
 
@@ -163,13 +163,13 @@
 	<!-- FOOTER -->
 
 	<footer id="footer">
-		<div class="content">
+		<div class="content" role="complementary">
 
 <?php echo Widget::get('navigation') ?>
 <?php echo Widget::get('footer') ?>
 
 		</div>
-		<div id="end" class="content">
+		<div id="end" class="content" role="contentinfo">
 
 <?php echo Widget::get('end') ?>
 
