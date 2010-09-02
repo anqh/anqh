@@ -103,6 +103,7 @@ code,
 tt                                     { font: 1em/1.5 monospace; }
 time,
 var                                    { /*font-family: Georgia, Times New Roman, Times, serif;*/ font-style: normal; }
+time var                               { font-weight: bold; }
 tt                                     { display: block; margin: 1.667em 0; }
 hr                                     { margin-bottom: 1.667em; }
 

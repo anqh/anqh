@@ -34,6 +34,7 @@ h5 a                                   { color: @subheader-color; }
 #title h3                              { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 1em; }
 time[title]:not([class*="date"]),
 abbr[title]                            { border-bottom: 1px dotted @separator-color; margin-bottom: -1px; }
+time[datetime]                         { cursor: help; }
 textarea                               { resize: vertical; }
 
 /*span.user,
@@ -43,6 +44,8 @@ a.user                                 { font-weight: bold; }*/
 .my                                    { color: @my-color; }
 .owner                                 { color: @owner-color; }
 .private                               { color: @private-color; }
+
+small.ago                              { color: @text-color-alt; float: right; margin-left: 10px; }
 
 /***** /TEXT *****/
 
@@ -175,7 +178,6 @@ a.expander:after                       { content: '\21D3'; }
 .ui-widget-content                     { background: @widget-background; }
 .ui-widget-header                      { /*background: transparent;*/ }
 .ui-widget-header a                    { color: #ca3; }
-.ui-dialog                             { border: 1px solid @widget-border-color; }
 
 /* Interaction states */
 .ui-state-default,
@@ -225,7 +227,7 @@ a.ui-state-hover,
 .ui-widget-shadow                      { background: black; }
 
 /* Dialog */
-.ui-dialog                             { padding: 2px; position: relative; width: 300px; }
+.ui-dialog                             { border: 1px solid @widget-border-color; padding: 2px; position: absolute; width: 300px; }
 .ui-dialog .ui-dialog-titlebar         { color: @subheader-color; font-family: @header-font; padding: .5em 10px .3em 10px; position: relative;  }
 .ui-dialog .ui-dialog-title            { float: left; }
 .ui-dialog .ui-dialog-titlebar-close   { position: absolute; right: 10px; top: 50%; width: 16px; margin: -8px 0 0 0; height: 16px; }
@@ -480,6 +482,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** forum *****/
 
+.topics article .user                  { float: right; }
 span.locked                            { color: #333; font-variant: small-caps; }
 blockquote                             { color: @text-color-alt; }
 aside.post-old                         { color: @separator-color; text-align: center; }
