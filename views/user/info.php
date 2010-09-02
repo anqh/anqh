@@ -14,7 +14,7 @@
 	<?php echo $user->name     ? '<dt>' . __('Name')          . '</dt><dd>' . HTML::chars($user->name) . '</dd>' : '' ?>
 	<?php echo $user->homepage ? '<dt>' . __('Homepage')      . '</dt><dd>' . HTML::anchor($user->homepage, HTML::chars($user->homepage)) . '</dd>' : '' ?>
 	<?php echo $user->gender   ? '<dt>' . __('Gender')        . '</dt><dd>' . ($user->gender == 'm' ? __('Male') : __('Female'))  . '</dd>' : '' ?>
-	<?php echo $user->dob      ? '<dt>' . __('Date of Birth') . '</dt><dd>' . Date::format('DMYYYY', $user->dob) . ' (' . Date::timespan_short($user->dob) . ')</dd>' : '' ?>
+	<?php echo $user->dob      ? '<dt>' . __('Date of Birth') . '</dt><dd>' . Date::format('DMYYYY', $user->dob) . ' (' . Date::age($user->dob) . ')</dd>' : '' ?>
 
 	<dt><?php echo __('Registered') ?></dt><dd><?php echo HTML::time(Date::fuzzy_span($user->created), $user->created) ?>
 		(<?php echo __('member #:member', array(':member' => '<var>' . number_format($user->id) . '</var>')) ?>)</dd>

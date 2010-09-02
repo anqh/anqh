@@ -31,6 +31,34 @@ class Anqh_Date extends Kohana_Date {
 
 
 	/**
+	 * Returns age in human readable format with only the largest span
+	 *
+	 * @param		int|string	$time1
+	 * @param		int|string	$time2
+	 * @param		string			$output
+	 * @return	string
+	 */
+	public static function age($time1, $time2 = null) {
+		if (!is_numeric($time1)) $time1 = strtotime($time1);
+		if (!is_null($time2) && !is_int($time2)) $time2 = strtotime($time2);
+
+		if ($difference = Date::span($time1, $time2) and is_array($difference)) {
+			foreach ($difference as $span => $amount) {
+				if ($amount > 0) {
+					return $amount . ' ' . __(Inflector::singular($span, $amount));
+				}
+			}
+		}
+
+		if (empty($difference)) {
+			return '0 ' . __('seconds');
+		}
+
+		return __('some time');
+	}
+
+
+	/**
 	 * Locale formatted date
 	 *
 	 * @param   string  $format
@@ -130,27 +158,48 @@ class Anqh_Date extends Kohana_Date {
 
 
 	/**
-	 * Returns time difference in human readable format with only the largest span
+	 * Returns age/ago in short form
+	 * e.g., <1min, yesterday, 3 months or 2004
 	 *
-	 * @param		int|string	$time1
-	 * @param		int|string	$time2
-	 * @param		string			$output
-	 * @return	string
+	 * @static
+	 * @param   integer  $time
+	 * @param   boolean  $long  Include ago/in
+	 * @param   boolean  $wrap  Wrap number in <var>
+	 * @return  string
 	 */
-	public static function timespan_short($time1, $time2 = null) {
-		if (!is_numeric($time1)) $time1 = strtotime($time1);
-		if (!is_null($time2) && !is_int($time2)) $time2 = strtotime($time2);
-		if ($difference = Date::span($time1, $time2) and is_array($difference)) {
-			foreach ($difference as $span => $amount)
-				if ($amount > 0)
-					return $amount . ' ' . __(Inflector::singular($span, $amount));
+	public static function short_span($timestamp, $short = true, $wrap = false) {
+
+		// Determine the difference in seconds
+		$offset = abs(time() - $timestamp);
+		$wrap   = $wrap ? '<var>%d</var>' : '%d';
+
+		if ($offset < Date::MINUTE) {
+			$span = __('< 1 min');
+		} else if ($offset < Date::HOUR) {
+			$span = __(':min min', array(':min' => sprintf($wrap, floor($offset / Date::MINUTE))));
+		} else if ($offset > Date::HOUR * 6 && date('Ymd', $timestamp) == date('Ymd', strtotime('yesterday'))) {
+			return __('yesterday');
+		} else if ($offset > Date::HOUR * 6 && date('Ymd', $timestamp) == date('Ymd', strtotime('tomorrow'))) {
+			return __('tomorrow');
+		} else if ($offset < Date::DAY) {
+			$span = __(':hour h', array(':hour' => sprintf($wrap, floor($offset / Date::HOUR))));
+		} else if ($offset < Date::WEEK) {
+			$span = __(':day d', array(':day' => sprintf($wrap, floor($offset / Date::DAY))));
+		} else if ($offset < Date::MONTH) {
+			$span = __(':week wk', array(':week' => sprintf($wrap, floor($offset / Date::WEEK))));
+		} else if ($offset < (Date::YEAR)) {
+			$span = __(':month mo', array(':month' => sprintf($wrap, floor($offset / Date::MONTH))));
+		} else {
+			return date('Y', $timestamp);
 		}
 
-		if (empty($difference)) {
-			return '0 ' . __('seconds');
+		if ($short) {
+			return $span;
+		} else if ($timestamp <= time()) {
+			return __(':span ago', array(':span' => $span));
+		} else {
+			return __('in :span', array(':span' => $span));
 		}
-
-		return __('some time');
 	}
 
 }

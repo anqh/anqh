@@ -230,12 +230,14 @@ class Anqh_HTML extends Kohana_HTML {
 
 		$class = 'user ';
 		if ($user instanceof Model_user || $user && $user = Model_User::find_user($user)) {
-			$nick = $user->username;
-			if ($viewer && $viewer->is_friend($user)) {
-				$class .= 'friend ';
-			}
-			if ($user->gender) {
-				$class .= $user->gender == 'f' ? 'female ' : 'male ';
+			if ($user->loaded()) {
+				$nick = $user->username;
+				if ($viewer && $viewer->is_friend($user)) {
+					$class .= 'friend ';
+				}
+				if ($user->gender) {
+					$class .= $user->gender == 'f' ? 'female ' : 'male ';
+				}
 			}
 		}
 		$attributes['class'] = trim($class . Arr::get($attributes, 'class'));
