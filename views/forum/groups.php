@@ -28,24 +28,22 @@
 
 			<article class="area">
 				<header>
-					<?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description), 'class' => 'unit size2of3')) ?>
+					<h4 class="unit size2of3"><?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></h4>
 					<ul class="details unit size1of3">
 						<li class="unit size1of2"><?php echo HTML::icon_value(array(':topics' => $area->topic_count), ':topics topic', ':topics topics', 'topics') ?></li>
 						<li class="unit size1of2"><?php echo HTML::icon_value(array(':posts' => $area->post_count), ':posts post', ':posts posts', 'posts') ?></li>
 					</ul>
 				</header>
-				<?php echo $area->description ?>
-				<footer>
-					<?php if ($area->topic_count > 0): ?>
+				<?php echo $area->description ?><br />
+				<?php if ($area->topic_count > 0): ?>
 
-					<small class="ago"><?php echo HTML::time(Date::short_span($area->last_topic->last_posted, true, true), $area->last_topic->last_posted) ?></small>
-					<?php echo HTML::user($area->last_topic->author, $area->last_topic->last_poster) ?>:
-					<?php echo HTML::anchor(Route::model($area->last_topic, '?page=last#last'), HTML::chars($area->last_topic->name)) ?>
+				<small class="ago"><?php echo HTML::time(Date::short_span($area->last_topic->last_posted, true, true), $area->last_topic->last_posted) ?></small>
+				<?php echo HTML::user($area->last_topic->author, $area->last_topic->last_poster) ?>:
+				<?php echo HTML::anchor(Route::model($area->last_topic, '?page=last#last'), HTML::chars($area->last_topic->name)) ?>
 
-					<?php else: ?>
-					<sup><?php echo __('No topics yet.') ?></sup>
-					<?php endif; ?>
-				</footer>
+				<?php else: ?>
+				<sup><?php echo __('No topics yet.') ?></sup>
+				<?php endif; ?>
 			</article>
 
 			<?php elseif ($area->status != Model_Forum_Area::STATUS_HIDDEN): ?>
@@ -54,7 +52,7 @@
 				<header>
 					<span title="<?php echo strip_tags($area->description) ?>"><?php echo HTML::chars($area->name) ?></span>
 				</header>
-				<footer><?php echo __('Members only') ?></footer>
+				<?php echo __('Members only') ?>
 			</article>
 
 			<?php	endif; ?>
