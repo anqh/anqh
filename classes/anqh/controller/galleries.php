@@ -524,7 +524,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$this->page_actions[] = array('link' => Route::get('galleries')->uri(array('action' => 'upload')), 'text' => __('Upload images'), 'class' => 'images-add');
 		}
 
-		$galleries = Jelly::select('gallery')->latest()->limit(10)->execute();
+		$galleries = Jelly::select('gallery')->latest()->limit(15)->execute();
 		if (count($galleries)) {
 			Widget::add('wide', View_Module::factory('galleries/galleries', array(
 				'galleries' => $galleries,

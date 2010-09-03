@@ -35,18 +35,23 @@ $copyright = $multiple = null;
 		<?php endif; ?>
 
 	<li class="unit size1of3">
-		<div class="thumb">
+		<figure class="thumb">
 			<?php echo HTML::anchor(
 				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => $approve)),
 				HTML::image($image->get_url('thumbnail', $gallery->dir)),
 					$image->description ? array('title' => HTML::chars($image->description)) : null) ?>
-		</div>
-		<?php if (!isset($approval)): ?>
+			<?php if (!isset($approval)): ?>
 
-			<?php echo HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
-			<?php echo HTML::icon_value(array(':views' => $image->view_count), ':views view', ':views views', 'views') ?><br />
+			<ficaption>
+				<?php echo HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
+				<?php echo HTML::icon_value(array(':views' => $image->view_count), ':views view', ':views views', 'views') ?><br />
+			</ficaption>
 
-		<?php elseif ($approval): $field_id = 'field-image-id-' . $image->id; ?>
+			<?php endif; ?>
+
+		</figure>
+
+		<?php if (!empty($approval)): $field_id = 'field-image-id-' . $image->id; ?>
 
 			<?php echo Form::radio('image_id[' . $image->id . ']', 'approve', null, array('id' => $field_id . '-approve', 'class' => 'image-approve')) ?>
 			<?php echo Form::label($field_id . '-approve', __('Approve'), array('title' => __('Approve'))) ?>
