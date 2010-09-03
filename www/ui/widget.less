@@ -274,26 +274,28 @@ a.ui-state-hover,
 div.loading                            { .ajax(); height: 16px; position: absolute; right: 5px; top: 5px; width: 16px; }
 span.icon,
 li.icon,
-var.icon                               { /*font-size: 0.75em;*/ opacity: .75; padding-left: 20px; .transition(opacity .25s ease-in-out); }
+var.icon                               { /*font-size: 0.75em; opacity: .75;*/ padding-left: 20px; .transition(opacity .25s ease-in-out); }
+/*
 span.icon:hover,
 li.icon:hover,
-var.icon:hover                         { opacity: 1; }
+var.icon:hover                         { opacity: 1; }*/
 .icon[title]                           { cursor: help; }
-.icon.approve                          { background: url(16/checkmark.png) no-repeat left center; }
+.icon.approve                          { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
 .icon.delete,
-.icon.deny                             { background: url(16/delete.png) no-repeat left center; }
-.icon.images                           { background: url(16/picture.png) no-repeat left center; }
+.icon.deny                             { background: url(/ui/icon/16/delete.png) no-repeat left center; }
+.icon.images                           { background: url(/ui/icon/16/picture.png) no-repeat left center; }
 .icon.comments,
-.icon.posts                            { background: url(16/spechbubble.png) no-repeat left center; }
-.icon.customize                        { background: url(16/page_layout.png) no-repeat 5px center; }
-.icon.rate                             { background: url(16/star_fav.png) no-repeat left center; }
-.icon.rate-half                        { background: url(16/star_fav_half.png) no-repeat left center; }
-.icon.rate-empty                       { background: url(16/star_fav_empty.png) no-repeat left center; }
-.icon.topics                           { background: url(16/spechbubble_2.png) no-repeat left center; }
-.icon.views                            { background: url(16/eye.png) no-repeat left center; }
-.icon.wait                             { background: url(16/playback_pause.png) no-repeat left center; }
+.icon.posts                            { background: url(/ui/icon/16/spechbubble.png) no-repeat left center; }
+.icon.posts.hot                        { background: url(16/spechbubble.png) no-repeat left center; }
+.icon.customize                        { background: url(/ui/icon/16/page_layout.png) no-repeat 5px center; }
+.icon.rate                             { background: url(/ui/icon/16/star_fav.png) no-repeat left center; }
+.icon.rate-half                        { background: url(/ui/icon/16/star_fav_half.png) no-repeat left center; }
+.icon.rate-empty                       { background: url(/ui/icon/16/star_fav_empty.png) no-repeat left center; }
+.icon.topics                           { background: url(/ui/icon/16/spechbubble_2.png) no-repeat left center; }
+.icon.views                            { background: url(/ui/icon/16/eye.png) no-repeat left center; }
+.icon.wait                             { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
 
-input.search                           { background-image: url(16/zoom.png); background-position: right center; background-repeat: no-repeat; }
+input.search                           { background-image: url(/ui/icon/16/zoom.png); background-position: right center; background-repeat: no-repeat; }
 
 /***** /ICONS *****/
 
@@ -337,7 +339,10 @@ a:hover img                            { opacity: 1; }
 
 #map                                   { height: 200px; width: 100%; }
 
-/*.logo                                  { float: right; }*/
+figure                                 { position: relative; }
+figure.thumb                           { display: block; height: 140px; margin: 0 auto 10px auto; position: relative; width: 140px; }
+figure.thumb ficaption                 { background: @hover-background; bottom: 0; display: block; margin: 0 auto; .opacity(.5); padding: 5px; position: absolute; .transition(opacity .25s ease-in-out); width: 130px; }
+figure.thumb:hover ficaption           { .opacity(1); }
 
 /***** /MEDIA *****/
 
@@ -393,21 +398,21 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpHeader ul ul                  { /*background: @section-background;*/ display: none; left: 0; position: absolute; top: 1.6667em; }
 .markItUpHeader ul ul li               { float: none; width: auto; }
 
-.markItUpHeader .button-bold a         { background-image: url(16/font_bold.png); }
-.markItUpHeader .button-italic a       { background-image: url(16/font_italic.png); }
-.markItUpHeader .button-underline a    { background-image: url(16/font_underline.png); }
-.markItUpHeader .button-size a         { background-image: url(16/font_size.png); }
-.markItUpHeader .button-small a        { background-image: url(16/sq_minus.png); }
-.markItUpHeader .button-normal a       { background-image: url(16/square_shape.png); }
-.markItUpHeader .button-big a          { background-image: url(16/sq_plus.png); }
-.markItUpHeader .button-picture a      { background-image: url(16/picture.png); }
-.markItUpHeader .button-link a         { background-image: url(16/link.png); }
-.markItUpHeader .button-list-bullets a { background-image: url(16/list_bullets.png); }
-.markItUpHeader .button-list-numbers a { background-image: url(16/list_num.png); }
-.markItUpHeader .button-list-item a    { background-image: url(16/indent_increase.png); }
-.markItUpHeader .button-quote a        { background-image: url(16/spechbubble_sq_line.png); }
-.markItUpHeader .button-code a         { background-image: url(16/brackets.png); }
-.markItUpHeader .button-clear a        { background-image: url(16/brush.png); }
+.markItUpHeader .button-bold a         { background-image: url(/ui/icon/16/font_bold.png); }
+.markItUpHeader .button-italic a       { background-image: url(/ui/icon/16/font_italic.png); }
+.markItUpHeader .button-underline a    { background-image: url(/ui/icon/16/font_underline.png); }
+.markItUpHeader .button-size a         { background-image: url(/ui/icon/16/font_size.png); }
+.markItUpHeader .button-small a        { background-image: url(/ui/icon/16/sq_minus.png); }
+.markItUpHeader .button-normal a       { background-image: url(/ui/icon/16/square_shape.png); }
+.markItUpHeader .button-big a          { background-image: url(/ui/icon/16/sq_plus.png); }
+.markItUpHeader .button-picture a      { background-image: url(/ui/icon/16/picture.png); }
+.markItUpHeader .button-link a         { background-image: url(/ui/icon/16/link.png); }
+.markItUpHeader .button-list-bullets a { background-image: url(/ui/icon/16/list_bullets.png); }
+.markItUpHeader .button-list-numbers a { background-image: url(/ui/icon/16/list_num.png); }
+.markItUpHeader .button-list-item a    { background-image: url(/ui/icon/16/indent_increase.png); }
+.markItUpHeader .button-quote a        { background-image: url(/ui/icon/16/spechbubble_sq_line.png); }
+.markItUpHeader .button-code a         { background-image: url(/ui/icon/16/brackets.png); }
+.markItUpHeader .button-clear a        { background-image: url(/ui/icon/16/brush.png); }
 
 .markItUpContainer textarea            { margin-top: -2em; padding-top: 2em; }
 
@@ -457,7 +462,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** online *****/
 
-#online-users .totals                  { background: url(32/users.png) no-repeat 10px center; height: 40px; padding-left: 60px; }
+#online-users .totals                  { background: url(/ui/icon/32/users.png) no-repeat 10px center; height: 40px; padding-left: 60px; }
 
 /***** /online *****/
 
@@ -482,7 +487,8 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** forum *****/
 
-.topics article .user                  { float: right; }
+.groups header h3                      { text-align: center; }
+.topics article .size1of6              { float: right; }
 span.locked                            { color: #333; font-variant: small-caps; }
 blockquote                             { color: @text-color-alt; }
 aside.post-old                         { color: @separator-color; text-align: center; }
@@ -496,7 +502,19 @@ article.post footer                    { font: 1em/1.5 monospace; .opacity(.75);
 
 /***** galleries *****/
 
-.galleries article                     { min-height: 10em; }
+.galleries article                     { height: 25em; }
+.galleries article header h4           { height: 1.5em; overflow: hidden; }
+.galleries ol.rating                   { margin: 0; }
+
+#galleries .galleries li               { margin-bottom: 1em; }
+#galleries .galleries li h4            { padding-top: 0; }
+#galleries .gallery li                 { text-align: center; }
+#galleries .galleries li .thumb,
+#galleries .gallery li .thumb          { position: relative; text-align: center; }
+#galleries .thumb time                 { background: @hover-background; padding: 5px; position: absolute; right: 5px; top: 5px; }
+.gallery-image                         { text-align: center; }
+.gallery-image a img                   { opacity: 1; }
+
 .gallery #form-image-approval li:last-of-type { clear: both; }
 .gallery input[value=approve],
 .gallery input[value=deny],
@@ -505,9 +523,9 @@ article.post footer                    { font: 1em/1.5 monospace; .opacity(.75);
 .gallery input[value=deny] + label,
 .gallery input[value=wait] + label     { cursor: pointer; display: inline-block; .opacity(.25); overflow: hidden; padding: 0 0 0 20px; .transition(opacity .15s ease-in-out); vertical-align: middle; width: 0; }
 .gallery input[name=all] + label       { .opacity(1); width: auto; }
-.gallery input[value=approve] + label  { background: url(16/checkmark.png) no-repeat left center; }
-.gallery input[value=deny] + label     { background: url(16/delete.png) no-repeat left center; }
-.gallery input[value=wait] + label     { background: url(16/playback_pause.png) no-repeat left center; }
+.gallery input[value=approve] + label  { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
+.gallery input[value=deny] + label     { background: url(/ui/icon/16/delete.png) no-repeat left center; }
+.gallery input[value=wait] + label     { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
 .gallery input[value=approve]:checked + label,
 .gallery input[value=deny]:checked + label,
 .gallery input[value=wait]:checked + label { .opacity(1); }
