@@ -680,7 +680,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				// Found from static cache
 				return self::$_users[$id];
 
-			} else if ($user = Cache::instance()->get('user_' . $id)) {
+			} else if ($user = Cache::instance()->get_('user_' . $id)) {
 
 				// Found from cache
 				$user = unserialize($user);
@@ -702,7 +702,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($user && $user->loaded()) {
 			self::$_users[$user->id] = self::$_users[Text::clean($user->username)] = self::$_users[mb_strtolower($user->email)] = $user;
 			if ($cache) {
-				Cache::instance()->set('user_' . $user->id, serialize($user), 3600);
+				Cache::instance()->set_('user_' . $user->id, serialize($user), 3600);
 			}
 		} else {
 			$user = null;
