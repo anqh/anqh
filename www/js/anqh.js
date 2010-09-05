@@ -223,9 +223,13 @@ $(function() {
 
 
 	// Tooltips
-	$('a[title], var[title], time[title]').tooltip({
+	$('.col1 a[title], .col1 var[title], .col1 time[title]').tooltip({
 		effect: 'slide',
 		position: 'top center'
+	});
+	$('.col2 a[title], .col2 var[title], .col2 time[title]').tooltip({
+		effect: 'slide',
+		position: 'center right'
 	});
 
 

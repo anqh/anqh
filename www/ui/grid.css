@@ -163,7 +163,7 @@ aside .mod .mod                        { margin-left: 0; }
 .mod .container                        { padding: 10px; }
 .mod article:last-of-type              { margin-bottom: 0; }
 .mod article + article                 { margin-top: 0.6667em; padding-top: 0.6667em; }
-.container                             { overflow: hidden; }
+/*.container                             { overflow: hidden; }*/
 .content                               { margin: 0 auto; position: relative; width: 100%; }
 .mod,
 .content,
@@ -232,7 +232,9 @@ footer:after,
 
 /***** /Matthew James Taylor *****/
 
-
+.container:after,
 .group:after                           { clear: both; content: ' '; display: block; font-size: 0; height: 0; visibility: hidden; }
+* html .container,
 * html .group                          { height: 1%; }
+*:first-child+html .container,
 *:first-child+html .group              { min-height: 1px; }
