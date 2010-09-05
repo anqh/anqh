@@ -130,10 +130,6 @@
 
 <?php echo Widget::get('navigation') ?>
 
-<?php echo Widget::get('search') ?>
-
-<?php echo Widget::get('visitor') ?>
-
 <?php echo Widget::get('sidebar') ?>
 
 			</section>

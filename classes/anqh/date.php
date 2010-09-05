@@ -20,6 +20,46 @@ class Anqh_Date extends Kohana_Date {
 	const DATE_SQL = 'date_sql';
 
 	/**
+	 * Date and time
+	 */
+	const DATETIME = 'DMYYYY_HM';
+
+	/**
+	 * Day and month name
+	 */
+	const DM_LONG = 'DM_LONG';
+
+	/**
+	 * Day and month
+	 */
+	const DM_SHORT  = 'DM';
+
+	/**
+	 * Zero padded day and month
+	 */
+	const DM_PADDED = 'DDMM';
+
+	/**
+	 * Day, month name and year
+	 */
+	const DMY_LONG = 'DMY_LONG';
+
+	/**
+	 * Day, month and year
+	 */
+	const DMY_SHORT  = 'DMYYYY';
+
+	/**
+	 * Zero padded day, month and year
+	 */
+	const DMY_PADDED = 'DDMMYYYY';
+
+	/**
+	 * Time
+	 */
+	const TIME = 'HHMM';
+
+	/**
 	 * ISO8601 time
 	 */
 	const TIME_8601 = 'time_8601';
@@ -68,37 +108,20 @@ class Anqh_Date extends Kohana_Date {
 	public static function format($format, $date = null) {
 		if (!$date) $date = time();
 		if (!is_numeric($date)) $date = strtotime($date);
+
 		switch ($format) {
-
-			// ISO8601/SQL date
-			case self::DATE_8601:
 			case self::DATE_SQL:
-				$format = 'Y-m-d';
-				break;
-
-			// ISO8601 time
-			case self::TIME_8601:
-				$format = 'c';
-				break;
-
-			// SQL time
-			case self::TIME_SQL:
-				$format = 'Y-m-d H:i:s';
-				break;
-
-			default:
-				if (strpos($format, 'generic') === false) {
-					switch ($format) {
-						case 'DM': $format = 'j.n.'; break;
-						case 'DDMM': $format = 'd.m.'; break;
-						case 'DMYYYY': $format = 'j.n.Y'; break;
-						case 'DDMMYYYY': $format = 'd.m.Y'; break;
-						case 'DMYYYY_HM': $format = 'j.n.Y H:i'; break;
-						case 'HHMM': $format = 'H:i'; break;
-					}
-				}
-				break;
-
+			case self::DATE_8601:  $format = 'Y-m-d'; break;
+			case self::DATETIME:   $format = __('j.n.Y H:i'); break;
+			case self::DM_LONG:    $format = __('F j'); break;
+			case self::DM_SHORT:   $format = __('j.n.'); break;
+			case self::DM_PADDED:  $format = __('d.m.'); break;
+			case self::DMY_LONG:   $format = __('F j, Y'); break;
+			case self::DMY_SHORT:  $format = __('j.n.Y'); break;
+			case self::DMY_PADDED: $format = __('d.m.Y'); break;
+			case self::TIME:       $format = __('H:i'); break;
+			case self::TIME_SQL:   $format = 'Y-m-d H:i:s'; break;
+			case self::TIME_8601:  $format = DateTime::ISO8601; break;
 		}
 
 		return date($format, $date);

@@ -148,7 +148,7 @@ abstract class Anqh_Controller_Template extends Controller {
 				'sub_items'    => $this->tabs,
 				'sub_selected' => $this->tab_id
 			)));
-			Widget::add('tabs',       View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
+			Widget::add('tabs', View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
 
 			// Footer
 			Widget::add('footer', View_Module::factory('events/event_list', array(
@@ -166,7 +166,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			Widget::add('footer', View_Module::factory('blog/entry_list', array(
 				'mod_id'    => 'footer-blog-entries',
 				'mod_class' => 'article unit size1of4 cut blogentries',
-				'mod_title'  => __('New blogs'),
+				'mod_title' => __('New blogs'),
 				'entries'   => Jelly::select('blog_entry')->limit(10)->execute(),
 			)));
 
@@ -183,8 +183,8 @@ abstract class Anqh_Controller_Template extends Controller {
 			$classes = array(
 				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").toggleClass("fixed", true).toggleClass("liquid", false); $.get(this.href); return false;')),
 				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'wide')),   __('Wide'),   array('onclick' => '$("body").toggleClass("liquid", true).toggleClass("narrow", false); $.get(this.href); return false;')),
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").toggleClass("left", true).toggleClass("right", false); $.get(this.href); return false;')),
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").toggleClass("right", true).toggleClass("left", false); $.get(this.href); return false;')),
+//				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").toggleClass("left", true).toggleClass("right", false); $.get(this.href); return false;')),
+//				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").toggleClass("right", true).toggleClass("left", false); $.get(this.href); return false;')),
 			);
 			foreach ($skins as $skin_name => &$skin_config) {
 				$skin_config['path'] = 'ui/' . $skin_name . '/skin.less';
@@ -207,16 +207,16 @@ abstract class Anqh_Controller_Template extends Controller {
 				foreach ($available_languages as $lang => $locale) {
 					$languages[] = HTML::anchor('set/lang/' . $lang, HTML::chars($locale[2]));
 				}
-				Widget::add('dock', ' | ' . __('Language: ') . implode(', ', $languages));
+//				Widget::add('dock', ' | ' . __('Language: ') . implode(', ', $languages));
 			}
 
 			// Search
-			Widget::add('search', View_Module::factory('generic/search', array(
+			Widget::add('sidebar', View_Module::factory('generic/search', array(
 				'mod_id' => 'search'
 			)));
 
 			// Visitor card
-			Widget::add('visitor', View_Module::factory('generic/visitor', array(
+			Widget::add('sidebar', View_Module::factory('generic/visitor', array(
 				'mod_id'    => 'visitor',
 				'mod_title' => self::$user ? __('Welcome') : __('Sign in'),
 				'user'      => self::$user,
@@ -225,21 +225,23 @@ abstract class Anqh_Controller_Template extends Controller {
 			// Online
 			Widget::add('sidebar', View_Module::factory('user/online', array(
 				'mod_id'    => 'online-users',
+				'mod_title' => __('Online'),
 				'viewer'    => self::$user,
 			)));
 
+			// Time & weather
+			Widget::add('sidebar', View_Module::factory('generic/clock', array(
+				'mod_id' => 'clock',
+				'user'   => self::$user,
+			)));
 
-			if (self::$user) {
-
-				// Admin functions
-				if (self::$user->has_role('admin')) {
-					Widget::add('dock', ' | ' . __('Admin: ')
-						. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
-						. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
-						. HTML::anchor('#debug', __('Profiler'), array('onclick' => '$("div.kohana").toggle();'))
-					);
-				}
-
+			// Admin functions
+			if (self::$user && self::$user->has_role('admin')) {
+				Widget::add('dock', ' | ' . __('Admin: ')
+					. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
+					. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
+					. HTML::anchor('#debug', __('Profiler'), array('onclick' => '$("div.kohana").toggle();'))
+				);
 			}
 
 			// Pin
