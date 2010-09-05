@@ -43,6 +43,8 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	public function before() {
 		parent::before();
 
+		Cache::$default = 'default';
+
 		// Check if this was an interna request or direct
 		$this->internal = $this->request !== Request::instance();
 
