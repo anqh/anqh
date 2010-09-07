@@ -66,7 +66,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Load events
 		$events = Jelly::select('event')->between($first, $last, 'ASC')->execute_grouped();
 		if (count($events)) {
-			$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
+			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
 			Widget::add('main', View_Module::factory('generic/filters', array(
 				'filters' => $this->_filters($events),
@@ -387,7 +387,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Load events
 		$events = Jelly::select('event')->past()->limit(25)->execute_grouped();
 		if (count($events)) {
-			$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
+			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
 			Widget::add('main', View_Module::factory('generic/filters', array(
 				'filters' => $this->_filters($events),
@@ -446,7 +446,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Load events
 		$events = Jelly::select('event')->upcoming()->limit(25)->execute_grouped();
 		if (count($events)) {
-			$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
+			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
 			Widget::add('main', View_Module::factory('generic/filters', array(
 				'filters' => $this->_filters($events),

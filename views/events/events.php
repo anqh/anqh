@@ -12,7 +12,7 @@
 <ol class="days">
 
 	<?php foreach ($events as $date => $cities): ?>
-	<li class="day">
+	<li class="day group">
 
 		<header>
 			<?php echo HTML::box_day($date) ?>
@@ -20,8 +20,8 @@
 
 		<?php foreach ($cities as $city => $city_events): ?>
 
-		<div class="city city-<?php echo URL::title($city) ?>">
-			<?php if (!empty($city)): ?>
+		<article class="city city-<?php echo URL::title($city) ?>">
+			<?php if (false && !empty($city)): ?>
 
 			<header>
 				<h3><?php echo HTML::chars($city) ?></h3>
@@ -33,32 +33,35 @@
 			<article>
 
 				<header>
-					<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event')) ?>
+					<h4><?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event')) ?></h4>
 				</header>
+				<span class="details">
 
-				<?php if ($event->price !== null && $event->price != -1): ?>
-				<span class="details price"><?php echo ($event->price == 0 ? __('Free entry') : '<var>' . Num::format($event->price, 2, true) . '</var>') ?></span>
-				<?php endif; ?>
+					<?php if ($event->price !== null && $event->price != -1)
+						echo ($event->price == 0 ? __('Free entry') : '<var>' . Num::format($event->price, 2, true) . '</var>'); ?>
 
-				<?php if ($event->venue_id): ?>
-				<span class="details venue">@ <?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>, <?php echo HTML::chars($event->venue->city->name) ?></span>
-				<?php elseif ($event->venue_name || $event->city_name): ?>
-				<span class="details venue">@ <?php echo HTML::chars($event->venue_name) . ($event->venue_name && $event->city_name ? ', ' : '') . HTML::chars($event->city_name) ?></span>
-				<?php endif; ?>
+					<?php if ($event->venue_id): ?>
+					@ <?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>, <?php echo HTML::chars($event->venue->city->name) ?>
+					<?php elseif ($event->venue_name || $event->city_name): ?>
+					@ <?php echo HTML::chars($event->venue_name), ($event->venue_name && $event->city_name ? ', ' : '') . HTML::chars($event->city_name) ?>
+					<?php endif; ?>
 
-				<?php if ($event->age && $event->age != -1): ?>
-				<span class="details age">(<?php echo __('Age limit :limit', array(':limit' => '<var>' . $event->age . '</var>')) ?>)</span>
-				<?php endif; ?>
+					<?php if ($event->age && $event->age != -1)
+						echo '(', __('Age limit :limit', array(':limit' => '<var>' . $event->age . '</var>')), ')' ?>
+
+				</span>
 
 				<?php if ($event->dj): ?>
-				<div class="dj"><?php echo HTML::chars($event->dj) ?></div>
+				<p class="dj">
+					<?php echo HTML::chars($event->dj) ?>
+				</p>
 				<?php endif; ?>
 
 			</article><!-- /event -->
 
 			<?php endforeach; ?>
 
-		</div><!-- /city -->
+		</article><!-- /city -->
 		<?php endforeach; ?>
 
 	</li><!-- /day -->
