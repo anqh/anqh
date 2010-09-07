@@ -105,25 +105,6 @@ section article:hover .hidden          { visibility: visible; }
 /***** /JQUERY *****/
 
 
-/***** calendar *****/
-
-.calendar table                        { width: 100%; }
-.calendar table th,
-.calendar table td                     { text-align: right; }
-.calendar table .prev                  { text-align: left; }
-.calendar table .month                 { text-align: center; }
-.calendar table .inactive              { opacity: 0.50; }
-.calendar table .today                 { font-weight: bold; }
-
-#events .day time.date                 { float: left; }
-#events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }
-#events .day .city h3                  { margin-top: 0; }
-#events .calendar .events              { margin-top: -1px; }
-#events .tab .events li                { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }
-
-/***** /calendar *****/
-
-
 /***** forum *****/
 
 #forum .post section                   { clear: both; }

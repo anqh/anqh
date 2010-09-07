@@ -45,6 +45,7 @@ a.user                                 { font-weight: bold; }*/
 .owner                                 { color: @owner-color; }
 .private                               { color: @private-color; }
 
+.meta                                  { color: @text-color-alt; }                             
 small.ago                              { color: @text-color-alt; float: right; margin-left: 10px; }
 
 /***** /TEXT *****/
@@ -313,7 +314,7 @@ ol.rating .icon                        { display: inline-block; height: 1em; min
 
 .step                                  { font-family: Georgia, serif; font-size: 3em; line-height: 1.5em; }
 .step,
-time.date                              { background: @badge-background; border: @badge-border; .border-radius(@badge-border-radius); display: block; width: 70px; }
+time.date                              { background: @badge-background; border: @badge-border; .border-radius(@badge-border-radius); display: block; width: 60px; }
 time.date *                            { display: block; text-align: center; }
 .step,
 time.date .day                         { color: @subheader-color; font-family: Georgia, serif; font-size: 2em; line-height: 0.833em; }
@@ -414,7 +415,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .markItUpHeader .button-code a         { background-image: url(/ui/icon/16/brackets.png); }
 .markItUpHeader .button-clear a        { background-image: url(/ui/icon/16/brush.png); }
 
-.markItUpContainer textarea            { margin-top: -2em; padding-top: 2em; }
+/*.markItUpContainer textarea            { margin-top: -2em; padding-top: 2em; }*/
 
 /***** /BBCODE *****/
 
@@ -491,11 +492,26 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 /***** events *****/
 
-.events ol.days                        { list-style: none; }
-.events ol.days li                     { overflow: hidden; }
+.calendar table                        { width: 100%; }
+.calendar table th,
+.calendar table td                     { text-align: right; }
+.calendar table .prev                  { text-align: left; }
+.calendar table .month                 { text-align: center; }
+.calendar table .inactive              { opacity: 0.50; }
+.calendar table .today                 { font-weight: bold; }
+
+.events ol.days                        { list-style: none; margin-left: 0; }
+/*.events ol.days li                     { overflow: hidden; }*/
 /*.events ol.days li article             { padding: 10px 0; }*/
 
+#events .day time.date                 { float: left; }
+#events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }
+#events .day .city h3                  { text-align: center; }
+#events .calendar .events              { margin-top: -1px; }
+#events .tab .events li                { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }
+
 .event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
+
 
 /***** /events *****/
 
@@ -518,7 +534,7 @@ article.post footer                    { font: 1em/1.5 monospace; .opacity(.75);
 /***** galleries *****/
 
 .galleries article                     { height: 25em; }
-.galleries article header h4           { height: 1.5em; overflow: hidden; }
+.galleries article header h4           { height: 2.5em; overflow: hidden; }
 .galleries ol.rating                   { margin: 0; }
 
 #galleries .galleries li               { margin-bottom: 1em; }
