@@ -210,6 +210,54 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find hot (=favorites) events
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_hot($limit = 20) {
+		return Jelly::select('event')
+			->where('stamp_begin', '>', time())
+			->and_where('favorite_count', '>', 0)
+			->order_by('favorite_count', 'DESC')
+			->limit($limit)
+			->execute();
+	}
+
+
+	/**
+	 * Find last modified events
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_modified($limit = 20) {
+		return Jelly::select('event')
+			->where('modified', 'IS NOT', null)
+			->order_by('modified', 'DESC')
+			->limit(20)
+			->execute();
+	}
+
+
+	/**
+	 * Find new events
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_new($limit = 20) {
+		return Jelly::select('event')
+			->order_by('id', 'DESC')
+			->limit($limit)
+			->execute();
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
@@ -225,7 +273,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    return $user && ($this->author->id == $user->id || $user->has_role('admin'));
+		    return $user && ($this->author->id == $user->id || $user->has_role('admin', 'event moderator'));
 
 			case self::PERMISSION_READ:
 				return true;

@@ -887,19 +887,19 @@ $(function() {
 				'mod_id'    => 'events-hot',
 				'mod_class' => 'cut tab events',
 				'title'     => __('Hot Events'),
-				'events'    =>  Jelly::select('event')->where('stamp_begin', '>', time())->order_by('favorite_count', 'DESC')->limit(20)->execute(),
+				'events'    =>  Model_Event::find_hot(20),
 			))),
 			'active' => array('href' => '#events-new', 'title' => __('New events'), 'tab' => View_Module::factory('events/event_list', array(
 				'mod_id'    => 'events-new',
 				'mod_class' => 'cut tab events',
 				'title'     => __('New Events'),
-				'events'    =>  Jelly::select('event')->order_by('id', 'DESC')->limit(20)->execute(),
+				'events'    =>  Model_Event::find_new(20),
 			))),
 			'latest' => array('href' => '#events-updated', 'title' => __('Updated events'), 'tab' => View_Module::factory('events/event_list', array(
 				'mod_id'    => 'events-updated',
 				'mod_class' => 'cut tab events',
 				'title'     => __('Updated Events'),
-				'events'    =>  Jelly::select('event')->where('modified', 'IS NOT', null)->order_by('modified', 'DESC')->limit(20)->execute(),
+				'events'    => Model_Event::find_modified(20),
 			))),
 		);
 
