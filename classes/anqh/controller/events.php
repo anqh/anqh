@@ -151,7 +151,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->page_actions[] = array('link' => Route::get('gallery_event')->uri(array('id' => $event->id)), 'text' => __('Gallery'));
 
 		$this->page_title = HTML::chars($event->name);
-		$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
+		$this->page_subtitle  = HTML::time(Date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true) . '. ';
 
 		// Event performers and extra info
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
@@ -179,7 +179,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Event quick info
 		Widget::add('side', View_Module::factory('events/event_info', array(
-			'mod_title' => __('Event information'),
+			//'mod_title' => __('Event information'),
 			'event'     => $event
 		)));
 
