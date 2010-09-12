@@ -5,10 +5,10 @@
  */
 
 .ajax (@background: transparent)       { background: @background url(ajax.gif) right center no-repeat; }
-.border-radius (@radius: 5px)          { border-radius: @radius; -moz-border-radius: @radius; -webkit-border-radius: @radius; }
-.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
-.opacity (@opacity: 1)                 { opacity: @opacity; -moz-opacity: @opacity; }
-.transition (@transition: all 1s ease-in-out) { transition: @transition; -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; }
+.border-radius (@radius: 5px)          { -moz-border-radius: @radius; -webkit-border-radius: @radius; border-radius: @radius; }
+.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { -moz-box-shadow: @shadow; -o-box-shadow: @shadow; -webkit-box-shadow: @shadow; box-shadow: @shadow; }
+.opacity (@opacity: 1)                  { -moz-opacity: @opacity; filter:alpha(opacity=@opacity * 100); opacity: @opacity; }
+.transition (@transition: all 1s ease-in-out) { -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; transition: @transition; }
 
 @body-background-color:                #f0efe5;
 @body-background-image:                none;
@@ -37,14 +37,6 @@
 @input-border-hover-color:             @input-border-color;
 @input-border-focus-color:             @input-border-hover-color;
 
-@button-background:                    #cdbd9e;
-@button-top:                           #e2d1b3;
-@button-bottom:                        #b09f81;
-@button-border-top:                    @button-top;
-@button-border-bottom:                 @button-bottom;
-@button-color:                         #5aa8d0;
-@button-rgba:                          rgba(90, 168, 208, 0.69);
-
 @widget-background:                    @body-background-color;
 @widget-border-color:                  @input-border-color;
 @widget-border:                        1px solid @widget-border-color;
@@ -62,8 +54,8 @@
 
 @text-color:                           #555;
 @text-color-alt:                       @777;
-@link-color:                           #ca7246;
-@link-rgba:                            rgba(202, 114, 70, 0.69);
+@link-color:                           #107174;
+@link-rgba:                            rgba(16, 113, 116, 0.69);
 @link-hover-color:                     #a0a0a0;
 @action-background:                    #222;
 @action-link-color:                    black;
@@ -90,12 +82,6 @@
 @badge-border:                         1px solid @badge-background-alt;
 @badge-border-radius:                  5px;
 
-@dock-background:                      #c1bbab;
-@dock-separator:                       1px solid #404040;
-@dock-color:                           #4b4b4b;
-@dock-link-color:                      #107174;
-@dock-text-shadow:                     0 1px 0 #ccc;
-
 @mainmenu-background:                  #dedcd0;
 @mainmenu-link-background:             @mainmenu-background;
 @mainmenu-link-hover-background:       @mainmenu-background;
@@ -114,10 +100,10 @@
 @groove-light:                         @input-background;
 @groove-shadow:                        @input-border-bottom;
 
-@footer-background:                    @dock-background;
-@footer-color:                         @dock-color;
-@footer-link-color:                    @dock-link-color;
-@footer-text-shadow:                   @dock-text-shadow;
+@footer-background:                    #c1bbab;
+@footer-color:                         #4b4b4b;
+@footer-link-color:                    @link-color;
+@footer-text-shadow:                   0 1px 0 #ccc;
 
 @import "../layout.less";
 @import "../widget.less";

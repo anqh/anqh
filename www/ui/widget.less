@@ -45,7 +45,7 @@ a.user                                 { font-weight: bold; }*/
 .owner                                 { color: @owner-color; }
 .private                               { color: @private-color; }
 
-.meta                                  { color: @text-color-alt; }                             
+.meta                                  { color: @text-color-alt; }
 small.ago                              { color: @text-color-alt; float: right; margin-left: 10px; }
 
 /***** /TEXT *****/
@@ -115,13 +115,21 @@ form .notice input                     { border-color: @info-background; }
 
 /***** BUTTONS *****/
 
+@button-background:                    #222;
+@button-top:                           #222;
+@button-bottom:                        #111;
+@button-border-top:                    #404040;
+@button-border-bottom:                 #111;
+@button-color:                         #73aebe;
+@button-rgba:                          rgba(51, 170, 204, 0.69);
+
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 a.action                               { margin: 5px 2px; }
 button:::-moz-focus-inner              { border: 0; padding: 0; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
 input[type=submit],
-a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border-width: 0; border-bottom: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
+a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
 button[disabled=disabled],
 input[disabled=disabled],
 a.action.disabled                      { cursor: default; font-style: italic; .opacity(.25); }
@@ -500,9 +508,11 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .calendar table .inactive              { opacity: 0.50; }
 .calendar table .today                 { font-weight: bold; }
 
-.events ol.days                        { list-style: none; margin-left: 0; }
-/*.events ol.days li                     { overflow: hidden; }*/
-/*.events ol.days li article             { padding: 10px 0; }*/
+.events .days                          { list-style: none; margin-left: 0; }
+.events .days .date                    { margin-bottom: 10px; }
+.events .days .day                     { border-top: 1px solid @separator-color; }
+.events .days article                  { border-top: 0 none; }
+.events .days .city                    { padding-top: 10px; }
 
 #events .day time.date                 { float: left; }
 #events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }

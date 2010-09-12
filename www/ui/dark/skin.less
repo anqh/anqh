@@ -5,10 +5,10 @@
  */
 
 .ajax (@background: transparent)       { background: @background url(ajax.gif) right center no-repeat; }
-.border-radius (@radius: 5px)          { border-radius: @radius; -moz-border-radius: @radius; -webkit-border-radius: @radius; }
-.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { box-shadow: @shadow; -moz-box-shadow: @shadow; -o-box-shadow: @shadow; -webkit-box-shadow: @shadow; }
-.opacity (@opacity: 1)                  { opacity: @opacity; -moz-opacity: @opacity; filter:alpha(opacity=@opacity * 100); }
-.transition (@transition: all 1s ease-in-out) { transition: @transition; -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; }
+.border-radius (@radius: 5px)          { -moz-border-radius: @radius; -webkit-border-radius: @radius; border-radius: @radius; }
+.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { -moz-box-shadow: @shadow; -o-box-shadow: @shadow; -webkit-box-shadow: @shadow; box-shadow: @shadow; }
+.opacity (@opacity: 1)                  { -moz-opacity: @opacity; filter:alpha(opacity=@opacity * 100); opacity: @opacity; }
+.transition (@transition: all 1s ease-in-out) { -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; transition: @transition; }
 
 @body-background-color:                #090909;
 @body-background-image:                none;
@@ -36,14 +36,6 @@
 @input-border-color:                   @input-border-bottom;
 @input-border-hover-color:             #999;
 @input-border-focus-color:             @input-hint-color;
-
-@button-background:                    #222;
-@button-top:                           #222;
-@button-bottom:                        #111;
-@button-border-top:                    #404040;
-@button-border-bottom:                 #111;
-@button-color:                         @link-color;
-@button-rgba:                          @link-rgba;
 
 @widget-background:                    @body-background-color;
 @widget-border-color:                  @input-border-color;
@@ -90,12 +82,6 @@
 @badge-border:                         0 none;
 @badge-border-radius:                  5px;
 
-@dock-background:                      black;
-@dock-separator:                       1px solid #333;
-@dock-color:                           #f2f2f2;
-@dock-link-color:                      @link-color;
-@dock-text-shadow:                     none;
-
 @mainmenu-background:                  #121212;
 @mainmenu-link-background:             rgba(0, 0, 0, 0.5);
 @mainmenu-link-hover-background:       rgba(0, 0, 0, 0.75);
@@ -114,9 +100,9 @@
 @groove-shadow:                        black;
 
 @footer-background:                    black;
-@footer-color:                         @dock-color;
-@footer-link-color:                    @dock-link-color;
-@footer-text-shadow:                   @dock-text-shadow;
+@footer-color:                         #f2f2f2;
+@footer-link-color:                    @link-color;
+@footer-text-shadow:                   none;
 
 @import "../layout.less";
 @import "../widget.less";

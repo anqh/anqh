@@ -17,6 +17,11 @@ body                                   { background: @body-background-color; col
 
 
 /***** DOCK *****/
+@dock-background:                      black;
+@dock-separator:                       1px solid #333;
+@dock-color:                           #f2f2f2;
+@dock-link-color:                      @link-color;
+@dock-text-shadow:                     none;
 
 #dock                                  { background: @dock-background; .box-shadow(0 0 10px @dock-background); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
 #dock                                  { margin-top: -25px; .transition(margin-top .25s ease-in-out); }
@@ -38,13 +43,21 @@ body                                   { background: @body-background-color; col
 
 /***** SIDEBAR *****/
 
+@sidebar-background:                   #121212;
+@sidebar-link-background:              rgba(0, 0, 0, 0.5);
+@sidebar-link-hover-background:        rgba(0, 0, 0, 0.75);
+@sidebar-color:                        #777;
+@sidebar-text-shadow:                  1px 1px 0 rgba(0, 0, 0, 0.75);
+@sidebar-hover-color:                  white;
+@sidebar-selected-color:               #f6f6f6;
+
 #header                                { margin-top: 20px; margin-bottom: 10px; }
 h1 a                                   { display: block; .opacity(.2); }
 h1                                     { .opacity(.2); .transition(opacity .25s ease-in-out); }
 h1:hover                               { .opacity(1); }
 
 .leftmenu                              { background: #333; }
-.col2                                  { text-shadow: @mainmenu-text-shadow; }
+.col2                                  { text-shadow: @sidebar-text-shadow; }
 .colright                              { .box-shadow(0 0 10px rgba(0, 0, 0, .5)); }
 
 #side-narrow nav                       { border-bottom: 1px solid #111; }
@@ -52,15 +65,15 @@ h1:hover                               { .opacity(1); }
 #side-narrow .mod:last-child           { border-bottom: 0 none; }
 
 #side-narrow var,
-#side-narrow a                         { color: @mainmenu-color; }
-#side-narrow a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
+#side-narrow a                         { color: @sidebar-color; }
+#side-narrow a:hover                   { color: @sidebar-selected-color; text-decoration: none; }
 #side-narrow nav ul,
 #side-narrow nav ul li                 { display: block; }
-#side-narrow nav ul li a               { color: @mainmenu-color; display: block; font-size: 1.1667em; height: 1.7857em; .transition(color .25s ease-in-out); vertical-align: middle; }
-#side-narrow nav ul li.selected > a    { color: @mainmenu-selected-color; }
+#side-narrow nav ul li a               { color: @sidebar-color; display: block; font-size: 1.1667em; height: 1.7857em; .transition(color .25s ease-in-out); vertical-align: middle; }
+#side-narrow nav ul li.selected > a    { color: @sidebar-selected-color; }
 #side-narrow nav ul.submenu li         { background: transparent; }
 #side-narrow nav ul.submenu li a       { padding-left: 20px; }
-#side-narrow .user                     { color: @mainmenu-selected-color; }
+#side-narrow .user                     { color: @sidebar-selected-color; }
 #side-narrow input                     { margin-bottom: 10px; margin-left: 0; }
 #side-narrow input:last-child          { margin-bottom: 0; }
 #side-narrow input[type=submit]        { margin-left: 2px; }
@@ -70,7 +83,7 @@ h1:hover                               { .opacity(1); }
 .new-messages li a                     { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }
 .new-messages li a div                 { height: 100%; .opacity(.2); width: 100%; }
 .new-messages li a:hover div           { .opacity(1); }
-.new-messages li a var                 { background: rgba(0, 0, 0, .75); .border-radius(5px); color: @mainmenu-selected-color; left: 0; padding: 0 4px; position: absolute; top: 0; }
+.new-messages li a var                 { background: rgba(0, 0, 0, .75); .border-radius(5px); color: @sidebar-selected-color; left: 0; padding: 0 4px; position: absolute; top: 0; }
 .new-messages {
   .new-comments div                    { background: url(/ui/icon/32/spechbubble.png) no-repeat center center; }
   .new-blog-comments div               { background: url(/ui/icon/32/notepad_2.png) no-repeat center center; }
@@ -112,6 +125,7 @@ section .article,
 section article                        {/* border-bottom: 1px solid @body-background-color;*/ /*background: @section-background-alt; overflow: hidden;*/ position: relative; }
 section .divider + article,
 section article + article              { border-top: 1px solid @separator-color; }
+article article + article              { border-top: 0 none; }
 
 .mod article header                    { border-bottom: @separator-light-border; /*margin-bottom: 0.6667em;*/ overflow: hidden; }
 /*.mod article header h4                 { float: left; }*/
