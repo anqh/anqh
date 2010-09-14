@@ -88,9 +88,11 @@ class Anqh_Controller_User extends Controller_Template {
 
 		// Change existing
 		if (isset($_REQUEST['default'])) {
+			/** @var  Model_Image  $image */
 			$image = Jelly::select('image')->load((int)$_REQUEST['default']);
 			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image)) {
 				$user->default_image = $image;
+				$user->picture = $image->get_url();
 				$user->save();
 			}
 			$cancel = true;
@@ -98,6 +100,7 @@ class Anqh_Controller_User extends Controller_Template {
 
 		// Delete existing
 		if (isset($_REQUEST['delete'])) {
+			/** @var  Model_Image  $image */
 			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
 			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image->id && $user->has('images', $image)) {
 				$user->remove('images', $image);
@@ -244,6 +247,7 @@ class Anqh_Controller_User extends Controller_Template {
 			));
 
 			$view = View_Module::factory('generic/comments', array(
+				'mod_title'  => __('Comments'),
 				'delete'     => Route::get('user_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
 				'private'    => Route::get('user_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
 				'comments'   => $user->get('comments')->viewer(self::$user)->pagination($pagination)->execute(),
@@ -260,6 +264,14 @@ class Anqh_Controller_User extends Controller_Template {
 			Widget::add('main', $view);
 		}
 
+		// Display news feed
+		$newsfeed = new NewsFeed($user, true);
+		$newsfeed->max_items = 5;
+		Widget::add('main', View_Module::factory('generic/newsfeed', array(
+			'newsfeed' => $newsfeed->as_array(),
+			'mini'     => true
+		)), Widget::TOP);
+
 		// Slideshow
 		if (count($user->images) > 1) {
 			$images = array();
@@ -271,12 +283,12 @@ class Anqh_Controller_User extends Controller_Template {
 		}
 
 		// Portrait
-		Widget::add('side', $this->_get_mod_image($user));
+		Widget::add('side', $this->_get_mod_image($user), Widget::TOP);
 
 		// Info
 		Widget::add('side', View_Module::factory('user/info', array(
 			'user' => $user,
-		)));
+		)), Widget::TOP);
 
 	}
 

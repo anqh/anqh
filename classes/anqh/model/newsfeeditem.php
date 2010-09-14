@@ -29,4 +29,28 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 			));
 	}
 
+
+	/**
+	 * Find public Newsfeed items
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_items($limit = 20) {
+		return Jelly::select('newsfeeditem')->limit($limit)->execute();
+	}
+
+	/**
+	 * Find public Newsfeed items
+	 *
+	 * @static
+	 * @param   Model_User  $user
+	 * @param   integer     $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_items_personal(Model_User $user, $limit = 20) {
+		return Jelly::select('newsfeeditem')->where('user_id', '=', $user->id)->limit($limit)->execute();
+	}
+
 }

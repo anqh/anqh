@@ -47,22 +47,21 @@
 
 <article id="comment-<?php echo $comment->id ?>" class="<?php echo implode(' ', $classes) ?>">
 
-	<?php echo HTML::avatar($comment->author->avatar, $comment->author->username) ?>
 
 	<header>
-		<?php if ($user && $comment->user_id == $user->id || $mine): ?>
-		<span class="actions">
+		<?php echo HTML::avatar($comment->author->avatar, $comment->author->username, true) ?>
+		<?php echo HTML::user($comment->author, $comment->author->username) ?>
+		<small class="ago"><?php echo HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?></small>
+
+		<?php if ($user && $comment->user->id == $user->id || $mine): ?>
+		<span class="actions alt">
 			<?php if ($private && !$comment->private): ?>
-			<?php echo HTML::anchor(sprintf($private, $comment->id), __('Set as private'), array('class' => 'action comment-private')) ?>
+			<?php echo HTML::anchor(sprintf($private, $comment->id), __('Set as private'), array('class' => 'action small comment-private')) ?>
 			<?php endif; ?>
-			<?php echo HTML::anchor(sprintf($delete, $comment->id), __('Delete'), array('class' => 'action comment-delete')) ?>
+			<?php echo HTML::anchor(sprintf($delete, $comment->id), __('Delete'), array('class' => 'action small comment-delete')) ?>
 		</span>
 		<?php endif; ?>
 
-		<?php echo HTML::user($comment->author_id, $comment->author->username) ?>,
-		<?php echo __(':ago', array(
-			':ago' => HTML::time(Date::fuzzy_span($comment->created), $comment->created))
-		) ?>
 	</header>
 
 	<p>

@@ -25,6 +25,11 @@ class Anqh_Newsfeed {
 	public $max_items;
 
 	/**
+	 * @var  boolean  Personal newsfeed
+	 */
+	protected $_personal = false;
+
+	/**
 	 * @var  Model_User  Newsfeed viewing user
 	 */
 	protected $_user;
@@ -34,13 +39,15 @@ class Anqh_Newsfeed {
 	 * Create new NewsFeed
 	 *
 	 * @param  Model_User  $user
+	 * @param  boolean     $personal
 	 */
-	public function __construct(Model_User $user = null) {
-		$this->_user = $user;
+	public function __construct(Model_User $user = null, $personal = false) {
 
 		// Set defaults
 		$this->max_items = 20;
 
+		$this->_user = $user;
+		$this->_personal = $personal;
 	}
 
 
@@ -76,7 +83,9 @@ class Anqh_Newsfeed {
 	 */
 	protected function _find_items() {
 		if (empty($this->_items)) {
-			$this->_items = Jelly::select('newsfeeditem')->limit($this->max_items)->execute();
+			$this->_items = $this->_personal
+				? Model_NewsfeedItem::find_items_personal($this->_user, $this->max_items)
+				: Model_NewsfeedItem::find_items($this->max_items);
 		}
 	}
 
