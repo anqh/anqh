@@ -232,9 +232,18 @@ footer:after,
 
 /***** /Matthew James Taylor *****/
 
+article:after,
+header:after,
+footer:after,
 .container:after,
 .group:after                           { clear: both; content: ' '; display: block; font-size: 0; height: 0; visibility: hidden; }
+* html article,
+* html header,
+* html footer,
 * html .container,
 * html .group                          { height: 1%; }
+*:first-child+html article,
+*:first-child+html header,
+*:first-child+html footer,
 *:first-child+html .container,
 *:first-child+html .group              { min-height: 1px; }

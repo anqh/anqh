@@ -123,8 +123,8 @@ form .notice input                     { border-color: @info-background; }
 @button-color:                         #73aebe;
 @button-rgba:                          rgba(51, 170, 204, 0.69);
 
-.ui-widget .ui-dialog-buttonpane .ui-state-default,
-a.action                               { margin: 5px 2px; }
+.ui-widget .ui-dialog-buttonpane .ui-state-default/*,
+a.action                               */{ margin: 5px 2px; }
 button:::-moz-focus-inner              { border: 0; padding: 0; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
@@ -441,7 +441,7 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 .comments input[name=comment]          { width: 300px; }
 .comments form                         { margin-bottom: 10px; }
-.comments article p                    { padding-left: 60px; }
+/*.comments article p                    { padding-left: 60px; }*/
 
 /***** /COMMENTS *****/
 
@@ -514,8 +514,9 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 .events .days article                  { border-top: 0 none; }
 .events .days .city                    { padding-top: 10px; }
 
-#events .day time.date                 { float: left; }
+#events .day > header                  { float: left; }
 #events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }
+#events .day .city article header:after { clear: none; }
 #events .day .city h3                  { text-align: center; }
 #events .calendar .events              { margin-top: -1px; }
 #events .tab .events li                { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }

@@ -238,7 +238,7 @@ $(function() {
 		$('body').append('<div id="hovercard"></div>');
 		$('#hovercard').data('cache', []);
 	}
-	$('a.user, .avatar a, a.event').hovercard();
+	$('a.hoverable').hovercard();
 
 
 	// Theme

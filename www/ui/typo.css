@@ -108,7 +108,7 @@ tt                                     { display: block; margin: 1.667em 0; }
 hr                                     { margin-bottom: 1.667em; }
 
 blockquote                             { font-family: Georgia, "Times New Roman", Times, serif; font-style: italic; padding: 1.667em; }
-blockquote:before                      { content: "\201C"; float: left; font-family: Georgia, "Times New Roman", Times, serif; font-size: 4em; line-height: 0; margin-left: -0.5em; vertical-align: -0.7em; }
+blockquote:before                      { content: "\201C"; float: left; font-family: Georgia, "Times New Roman", Times, serif; font-size: 4em; line-height: 0; margin-left: -0.5em; margin-top: 0.25em; vertical-align: -0.7em; }
 /*blockquote > p                         { padding: 0; margin: 0; }*/
 blockquote em                          { font-style: normal; }
 blockquote cite                        { font-size: 0.9em; margin: 0.1em; opacity: 0.75; padding-left: 2em; }
