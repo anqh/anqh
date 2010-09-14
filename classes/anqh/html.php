@@ -24,7 +24,7 @@ class Anqh_HTML extends Kohana_HTML {
 		if (empty($title)) {
 			return '<div class="' . $class . '">' . HTML::image($avatar, array('alt' => 'Avatar')) . '</div>';
 		} else {
-			return '<div class="' . $class . '">' . HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title))) . '</div>';
+			return '<div class="' . $class . '">' . HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title, 'class' => 'hoverable'))) . '</div>';
 		}
 	}
 
@@ -202,7 +202,7 @@ class Anqh_HTML extends Kohana_HTML {
 			if (!isset($attributes['title'])) {
 				$title = Date::format($short ? 'DMYYYY' : 'DMYYYY_HM', $time);
 				if ($title != $str) {
-					$attributes['title'] = Date::format($short ? 'DMYYYY' : 'DMYYYY_HM', $time);
+					$attributes['title'] = $title;
 				}
 			}
 
@@ -228,19 +228,20 @@ class Anqh_HTML extends Kohana_HTML {
 			$viewer = Visitor::instance()->get_user();
 		}
 
-		$class = 'user ';
+		$class = array('user', 'hoverable');
 		if ($user instanceof Model_user || $user && $user = Model_User::find_user($user)) {
 			if ($user->loaded()) {
 				$nick = $user->username;
 				if ($viewer && $viewer->is_friend($user)) {
-					$class .= 'friend ';
+					$class[] = 'friend ';
 				}
 				if ($user->gender) {
-					$class .= $user->gender == 'f' ? 'female ' : 'male ';
+					$class[] = $user->gender == 'f' ? 'female ' : 'male ';
 				}
 			}
 		}
-		$attributes['class'] = trim($class . Arr::get($attributes, 'class'));
+		$class[] = Arr::get($attributes, 'class');
+		$attributes['class'] = trim(implode(' ', $class));
 
 		return empty($nick) ? __('Unknown') : HTML::anchor(URL::user($nick), $nick, $attributes);
 	}

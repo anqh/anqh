@@ -186,8 +186,8 @@ class Anqh_Date extends Kohana_Date {
 	 *
 	 * @static
 	 * @param   integer  $time
-	 * @param   boolean  $long  Include ago/in
-	 * @param   boolean  $wrap  Wrap number in <var>
+	 * @param   boolean  $short  Include ago/in
+	 * @param   boolean  $wrap   Wrap number in <var>
 	 * @return  string
 	 */
 	public static function short_span($timestamp, $short = true, $wrap = false) {
