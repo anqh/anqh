@@ -266,7 +266,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$ads = Kohana::config('site.ads');
 			if ($ads && $ads['enabled']) {
 				foreach ($ads['slots'] as $ad => $slot) {
-					Widget::add($slot, View::factory('ads/' . $ad));
+					Widget::add($slot, View::factory('ads/' . $ad), Widget::MIDDLE);
 				}
 			}
 

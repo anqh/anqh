@@ -13,6 +13,13 @@
 class Anqh_Widget {
 
 	/**
+	 * Widget weights
+	 */
+	const TOP    = -20;
+	const MIDDLE = -10;
+	const BOTTOM = 0;
+
+	/**
 	 * Weights
 	 *
 	 * @var  array
@@ -36,7 +43,7 @@ class Anqh_Widget {
 	 * @param  string  $content
 	 * @param  int     $weight
 	 */
-	public static function add($name, $content, $weight = 0) {
+	public static function add($name, $content, $weight = self::BOTTOM) {
 	  while (in_array($weight, self::$weights)) {
 	    $weight++;
 	  }
@@ -93,7 +100,7 @@ class Anqh_Widget {
 	 * @param  string  $content
 	 * @param  int     $weight
 	 */
-	public static function set($name, $content, $weight = 0) {
+	public static function set($name, $content, $weight = self::BOTTOM) {
 		$weights = self::$widgets[$name];
 		self::$weights = array_diff(self::$weights, $weights);
 		self::$widgets[$name] = array();
