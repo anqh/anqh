@@ -47,7 +47,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('added new event :event', array(
-						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
+						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable'))
 					));
 				}
 				break;
@@ -56,7 +56,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('updated event :event', array(
-						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
+						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable'))
 					));
 				}
 				break;
@@ -65,7 +65,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('added event :event to favorites', array(
-						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event'))
+						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable'))
 					));
 				}
 				break;

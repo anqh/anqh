@@ -20,7 +20,7 @@
 
 		<?php foreach ($cities as $city => $city_events): ?>
 
-		<article class="city city-<?php echo URL::title($city) ?>">
+		<section class="city city-<?php echo URL::title($city) ?>">
 			<?php if (false && !empty($city)): ?>
 
 			<header>
@@ -33,12 +33,12 @@
 			<article>
 
 				<header>
-					<h4><?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'event')) ?></h4>
+					<h4><?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable')) ?></h4>
 				</header>
 				<span class="details">
 
 					<?php if ($event->price !== null && $event->price != -1)
-						echo ($event->price == 0 ? __('Free entry') : '<var>' . Num::format($event->price, 2, true) . '</var>'); ?>
+						echo ($event->price == 0 ? __('Free entry') : '<var>' . Num::format($event->price, 2, true) . '&euro;</var>'); ?>
 
 					<?php if ($event->venue_id): ?>
 					@ <?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>, <?php echo HTML::chars($event->venue->city->name) ?>
@@ -61,7 +61,7 @@
 
 			<?php endforeach; ?>
 
-		</article><!-- /city -->
+		</section><!-- /city -->
 		<?php endforeach; ?>
 
 	</li><!-- /day -->

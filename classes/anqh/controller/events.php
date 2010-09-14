@@ -81,7 +81,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			'date'      => $first,
 			'url_day'   => '/events/:year/:month/:day',
 			'url_month' => '/events/:year/:month',
-		)));
+		)), Widget::TOP);
 
 		// Tabs
 		$this->_tabs();
@@ -401,7 +401,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		Widget::add('side', View_Module::factory('events/calendar', array(
 			'url_day'   => '/events/:year/:month/:day',
 			'url_month' => '/events/:year/:month',
-		)));
+		)), Widget::TOP);
 
 		// Tabs
 		$this->_tabs();
@@ -460,7 +460,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		Widget::add('side', View_Module::factory('events/calendar', array(
 			'url_day'   => '/events/:year/:month/:day',
 			'url_month' => '/events/:year/:month',
-		)));
+		)), Widget::TOP);
 
 		// Tabs
 		$this->_tabs();

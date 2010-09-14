@@ -14,7 +14,7 @@
 	<?php foreach ($events as $event): ?>
 	<li class="event">
 		<?php echo Date::format('DDMM', $event->stamp_begin) ?>
-		<?php echo HTML::anchor(Route::model($event), $event->name, array('class' => 'event')) ?>
+		<?php echo HTML::anchor(Route::model($event), $event->name, array('class' => 'hoverable')) ?>
 	</li>
 	<?php endforeach; ?>
 

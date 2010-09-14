@@ -12,7 +12,7 @@
 <?php	if ($event->dj): ?>
 <article class="dj">
 	<header>
-		<h3><?php echo __('Performers') ?></h3>
+		<h3><?php echo __('Line-up') ?></h3>
 	</header>
 	<?php echo Text::auto_p(HTML::chars($event->dj)) ?>
 
