@@ -35,7 +35,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 					$text = __('commented to an image in :gallery', array(':gallery' => HTML::anchor(
 						Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
 						HTML::chars($gallery->name),
-						array('title' => $gallery->name)
+						array('class' => 'hoverable')
 					)));
 				}
 				break;

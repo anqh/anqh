@@ -320,7 +320,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			Widget::add('side', View_Module::factory('events/event_info', array(
 				'event' => $gallery->event,
 				'user'  => self::$user,
-			)));
+			)), Widget::TOP);
 		}
 
 		// Set title and tabs
@@ -333,6 +333,36 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			'user'     => self::$user,
 		)));
 
+	}
+
+
+	/**
+	 * Action: hover card
+	 */
+	public function action_hover() {
+		$this->history = false;
+
+		// Hover card works only with ajax
+		if (!$this->ajax) {
+			return $this->action_image();
+		}
+
+		$gallery_id = (int)$this->request->param('gallery_id');
+		$image_id   = (int)$this->request->param('id');
+
+		/** @var  Model_Gallery  $gallery */
+		$gallery = Jelly::select('gallery')->load($gallery_id);
+		if ($gallery->loaded()) {
+			/** @var  Model_Image  $image */
+			$image = Jelly::select('image')->load($image_id);
+			if ($image->loaded()) {
+				echo View_Module::factory('galleries/hovercard', array(
+					'mod_title' => HTML::chars($gallery->name),
+					'gallery'   => $gallery,
+					'image'     => $image,
+				));
+			}
+		}
 	}
 
 
@@ -506,7 +536,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			Widget::add('side', View_Module::factory('galleries/image_info', array(
 				'mod_title' => __('Picture info'),
 				'image'     => $current,
-			)));
+			)), Widget::TOP);
 
 		}
 
