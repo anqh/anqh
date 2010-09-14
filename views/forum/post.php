@@ -22,25 +22,7 @@ $owners = ($topic->author->id && $post->author->id == $topic->author->id);
 
 			<?php echo HTML::user($post->author, $post->author_name) ?>
 			<small class="ago"><?php echo HTML::time(Date::short_span($post->created, true, true), $post->created) ?></small>
-			<?php if ($post->modifies > 0): ?>
-			<br />
-			<?php echo __('Edited :ago', array(
-				':ago' => HTML::time(Date::fuzzy_span($post->modified), $post->modified)
-			)) ?>
-			<?php endif;
-			if ($post->parent->id): ?>
-			<br />
-			<?php echo __('Reply to :parent', array(
-				':parent' => HTML::anchor(
-					Route::get('forum_post')->uri(array(
-						'topic_id' => Route::model_id($topic),
-						'id'       => $post->parent->id,
-					)) . '#post-' . $post->parent->id,
-					HTML::chars($post->parent->topic->name)))) ?>
-			<?php endif; ?>
-
-			<br />
-			<span class="actions">
+			<span class="actions alt">
 				<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_UPDATE, $user)) echo HTML::anchor(
 						Route::get('forum_post')->uri(array(
 							'id'       => Route::model_id($post),
@@ -66,6 +48,22 @@ $owners = ($topic->author->id && $post->author->id == $topic->author->id);
 						array('class' => 'action post-quote small')) ?>
 			</span>
 
+			<?php if ($post->modifies > 0): ?>
+			<br />
+			<?php echo __('Edited :ago', array(
+				':ago' => HTML::time(Date::fuzzy_span($post->modified), $post->modified)
+			)) ?>
+			<?php endif;
+			if ($post->parent->id): ?>
+			<br />
+			<?php echo __('Reply to :parent', array(
+				':parent' => HTML::anchor(
+					Route::get('forum_post')->uri(array(
+						'topic_id' => Route::model_id($topic),
+						'id'       => $post->parent->id,
+					)) . '#post-' . $post->parent->id,
+					HTML::chars($post->parent->topic->name)))) ?>
+			<?php endif; ?>
 		</header>
 
 		<section class="post-content">

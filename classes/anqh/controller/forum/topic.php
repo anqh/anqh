@@ -151,7 +151,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					foreach ((array)$bind['view'] as $view) {
 						Widget::add('side', View_Module::factory($view, array(
 							$bind['model'] => $model,
-						)));
+						)), Widget::TOP);
 					}
 
 				}
@@ -204,7 +204,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			)));
 		}
 
-		$this->side_views();
+		//$this->side_views();
 	}
 
 
