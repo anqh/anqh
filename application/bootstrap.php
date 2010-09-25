@@ -39,8 +39,8 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Environment check, defaults to Kohana::DEVELOPMENT
  */
-if (isset($_ENV['ENVIRONMENT'])) {
-	Kohana::$environment = $_ENV['ENVIRONMENT'];
+if (isset($_SERVER['ENVIRONMENT'])) {
+	Kohana::$environment = $_SERVER['ENVIRONMENT'];
 }
 
 /**
