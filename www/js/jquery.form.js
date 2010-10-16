@@ -3,26 +3,28 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2009 Antti Qvickström
+ * @copyright  (c) 2009-2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 (function ($) {
 
 	/**
-	 * Input title hint
+	 * Input placeholder hint
 	 *
 	 * @author  Antti Qvickström (password patch)
 	 * @author  Remy Sharp (original)
 	 * @url     http://remysharp.com/2007/01/25/jquery-tutorial-text-box-hints/
 	 */
 	$.fn.hint = function (blurClass) {
+		if ('placeholder' in document.createElement('input')) return;
+
 		blurClass = blurClass || 'blur';
 
 	  return this.each(function () {
 
 	    // Get jQuery version of 'this' and capture the rest of the variable to allow for reuse
 	    var $input = $(this),
-	      title = $input.attr('title'),
+	      placeholder = $input.attr('placeholder'),
 	      isPassword = $input.attr('type') == 'password',
 	      $form = $(this.form),
 	      $win = $(window);
@@ -33,19 +35,18 @@
 	    		$password.remove();
 	    		$input.show();
 	    	} else {
-	      	if ($input.val() === title && $input.hasClass(blurClass)) {
+	      	if ($input.val() === placeholder && $input.hasClass(blurClass)) {
 	        	$input.val('').removeClass(blurClass);
 	      	}
 	    	}
 	    }
 
 	    // Only apply logic if the element has the attribute
-	    if (title) {
-
+	    if (placeholder) {
 	    	if (isPassword) {
 
-	    		// Add text input to handle title
-    			$input.attr('title', null);
+	    		// Add text input to handle placeholder
+    			$input.attr('placeholder', null);
     			var $password = $input.clone();
     			var display = $input.css('display');
     			$password.hide()
@@ -55,7 +56,7 @@
    						name: $input.attr('name') + '-hint'
     				})
     				.addClass(blurClass)
-    				.val(title)
+    				.val(placeholder)
     				.insertAfter($input)
     				.focus(function() {
     					$password.hide();
@@ -74,10 +75,10 @@
 
 	    	} else {
 
-		      // On blur, set value to title attr if text is blank
+		      // On blur, set value to placeholder attr if text is blank
 		      $input.blur(function () {
 		        if (this.value === '') {
-		          $input.addClass(blurClass).val(title);
+		          $input.addClass(blurClass).val(placeholder);
 		        }
 		      }).focus(remove).blur();
 

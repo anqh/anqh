@@ -172,8 +172,11 @@ aside .mod                             {margin-bottom: 10px; }
 .mod .mod                              { background: transparent; margin-bottom: 0; }
 #side-narrow .mod .container           { padding-left: 0; padding-right: 0; }
 
-aside .mod                             { background: @midget-border-color; .border-radius(6px); padding: 5px 0; }
-aside .mod .container                  { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; overflow: hidden; padding: 9px; }
+.widget                                { background: @midget-border-color; .border-radius(6px);padding: 5px 0; }
+.widget-container                      { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; padding: 4px; }
+
+aside .mod                             { .widget; }
+aside .mod .container                  { .widget-container; overflow: hidden; padding: 9px; }
 aside h4,
 aside h5,
 aside .mod .container li               { text-shadow: @mainmenu-text-shadow; }
