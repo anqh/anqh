@@ -167,13 +167,13 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Event flyers
 		if ($event->flyer_front->id || $event->flyer_back->id || !($event->flyer_front_url || $event->flyer_back_url)) {
-			Widget::add('side', $this->_get_mod_image($event));
+			Widget::add('side', $this->_get_mod_image($event), Widget::TOP);
 		} else if ($event->flyer_front_url || $event->flyer_back_url) {
 
 			// To be deprecated
 			Widget::add('side', View_Module::factory('events/flyers', array(
 				'event' => $event,
-			)));
+			)), Widget::TOP);
 
 		}
 
@@ -181,7 +181,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		Widget::add('side', View_Module::factory('events/event_info', array(
 			//'mod_title' => __('Event information'),
 			'event'     => $event
-		)));
+		)), Widget::TOP);
 
 		// Favorites
 		if ($event->favorite_count) {
@@ -189,7 +189,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				'mod_title' => _('Favorites'),
 				'viewer'    => self::$user,
 				'users'     => $event->find_favorites()
-			)));
+			)), Widget::TOP);
 		}
 
 	}
