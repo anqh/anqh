@@ -35,7 +35,7 @@ class Anqh_Route extends Kohana_Route {
 	 * @return  string
 	 */
 	public static function model_id(Jelly_Model $model) {
-		return URL::title($model->id() . ' ' . $model->name());
+		return URL::title($model->id() . ' ' . $model->name(), '-', true);
 	}
 
 }
