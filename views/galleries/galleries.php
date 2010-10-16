@@ -15,7 +15,7 @@ $gallery = null;
 <ul>
 
 <?php foreach ($galleries as $gallery): ?>
-	<li class="unit size1of5">
+	<li class="grid2<?php echo Text::alternate(' first', '', '', '', '', '') ?>">
 		<article>
 			<header>
 				<div class="thumb">

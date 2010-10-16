@@ -34,7 +34,7 @@ $copyright = $multiple = null;
 
 		<?php endif; ?>
 
-	<li class="unit size1of3">
+	<li class="grid2<?php echo Text::alternate(' first', '', '', '') ?>">
 		<figure class="thumb">
 			<?php echo HTML::anchor(
 				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => $approve)),
