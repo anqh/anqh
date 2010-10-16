@@ -107,7 +107,7 @@ section article:hover .hidden          { visibility: visible; }
 
 /***** forum *****/
 
-#forum .post section                   { clear: both; }
+/*#forum .post section                   { clear: both; }*/
 #forum .post footer                    { padding-top: 0.8333em; }
 #forum .post footer .actions.my        { float: left; }
 

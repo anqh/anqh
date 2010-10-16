@@ -129,7 +129,7 @@ button:::-moz-focus-inner              { border: 0; padding: 0; }
 .ui-widget .ui-dialog-buttonpane .ui-state-default,
 button,
 input[type=submit],
-a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(4px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
+a.action                               { background: @button-background; background: -moz-linear-gradient(top, @button-top, @button-bottom); background: -webkit-gradient(linear, left top, left bottom, from(@button-top), to(@button-bottom)); border: 1px solid @button-border-bottom; border-top: 1px solid @button-border-top; .border-radius(3px); .box-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); cursor: pointer; color: white; cursor: pointer; display: inline-block; opacity: 0.9; outline: none; padding: 3px 1em;/*padding: 4px 1em 3px;*/ position: relative; text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25); .transition(all .15s ease-in-out); }
 button[disabled=disabled],
 input[disabled=disabled],
 a.action.disabled                      { cursor: default; font-style: italic; .opacity(.25); }
@@ -147,7 +147,7 @@ a.action:active                        { outline: none; top: 1px; }
 .ui-widget .ui-dialog-buttonpane .ui-state-hover,
 button:hover,
 input[type=submit]:hover,
-a.action:hover                         { .opacity(1); text-decoration: none; }
+a.action:hover                         { .opacity(1); text-decoration: none; z-index: 10; }
 button[disabled=disabled]:hover,
 input[disabled=disabled]:hover,
 a.action.disabled:hover                { .opacity(.25); }
@@ -523,7 +523,6 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 
 .event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
 
-
 /***** /events *****/
 
 
@@ -537,7 +536,8 @@ aside.post-old                         { color: @separator-color; text-align: ce
 section.mod .divider                   { border-bottom: 1px dotted @body-background-color; border-top: 1px dotted @body-background-color; margin: 2px 0; text-align: center; }
 /*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
 #field-signature                       { font: 1em/1.5 monospace; }
-article.post footer                    { font: 1em/1.5 monospace; .opacity(.75); padding-left: 10px; ; }
+article.post footer                    { font: 1em/1.5 monospace; .opacity(.75); }
+article.post footer p                  { padding-left: 10px; }
 
 /***** /forum *****/
 

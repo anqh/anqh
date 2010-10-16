@@ -17,6 +17,7 @@ body                                   { background: @body-background-color; col
 
 
 /***** DOCK *****/
+
 @dock-background:                      black;
 @dock-separator:                       1px solid #333;
 @dock-color:                           #f2f2f2;
@@ -36,7 +37,7 @@ body                                   { background: @body-background-color; col
 #visitor input,
 #dock label,
 #dock input                            { display: inline; margin-left: 0; }
-#customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -20px; }
+#customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; left: 50%; bottom: -20px; }
 
 /***** /DOCK *****/
 
@@ -50,11 +51,6 @@ body                                   { background: @body-background-color; col
 @sidebar-text-shadow:                  1px 1px 0 rgba(0, 0, 0, 0.75);
 @sidebar-hover-color:                  white;
 @sidebar-selected-color:               #f6f6f6;
-
-#header                                { margin-top: 20px; margin-bottom: 10px; }
-h1 a                                   { display: block; .opacity(.2); }
-h1                                     { .opacity(.2); .transition(opacity .25s ease-in-out); }
-h1:hover                               { .opacity(1); }
 
 .leftmenu                              { background: #333; }
 .col2                                  { text-shadow: @sidebar-text-shadow; }
@@ -78,9 +74,25 @@ h1:hover                               { .opacity(1); }
 #side-narrow input:last-child          { margin-bottom: 0; }
 #side-narrow input[type=submit]        { margin-left: 2px; }
 
-.new-messages                          { clear: both; }
+/***** /SIDEBAR *****/
+
+
+/***** HEADER *****/
+
+@mainmenu-background:                  #121212;
+@mainmenu-link-background:             rgba(0, 0, 0, 0.5);
+@mainmenu-link-hover-background:       rgba(0, 0, 0, 0.75);
+@mainmenu-color:                       #777;
+@mainmenu-text-shadow:                 1px 1px 0 rgba(0, 0, 0, 0.75);
+@mainmenu-hover-color:                 white;
+@mainmenu-selected-color:              #f6f6f6;
+
+#header                                { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; }
+#header li                             { margin-top: 0; }
+.new-messages                          { clear: both; float: right; margin-top: 10px; }
 /*.new-messages li                       { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }*/
 .new-messages li a                     { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }
+.new-messages li a:hover               { text-decoration: none; }
 .new-messages li a div                 { height: 100%; .opacity(.2); width: 100%; }
 .new-messages li a:hover div           { .opacity(1); }
 .new-messages li a var                 { background: rgba(0, 0, 0, .75); .border-radius(5px); color: @sidebar-selected-color; left: 0; padding: 0 4px; position: absolute; top: 0; }
@@ -92,7 +104,18 @@ h1:hover                               { .opacity(1); }
   .new-image-comments div              { background: url(/ui/icon/32/photo.png) no-repeat center center; }
 }
 
-/***** /SIDEBAR *****/
+#mainmenu                              { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; border-top: 1px solid @groove-light; }
+#mainmenu li                           { display: block; float: left; margin-right: 30px; position: relative; }
+#mainmenu li a                         { color: @mainmenu-color; display: block; font-size: 1.1667em; line-height: 1.4286em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
+#mainmenu li a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
+#mainmenu li.selected > a              { color: @mainmenu-selected-color; }
+#mainmenu li ul                        { position: absolute; width: 400px; }
+
+h1 a                                   { display: block; .opacity(.2); }
+h1                                     { .opacity(.2); .transition(opacity .25s ease-in-out); }
+h1:hover                               { .opacity(1); }
+
+/***** /HEADER *****/
 
 
 /***** BODY *****/
@@ -105,7 +128,7 @@ body.right #main                       { float: right; }
 .cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 .tab                                   { background: none; margin: 0; padding: 0; }
 
-#title                                 { background: @mod-background; padding: 0 5px; position: relative; }
+#title                                 { background: @mod-background; position: relative; }
 #title .container                      { padding: 0 10px; }
 #title nav                             { overflow: hidden; }
 #title nav li                          { background: black; border-right: 1px solid #111; float: left; }
@@ -142,13 +165,15 @@ section article .details               { color: @text-color-alt; }
 #main .mod,
 #wide .mod,
 #header .mod,
-aside .mod                             { background: @midget-background; margin-bottom: 10px; }
+aside .mod                             {margin-bottom: 10px; }
 #title,
 #wide .mod,
 #main .mod                             { background: @mod-background; }
 .mod .mod                              { background: transparent; margin-bottom: 0; }
 #side-narrow .mod .container           { padding-left: 0; padding-right: 0; }
 
+aside .mod                             { background: @midget-border-color; .border-radius(6px); padding: 5px 0; }
+aside .mod .container                  { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; overflow: hidden; padding: 9px; }
 aside h4,
 aside h5,
 aside .mod .container li               { text-shadow: @mainmenu-text-shadow; }

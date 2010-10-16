@@ -157,10 +157,10 @@
 #title,
 #main .mod,
 #wide .mod,
-aside .mod                             { margin-left: 10px; }
+aside .mod                             { /*margin-left: 10px;*/ }
 aside .mod .mod                        { margin-left: 0; }
 .tab .container,
-.mod .container                        { padding: 10px; }
+.mod .container                        { /*padding: 10px;*/ }
 .mod article:last-of-type              { margin-bottom: 0; }
 .mod article + article                 { margin-top: 0.6667em; padding-top: 0.6667em; }
 /*.container                             { overflow: hidden; }*/
@@ -197,7 +197,7 @@ footer:after,
 
 /***** Matthew James Taylor, 160px column, 10px gutter *****/
 
-.colmask                               { clear: both; float: left; overflow: hidden; position: relative; width: 100%; }
+.colmask                               { clear: both; /*float: left;*/ overflow: hidden; position: relative; width: 100%; }
 .col1wrap                              { float: left; padding-bottom: 10px; position: relative; width: 50%; }
 .colleft                               { float: left; position: relative; width: 100%; }
 .colmid                                { float: left; position: relative; right: 100%; width: 200%; }
@@ -231,6 +231,37 @@ footer:after,
 .fullpage .col1                        { margin: 0 10px; }
 
 /***** /Matthew James Taylor *****/
+
+
+/***** Nick La & Darcy Clarke, 978px 30px gutter *****/
+
+.grid1,
+.grid2,
+.grid3,
+.grid4,
+.grid5,
+.grid6,
+.grid7,
+.grid8,
+.grid9,
+.grid10,
+.grid11                                { float: left; margin-left: 30px; position: relative; }
+.grid1                                 { width: 54px; }
+.grid2                                 { width: 138px; }
+.grid3                                 { width: 222px; }
+.grid4                                 { width: 306px; }
+.grid5                                 { width: 390px; }
+.grid6                                 { width: 474px; }
+.grid7                                 { width: 558px; }
+.grid8                                 { width: 642px; }
+.grid9                                 { width: 726px; }
+.grid10                                { width: 810px; }
+.grid11                                { width: 894px; }
+.grid12                                { clear: both; margin: 0 auto; position: relative; width: 978px; }
+.first                                 { clear: left; margin-left: 0; }
+
+/***** /Nick La & Darcy Clarke, 978px 30px gutter *****/
+
 
 article:after,
 header:after,
