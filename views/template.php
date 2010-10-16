@@ -51,101 +51,114 @@
 
 <body id="<?php echo $page_id ?>" class="<?php echo $page_class ?>">
 
+
+	<!-- HEADER -->
+
+	<section id="header">
+		<div class="container grid12">
+
+			<section id="logo" class="grid3 first" role="banner">
+				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
+			</section>
+
+			<section id="notifications" class="grid5">
+
+<?php echo Widget::get('search') ?>
+
+			</section><!-- #notifications -->
+
+			<section id="visitor" class="grid4">
+
+<?php echo Widget::get('visitor') ?>
+
+			</section><!-- #visitor -->
+
+		</div>
+	</section><!-- #header -->
+
+	<section id="mainmenu">
+		<div class="container grid12">
+
+<?php echo Widget::get('navigation') ?>
+
+		</div>
+	</section><!-- #mainmenu -->
+
+	<!-- /HEADER -->
+
+
+	<?php echo Widget::get('ad_top') ?>
+
+
 	<!-- BODY -->
 
-	<div id="body" class="colmask leftmenu">
-		<div class="colright">
-			<div class="col1wrap">
 
+	<!-- CONTENT -->
 
-				<!-- CONTENT -->
+	<section id="main-top">
+		<div class="container grid12">
 
-				<section id="main-wide" class="col1" role="main">
-
-<?php echo Widget::get('ad_top') ?>
-
-					<!-- MAIN -->
-
-					<section id="<?php echo ($wide = Widget::get('wide')) ? 'wide' : 'main' ?>" class="unit <?php echo $wide ? 'size1of1' : 'size3of5' ?>">
-						<header id="title">
+			<header id="title">
 
 <?php //echo Widget::get('breadcrumb') ?>
 
-							<hgroup>
-								<h2><?php echo $page_title ?></h2>
-								<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
-							</hgroup>
+				<hgroup>
+					<h2><?php echo $page_title ?></h2>
+					<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
+				</hgroup>
 
 <?php echo Widget::get('actions') ?>
 
-						</header><!-- #title -->
+			</header><!-- #title -->
+
+<?php if ($wide = Widget::get('wide')): ?>
+
+			<section id="wide">
 
 <?php echo Widget::get('error') ?>
-<?php echo $wide ? $wide : Widget::get('main') ?>
 
-					</section><!-- <?php echo $wide ? 'wide' : 'main' ?> -->
+<?php echo $wide; ?>
 
-<?php if ($wide && $main = Widget::get('main')): ?>
-					<section id="main" class="unit size3of5">
+			</section><!-- #wide -->
 
-<?php echo $main ?>
-
-					</section><!-- main -->
 <?php endif; ?>
 
-					<!-- /MAIN -->
+		</div>
+	</section><!-- #main-top -->
 
-<?php if (!$wide || $main): ?>
+<?php if ($main = Widget::get('main') or !$wide): ?>
 
-					<!-- SIDE -->
+	<section id="main-bottom">
+		<div class="container grid12">
 
-					<aside id="side" class="unit size2of5" role="complementary">
+			<section id="main" class="first grid8">
+
+<?php if (!$wide) echo Widget::get('error'); ?>
+
+<?php if ($main) echo $main; ?>
+
+			</section><!-- #main -->
+
+			<aside id="side" class="grid4" role="complementary">
 
 <?php echo Widget::get('side') ?>
 
 <?php echo Widget::get('ad_side') ?>
 
-					</aside><!-- #side -->
+			</aside><!-- #side -->
 
-					<!-- /SIDE -->
+		</div>
+	</section><!-- #main-bottom -->
 
 <?php endif; ?>
 
-				</section><!-- #main-wide -->
-
-				<!-- /CONTENT -->
-
-
-			</div>
-
-
-			<!-- SIDEBAR -->
-
-			<section id="side-narrow" class="col2">
-
-				<section id="logo" role="banner">
-					<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
-				</section>
-
-
-<?php echo Widget::get('navigation') ?>
-
-<?php echo Widget::get('sidebar') ?>
-
-			</section>
-
-			<!-- /SIDEBAR -->
-
-		</div>
-	</div>
-
-	<!-- /BODY -->
+	<!-- /CONTENT -->
 
 
 	<!-- DOCK -->
 
 	<section id="dock" class="pinned">
-		<div class="content">
+		<div class="container grid12">
 
 <?php echo Widget::get('dock') ?>
 
@@ -159,13 +172,13 @@
 	<!-- FOOTER -->
 
 	<footer id="footer">
-		<div class="content" role="complementary">
+		<div class="container grid12" role="complementary">
 
 <?php echo Widget::get('navigation') ?>
 <?php echo Widget::get('footer') ?>
 
 		</div>
-		<div id="end" class="content" role="contentinfo">
+		<div id="end" class="container grid12" role="contentinfo">
 
 <?php echo Widget::get('end') ?>
 

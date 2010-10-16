@@ -211,14 +211,12 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// Search
-			Widget::add('sidebar', View_Module::factory('generic/search', array(
+			Widget::add('search', View_Module::factory('generic/search', array(
 				'mod_id' => 'search'
 			)));
 
 			// Visitor card
-			Widget::add('sidebar', View_Module::factory('generic/visitor', array(
-				'mod_id'    => 'visitor',
-				'mod_title' => self::$user ? __('Welcome') : __('Sign in'),
+			Widget::add('visitor', View::factory('generic/visitor', array(
 				'user'      => self::$user,
 			)));
 

@@ -10,19 +10,6 @@
 
 if ($user):
 
-	// Member
-	echo __(':user <var class="uid">[#:id]</var>', array(
-		':id'      => $user->id,
-		':user'    => HTML::user($user),
-	)), '<br />';
-	echo HTML::avatar($user->avatar, $user->username);
-?>
-<ul>
-	<li><?php echo HTML::anchor(URL::user($user, 'settings'), __('Settings')) ?></li>
-	<li><?php echo HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out')) ?></li>
-</ul>
-<?php
-
 	$new_comments = $user->find_new_comments();
 	if (!empty($new_comments)):
 ?>
@@ -33,6 +20,16 @@ if ($user):
 </ul>
 <?php
 	endif;
+
+	// Member
+	echo HTML::avatar($user->avatar, $user->username);
+	echo __(':user <var class="uid">[#:id]</var>', array(
+		':id'      => $user->id,
+		':user'    => HTML::user($user),
+	)), '<br />';
+
+	echo HTML::anchor(URL::user($user, 'settings'), __('Settings')), '<br />';
+	echo HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out'));
 
 // Logout also from Facebook
 /*
@@ -45,15 +42,17 @@ if (FB::enabled() && Visitor::instance()->get_provider()) {
 else:
 
 	// Guest
-	echo
-		Form::open(Route::get('sign')->uri(array('action' => 'in'))),
-		Form::input('username', null, array('title' => __('Username'))),
-		Form::password('password', null, array('title' => __('Password'))),
-		Form::checkbox('remember', 'true', false, array('disabled' => 'disabled')),
-		Form::label('remember', __('Remember me')),
-		Form::submit('signin', __('Sign in')),
-		Form::close();
+	echo Form::open(Route::get('sign')->uri(array('action' => 'in')));
+?>
+<ul>
+	<li class="grid2 first"><?php echo Form::input('username', null, array('title' => __('Username'))); ?></li>
+	<li class="grid2"><?php echo Form::checkbox('remember', 'true', false, array('disabled' => 'disabled')), Form::label('remember', __('Remember me')); ?></li>
+	<li class="grid2 first"><?php echo Form::password('password', null, array('title' => __('Password'))); ?></li>
+	<li class="grid2"><?php echo Form::submit('signin', __('Sign in')); ?>
+</ul>
+<?php
+	echo Form::close();
 
-	echo HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add'));
+	// echo HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add'));
 
 endif;
