@@ -34,7 +34,7 @@ foreach ($form['groups'] as $group_name => $group):
 ?>
 
 	<fieldset<?php echo HTML::attributes($group_attributes) ?>>
-		<?php if (isset($group['header'])): ?> <legend><?php echo HTML::chars($group['header']) ?></legend<?php endif; ?>
+		<?php if (isset($group['header'])): ?> <legend><?php echo HTML::chars($group['header']) ?></legend><?php endif; ?>
 
 		<ul>
 		<?php foreach ($group['fields'] as $field_name => $field):
