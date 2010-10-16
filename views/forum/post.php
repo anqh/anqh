@@ -62,6 +62,7 @@ $owners = ($topic->author->id && $post->author->id == $topic->author->id);
 						__('Quote'),
 						array('class' => 'action post-quote small')) ?>
 			</span>
+			&nbsp;
 		</div>
 
 		<footer class="grid6">
