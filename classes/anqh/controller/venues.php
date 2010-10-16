@@ -323,12 +323,12 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		// Default image
-		Widget::add('side', $this->_get_mod_image($venue));
+		Widget::add('side', $this->_get_mod_image($venue), Widget::TOP);
 
 		// Venue info
 		Widget::add('side', View_Module::factory('venues/info', array(
 			'venue' => $venue,
-		)));
+		)), Widget::TOP);
 	}
 
 
