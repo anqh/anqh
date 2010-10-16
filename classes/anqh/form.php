@@ -10,6 +10,22 @@
 class Anqh_Form extends Kohana_Form {
 
 	/**
+	 * @var  array  Form errors
+	 */
+	public $errors = null;
+
+	/**
+	 * @var  Jelly_Model  Model being edited
+	 */
+	public $model = null;
+
+	/**
+	 * @var  array  Form values
+	 */
+	public $values = null;
+
+
+	/**
 	 * Build input attributes from Jelly model rules
 	 *
 	 * @static
@@ -21,12 +37,12 @@ class Anqh_Form extends Kohana_Form {
 		foreach ($field->rules as $rule => $params) {
 			switch ($rule) {
 				case 'max_length': $attributes['maxlength'] = $params[0]; break;
-				case 'not_empty':  $attributes['title'] = __('Required'); break;
+				case 'not_empty':  $attributes['placeholder'] = __('Required'); $attributes['required'] = 'required'; break;
 			}
 		}
 
 		if ($field instanceof Field_URL) {
-			$attributes['title'] = 'http://';
+			$attributes['placeholder'] = 'http://';
 		}
 
 		return $attributes;
@@ -125,6 +141,47 @@ class Anqh_Form extends Kohana_Form {
 
 
 	/**
+	 * Get form error
+	 *
+	 * @param   string  $name
+	 * @return  string
+	 */
+	public function error($name) {
+		return Arr::get($this->errors, $name, null);
+	}
+
+
+	/**
+	 * Add errors to from
+	 *
+	 * @param   array  $errors
+	 * @return  Form
+	 */
+	public function errors(array $errors = null) {
+		$this->errors = $errors + $this->errors;
+
+		return $this;
+	}
+
+
+	/**
+	 * Create new form
+	 *
+	 * @static
+	 * @param   array   $values
+	 * @param   array  $errors
+	 * @return  Form
+	 */
+	public static function factory(array $values = null, array $errors = null) {
+		$form = new Form;
+		$form->values = $values;
+		$form->errors = $errors;
+
+		return $form;
+	}
+
+
+	/**
 	 * Creates a file upload form input.
 	 *
 	 * @param   string        input name
@@ -181,6 +238,19 @@ class Anqh_Form extends Kohana_Form {
 		$input      = Form::input($name, $value, $attributes);
 
 		return Form::wrap($input, $name, $label, $error, $tip);
+	}
+
+
+	/**
+	 * Set edited object
+	 *
+	 * @param   object  $model
+	 * @return  Form
+	 */
+	public function model($model = null) {
+		$this->model = $model;
+
+		return $this;
 	}
 
 
@@ -332,7 +402,7 @@ class Anqh_Form extends Kohana_Form {
 		if (is_array($body)) {
 			$body = Arr::get($body, $name);
 		} else if (is_object($body)) {
-			$body = $value->$name;
+			$body = $body->$name;
 		}
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
@@ -347,6 +417,30 @@ class Anqh_Form extends Kohana_Form {
 
 
 	/**
+	 * Get form input value
+	 *
+	 * @param   string  $name
+	 * @return  string
+	 */
+	public function value($name) {
+		return Arr::get($this->values, $name, is_object($this->model) ? $this->model->$name : null);
+	}
+
+
+	/**
+	 * Add values to from
+	 *
+	 * @param   array  $values
+	 * @return  Form
+	 */
+	public function values(array $values = null) {
+		$this->values = $values + $this->values;
+
+		return $this;
+	}
+
+
+	/**
 	 * Create Anqh styles form input wrapped in list
 	 *
 	 * @param   string        $input
@@ -355,13 +449,17 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
 	 * @param   bool          $label_after
+	 * @param   array         $attributes
 	 * @return  string
 	 */
-	public static function wrap($input, $name, $label = null, $error = null, $tip = null, $label_after = false) {
+	public static function wrap($input, $name, $label = null, $error = null, $tip = null, $label_after = false, array $attributes = null) {
 
 		// Find the input error if any
 		$error = HTML::error($error, $name);
-		$wrap = empty($error) ? '<li>' : '<li class="error">' . $error;
+		if (!empty($error)) {
+			$attributes['class'] = trim('error ' . Arr::get($attributes, 'class'));
+		}
+		$wrap = '<li' . HTML::attributes($attributes) . '>';
 
 		// Input label if any
 		if ($label) {
