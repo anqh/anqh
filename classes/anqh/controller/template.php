@@ -181,8 +181,8 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Dock
 			$classes = array(
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").toggleClass("fixed", true).toggleClass("liquid", false); $.get(this.href); return false;')),
-				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'wide')),   __('Wide'),   array('onclick' => '$("body").toggleClass("liquid", true).toggleClass("narrow", false); $.get(this.href); return false;')),
+//				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'narrow')), __('Narrow'), array('onclick' => '$("body").toggleClass("fixed", true).toggleClass("liquid", false); $.get(this.href); return false;')),
+//				HTML::anchor(Route::get('setting')->uri(array('action' => 'width', 'value' => 'wide')),   __('Wide'),   array('onclick' => '$("body").toggleClass("liquid", true).toggleClass("narrow", false); $.get(this.href); return false;')),
 //				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'left')),   __('Left'),   array('onclick' => '$("body").toggleClass("left", true).toggleClass("right", false); $.get(this.href); return false;')),
 //				HTML::anchor(Route::get('setting')->uri(array('action' => 'main',  'value' => 'right')),  __('Right'),  array('onclick' => '$("body").toggleClass("right", true).toggleClass("left", false); $.get(this.href); return false;')),
 			);
@@ -211,9 +211,11 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// Search
+			/*
 			Widget::add('search', View_Module::factory('generic/search', array(
 				'mod_id' => 'search'
 			)));
+			 */
 
 			// Visitor card
 			Widget::add('visitor', View::factory('generic/visitor', array(

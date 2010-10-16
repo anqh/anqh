@@ -63,7 +63,7 @@
 
 			<section id="notifications" class="grid5">
 
-<?php echo Widget::get('search') ?>
+<?php echo Widget::get('search') ?> &nbsp;
 
 			</section><!-- #notifications -->
 
