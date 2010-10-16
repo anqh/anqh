@@ -38,29 +38,31 @@ $pages = array_unique($pages);
 $previous = 1;
 ?>
 
-<p class="pagination">
+<div class="pagination">
+	<div>
 
-	<?php if ($previous_page): ?>
-		<?php echo HTML::anchor($page->url($previous_page), '&laquo;&nbsp;') ?>
-	<?php else: ?>
-		&laquo;&nbsp;
-	<?php endif ?>
-
-	<?php foreach ($pages as $i): ?>
-		<?php if ($i - $previous > 1): ?>
-			&hellip;
-		<?php endif; $previous = $i; ?>
-		<?php if ($i == $current_page): ?>
-			<strong><?php echo $i ?></strong>
+		<?php if ($previous_page): ?>
+			<?php echo HTML::anchor($page->url($previous_page), '&laquo;&nbsp;') ?>
 		<?php else: ?>
-	<?php echo HTML::anchor($page->url($i), $i) ?>
+			&laquo;&nbsp;
 		<?php endif ?>
-	<?php endforeach ?>
 
-	<?php if ($next_page): ?>
-		<?php echo HTML::anchor($page->url($next_page), '&nbsp;&raquo;'); ?>
-	<?php else: ?>
-		&nbsp;&raquo;
-	<?php endif ?>
+		<?php foreach ($pages as $i): ?>
+			<?php if ($i - $previous > 1): ?>
+				&hellip;
+			<?php endif; $previous = $i; ?>
+			<?php if ($i == $current_page): ?>
+				<strong><?php echo $i ?></strong>
+			<?php else: ?>
+		<?php echo HTML::anchor($page->url($i), $i) ?>
+			<?php endif ?>
+		<?php endforeach ?>
 
-</p>
+		<?php if ($next_page): ?>
+			<?php echo HTML::anchor($page->url($next_page), '&nbsp;&raquo;'); ?>
+		<?php else: ?>
+			&nbsp;&raquo;
+		<?php endif ?>
+
+	</div>
+</div>
