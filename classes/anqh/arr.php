@@ -13,16 +13,36 @@ abstract class Anqh_Arr extends Kohana_Arr {
 	/**
 	 * Get a value from array and delete key or default if not found
 	 *
-	 * @param   array   $array
-	 * @param   string  $key
-	 * @param   mixed   $default
+	 * @param   array         $array
+	 * @param   string|array  $key
+	 * @param   mixed         $default
 	 * @return  mixed
 	 */
 	public static function get_once(array &$array, $key, $default = null) {
-		$value = self::get($array, $key, $default);
-		unset($array[$key]);
+		$value = is_array($key) ? self::extract($array, $key, $default) : self::get($array, $key, $default);
+		$array = array_diff_key($array, (array)$key);
 
 		return $value;
+	}
+
+
+	/**
+	 * Get an assoc array using the key and value from original array, reducing one dimension
+	 *
+	 * @static
+	 * @param   array  $array
+	 * @param   mixed  $key
+	 * @param   mixed  $value
+	 * @return  array
+	 */
+	public static function reduce(array $array, $key, $value) {
+		$reduced = array();
+
+		foreach ($array as $assoc) {
+			isset($assoc[$key]) and $reduced[$assoc[$key]] = Arr::get($assoc, $value);
+		}
+
+		return $reduced;
 	}
 
 

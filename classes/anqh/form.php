@@ -147,7 +147,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public function error($name) {
-		return Arr::get($this->errors, $name, null);
+		return Arr::path($this->errors, $name, null);
 	}
 
 
@@ -169,13 +169,15 @@ class Anqh_Form extends Kohana_Form {
 	 *
 	 * @static
 	 * @param   array   $values
-	 * @param   array  $errors
+	 * @param   array   $errors
+	 * @param   object  $model
 	 * @return  Form
 	 */
-	public static function factory(array $values = null, array $errors = null) {
+	public static function factory(array $values = null, array $errors = null, $model = null) {
 		$form = new Form;
 		$form->values = $values;
 		$form->errors = $errors;
+		$form->model  = $model;
 
 		return $form;
 	}
@@ -448,7 +450,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
-	 * @param   bool          $label_after
+	 * @param   boolean       $label_after
 	 * @param   array         $attributes
 	 * @return  string
 	 */
@@ -463,7 +465,7 @@ class Anqh_Form extends Kohana_Form {
 
 		// Input label if any
 		if ($label) {
-			$wrap .= is_array($label) ? Form::label(key($label), current($label)) : Form::label($name, $label);
+			$label = is_array($label) ? Form::label(key($label), current($label)) : Form::label($name, $label);
 		}
 
 		// Input tip if any
@@ -471,7 +473,7 @@ class Anqh_Form extends Kohana_Form {
 			$tip = '<p class="tip">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
 		}
 
-		return ($label_after ? $input . $wrap : $wrap . $input) . $tip . "</li>\n";
+		return $wrap . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</li>\n";
 	}
 
 }
