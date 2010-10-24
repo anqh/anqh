@@ -45,9 +45,9 @@ else:
 	echo Form::open(Route::get('sign')->uri(array('action' => 'in')));
 ?>
 <ul>
-	<li class="grid2 first"><?php echo Form::input('username', null, array('title' => __('Username'))); ?></li>
+	<li class="grid2 first"><?php echo Form::input('username', null, array('placeholder' => __('Username'))); ?></li>
 	<li class="grid2"><?php echo Form::checkbox('remember', 'true', false, array('disabled' => 'disabled')), Form::label('remember', __('Remember me')); ?></li>
-	<li class="grid2 first"><?php echo Form::password('password', null, array('title' => __('Password'))); ?></li>
+	<li class="grid2 first"><?php echo Form::password('password', null, array('placeholder' => __('Password'))); ?></li>
 	<li class="grid2"><?php echo Form::submit('signin', __('Sign in')); ?>
 </ul>
 <?php
