@@ -73,9 +73,9 @@ class Anqh_Controller_API extends Controller {
 
 		// Set result defaults
 		$this->data = array(
-			'version' => $this->version,
-			'requests' => $requests,
-			'requests_left' => $requests_left,
+			'version'        => $this->version,
+			'requests'       => $requests,
+			'requests_left'  => $requests_left,
 			'request_window' => $rate_span,
 		);
 
@@ -86,9 +86,17 @@ class Anqh_Controller_API extends Controller {
 	public function after() {
 		switch ($this->format) {
 
+			// Support JSON and JSONP
 			case self::FORMAT_JSON:
 		    $this->request->headers['Content-Type'] = 'application/json';
-		    $this->request->response = json_encode($this->data);
+
+		    // Check and sanitize JSONP
+		    $jsonp = Arr::get($_REQUEST, 'callback');
+		    if ($jsonp && Validate::alpha_dash($jsonp)) {
+			    $this->request->response = $jsonp . '(' . json_encode($this->data) . ')';
+		    } else {
+			    $this->request->response = json_encode($this->data);
+		    }
 		    break;
 
 			case self::FORMAT_XML:
