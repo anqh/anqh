@@ -45,14 +45,14 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			'stamp_begin' => new Field_DateTime(array(
 				'label'      => __('From'),
 				'label_date' => __('Date'),
-				'label_time' => __('From'),
+				'label_time' => '',
 				'rules' => array(
 					'not_empty' => null,
 				),
 			)),
 			'stamp_end' => new Field_DateTime(array(
 				'label'      => __('To'),
-				'label_time' => __('To'),
+				'label_time' => '-',
 				'show_date'  => false,
 				'rules' => array(
 					'not_empty' => null,
@@ -95,11 +95,11 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				)
 			)),
 			'price' => new Field_Float(array(
-				'label' => __('At the door'),
+				'label' => __('Tickets'),
 				'null'  => true,
 			)),
 			'price2' => new Field_Float(array(
-				'label' => __('Presale'),
+				'label' => __('Presale tickets'),
 				'null'  => true,
 			)),
 			'music' => new Field_Text,
@@ -132,7 +132,9 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'column'  => 'flyer_back_image_id',
 				'foreign' => 'image',
 			)),
-			'tags'      => new Field_ManyToMany,
+			'tags'      => new Field_ManyToMany(array(
+				'label' => __('Music'),
+			)),
 			'images'    => new Field_ManyToMany,
 			'favorites' => new Field_ManyToMany(array(
 				'foreign' => 'user',

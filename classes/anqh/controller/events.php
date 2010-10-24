@@ -533,13 +533,90 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Handle post
-		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
+
+			// Handle venue
+			if ($venue_id = (int)Arr::get_once($_POST, 'venue')) {
+
+				// Old venue
+				$venue = Jelly::select('venue')->load($venue_id);
+
+			} else if ($venue_name = Arr::get($_POST, 'venue_name')) {
+
+				// New venue
+				if ($city_id = (int)Arr::get_once($_POST, 'city_id')) {
+					$city = Geo::find_city($city_id);
+				}
+				if ($foursquare_id = (int)Arr::get_once($_POST, 'foursquare_id')) {
+
+					// Foursquare venue
+					// @todo: Refetch data using id?
+					$venue = Model_Venue::find_by_foursquare($foursquare_id);
+					if (!$venue->loaded()) {
+						$venue = Jelly::factory('venue')->set(array(
+							'foursquare_id'          => $foursquare_id,
+							'foursquare_category_id' => Arr::get_once($_POST, 'foursquare_category_id')
+						));
+					}
+
+				} else {
+
+					// Check for duplicate venue
+					$venues = Model_Venue::find_by_name($venue_name);
+					if ($venues->count()) {
+						$address   = strtolower(trim(Arr::get($_POST, 'address')));
+						$city_name = strtolower(isset($city) ? $city->name : Arr::get($_POST, 'city_name'));
+						foreach ($venues as $venue_old) {
+							if (strtolower($venue_old->city_name) == $city_name && (empty($address) || empty($venue_old->address) || levenshtein(strtolower($venue_old->address), $address) < 4)) {
+
+								// Venue in same town with almost same address, assume same
+								$venue = $venue_old;
+								break;
+
+							}
+						}
+					}
+
+				}
+
+				// Fill rest of the venue info if not found
+				!isset($venue) and $venue = Jelly::factory('venue');
+				if (!$venue->loaded()) {
+					$venue->name       = Arr::get($_POST, 'venue_name');
+					$venue->address    = Arr::get($_POST, 'address');
+					$venue->latitude   = Arr::get($_POST, 'latitude');
+					$venue->longitude  = Arr::get($_POST, 'longitude');
+					$venue->event_host = true;
+					$venue->author     = self::$user;
+					if (isset($city) && $city->loaded()) {
+						$venue->city = $city;
+						$venue->city_name = $city->name;
+						$venue->country = $city->country;
+					} else {
+						$venue->city_name = Arr::get($_POST, 'city_name');
+					}
+					try {
+						$venue->save();
+					} catch (Validate_Exception $venue_validation) {}
+				}
+
+			}
+
 			$post = Arr::extract($_POST, Model_Event::$editable_fields);
 			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time'])) {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
 			$event->set($post);
+
+			// Set venue to event if venue is saved
+			if (isset($venue)) {
+				$event->venue = $venue;
+			}
+			if (isset($city)) {
+				$event->city = $city;
+				$event->city_name = $city->name;
+				$event->country = $city->country;
+			}
 
 			// Old version
 			if (count($event->tags)) {
@@ -550,252 +627,67 @@ class Anqh_Controller_Events extends Controller_Template {
 				$event->music = implode(', ', $music);
 			}
 
-			// GeoNames
-			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
-				$event->city = $city;
-			}
-
+			// Validate event
 			try {
-				$validation = 'event';
 				$event->validate();
+			} catch (Validate_Exception $event_validation) {}
 
-				// Add venue?
-				if ($_POST['venue_name']) {
-
-					// Check for duplicate
-					$duplicate = false;
-					if (!empty($_POST['venue'])) {
-						$venue = Jelly::select('venue')->load((int)$_POST['venue']);
-						if ($venue->loaded() && $venue->name == $_POST['venue_name']) {
-							$event->venue = $venue;
-							$duplicate = true;
-						}
-					}
-					if (!$duplicate) {
-						$venue = Jelly::factory('venue');
-						$venue->name = $_POST['venue_name'];
-						$venue->address = $_POST['address'];
-						$venue->city_name = $_POST['city_name'];
-						$venue->latitude = $_POST['latitude'];
-						$venue->longitude = $_POST['longitude'];
-						isset($city) and $venue->city = $city;
-						$venue->event_host = true;
-						$validation = 'venue';
-						$venue->save();
-						$event->venue = $venue;
-					}
-				}
+			// If no errors found, save
+			if (!isset($venue_validation) && !isset($event_validation)) {
 
 				// Make sure end time is after start time, i.e. the next day
 				if ($event->stamp_end < $event->stamp_begin) {
 					$event->stamp_end += 60 * 60 * 24;
 				}
-				$validation = 'event';
+
 				$event->save();
 
-				// News feed
 				$edit ? NewsfeedItem_Events::event_edit(self::$user, $event) : NewsfeedItem_Events::event(self::$user, $event);
 
 				$this->request->redirect(Route::model($event));
-			} catch (Validate_Exception $e) {
-				$errors = $e->array->errors('validation');
-				if ($validation == 'venue' && isset($errors['name'])) {
-					$errors['venue_name'] = Arr::get_once($errors, 'name');
-				}
 			}
 		}
 
-		// Build form
-		$form = array(
-			'values' => $event,
-			'errors' => $errors,
-			'cancel' => $cancel,
-			'hidden' => array(
-				'city_id'   => $event->city ? $event->city->id : 0,
-				'venue'     => $event->venue ? $event->venue->id : 0,
-				'latitude'  => $event->venue ? $event->venue->latitude : '',
-				'longitude' => $event->venue ? $event->venue->longitude : '',
-			),
-			'groups' => array(
-				'event' => array(
-					'header' => __('Event'),
-					'fields' => array(
-						'name'     => array(),
-						'homepage' => array(),
-					),
-				),
-				'when' => array(
-					'header'     => __('When?'),
-					'attributes' => array(
-						'class' => 'horizontal',
-					),
-					'fields'     => array(
-						'stamp_begin' => array(
-							'default_time' => '22:00',
-						),
-						'stamp_end'   => array(
-							'default_time' => '04:00',
-						),
-					)
-				),
-				'tickets' => array(
-					'header' => __('Tickets'),
-					'fields' => array(
-						'price'  => array('attributes' => array('title' => __('Set to zero for free entry'))),
-						'price2' => array(),
-						'age'    => array(),
-					),
-				),
-				'where' => array(
-					'header' => __('Where?'),
-					'fields' => array(
-						'venue_name' => array(),
-						'address'    => array(
-							'model' => $event->venue,
-						),
-						'city_name'  => array(),
-					)
-				),
-				'who' => array(
-					'header' => __('Who?'),
-					'fields' => array(
-						'dj' => array(),
-					)
-				),
-				'what' => array(
-					'header' => __('What?'),
-					'fields' => array(
-						'info' => array(),
-					)
-				)
-			)
-		);
-
 		// Tags
+		$tags = array();
 		$tag_group = Jelly::select('tag_group')->where('name', '=', 'Music')->limit(1)->execute();
 		if ($tag_group->loaded() && count($tag_group->tags)) {
-			$tags = array();
 			foreach ($tag_group->tags as $tag) {
 				$tags[$tag->id()] = $tag->name();
 			}
-			$form['groups']['what']['fields']['tags'] = array(
-				'class'  => 'pills',
-				'values' => $tags,
-			);
 		}
 
-		// Autocomplete city
-		$this->autocomplete_city('city_name', 'city_id');
-
-		// Autocomplete venue
-		$venues = Jelly::select('venue')->with('city')->event_hosts()->execute();
+		// Venue
+		/*
+		$venues = Jelly::select('venue')->with('city')->event_hosts()->order_by('name', 'ASC')->execute();
 		$hosts = array();
 		if (count($venues)) {
-			foreach ($venues as $venue) {
+			foreach ($venues as $v) {
 				$hosts[] = array(
-					'value'     => $venue->id,
-					'label'     => HTML::chars($venue->name),
-					'address'   => HTML::chars($venue->address),
-					'city'      => HTML::chars($venue->city->name),
-					'city_id'   => $venue->city->id,
-					'latitude'  => $venue->latitude,
-					'longitude' => $venue->longitude,
+					'value'     => $v->id,
+					'label'     => HTML::chars($v->name),
+					'address'   => HTML::chars($v->address),
+					'city'      => HTML::chars($v->city->name),
+					'city_id'   => $v->city->id,
+					'latitude'  => $v->latitude,
+					'longitude' => $v->longitude,
 				);
 			}
 		}
-		Widget::add('foot', HTML::script_source('
-var venues = ' . json_encode($hosts) . ';
-var venue = "";
-$("#field-venue-name").autocomplete({
-	minLength: 1,
-	source: venues,
-	focus: function(event, ui) {
-		$("input[name=venue_name]").val(ui.item.label);
-		venue = ui.item.label;
-		return false;
-	},
-	select: function(event, ui) {
-		$("input[name=venue_name]").val(ui.item.label);
-		$("input[name=venue]").val(ui.item.value);
-		$("input[name=address]").val(ui.item.address);
-		$("input[name=city_name]").val(ui.item.city);
-		$("input[name=city]").val(ui.item.city_id);
-		$("#map").googleMap({ marker: true, lat: ui.item.latitude, long: ui.item.longitude });
-		return false;
-	},
-	close: function(event, ui) {
-		if ($("input[name=venue_name]").val() != venue) {
-			$("input[name=venue]").val("");
-		}
-	}
-})
-.data("autocomplete")._renderItem = function(ul, item) {
-	return $("<li></li>")
-		.data("item.autocomplete", item)
-		.append("<a>" + item.label + ", " + item.city + "</a>")
-		.appendTo(ul);
-};
-'));
+		 */
 
-		// Maps
-		Widget::add('foot', HTML::script_source('
-$(function() {
-	$("#fields-where ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
+		Widget::add('wide', View_Module::factory('events/edit', array(
+			'event'  => $event,
+			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
+			'tags'   => $tags,
 
-	$("#map").googleMap(' . ($event->venue->latitude ? json_encode(array('marker' => true, 'lat' => $event->venue->latitude, 'long' => $event->venue->longitude)) : '') . ');
+			'venue'  => isset($venue) ? $venue : $event->venue,
+			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
+			// 'venues' => $hosts,
 
-	$("input[name=address], input[name=city_name]").blur(function(event) {
-		var address = $("input[name=address]").val();
-		var city = $("input[name=city_name]").val();
-		if (address != "" && city != "") {
-			var geocode = address + ", " + city;
-			geocoder.geocode({ address: geocode }, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK && results.length) {
-				  map.setCenter(results[0].geometry.location);
-				  $("input[name=latitude]").val(results[0].geometry.location.lat());
-				  $("input[name=longitude]").val(results[0].geometry.location.lng());
-				  var marker = new google.maps.Marker({
-				    position: results[0].geometry.location,
-				    map: map
-				  });
-				}
-			});
-		}
-	});
-
-});
-'));
-
-		$options = array(
-			'changeMonth'     => true,
-			'changeYear'      => true,
-			'dateFormat'      => 'd.m.yy',
-			'dayNames'        => array(
-				__('Sunday'), __('Monday'), __('Tuesday'), __('Wednesday'), __('Thursday'), __('Friday'), __('Saturday')
-			),
-			'dayNamesMin'    => array(
-				__('Su'), __('Mo'), __('Tu'), __('We'), __('Th'), __('Fr'), __('Sa')
-			),
-			'firstDay'        => 1,
-			'monthNames'      => array(
-				__('January'), __('February'), __('March'), __('April'),
-				__('May'), __('June'), __('July'), __('August'),
-				__('September'), __('October'), __('November'), __('December')
-			),
-			'monthNamesShort' => array(
-				__('Jan'), __('Feb'), __('Mar'), __('Apr'),
-				__('May'), __('Jun'), __('Jul'), __('Aug'),
-				__('Sep'), __('Oct'), __('Nov'), __('Dec')
-			),
-			'nextText'        => __('&raquo;'),
-			'prevText'        => __('&laquo;'),
-			'showWeek'        => true,
-			'showOtherMonths' => true,
-			'weekHeader'      => __('Wk'),
-		);
-
-		Widget::add('foot', HTML::script_source('$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');'));
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+			'city'   => $event->city->loaded() ? $event->city : (isset($venue) && $venue->city->loaded() ? $venue->city : null),
+			'cancel' => $cancel,
+		)));
 	}
 
 	/**
