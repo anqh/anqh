@@ -177,6 +177,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$skin_imports = array(
 				'ui/layout.less',
 				'ui/widget.less',
+				'ui/custom.less'
 			);
 
 			// Dock
