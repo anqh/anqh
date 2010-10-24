@@ -17,7 +17,8 @@ $.fn.googleMap = function(options) {
 		zoom: 14,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		marker: false,
-		infowindow: false
+		infowindow: false,
+		mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU }
 	};
 
 	options = $.extend(defaults, options || {});
@@ -34,7 +35,6 @@ $.fn.googleMap = function(options) {
 	}
 
 	var center = new google.maps.LatLng(options.lat, options.long);
-
 	map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
 	if (options.marker) {
 		var marker = new google.maps.Marker({
@@ -78,6 +78,11 @@ function confirm_delete(title, action) {
 
 // Hovercards
 $.fn.hovercard = function() {
+
+	if ($('#hovercard').length == 0) {
+		$('body').append('<div id="hovercard"></div>');
+		$('#hovercard').data('cache', []);
+	}
 
 	$(this).tooltip({
 		effect: 'slide',
@@ -136,6 +141,34 @@ $.fn.skinswitcher = function() {
 	}
 
 	return this;
+};
+
+
+// Open ajax dialog
+$.fn.dialogify = function() {
+	var href = this.attr('href') || this.attr('data-href');
+	if (!href) { return false; }
+
+	var title = this.attr('data-dialog-title');
+	var width = this.attr('data-dialog-width') || 300;
+	var height = this.attr('data-dialog-height') || 'auto';
+	$('<div style="display:none"></div>')
+		.appendTo('body')
+		.dialog({
+			modal: true,
+			title: title,
+			width: width,
+			height: height,
+			closeText: '✕',
+			open: function() {
+				$(this).load(href);
+			},
+			close: function() {
+				$(this).remove();
+			}
+		});
+
+	return false;
 };
 
 
@@ -208,6 +241,121 @@ $.fn.slideshow = function() {
 };
 
 
+// City autocomplete
+$.fn.geonamesCity = function(options) {
+	var defaults = {
+		map: 'map',
+		cityId: 'city_id',
+		country: 'FI',
+		lang: 'en',
+		address: 'address',
+		latitude: 'latitude',
+		longitude: 'longitude'
+	};
+
+	options = $.extend(defaults, options || {});
+	$(this)
+		.autocomplete({
+			source: function(request, response) {
+				$.ajax({
+					url: 'http://ws.geonames.org/searchJSON',
+					dataType: 'jsonp',
+					data: {
+						lang: options.lang,
+						featureClass: 'P',
+						countryBias: options.country,
+						style: 'full',
+						maxRows: 10,
+						name_startsWith: request.term
+					},
+					success: function(data) {
+						response($.map(data.geonames, function(item) {
+							return {
+								id: item.geonameId,
+								label: item.name + (item.adminName1 ? ', ' + item.adminName1 : '') + ', ' + item.countryName,
+								value: item.name,
+								lat: item.lat,
+								long: item.lng
+							}
+						}))
+					}
+				})
+			},
+			minLength: 2,
+			select: function(event, ui) {
+				$('input[name=' + options.cityId + ']').val(ui.item.id);
+				$('input[name=' + options.latitude + ']').val(ui.item.lat);
+				$('input[name=' + options.longitude + ']').val(ui.item.long);
+				$('#' + options.map).googleMap({ lat: ui.item.lat, long: ui.item.long });
+			}
+		});
+};
+
+
+// Foursquare autocomplete
+$.fn.foursquareVenue = function(options) {
+	var defaults = {
+		address: 'address',
+		latitudeSearch: 'city_latitude',
+		longitudeSearch: 'city_longitude',
+		latitude: 'latitude',
+		longitude: 'longitude',
+		venueId: 'venue_id',
+		categoryId: 'category_id',
+		map: 'map',
+		limit: 10
+	};
+
+	options = $.extend(defaults, options || {});
+	$(this)
+		.autocomplete({
+			source: function(request, response) {
+				$.ajax({
+					url: '/api/v1/venues/foursquare',
+					dataType: 'jsonp',
+					type: 'get',
+					data: {
+						method: 'venues',
+						geolat: $('input[name=' + options.latitudeSearch + ']').val(),
+						geolong: $('input[name=' + options.longitudeSearch + ']').val(),
+						l: options.limit,
+						q: request.term
+					},
+					success: function(data) {
+						if (!data.venues) {
+							return false;
+						}
+
+						response($.map(data.venues.groups[0].venues, function(item) {
+							console.debug(item);
+							return {
+								id: item.id,
+								label: item.name + ', ' + item.address,
+								value: item.name,
+								address: item.address,
+								city: item.city,
+								zip: item.zip,
+								lat: item.geolat,
+								long: item.geolong,
+								category: item.primarycategory ? item.primarycategory.id : 0
+							}
+						}));
+					}
+				})
+			},
+			minLength: 2,
+			select: function(event, ui) {
+				$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
+				ui.item.category && $('input[name=' + options.categoryId + ']') && $('input[name=' + options.categoryId + ']').val(ui.item.category);
+				ui.item.address && $('input[name=' + options.address + ']') && $('input[name=' + options.address + ']').val(ui.item.address);
+				$('input[name=' + options.latitude + ']') && $('input[name=' + options.latitude + ']').val(ui.item.lat);
+				$('input[name=' + options.longitude + ']') && $('input[name=' + options.longitude + ']').val(ui.item.long);
+				$('#' + options.map).googleMap({ marker: true, lat: ui.item.lat, long: ui.item.long });
+			}
+		});
+};
+
+
 $(function() {
 
 	// Google Maps
@@ -223,21 +371,13 @@ $(function() {
 
 
 	// Tooltips
-	$('.col1 a[title], .col1 var[title], .col1 time[title]').tooltip({
+	$('a[title], var[title], time[title]').tooltip({
 		effect: 'slide',
 		position: 'top center'
-	});
-	$('.col2 a[title], .col2 var[title], .col2 time[title]').tooltip({
-		effect: 'slide',
-		position: 'center right'
 	});
 
 
 	// Hover card
-	if ($('#hovercard').length == 0) {
-		$('body').append('<div id="hovercard"></div>');
-		$('#hovercard').data('cache', []);
-	}
 	$('a.hoverable').hovercard();
 
 
@@ -301,8 +441,7 @@ $(function() {
 
 	// Ajaxify actions
 	$('a.ajaxify').live('click', function() {
-		$link = $(this);
-		$link.closest('section.mod').ajaxify($link.attr('href'));
+		$(this).closest('section.mod').ajaxify($(this).attr('href'));
 
 		return false;
 	});
@@ -311,6 +450,13 @@ $(function() {
 		$(this).closest('section.mod').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
 	});
 
+
+	// Ajax dialogs
+	$('a.dialogify').live('click', function(e) {
+		e.preventDefault();
+
+		$(this).dialogify();
+	});
 
 	// Slideshows, scrollables
 	$('div.scrollable').scrollable();

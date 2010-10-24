@@ -59,7 +59,8 @@ section[class*="-content"] section[class*="-edit"] form { padding: 0; }
 */
 
 form ul li + li,
-form ul + ul                           { margin-top: 0.8333em; }
+form ul + ul,
+form fieldset + fieldset               { margin-top: 0.8333em; }
 label                                  { display: block; }
 input[type="checkbox"] + label,
 input[type="radio"] + label,
@@ -69,10 +70,10 @@ input[type="radio"] + label,
 
 input,
 textarea,
-select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(5px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
+select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(3px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
 input:-webkit-autofill                 { color: inherit; }
-fieldset.horizontal li label           { margin-right: 0.5em; }
-fieldset.horizontal li + li label      { margin-left: 0.5em; }
+.horizontal li label                   { margin-right: 0.5em; }
+.horizontal li + li label              { margin-left: 0.5em; }
 /*
 fieldset.horizontal input,
 fieldset.horizontal textarea,
@@ -97,16 +98,13 @@ input.hint,
 input.private                          { border-color: @private-color; }
 
 fieldset a                             { vertical-align: middle; }
+fieldset label a                       { vertical-align: inherit; }
 
 input.date                             { width: 8em; }
 input.time                             { width: 4em; }
 select.time                            { width: 6em; }
 
-form .notice .info,
-form .error .info                      { float: right; .border-radius(4px 4px 0 0); padding: 0 0.5em; }
-form .notice input,
-form .error input                      { border-top-right-radius: 0; -moz-border-radius-topright: 0; -webkit-border-top-right-radius: 0; }
-form .error .info                      { background: @error-background; color: @error-color; }
+form .error .info                      { color: @error-color; }
 form .error select,
 form .error textarea,
 form .error input                      { border-color: @error-background; }
@@ -249,8 +247,8 @@ a.ui-state-hover,
 .ui-dialog .ui-dialog-content          { border: 0; padding: .5em 10px; overflow: auto; zoom: 1; }
 .ui-dialog .ui-dialog-buttonpane       { border-width: 1px 0 0 0; margin: .5em 0 0 0; padding: .3em 10px 10px 10px; text-align: left; }
 .ui-dialog .ui-dialog-buttonpane button { float: right; }
-.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
-.ui-draggable .ui-dialog-titlebar { cursor: move; }
+.ui-dialog .ui-resizable-se            { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar      { cursor: move; }
 
 /* Autocomplete */
 .ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; .border-radius(0 0 4px 4px); list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; z-index: 99999; }
@@ -485,105 +483,3 @@ ul.bbcode_list li + li                 { border-top: none; padding-top: 0; }
 #side-narrow #search .container        { padding-right: 6px; }
 
 /***** /search *****/
-
-
-/***** online *****/
-
-#online-users .totals                  { background: url(/ui/icon/32/users.png) no-repeat 10px center; height: 40px; padding-left: 60px; }
-
-/***** /online *****/
-
-
-/***** clock *****/
-
-#clock time.clock                      { color: @mainmenu-color; display: block; text-align: center; }
-#clock time .time                      { font: 4em/1em Arial, sans-serif; font-weight: bold; }
-
-/***** /clock *****/
-
-
-/***** shout *****/
-
-.shout input[type=text]                { width: 70%; }
-
-/***** /shout *****/
-
-
-/***** events *****/
-
-.calendar table                        { width: 100%; }
-.calendar table th,
-.calendar table td                     { text-align: right; }
-.calendar table .prev                  { text-align: left; }
-.calendar table .month                 { text-align: center; }
-.calendar table .inactive              { opacity: 0.50; }
-.calendar table .today                 { font-weight: bold; }
-
-.events .days                          { list-style: none; margin-left: 0; }
-.events .days .date                    { margin-bottom: 10px; }
-.events .days .day                     { border-top: 1px solid @separator-color; }
-.events .days article                  { border-top: 0 none; }
-.events .days .city                    { padding-top: 10px; }
-
-#events .day > header                  { float: left; }
-#events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }
-#events .day .city article header:after { clear: none; }
-#events .day .city h3                  { text-align: center; }
-#events .calendar .events              { margin-top: -1px; }
-#events .tab .events li                { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }
-
-.event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
-
-/***** /events *****/
-
-
-/***** forum *****/
-
-.groups header h3                      { text-align: center; }
-.topics article .size1of6              { float: right; }
-span.locked                            { color: #333; font-variant: small-caps; }
-blockquote                             { color: @text-color-alt; }
-aside.post-old                         { color: @separator-color; text-align: center; }
-section.mod .divider                   { border-bottom: 1px dotted @body-background-color; border-top: 1px dotted @body-background-color; margin: 2px 0; text-align: center; }
-/*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
-#field-signature                       { font: 1em/1.5 monospace; }
-article.post footer                    { font: 1em/1.5 monospace; .opacity(.75); }
-article.post footer p                  { padding-left: 10px; }
-
-/***** /forum *****/
-
-
-/***** galleries *****/
-
-.galleries article                     { height: 25em; }
-.galleries article header h4           { height: 2.5em; overflow: hidden; }
-.galleries ol.rating                   { margin: 0; }
-
-#galleries .galleries li               { margin-bottom: 1em; }
-#galleries .galleries li h4            { padding-top: 0; }
-#galleries .gallery li                 { text-align: center; }
-#galleries .galleries li .thumb,
-#galleries .gallery li .thumb          { position: relative; text-align: center; }
-#galleries .thumb time                 { background: @hover-background; padding: 5px; position: absolute; right: 5px; top: 5px; }
-.gallery-image                         { text-align: center; }
-.gallery-image a img                   { opacity: 1; }
-
-.gallery #form-image-approval li:last-of-type { clear: both; }
-.gallery input[value=approve],
-.gallery input[value=deny],
-.gallery input[value=wait]             { display: none; }
-.gallery input[value=approve] + label,
-.gallery input[value=deny] + label,
-.gallery input[value=wait] + label     { cursor: pointer; display: inline-block; .opacity(.25); overflow: hidden; padding: 0 0 0 20px; .transition(opacity .15s ease-in-out); vertical-align: middle; width: 0; }
-.gallery input[name=all] + label       { .opacity(1); width: auto; }
-.gallery input[value=approve] + label  { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
-.gallery input[value=deny] + label     { background: url(/ui/icon/16/delete.png) no-repeat left center; }
-.gallery input[value=wait] + label     { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
-.gallery input[value=approve]:checked + label,
-.gallery input[value=deny]:checked + label,
-.gallery input[value=wait]:checked + label { .opacity(1); }
-.gallery input[value=approve] + label:hover,
-.gallery input[value=deny] + label:hover,
-.gallery input[value=wait] + label:hover { .opacity(1); }
-
-/***** /galleries *****/

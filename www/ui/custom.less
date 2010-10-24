@@ -1,0 +1,132 @@
+/*
+ * Page specific LESS styles.
+ *
+ * Copyright (c) 2009-2010 Anqh
+ */
+
+/***** index *****/
+
+/* online */
+#online-users .totals                  { background: url(/ui/icon/32/users.png) no-repeat 10px center; height: 40px; padding-left: 60px; }
+
+/* shout */
+.shout input[type=text]                { width: 70%; }
+
+/***** /index *****/
+
+
+/***** events *****/
+
+.calendar table                        { width: 100%; }
+.calendar table th,
+.calendar table td                     { text-align: right; }
+.calendar table .prev                  { text-align: left; }
+.calendar table .month                 { text-align: center; }
+.calendar table .inactive              { opacity: 0.50; }
+.calendar table .today                 { font-weight: bold; }
+
+.events .days                          { list-style: none; margin-left: 0; }
+.events .days .date                    { margin-bottom: 10px; }
+.events .days .day                     { border-top: 1px solid @separator-color; }
+.events .days article                  { border-top: 0 none; }
+.events .days .city                    { padding-top: 10px; }
+
+#events .day > header                  { float: left; }
+#events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }
+#events .day .city article header:after { clear: none; }
+#events .day .city h3                  { text-align: center; }
+#events .calendar .events              { margin-top: -1px; }
+#events .tab .events li                { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }
+
+.event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
+
+#form-event-edit {
+  #field-dj                            { font-size: 1.3333em; }
+  div.grid4 {
+    #fields-when {
+      li                               { float: left; }
+      li + li                          { margin-top: 1.665em; }
+      li + li label                    { display: inline; margin: 0 1em; }
+    }
+    #fields-venue                      { display: none; }
+    #fields-tickets,
+	  #fields-where {
+      li                               { overflow: hidden; }
+      label                            { clear: left; float: left; width: 138px; }
+      select,
+      input                            { float: left; margin-left: 20px; width: 138px; }
+      a.action                         { margin-left: 158px; }
+    }
+    #fields-tickets {
+      input                            { width: 54px; }
+      #field-free                      { margin: 0 1em 0 0; width: auto; }
+    }
+    #field-free + label                { clear: none; }
+  }
+}
+
+/***** /events *****/
+
+
+/***** forum *****/
+
+.groups header h3                      { text-align: center; }
+.topics article .size1of6              { float: right; }
+span.locked                            { color: #333; font-variant: small-caps; }
+blockquote                             { color: @text-color-alt; }
+aside.post-old                         { color: @separator-color; text-align: center; }
+section.mod .divider                   { border-bottom: 1px dotted @body-background-color; border-top: 1px dotted @body-background-color; margin: 2px 0; text-align: center; }
+/*article.post header                    { min-height: 55px; height: 55px; height: auto; overflow: visible; }*/
+#field-signature                       { font: 1em/1.5 monospace; }
+article.post footer                    { font: 1em/1.5 monospace; .opacity(.75); }
+article.post footer p                  { padding-left: 10px; }
+
+/***** /forum *****/
+
+
+/***** galleries *****/
+
+.galleries article                     { height: 25em; }
+.galleries article header h4           { height: 2.5em; overflow: hidden; }
+.galleries ol.rating                   { margin: 0; }
+
+#galleries .galleries li               { margin-bottom: 1em; }
+#galleries .galleries li h4            { padding-top: 0; }
+#galleries .gallery li                 { text-align: center; }
+#galleries .galleries li .thumb,
+#galleries .gallery li .thumb          { position: relative; text-align: center; }
+#galleries .thumb time                 { background: @hover-background; padding: 5px; position: absolute; right: 5px; top: 5px; }
+.gallery-image                         { text-align: center; }
+.gallery-image a img                   { opacity: 1; }
+
+.gallery #form-image-approval li:last-of-type { clear: both; }
+.gallery input[value=approve],
+.gallery input[value=deny],
+.gallery input[value=wait]             { display: none; }
+.gallery input[value=approve] + label,
+.gallery input[value=deny] + label,
+.gallery input[value=wait] + label     { cursor: pointer; display: inline-block; .opacity(.25); overflow: hidden; padding: 0 0 0 20px; .transition(opacity .15s ease-in-out); vertical-align: middle; width: 0; }
+.gallery input[name=all] + label       { .opacity(1); width: auto; }
+.gallery input[value=approve] + label  { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
+.gallery input[value=deny] + label     { background: url(/ui/icon/16/delete.png) no-repeat left center; }
+.gallery input[value=wait] + label     { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
+.gallery input[value=approve]:checked + label,
+.gallery input[value=deny]:checked + label,
+.gallery input[value=wait]:checked + label { .opacity(1); }
+.gallery input[value=approve] + label:hover,
+.gallery input[value=deny] + label:hover,
+.gallery input[value=wait] + label:hover { .opacity(1); }
+
+/***** /galleries *****/
+
+
+/***** venues *****/
+
+.ui-dialog #form-venue-edit {
+  fieldset                             { margin-bottom: 0.8333em; }
+  li                                   { overflow: hidden; }
+  label                                { clear: left; float: left; width: 54px; }
+  input                                { float: left; width: 220px; }
+}
+
+/***** /venues *****/

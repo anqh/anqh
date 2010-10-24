@@ -263,6 +263,15 @@ footer:after,
 /***** /Nick La & Darcy Clarke, 978px 30px gutter *****/
 
 
+.label2 label,
+.input2 input[type="text"],
+.input2 input[type="password"],
+.input2 input[type="file"],
+.input2 textarea,
+.input2 select                         { width: 138px; }
+.horizontal.label2 label               { display: block; float: left; margin-left: 0; margin-right: 0; }
+.horizontal.input2 input               { margin-left: 20px; }
+
 article:after,
 header:after,
 footer:after,
