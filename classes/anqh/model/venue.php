@@ -76,10 +76,18 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 				)),
 				'city_name'  => new Field_String(array(
 					'label' => __('City'),
+					'rules' => array(
+						'not_empty'  => null,
+					),
 				)),
 				'city'       => new Field_BelongsTo(array(
 					'foreign' => 'geo_city',
 				)),
+				'country' => new Field_BelongsTo(array(
+					'foreign' => 'geo_country',
+					'null'    => true,
+				)),
+
 				'latitude'   => new Field_Float,
 				'longitude'  => new Field_Float,
 				'event_host' => new Field_Boolean(array(
@@ -91,6 +99,9 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 				'modified'   => new Field_Timestamp(array(
 					'auto_now_update' => true,
 				)),
+
+				'foursquare_id'          => new Field_Integer,
+				'foursquare_category_id' => new Field_Integer,
 
 				'author' => new Field_BelongsTo(array(
 					'column'  => 'author_id',
@@ -107,6 +118,30 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 				)),
 				'events' => new Field_HasMany,
 		));
+	}
+
+
+	/**
+	 * Find single venue by Foursquare id
+	 *
+	 * @static
+	 * @param   integer  $foursquare_id
+	 * @return  Model_Venue
+	 */
+	public static function find_by_foursquare($foursquare_id) {
+		return Jelly::select('venue')->where('foursquare_id', '=', (int)$foursquare_id)->limit(1)->execute();
+	}
+
+
+	/**
+	 * Find multiple venues by name
+	 *
+	 * @static
+	 * @param   string  $name
+	 * @return  Jelly_Collection
+	 */
+	public static function find_by_name($name) {
+		return Jelly::select('venue')->where('name', 'ILIKE', trim($name))->execute();
 	}
 
 
