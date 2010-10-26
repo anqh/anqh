@@ -25,6 +25,7 @@ class Anqh_View extends Kohana_View {
 			Kohana::exception_handler($e);
 
 			if (Kohana::$environment == Kohana::PRODUCTION) {
+				ob_end_clean();
 				echo __('An error occured and has been logged.');
 			} else {
 				echo ob_get_clean();
