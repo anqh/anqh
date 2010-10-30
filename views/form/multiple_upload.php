@@ -30,6 +30,17 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 		</ul>
 	</fieldset>
 
+	<table id="progress-files">
+		<thead>
+			<tr>
+				<th><?php echo __('Filename') ?></th>
+				<th colspan="2"><?php echo __('Filesize') ?></th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+		<tfoot></tfoot>
+	</table>
+
 	<fieldset>
 
 		<?php echo Form::csrf() ?>
@@ -40,11 +51,8 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 <?php echo Form::close(); ?>
 
 <div id="progress-report">
-	<ul id="progress-files"></ul>
 	<span id="progress-report-status"></span> <span id="progress-report-name"></span>
-	<div id="progress-report-bar-container" style="width: 90%; height: 5px;">
-		<div id="progress-report-bar" style="background-color: blue; width: 0; height: 100%;"></div>
-	</div>
+	<div class="progress-bar"><div><var></var></div></div>
 </div>
 
 <div id="progress-thumbnails"></div>
@@ -67,7 +75,9 @@ $(function() {
 				return true;
 			},
 			onProgress: function(event, progress, name, number, total) {
-				$("#upload-" + number + " .progress").text(Math.ceil(progress * 100) + "%");
+				progress = Math.ceil(progress * 100);
+				$("#upload-" + number + " .progress").text(progress == 100 ? "Processing..." : progress + "%");
+				$("#progress-report .progress-bar var").text(progress + "%");
 				return true;
 			},
 			onFinishOne: function(event, response, name, number, total) {
@@ -80,6 +90,7 @@ $(function() {
 				} catch (e) {
 					var message = "Failed";
 				}
+				$("#upload-" + number).addClass(response.error ? "error" : "done");
 				$("#upload-" + number + " .progress").text(message);
 			},
 			setName: function(text) {
@@ -89,22 +100,24 @@ $(function() {
 				$("#progress-report-status").text(text);
 			},
 			setProgress: function(val) {
-				$("#progress-report-bar").css("width", Math.ceil(val * 100) + "%");
+				$("#progress-report .progress-bar div").css("width", Math.ceil(val * 100) + "%");
 			}
 		})
 	.bind("change", function() {
+		$("#progress-files").show();
 		var files = this.files;
 		var total = files.length;
-		var $files = $("#progress-files").empty();
+		var $files = $("#progress-files tbody").empty();
 		var size = 0;
 		$.each(files, function(index, file) {
 			size += file.fileSize;
-			$files.append("<li id=\"upload-" + index + "\">" + file.fileName + ", " + Math.round(file.fileSize / 1024) + "kB <span class=\"progress\"></span></li>");
+			$files.append("<tr id=\"upload-" + index + "\"><td>" + file.fileName + "</td><td>" + Math.round(file.fileSize / 1024) + "kB</td><td class=\"progress\"></td></tr>");
 		});
-		$files.append("<li>Total: " + total + " files, " + Math.round(size / 1024) + "kB</li>");
+		$("#progress-files tfoot").html("<tr><th>" + total + " file(s)</th><th colspan=\"2\">" + Math.round(size / 1024) + "kB</th></tr>");
 	});
 
 	$("#form-multiple-upload").bind("submit", function() {
+		$("#progress-report").show();
 		$("#' . $field_id . '").trigger("html5_upload.start");
 		return false;
 	});
