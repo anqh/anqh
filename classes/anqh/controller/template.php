@@ -175,6 +175,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$skins = Kohana::config('site.skins');
 			$skin = $session->get('skin', 'dark');
 			$skin_imports = array(
+				'ui/mixin.less',
 				'ui/layout.less',
 				'ui/widget.less',
 				'ui/custom.less'
