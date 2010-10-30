@@ -4,11 +4,6 @@
  * Copyright (c) 2010 Anqh
  */
 
-.ajax (@background: transparent)       { background: @background url(ajax.gif) right center no-repeat; }
-.border-radius (@radius: 5px)          { -moz-border-radius: @radius; -webkit-border-radius: @radius; border-radius: @radius; }
-.box-shadow (@shadow: 0 0 10px rgba(0,0,0,0.75)) { -moz-box-shadow: @shadow; -o-box-shadow: @shadow; -webkit-box-shadow: @shadow; box-shadow: @shadow; }
-.opacity (@opacity: 1)                  { -moz-opacity: @opacity; filter:alpha(opacity=@opacity * 100); opacity: @opacity; }
-.transition (@transition: all 1s ease-in-out) { -moz-transition: @transition; -o-transition: @transition; -webkit-transition: @transition; transition: @transition; }
 
 @body-background-color:                #f0efe5;
 @body-background-image:                none;
@@ -105,6 +100,7 @@
 @footer-link-color:                    @link-color;
 @footer-text-shadow:                   0 1px 0 #ccc;
 
+@import "../mixin.less";
 @import "../layout.less";
 @import "../widget.less";
 @import "../custom.less";

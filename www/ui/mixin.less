@@ -1,0 +1,49 @@
+/*
+ * Mixins LESS styles
+ *
+ * Copyright (c) 2009-2010 Anqh
+ */
+
+.ajax (@background: transparent) {
+	background: @background url(ajax.gif) right center no-repeat;
+}
+
+.background-clip {
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+}
+
+.border-radius (@radius: 5px) {
+	-moz-border-radius: @radius;
+	-webkit-border-radius: @radius;
+	border-radius: @radius;
+}
+
+.box-shadow (@shadow: 0 0 10px rgba(0, 0, 0, 0.75)) {
+	-moz-box-shadow: @shadow;
+	-o-box-shadow: @shadow;
+	-webkit-box-shadow: @shadow;
+	box-shadow: @shadow;
+}
+
+.gradient-horizontal (@color1: black; @color2: white) {
+	background: -moz-linear-gradient(@color1, @color2);
+	background: -webkit-gradient(linear, left top, left bottom, from(@color1), to(@color2));
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=@color1, endColorstr=@color2);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=@color1, endColorstr=@color2)";
+	.background-clip;
+}
+
+.opacity (@opacity: 1) {
+	-moz-opacity: @opacity;
+	filter: alpha(opacity=@opacity * 100);
+	opacity: @opacity;
+}
+
+.transition (@transition: all 1s ease-in-out) {
+	-moz-transition: @transition;
+	-o-transition: @transition;
+	-webkit-transition: @transition;
+	transition: @transition;
+}

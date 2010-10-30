@@ -70,7 +70,7 @@ input[type="radio"] + label,
 
 input,
 textarea,
-select                                 { background: @input-background; border-bottom: 1px solid @input-border-bottom; border-left: 1px solid @input-border-left; .border-radius(3px); border-right: 1px solid @input-border-right; border-top: 1px solid @input-border-top; color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
+select                                 { background: @input-background; border: 1px solid; border-color: @input-border-top @input-border-right @input-border-bottom @input-border-left; .border-radius(3px); color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
 input:-webkit-autofill                 { color: inherit; }
 .horizontal li label                   { margin-right: 0.5em; }
 .horizontal li + li label              { margin-left: 0.5em; }
@@ -317,6 +317,23 @@ ol.rating li                           { display: inline; }
 ol.rating .icon                        { display: inline-block; height: 1em; min-height: 16px; width: 0; }
 
 /***** /RATING *****/
+
+
+/***** MULTIPLE UPLOAD *****/
+
+#progress-files .error                 { color: @negative-color; }
+#progress-files .done                  { color: @positive-color; }
+
+/***** /MULTIPLE UPLOAD *****/
+
+
+/***** PROGRESS BAR *****/
+
+.progress-bar                          { background: @input-background; border: 1px solid; border-color: @input-border-top @input-border-right @input-border-bottom @input-border-left; .border-radius(3px); height: 20px; width: 100%; }
+.progress-bar div                      { background: #92d81d; .border-radius(3px); /*border: 1px solid; border-color: #76bc17 #bee439 #bee439 #76bc17;*/ .box-shadow(inset 0 0 5px rgba(0, 0, 0, .5)); .gradient-horizontal(#aada21; #79bd17); height: 100%; position: relative; width: 0; }
+.progress-bar var                      { color: black; position: absolute; right: 10px; top: 1px; }
+
+/***** /PROGRESS BAR *****/
 
 
 /***** BADGES *****/
