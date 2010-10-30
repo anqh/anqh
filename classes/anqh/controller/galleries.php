@@ -604,7 +604,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		Widget::add('side', View_Module::factory('galleries/help_upload', array(
 			'mod_title' => __('Instructions'),
 			'mod_class' => 'help',
-		)));
+		)), Widget::TOP);
 
 		// Load existing gallery if any
 		$gallery_id = (int)$this->request->param('gallery_id');
@@ -643,6 +643,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					set_time_limit(0);
 					ignore_user_abort(true);
 
+					// Duplicate filename check
+					$uploaded = Session::instance()->get('uploaded', array());
+					if (isset($uploaded[$gallery->id]) && in_array($file['name'], $uploaded[$gallery->id])) {
+						throw new Kohana_Exception(__('Already uploaded'));
+					}
+
 					$image = Jelly::factory('image')
 						->set(array(
 							'author' => self::$user,
@@ -664,6 +670,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					// Set the image as gallery image
 					$gallery->add('images', $image);
 					$gallery->save();
+
+					$uploaded[$gallery->id][] = $file['name'];
+					Session::instance()->set('uploaded', $uploaded);
 
 					// Show image if uploaded with ajax
 					if ($this->ajax) {
