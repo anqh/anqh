@@ -46,7 +46,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$approve = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
 
 		// Load galleries we have access to
-		$galleries = Model_Gallery::find_pending($approve ? null : $this);
+		$galleries = Model_Gallery::find_pending($approve ? null : self::$user);
 
 		if (count($galleries)) {
 			Widget::add('wide', View_Module::factory('galleries/galleries', array(
@@ -259,8 +259,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
 
 			// Handle images?
-			if ($approve && $_POST && Security::csrf_valid()) {
-				$pending = $gallery->find_images_pending();
+			if ($_POST && Security::csrf_valid()) {
+				$pending = $gallery->find_images_pending($approve ? null : self::$user);
 				$images  = (array)Arr::get($_POST, 'image_id');
 				$authors = array();
 				if (count($pending) && count($images)) {
@@ -269,30 +269,37 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						switch ($action) {
 
 							case 'approve':
-								$gallery->image_count++;
-								$authors[$image->author->id] = $image->author->username;
-						    $image->status = Model_Image::VISIBLE;
-						    $image->save();
+								if ($approve) {
+									$gallery->image_count++;
+									$authors[$image->author->id] = $image->author->username;
+									$image->status = Model_Image::VISIBLE;
+									$image->save();
+								}
 						    break;
 
 							case 'deny':
 								$gallery->remove('images', $image->id);
 						    $image->delete();
+						    break;
 
 						}
 					}
 
-					// Set default image if none set
-					if (!$gallery->default_image->id) {
-						$gallery->default_image = $gallery->find_images()->current();
-					}
+					// Admin actions
+					if ($approve) {
 
-					$gallery->update_copyright();
-					$gallery->modified = time();
+						// Set default image if none set
+						if (!$gallery->default_image->id) {
+							$gallery->default_image = $gallery->find_images()->current();
+						}
+
+						$gallery->update_copyright();
+						$gallery->modified = time();
+					}
 					$gallery->save();
 
 					// Redirect to normal gallery if all images approved/denied
-					if (!count($gallery->find_images_pending())) {
+					if (!count($gallery->find_images_pending($approve ? null : self::$user))) {
 						$this->request->redirect(Route::model($gallery));
 					} else {
 						$this->request->redirect(Route::model($gallery, 'pending'));
@@ -328,9 +335,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Pictures
 		Widget::add('main', View_Module::factory('galleries/gallery', array(
-			'gallery'  => $gallery,
-			'approval' => isset($approve) ? $approve : null,
-			'user'     => self::$user,
+			'gallery' => $gallery,
+			'pending' => $this->request->action == 'pending',
+			'approve' => isset($approve) ? $approve : null,
+			'user'    => self::$user,
 		)));
 
 	}
@@ -536,7 +544,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			Widget::add('side', View_Module::factory('galleries/image_info', array(
 				'mod_title' => __('Picture info'),
 				'image'     => $current,
-			)), Widget::TOP);
+			)));
 
 		}
 
@@ -604,7 +612,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		Widget::add('side', View_Module::factory('galleries/help_upload', array(
 			'mod_title' => __('Instructions'),
 			'mod_class' => 'help',
-		)), Widget::TOP);
+		)));
 
 		// Load existing gallery if any
 		$gallery_id = (int)$this->request->param('gallery_id');
@@ -671,8 +679,16 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					$gallery->add('images', $image);
 					$gallery->save();
 
+					// Mark filename as uploaded for current gallery
 					$uploaded[$gallery->id][] = $file['name'];
 					Session::instance()->set('uploaded', $uploaded);
+
+					// Make sure the user has photo role to be able to see uploaded pictures
+					if (!self::$user->has_role('photo')) {
+						self::$user
+							->add('roles', Model_Role::find('photo'))
+							->save();
+					}
 
 					// Show image if uploaded with ajax
 					if ($this->ajax) {

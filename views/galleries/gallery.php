@@ -10,12 +10,11 @@
 
 /** @var  Model_Gallery $gallery  */
 
-$approve = isset($approval) && !is_null($approval) ? 'approve' : '';
-$images = $approve
-	? $gallery->find_images_pending($approval ? null : $user)
+$images = $pending
+	? $gallery->find_images_pending($approve ? null : $user)
 	: $gallery->find_images();
 
-if ($approve && $approval) echo Form::open(null, array('id' => 'form-image-approval'));
+if ($pending) echo Form::open(null, array('id' => 'form-image-approval'));
 
 $copyright = $multiple = null;
 ?>
@@ -37,10 +36,10 @@ $copyright = $multiple = null;
 	<li class="grid2<?php echo Text::alternate(' first', '', '', '') ?>">
 		<figure class="thumb">
 			<?php echo HTML::anchor(
-				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => $approve)),
+				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => $pending ? 'approve' : '')),
 				HTML::image($image->get_url('thumbnail', $gallery->dir)),
 					$image->description ? array('title' => HTML::chars($image->description)) : null) ?>
-			<?php if (!isset($approval)): ?>
+			<?php if (!$pending): ?>
 
 			<ficaption>
 				<?php echo HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
@@ -51,13 +50,15 @@ $copyright = $multiple = null;
 
 		</figure>
 
-		<?php if (!empty($approval)): $field_id = 'field-image-id-' . $image->id; ?>
+		<?php if ($pending): $field_id = 'field-image-id-' . $image->id; ?>
 
+			<?php if ($approve): ?>
 			<?php echo Form::radio('image_id[' . $image->id . ']', 'approve', null, array('id' => $field_id . '-approve', 'class' => 'image-approve')) ?>
 			<?php echo Form::label($field_id . '-approve', __('Approve'), array('title' => __('Approve'))) ?>
+			<?php endif; ?>
 
 			<?php echo Form::radio('image_id[' . $image->id . ']', 'deny', null, array('id' => $field_id . '-deny', 'class' => 'image-deny')) ?>
-			<?php echo Form::label($field_id . '-deny', __('Deny'), array('title' => __('Deny'))) ?>
+			<?php echo Form::label($field_id . '-deny', $approve ? __('Deny') : __('Delete'), array('title' => $approve ? __('Deny') : __('Delete'))) ?>
 
 			<?php echo Form::radio('image_id[' . $image->id . ']', 'wait', true, array('id' => $field_id . '-wait', 'class' => 'image-wait')) ?>
 			<?php echo Form::label($field_id . '-wait', __('Wait'), array('title' => __('Wait'))) ?>
@@ -67,13 +68,11 @@ $copyright = $multiple = null;
 
 	<?php endforeach; ?>
 
-	<?php if ($approve && $approval) echo '<li class="unit size1of1">' . Form::radios_wrap(
+	<?php if ($pending) echo '<li class="unit size1of1">' . Form::radios_wrap(
 		'all',
-		array(
-			'approve' => __('Approve'),
-			'deny'    => __('Deny'),
-			'wait'    => __('Wait'),
-		),
+		$approve
+			? array('approve' => __('Approve'), 'deny' => __('Deny'), 'wait' => __('Wait'))
+			: array('deny' => __('Delete'), 'wait' => __('Wait')),
 		null,
 		null,
 		__('All images'),
@@ -84,10 +83,10 @@ $copyright = $multiple = null;
 
 </ul>
 <?php
-if ($approve && $approval):
+if ($pending):
 	echo Form::csrf();
-	echo HTML::icon_value(array(':images' => 0), __('Approved'), null, 'approve') . ' ';
-	echo HTML::icon_value(array(':images' => 0), __('Denied'), null, 'deny') . ' ';
+	if ($approve) echo HTML::icon_value(array(':images' => 0), __('Approved'), null, 'approve') . ' ';
+	echo HTML::icon_value(array(':images' => 0), $approve ? __('Denied') : __('Deleted'), null, 'deny') . ' ';
 	echo HTML::icon_value(array(':images' => count($images)), __('Waiting'), null, 'wait') . '<br />';
 	echo Form::submit_wrap('approve', __('Save'), null, Route::get('galleries')->uri(array('action' => 'approval')));
 	echo Form::close();
