@@ -23,20 +23,30 @@ class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
 					'unique' => true,
 					'rules'  => array(
 						'max_length' => array(32),
-						'not_empty'  => array(true),
-					),
-					'filters' => array(
-						'trim' => null,
+						'not_empty'  => null,
 					),
 				)),
 				'description' => new Field_Text(array(
 					'label' => __('Description'),
-					'filters' => array(
-						'trim' => null,
-					),
 				)),
 				'users'       => new Field_ManyToMany,
 		));
+	}
+
+
+	/**
+	 * Find a role by id or name
+	 *
+	 * @static
+	 * @param   string|integer  $role
+	 * @return  Model_Role
+	 */
+	public static function find($role) {
+		$model = is_numeric($role)
+			? Jelly::select('role', $role)
+			: Jelly::select('role')->where('name', '=', $role)->limit(1)->execute();
+
+		return $model->loaded() ? $model : null;
 	}
 
 
