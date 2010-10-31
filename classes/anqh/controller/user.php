@@ -261,11 +261,11 @@ class Anqh_Controller_User extends Controller_Template {
 				echo $view;
 				return;
 			}
-			Widget::add('main', $view);
+			Widget::add('main', $view, Widget::BOTTOM);
 		}
 
 		// Display news feed
-		$newsfeed = new NewsFeed($user, true);
+		$newsfeed = new NewsFeed($user, Newsfeed::PERSONAL);
 		$newsfeed->max_items = 5;
 		Widget::add('main', View_Module::factory('generic/newsfeed', array(
 			'newsfeed' => $newsfeed->as_array(),
@@ -283,12 +283,12 @@ class Anqh_Controller_User extends Controller_Template {
 		}
 
 		// Portrait
-		Widget::add('side', $this->_get_mod_image($user), Widget::TOP);
+		Widget::add('side', $this->_get_mod_image($user));
 
 		// Info
 		Widget::add('side', View_Module::factory('user/info', array(
 			'user' => $user,
-		)), Widget::TOP);
+		)));
 
 	}
 

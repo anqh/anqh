@@ -22,11 +22,34 @@ class Anqh_Controller_Index extends Controller_Template {
 		$this->page_title = __('Welcome to :site', array(':site' => Kohana::config('site.site_name')));
 
 		// Display news feed
-		$newsfeed = new NewsFeed(self::$user);
+		$newsfeed_type = Arr::get($_GET, 'newsfeed', 'all');
+		switch ($newsfeed_type) {
+
+			// Friend newsfeed
+			case 'friends':
+				$newsfeed = new Newsfeed(self::$user, Newsfeed::USERS);
+				$newsfeed->users = self::$user->find_friends(0, 0);
+		    break;
+
+			// All users
+			case 'all':
+			default:
+				$newsfeed = new NewsFeed(self::$user, Newsfeed::ALL);
+		    break;
+
+		}
 		$newsfeed->max_items = 25;
-		Widget::add('main', View_Module::factory('generic/newsfeed', array(
-			'newsfeed' => $newsfeed->as_array()
-		)));
+
+		$view = View_Module::factory('generic/newsfeed', array(
+			'newsfeed' => $newsfeed->as_array(),
+			'tabs'     => !$this->ajax && (bool)self::$user,
+			'tab'      => $newsfeed_type
+		));
+		if ($this->ajax) {
+			echo $view;
+			return;
+		}
+		Widget::add('main', $view);
 
 		// Shout
 		$shouts = Jelly::select('shout')->limit(10)->execute();

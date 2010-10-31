@@ -41,6 +41,7 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 		return Jelly::select('newsfeeditem')->limit($limit)->execute();
 	}
 
+
 	/**
 	 * Find public Newsfeed items
 	 *
@@ -52,5 +53,19 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	public static function find_items_personal(Model_User $user, $limit = 20) {
 		return Jelly::select('newsfeeditem')->where('user_id', '=', $user->id)->limit($limit)->execute();
 	}
+
+
+	/**
+	 * Find public Newsfeed items from user list
+	 *
+	 * @static
+	 * @param   array    $users
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_items_users(array $users, $limit = 20) {
+		return Jelly::select('newsfeeditem')->where('user_id', 'IN', $users)->limit($limit)->execute();
+	}
+
 
 }

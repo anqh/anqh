@@ -10,6 +10,21 @@
 class Anqh_Newsfeed {
 
 	/**
+	 * All users newsfeed
+	 */
+	const ALL = 'default';
+
+	/**
+	 * Personal newsfeed
+	 */
+	const PERSONAL = 'personal';
+
+	/**
+	 * Multiple user newsfeed
+	 */
+	const USERS = 'users';
+
+	/**
 	 * @var  integer  Total items loaded
 	 */
 	protected $_item_count;
@@ -25,29 +40,31 @@ class Anqh_Newsfeed {
 	public $max_items;
 
 	/**
-	 * @var  boolean  Personal newsfeed
-	 */
-	protected $_personal = false;
-
-	/**
-	 * @var  Model_User  Newsfeed viewing user
+	 * @var  Model_User  Viewer
 	 */
 	protected $_user;
+
+	/**
+	 * @var  array  Users for multiple user newsfeed
+	 */
+	public $users = array();
+
+	/**
+	 * @var  string  Newsfeed type
+	 */
+	protected $_type = self::ALL;
 
 
 	/**
 	 * Create new NewsFeed
 	 *
 	 * @param  Model_User  $user
-	 * @param  boolean     $personal
+	 * @param  string      $type
 	 */
-	public function __construct(Model_User $user = null, $personal = false) {
-
-		// Set defaults
+	public function __construct(Model_User $user = null, $type = self::ALL) {
 		$this->max_items = 20;
-
 		$this->_user = $user;
-		$this->_personal = $personal;
+		$this->_type = $type;
 	}
 
 
@@ -83,9 +100,25 @@ class Anqh_Newsfeed {
 	 */
 	protected function _find_items() {
 		if (empty($this->_items)) {
-			$this->_items = $this->_personal
-				? Model_NewsfeedItem::find_items_personal($this->_user, $this->max_items)
-				: Model_NewsfeedItem::find_items($this->max_items);
+			switch ($this->_type) {
+
+				// Personal newsfeed
+		    case self::PERSONAL:
+			    $this->_items = Model_NewsfeedItem::find_items_personal($this->_user, $this->max_items);
+	        break;
+
+				// Multiple user newsfeed
+				case self::USERS:
+					$this->_items = empty($this->users) ? array() : Model_NewsfeedItem::find_items_users($this->users, $this->max_items);
+			    break;
+
+				// All users
+		    case self::ALL:
+		    default:
+				$this->_items = Model_NewsfeedItem::find_items($this->max_items);
+		    break;
+
+			}
 		}
 	}
 
