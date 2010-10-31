@@ -196,7 +196,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				)),
 				'images'  => new Field_ManyToMany,
 				'friends' => new Field_HasMany(array(
-					'foreign' => 'friend',
+					'foreign' => 'friend'
 				)),
 				'comments' => new Field_HasMany(array(
 					'foreign' => 'user_comment'
@@ -567,7 +567,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	public function delete_friend(User_Model $friend) {
 		return $this->loaded()
 			&& $this->is_friend($friend)
-			&& (bool)count(db::build()
+			&& (bool)count(DB::build()
 				->delete('friends')
 				->where('user_id', '=', $this->id)
 				->where('friend_id', '=', $friend->id)
@@ -580,23 +580,32 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param   integer  $page_num
 	 * @param   integer  $page_size
-	 * @return  ORM_Iterator
+	 * @return  array
 	 */
 	public function find_friends($page_num = 1, $page_size = 25) {
-		$page_offset = ($page_num - 1) * $page_size;
-		$friends = ORM::factory('friend')->where('user_id', '=', $this->id)->find_all($page_size, $page_offset);
+		$friends = Jelly::select('friend')->where('user_id', '=', $this->id);
+		if ($page_size) {
+			$friends
+				->limit($page_size)
+				->offset(($page_num - 1) * $page_size);
+		}
 
-		return $friends;
+		$users = array();
+		foreach ($friends->execute() as $friend) {
+			$users[] = $friend->friend->id;
+		}
+
+		return $users;
 	}
 
 
 	/**
 	 * Get user's total friend count
 	 *
-	 * @return  int
+	 * @return  integer
 	 */
 	public function get_friend_count() {
-		return (int)ORM::factory('friend')->where('user_id', '=', $this->id)->count_all();
+		return (int)Jelly::select('friend')->where('user_id', '=', $this->id)->count();
 	}
 
 
