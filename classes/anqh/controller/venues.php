@@ -175,6 +175,35 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 
 	/**
+	 * Action: foursquare
+	 */
+	public function action_foursquare() {
+		$this->history = false;
+
+		// Load venue
+		$venue_id = (int)$this->request->param('id');
+		$venue = Jelly::select('venue')->load($venue_id);
+		if (!$venue->loaded()) {
+			throw new Model_Exception($venue, $venue_id);
+		}
+
+		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
+
+		if (Security::csrf_valid() && isset($_POST['foursquare_id'])) {
+			try {
+				$venue
+					->set(Arr::extract($_POST, array('foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address')))
+					->save();
+			} catch (Validate_Exception $e) {
+
+			}
+		}
+
+		$this->request->redirect(Route::model($venue));
+	}
+
+
+	/**
 	 * Action: image
 	 */
 	public function action_image() {
@@ -323,10 +352,8 @@ class Anqh_Controller_Venues extends Controller_Template {
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
+
 		$this->page_title    = HTML::chars($venue->name);
-		$this->page_subtitle = __('Category :category', array(
-			':category' => HTML::anchor(Route::model($venue->category), $venue->category->name, array('title' => $venue->category->description))
-		));
 
 		// Set actions
 		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
@@ -359,7 +386,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 				'mod_title' => __('Similar venues'),
 				'venue'     => $venue,
 				'venues'    => $similar,
-				'admin'     => Permission::has(new Model_Venue, Model_Venue::PERMISSION_COMBINE, self::$user)
+				'admin'     => Permission::has($venue, Model_Venue::PERMISSION_COMBINE, self::$user)
 			)));
 		}
 
@@ -378,7 +405,9 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Venue info
 		Widget::add('side', View_Module::factory('venues/info', array(
+			'admin' => Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user),
 			'venue' => $venue,
+			'foursquare' => $venue->foursquare(),
 		)));
 	}
 
