@@ -194,6 +194,8 @@ class Anqh_Controller_Venues extends Controller_Template {
 				$venue
 					->set(Arr::extract($_POST, array('foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address')))
 					->save();
+
+				NewsfeedItem_Venues::venue_edit(self::$user, $venue);
 			} catch (Validate_Exception $e) {
 
 			}
@@ -484,6 +486,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 	 */
 	protected function _edit_venue($category_id = null, $venue_id = null) {
 		$this->history = false;
+		$edit = true;
 
 		if ($venue_id) {
 
@@ -504,6 +507,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		} else {
 
 			// Creating new
+			$edit = false;
 			$category = Jelly::select('venue_category')->load($category_id);
 			if (!$category->loaded()) {
 				throw new Model_Exception($category, $category_id);
@@ -530,6 +534,9 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 			try {
 				$venue->save();
+
+				$edit ? NewsfeedItem_Venues::venue_edit(self::$user, $venue) : NewsfeedItem_Venues::venue(self::$user, $venue);
+
 				$this->request->redirect(Route::model($venue));
 			} catch (Validate_Exception $e) {
 				$errors = $e->array->errors('validation');

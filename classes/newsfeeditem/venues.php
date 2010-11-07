@@ -7,4 +7,4 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class NewsfeedItem_Venue extends Anqh_NewsfeedItem_Venue {}
+class NewsfeedItem_Venues extends Anqh_NewsfeedItem_Venues {}
