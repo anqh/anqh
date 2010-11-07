@@ -286,6 +286,22 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Remove duplicate venues
+	 *
+	 * @static
+	 * @param   integer  $venue_id
+	 * @param   integer  $duplicate_id
+	 * @return  integer  Update count
+	 */
+	public static function merge_venues($venue_id, $duplicate_id) {
+		return DB::update('events')
+			->set(array('venue_id' => $venue_id))
+			->where('venue_id', '=', $duplicate_id)
+			->execute();
+	}
+
+
+	/**
 	 * Check for favorite
 	 *
 	 * @param  Model_User|integer  $user  id, User_Model
