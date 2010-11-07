@@ -23,7 +23,11 @@ class Anqh_Controller_Venues extends Controller_Template {
 	 * Action: add venue
 	 */
 	public function action_add() {
-		return $this->_edit_venue((int)$this->request->param('id'));
+		if (!$this->request->param('id') && $this->ajax) {
+			return $this->_edit_venue_dialog();
+		} else {
+			return $this->_edit_venue((int)$this->request->param('id'));
+		}
 	}
 
 
@@ -64,6 +68,42 @@ class Anqh_Controller_Venues extends Controller_Template {
 		)));
 
 		$this->_tabs();
+	}
+
+
+	/**
+	 * Action: combine
+	 */
+	public function action_combine() {
+		$this->history = false;
+
+		// Load original venue
+		$venue_id = (int)$this->request->param('id');
+		$venue = Jelly::select('venue')->load($venue_id);
+		if (!$venue->loaded()) {
+			throw new Model_Exception($venue, $venue_id);
+		}
+
+		// Load duplicate venue
+		$duplicate_id = (int)$this->request->param('param');
+		$duplicate = Jelly::select('venue')->load($duplicate_id);
+		if (!$duplicate->loaded()) {
+			throw new Model_Exception($duplicate, $duplicate_id);
+		}
+
+		Permission::required($venue, Model_Venue::PERMISSION_COMBINE, self::$user);
+
+		if (Security::csrf_valid()) {
+
+			// Update events
+			Model_Event::merge_venues($venue_id, $duplicate_id);
+
+			// Remove duplicate
+			$duplicate->delete();
+
+		}
+
+		$this->request->redirect(Route::model($venue));
 	}
 
 
@@ -264,8 +304,8 @@ class Anqh_Controller_Venues extends Controller_Template {
 			$this->page_actions[] = array('link' => Route::get('venue_category_add')->uri(), 'text' => __('Add category'), 'class' => 'category-add');
 		}
 
-		Widget::add('main', View_Module::factory('venues/categories', array(
-			'categories' => Jelly::select('venue_category')->execute(),
+		Widget::add('main', View_Module::factory('venues/cities', array(
+			'venues' => Model_Venue::find_all(),
 		)));
 
 		$this->_tabs();
@@ -312,6 +352,17 @@ class Anqh_Controller_Venues extends Controller_Template {
 			)));
 		}
 
+		// Similar venues
+		$similar = Model_Venue::find_by_name($venue->name);
+		if (count($similar) > 1) {
+			Widget::add('main', View_Module::factory('venues/similar', array(
+				'mod_title' => __('Similar venues'),
+				'venue'     => $venue,
+				'venues'    => $similar,
+				'admin'     => Permission::has(new Model_Venue, Model_Venue::PERMISSION_COMBINE, self::$user)
+			)));
+		}
+
 		// Slideshow
 		if (count($venue->images) > 1) {
 			$images = array();
@@ -323,12 +374,12 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		// Default image
-		Widget::add('side', $this->_get_mod_image($venue), Widget::TOP);
+		Widget::add('side', $this->_get_mod_image($venue));
 
 		// Venue info
 		Widget::add('side', View_Module::factory('venues/info', array(
 			'venue' => $venue,
-		)), Widget::TOP);
+		)));
 	}
 
 
@@ -539,6 +590,16 @@ $(function() {
 
 });
 '));
+	}
+
+
+	/**
+	 * Edit venue data in dialog
+	 */
+	protected function _edit_venue_dialog() {
+		echo View_Module::factory('venues/edit_dialog', array(
+
+		));
 	}
 
 

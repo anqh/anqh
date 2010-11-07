@@ -10,6 +10,11 @@
 class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 
 	/**
+	 * Permission to combine duplicate venues
+	 */
+	const PERMISSION_COMBINE = 'combine';
+
+	/**
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
@@ -122,6 +127,21 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find all venues sorted by city and category
+	 *
+	 * @static
+	 * @return  Jelly_Collection
+	 */
+	public static function find_all() {
+		return Jelly::select('venue')
+			->with('venue_category')
+			->order_by('city_name', 'ASC')
+			->order_by('name', 'ASC')
+			->execute();
+	}
+
+
+	/**
 	 * Find single venue by Foursquare id
 	 *
 	 * @static
@@ -184,9 +204,10 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 		    $status = $user && $user->loaded();
 		    break;
 
+			case self::PERMISSION_COMBINE:
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    $status = $user && $user->has_role('admin');
+		    $status = $user && $user->has_role('admin', 'venue moderator');
 		    break;
 
 			case self::PERMISSION_READ:
