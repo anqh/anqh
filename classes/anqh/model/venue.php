@@ -105,8 +105,12 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 					'auto_now_update' => true,
 				)),
 
-				'foursquare_id'          => new Field_Integer,
-				'foursquare_category_id' => new Field_Integer,
+				'foursquare_id'          => new Field_Integer(array(
+					'label' => __('Foursquare ID')
+				)),
+				'foursquare_category_id' => new Field_Integer(array(
+					'label' => __('Foursquare Category ID')
+				)),
 
 				'author' => new Field_BelongsTo(array(
 					'column'  => 'author_id',
@@ -138,6 +142,43 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 			->order_by('city_name', 'ASC')
 			->order_by('name', 'ASC')
 			->execute();
+	}
+
+
+	/**
+	 * Load Foursquare data
+	 *
+	 * @return  array
+	 */
+	public function foursquare() {
+		if ($this->foursquare_id) {
+
+			// Use cache to avoid flooding Foursquare
+			$foursquare = Cache::instance()->get_('foursquare_venue_' . $this->foursquare_id);
+			if (!$foursquare) {
+
+				// Store the original request
+				$request = $_REQUEST;
+				$_REQUEST = array(
+					'method' => 'venue',
+					'vid'    => $this->foursquare_id
+				);
+				$response = Request::factory(Route::url('api_venues', array('action' => 'foursquare', 'format' => 'json')))
+					->execute()
+					->response;
+
+				// Restore the original request
+				$_REQUEST = $request;
+
+				$foursquare = Arr::path(json_decode($response, true), 'venue.venue');
+
+				// Cache results for 15 minutes
+				Cache::instance()->set_('foursquare_venue_' . $this->foursquare_id, $foursquare, 60 * 15);
+				
+			}
+
+			return $foursquare;
+		}
 	}
 
 

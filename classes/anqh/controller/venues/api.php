@@ -15,15 +15,20 @@ class Anqh_Controller_Venues_API extends Controller_API {
 	public function action_foursquare() {
 		$foursquare = Arr::get_once($_REQUEST, 'method');
 		$url        = 'http://api.foursquare.com/v1';
+		$method     = 'GET';
 		$required = $optional = array();
 
 		switch ($foursquare) {
 
+			// Venue info
+			case 'venue':
+				$url .= '/venue.json';
+				$required = array('vid');
+				break;
+
 			// Venue search
 			case 'venues':
 				$url   .= '/venues.json';
-				$method = 'GET';
-				$params = array('geolat', 'geolong', 'q', 'l');
 				$required = array('geolat', 'geolong');
 				$optional = array('q', 'l');
 		    break;
