@@ -95,6 +95,9 @@ abstract class Anqh_Controller_Template extends Controller {
 		$this->breadcrumb = Session::instance()->get('breadcrumb', array());
 		$this->history = $this->history && !$this->ajax;
 
+		// Open outside links to other tab
+		HTML::$windowed_urls = true;
+
 		// Load the template
 		if ($this->auto_render === true) {
 			$this->template = View::factory($this->template);
