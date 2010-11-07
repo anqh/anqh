@@ -578,24 +578,19 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Get user's friends
 	 *
-	 * @param   integer  $page_num
-	 * @param   integer  $page_size
 	 * @return  array
 	 */
-	public function find_friends($page_num = 1, $page_size = 25) {
-		$friends = Jelly::select('friend')->where('user_id', '=', $this->id);
-		if ($page_size) {
-			$friends
-				->limit($page_size)
-				->offset(($page_num - 1) * $page_size);
+	public function find_friends() {
+		static $friends = array();
+
+		if (!isset($friends[$this->id])) {
+			$friends[$this->id] = array();
+			foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
+				$friends[$this->id][] = $friend->friend->id;
+			}
 		}
 
-		$users = array();
-		foreach ($friends->execute() as $friend) {
-			$users[] = $friend->friend->id;
-		}
-
-		return $users;
+		return $friends[$this->id];
 	}
 
 
@@ -619,7 +614,9 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		return $this->has('friends', $friend);
+		$friend = $friend instanceof Model_User ? $friend->id : $friend;
+
+		return in_array($friend, $this->find_friends());
 		/*
 		// Load friends
 		if (!is_array($this->data_friends)) {
