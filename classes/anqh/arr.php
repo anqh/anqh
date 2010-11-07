@@ -27,6 +27,24 @@ abstract class Anqh_Arr extends Kohana_Arr {
 
 
 	/**
+	 * Get first non-false value
+	 *
+	 * @static
+	 * @param   mixed
+	 * @param   mixed
+	 * @return  mixed
+	 */
+	public static function pick() {
+		$values = (func_num_args() == 1 && is_array(func_get_arg(0))) ? func_get_arg(0) : func_get_args();
+		foreach ($values as $value) {
+			if (!empty($value)) {
+				return $value;
+			}
+		}
+	}
+
+
+	/**
 	 * Get an assoc array using the key and value from original array, reducing one dimension
 	 *
 	 * @static
