@@ -573,16 +573,29 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_friends() {
-		static $friends = array();
+		static $_cache = array();
 
-		if (!isset($friends[$this->id])) {
-			$friends[$this->id] = array();
-			foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
-				$friends[$this->id][] = $friend->friend->id;
+		// Try static cache
+		$friends = Arr::get($_cache, $this->id);
+		if (is_null($friends)) {
+
+			// Try cache
+			$friends = Cache::instance()->get_('friends_' . $this->id);
+			if (is_null($friends)) {
+
+				// Load from DB
+				$friends = array();
+				foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
+					$friends[] = $friend->friend->id;
+				}
+
+				Cache::instance()->set_('friends_'  . $this->id, $friends, Date::HOUR);
 			}
+
+			$_cache[$this->id] = $friends;
 		}
 
-		return $friends[$this->id];
+		return $_cache[$this->id];
 	}
 
 
@@ -599,35 +612,20 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Check for friendship
 	 *
-	 * @param  mixed  $friend  Model_User, $id
+	 * @param  mixed  $friend  Model_User, array, $id
 	 */
 	public function is_friend($friend) {
-		if (empty($friend) || !(is_int($friend) || $friend instanceof Model_User)) {
+		if ($friend instanceof Model_User) {
+			$friend = (int)$friend->id;
+		} else if (is_array($friend)) {
+			$friend = (int)Arr::get($friend, 'id');
+		}
+
+		if (!is_int($friend) || $friend == 0) {
 			return false;
 		}
 
-		$friend = $friend instanceof Model_User ? $friend->id : $friend;
-
 		return in_array($friend, $this->find_friends());
-		/*
-		// Load friends
-		if (!is_array($this->data_friends)) {
-			$friends = array();
-			if ($this->loaded()) {
-				$users = db::build()->select('friend_id')->from('friends')->where('user_id', '=', $this->id)->execute()->as_array();
-				foreach ($users as $user) {
-					$friends[(int)$user['friend_id']] = (int)$user['friend_id'];
-				}
-			}
-			$this->data_friends = $friends;
-		}
-
-		if ($friend instanceof User_Model) {
-			$friend = $friend->id;
-		}
-
-		return isset($this->data_friends[(int)$friend]);
-		*/
 	}
 
 	/***** /FRIENDS *****/
@@ -707,6 +705,78 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		}
 
 		return $user;
+	}
+
+
+	/**
+	 * Load one user light array
+	 *
+	 * @static
+	 * @param   integer  $id
+	 * @return  array|null
+	 */
+	public static function find_user_light($id = null) {
+		static $_cache = array();
+
+		if ($id instanceof Model_User) {
+			$id = (int)$id->id;
+		} else if (is_array($id)) {
+			return $id;
+		} else {
+			$id = (int)$id;
+		}
+
+		// Try static cache
+		$user = Arr::get($_cache, $id);
+		if (!$user) {
+
+			// Try cache
+			$user = Cache::instance()->get_('user_light_' . $id);
+			if (!$user) {
+
+				// Load from DB
+				$model = Jelly::select('user', $id);
+				if ($model->loaded()) {
+					$user  = array(
+						'id'        => $id,
+						'username'  => $model->username,
+						'gender'    => $model->gender,
+						'title'     => $model->title,
+						'signature' => $model->signature,
+						'avatar'    => $model->avatar,
+						'thumb'     => $model->default_image->id ? $model->default_image->get_url('thumbnail') : ($model->picture ? $model->picture : null),
+					);
+				} else {
+					$user = null;
+				}
+
+				Cache::instance()->set_('user_light_' . $id, $user, Date::DAY);
+			}
+
+			$_cache[$id] = $user;
+		}
+
+		return $user;
+	}
+
+
+	/**
+	 * Get user id from data
+	 *
+	 * @static
+	 * @param   mixed  $user
+	 * @return  integer
+	 */
+	public static function user_id($user) {
+		if (is_int($user)) {
+			return $user;
+		} else if (is_array($user)) {
+			return (int)Arr::get($user, 'id');
+		}	else if ($user instanceof Model_User) {
+			return (int)$user->id;
+		}
+
+		return 0;
 	}
 
 

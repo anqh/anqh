@@ -10,6 +10,17 @@
 class Jelly_Model extends Jelly_Model_Core {
 
 	/**
+	 * Get model original value, e.g., foreign model id
+	 *
+	 * @param   string  $name
+	 * @return  mixed
+	 */
+	public function original($name = null) {
+		return Arr::get($this->_original, $name);
+	}
+
+
+	/**
 	 * Validates the current state of the model.
 	 *
 	 * Only changed data is validated, unless $data is passed.

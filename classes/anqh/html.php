@@ -221,22 +221,22 @@ class Anqh_HTML extends Kohana_HTML {
 	 * @return  string
 	 */
 	public static function user($user, $nick = null, array $attributes = null) {
-		static $viewer = false;
+		static $viewer = true;
 
 		// Load current user for friend styling
-		if ($viewer === false) {
+		if ($viewer === true) {
 			$viewer = Visitor::instance()->get_user();
 		}
 
 		$class = array('user', 'hoverable');
-		if ($user instanceof Model_user || $user && $user = Model_User::find_user($user)) {
-			if ($user->loaded()) {
-				$nick = $user->username;
+		if (is_array($user) || $user && $user = Model_User::find_user_light($user)) {
+			if ($user) {
+				$nick = $user['username'];
 				if ($viewer && $viewer->is_friend($user)) {
 					$class[] = 'friend ';
 				}
-				if ($user->gender) {
-					$class[] = $user->gender == 'f' ? 'female ' : 'male ';
+				if ($user['gender']) {
+					$class[] = $user['gender'] == 'f' ? 'female ' : 'male ';
 				}
 			}
 		}

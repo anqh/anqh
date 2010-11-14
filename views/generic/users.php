@@ -16,11 +16,12 @@
 		// Build short (friends) and long (others) user list
 		$short = $long = array();
 		foreach ($users as $user):
-			$user = ($user instanceof Model_User) ? $user : Jelly::select('user')->load($user);
+			$user = is_array($user) ? $user : Model_User::find_user_light($user);
+			//$user = ($user instanceof Model_User) ? $user : Jelly::select('user')->load($user);
 			if ($viewer && $viewer->is_friend($user)):
-				$short[mb_strtoupper($user->username)] = HTML::user($user);
+				$short[mb_strtoupper($user['username'])] = HTML::user($user);
 			else:
-				$long[mb_strtoupper($user->username)] = HTML::user($user);
+				$long[mb_strtoupper($user['username'])] = HTML::user($user);
 			endif;
 		endforeach;
 		ksort($long);

@@ -82,7 +82,7 @@ class Anqh_Newsfeed {
 			$class = 'Newsfeeditem_' . $item->class;
 			if (method_exists($class, 'get') && $text = call_user_func(array($class, 'get'), $item)) {
 				$feed[] = array(
-					'user'  => $item->user,
+					'user'  => Model_User::find_user_light($item->original('user')),
 					'stamp' => $item->stamp,
 					'text'  => $text
 				);

@@ -51,7 +51,7 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_items_personal(Model_User $user, $limit = 20) {
-		return Jelly::select('newsfeeditem')->where('user_id', '=', $user->id)->limit($limit)->execute();
+		return Jelly::select('newsfeeditem')->where('user:foreign_key', '=', $user->id)->limit($limit)->execute();
 	}
 
 
@@ -64,7 +64,7 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_items_users(array $users, $limit = 20) {
-		return Jelly::select('newsfeeditem')->where('user_id', 'IN', $users)->limit($limit)->execute();
+		return Jelly::select('newsfeeditem')->where('user:foreign_key', 'IN', $users)->limit($limit)->execute();
 	}
 
 
