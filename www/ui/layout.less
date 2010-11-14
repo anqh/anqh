@@ -25,19 +25,19 @@ body                                   { background: @body-background-color; col
 @dock-text-shadow:                     none;
 
 #dock                                  { background: @dock-background; .box-shadow(0 0 10px @dock-background); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
-#dock                                  { margin-top: -25px; .transition(margin-top .25s ease-in-out); }
+#dock                                  { margin-top: -27px; .transition(margin-top .25s ease-in-out); }
 #dock.open,
 #dock:hover                            { margin-top: 0; }
 #dock.pinned                           { position: fixed; }
 #dock label,
-#dock div                              { color: @dock-color; text-shadow: @dock-text-shadow; }
+#dock div                              { color: @dock-color; text-align: right; text-shadow: @dock-text-shadow; }
 #dock form                             { float: left; }
 #dock a                                { color: @dock-link-color; }
 #visitor label,
 #visitor input,
 #dock label,
 #dock input                            { display: inline; margin-left: 0; }
-#customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; left: 50%; bottom: -20px; }
+#customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -22px; }
 
 /***** /DOCK *****/
 
@@ -88,32 +88,28 @@ body                                   { background: @body-background-color; col
 @mainmenu-selected-color:              #f6f6f6;
 
 #header                                { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; }
-#header li                             { margin-top: 0; }
-.new-messages                          { clear: both; float: right; margin-top: 10px; }
-/*.new-messages li                       { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }*/
-.new-messages li a                     { display: block; float: left; height: 40px; margin-right: 10px; position: relative; width: 40px; }
-.new-messages li a:hover               { text-decoration: none; }
-.new-messages li a div                 { height: 100%; .opacity(.2); width: 100%; }
-.new-messages li a:hover div           { .opacity(1); }
-.new-messages li a var                 { background: rgba(0, 0, 0, .75); .border-radius(5px); color: @sidebar-selected-color; left: 0; padding: 0 4px; position: absolute; top: 0; }
-.new-messages {
-  .new-comments div                    { background: url(/ui/icon/32/spechbubble.png) no-repeat center center; }
-  .new-blog-comments div               { background: url(/ui/icon/32/notepad_2.png) no-repeat center center; }
-  .new-forum-quotes div                { background: url(/ui/icon/32/spechbubble_2.png) no-repeat center center; }
-  .new-gallery-approvals div           { background: url(/ui/icon/32/cert.png) no-repeat center center; }
-  .new-image-comments div              { background: url(/ui/icon/32/photo.png) no-repeat center center; }
-}
-
-#mainmenu                              { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; border-top: 1px solid @groove-light; }
-#mainmenu li                           { display: block; float: left; margin-right: 30px; position: relative; }
-#mainmenu li a                         { color: @mainmenu-color; display: block; font-size: 1.1667em; line-height: 1.4286em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
-#mainmenu li a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
-#mainmenu li.selected > a              { color: @mainmenu-selected-color; }
-#mainmenu li ul                        { position: absolute; width: 400px; }
-
-h1 a                                   { display: block; .opacity(.2); }
-h1                                     { .opacity(.2); .transition(opacity .25s ease-in-out); }
+h1                                     { float: left; .opacity(.5); margin-right: 30px; padding: 2px 0; .transition(opacity .25s ease-in-out); }
 h1:hover                               { .opacity(1); }
+h1 a                                   { display: block; }
+#header li                             { display: block; float: left; margin-right: 30px; padding: 0 2px; position: relative; }
+#header li a                           { color: @mainmenu-color; display: block; font-size: 1.1667em; line-height: 1.4286em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
+#header li a:hover                     { color: @mainmenu-selected-color; text-decoration: none; }
+#header li.selected > a                { color: @mainmenu-selected-color; }
+#header li ul                          { position: absolute; width: 400px; }
+
+#visitor                               { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; border-top: 1px solid @groove-light; }
+#visitor .avatar                       { padding: 0 5px 0 0; }
+#visitor form ul li                    { margin-bottom: 1px; margin-top: 1px; }
+.new-messages                          { float: left; padding-top: 3px; }
+.new-messages li a                     { background: rgba(0, 0, 0, .75) no-repeat 2px center; .border-radius(5px); color: @sidebar-selected-color; margin-right: 5px; padding: 2px 2px 2px 20px; }
+.new-messages li a:hover               { text-decoration: none; }
+.new-messages {
+  .new-comments a                      { background-image: url(/ui/icon/16/spechbubble.png); }
+  .new-blog-comments a                 { background-image: url(/ui/icon/16/notepad_2.png); }
+  .new-forum-quotes a                  { background-image: url(/ui/icon/16/spechbubble_2.png); }
+  .new-gallery-approvals a             { background-image: url(/ui/icon/16/cert.png); }
+  .new-image-comments a                { background-image: url(/ui/icon/16/photo.png); }
+}
 
 /***** /HEADER *****/
 

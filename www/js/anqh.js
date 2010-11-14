@@ -371,10 +371,14 @@ $(function() {
 
 
 	// Tooltips
-	$('a[title], var[title], time[title]').tooltip({
-		effect: 'slide',
-		position: 'top center'
-	});
+	$('a[title], var[title], time[title]')
+		.tooltip({
+			effect: 'slide',
+			position: 'top center'
+		})
+		.dynamic({
+			bottom: { offset: [-10, 0] }		
+		});
 
 
 	// Hover card
