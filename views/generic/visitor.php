@@ -22,14 +22,14 @@ if ($user):
 	endif;
 
 	// Member
-	echo HTML::avatar($user->avatar, $user->username);
+	echo HTML::avatar($user->avatar, $user->username, true);
 	echo __(':user <var class="uid">[#:id]</var>', array(
 		':id'      => $user->id,
 		':user'    => HTML::user($user),
-	)), '<br />';
+	));
 
-	echo HTML::anchor(URL::user($user, 'settings'), __('Settings')), '<br />';
-	echo HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out'));
+	echo ' - ', HTML::anchor(URL::user($user, 'settings'), __('Settings'));
+	echo ' - ', HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out'));
 
 // Logout also from Facebook
 /*
@@ -46,9 +46,9 @@ else:
 ?>
 <ul>
 	<li class="grid2 first"><?php echo Form::input('username', null, array('placeholder' => __('Username'))); ?></li>
-	<li class="grid2"><?php echo Form::checkbox('remember', 'true', false, array('disabled' => 'disabled')), Form::label('remember', __('Remember me')); ?></li>
-	<li class="grid2 first"><?php echo Form::password('password', null, array('placeholder' => __('Password'))); ?></li>
-	<li class="grid2"><?php echo Form::submit('signin', __('Sign in')); ?>
+	<li class="grid2"><?php echo Form::password('password', null, array('placeholder' => __('Password'))); ?></li>
+	<li class="grid1"><?php echo Form::submit('signin', __('Sign in')); ?>
+	<!--<li class="grid2"><?php echo Form::checkbox('remember', 'true', false, array('disabled' => 'disabled')), Form::label('remember', __('Remember me')); ?></li>-->
 </ul>
 <?php
 	echo Form::close();

@@ -54,35 +54,23 @@
 
 	<!-- HEADER -->
 
-	<section id="header">
+	<header id="header">
 		<div class="container grid12">
 
-			<section id="logo" class="grid3 first" role="banner">
-				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
-			</section>
+			<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
 
-			<section id="notifications" class="grid5">
+			<?php echo Widget::get('navigation') ?>
 
-<?php echo Widget::get('search') ?> &nbsp;
+		</div><!-- #mainmenu -->
+	</header><!-- #header -->
 
-			</section><!-- #notifications -->
-
-			<section id="visitor" class="grid4">
+	<section id="visitor">
+		<div class="container grid12">
 
 <?php echo Widget::get('visitor') ?>
 
-			</section><!-- #visitor -->
-
 		</div>
-	</section><!-- #header -->
-
-	<section id="mainmenu">
-		<div class="container grid12">
-
-<?php echo Widget::get('navigation') ?>
-
-		</div>
-	</section><!-- #mainmenu -->
+	</section><!-- #visitor -->
 
 	<!-- /HEADER -->
 
@@ -100,6 +88,7 @@
 
 			<header id="title">
 
+<?php echo Widget::get('subnavigation') ?>
 <?php //echo Widget::get('breadcrumb') ?>
 
 				<hgroup>
