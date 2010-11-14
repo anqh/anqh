@@ -8,19 +8,22 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+// Post author
+$author = Model_User::find_user_light($post->original('author'));
+
 // Viewer's post
-$my = ($user && $post->author->id == $user->id);
+$my = ($user && $author && $author['id'] == $user->id);
 
 // Topic author's post
-$owners = ($topic->author->id && $post->author->id == $topic->author->id);
+$owners = ($post->original('author') == $topic->original('author'));
 ?>
 
 	<article id="post-<?php echo $post->id ?>" class="post <?php echo ($owners ? 'owner ' : ''), ($my ? 'my ' : ''), Text::alternate('', 'alt') ?>">
 		<header<?php echo $post->id == $topic->last_post->id ? ' id="last"' : '' ?> class="grid2 first">
 
-			<?php echo HTML::avatar($post->author->avatar, $post->author->username) ?>
+			<?php echo HTML::avatar($author['avatar'], $author['username']) ?>
 
-			<?php echo HTML::user($post->author, $post->author_name) ?>
+			<?php echo HTML::user($author, $post->author_name) ?>
 		</header>
 
 		<section class="post-content grid6">
@@ -68,7 +71,7 @@ $owners = ($topic->author->id && $post->author->id == $topic->author->id);
 		<footer class="grid6">
 			<?php if ($post->modifies > 0) echo	__('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($post->modified), $post->modified))); ?>
 
-			<?php echo $post->author->signature ? BB::factory("\n--\n" . $post->author->signature)->render() : '' ?>
+			<?php echo $author['signature'] ? BB::factory("\n--\n" . $author['signature'])->render() : '' ?>
 
 		</footer>
 	</article>
