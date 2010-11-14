@@ -160,19 +160,19 @@ abstract class Anqh_Controller_Template extends Controller {
 			// Footer
 			Widget::add('footer', View_Module::factory('events/event_list', array(
 				'mod_id'    => 'footer-events-new',
-				'mod_class' => 'article unit size1of4 cut events',
+				'mod_class' => 'article grid4 first cut events',
 				'mod_title' => __('New events'),
 				'events'    => Jelly::select('event')->order_by('id', 'DESC')->limit(10)->execute()
 			)));
 			Widget::add('footer', View_Module::factory('forum/topiclist', array(
 				'mod_id'    => 'footer-topics-active',
-				'mod_class' => 'article unit size1of4 cut topics',
+				'mod_class' => 'article grid4 cut topics',
 				'mod_title' => __('New posts'),
 				'topics'    => Jelly::select('forum_topic')->order_by('last_post_id', 'DESC')->limit(10)->execute()
 			)));
 			Widget::add('footer', View_Module::factory('blog/entry_list', array(
 				'mod_id'    => 'footer-blog-entries',
-				'mod_class' => 'article unit size1of4 cut blogentries',
+				'mod_class' => 'article grid4 cut blogentries',
 				'mod_title' => __('New blogs'),
 				'entries'   => Jelly::select('blog_entry')->limit(10)->execute(),
 			)));

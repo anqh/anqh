@@ -10,9 +10,17 @@
 
 if ($user):
 
+	// Member
+	echo HTML::avatar($user->avatar, $user->username, true);
+	echo __(':user <var class="uid">[#:id]</var>', array(
+		':id'      => $user->id,
+		':user'    => HTML::user($user),
+	));
+
 	$new_comments = $user->find_new_comments();
 	if (!empty($new_comments)):
 ?>
+ ::
 <ul class="new-messages">
 	<?php foreach ($new_comments as $class => $link): ?>
 	<li class="<?php echo $class ?>"><?php echo $link ?></li>
@@ -21,15 +29,8 @@ if ($user):
 <?php
 	endif;
 
-	// Member
-	echo HTML::avatar($user->avatar, $user->username, true);
-	echo __(':user <var class="uid">[#:id]</var>', array(
-		':id'      => $user->id,
-		':user'    => HTML::user($user),
-	));
-
-	echo ' - ', HTML::anchor(URL::user($user, 'settings'), __('Settings'));
-	echo ' - ', HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out'));
+	echo ' :: ', HTML::anchor(URL::user($user, 'settings'), __('Settings'));
+	echo ' :: ', HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out'));
 
 // Logout also from Facebook
 /*
