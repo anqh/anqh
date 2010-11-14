@@ -215,7 +215,7 @@ class Anqh_HTML extends Kohana_HTML {
 	/**
 	 * Returns user link
 	 *
-	 * @param   mixed   $user  Model_User, uid or username
+	 * @param   mixed   $user
 	 * @param   string  $nick
 	 * @param   array   $attributes
 	 * @return  string

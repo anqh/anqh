@@ -225,7 +225,7 @@ class Anqh_Visitor {
 		static $current;
 
 		if (!is_object($current) && (is_string($user) || is_int($user))) {
-			$current = Model::factory('user')->find_user($user);
+			$current = Model_User::find_user($user);
 		}
 
 		if ($user instanceof Model_User && $user->loaded()) {

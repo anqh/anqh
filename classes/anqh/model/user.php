@@ -712,18 +712,40 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * Load one user light array
 	 *
 	 * @static
-	 * @param   integer  $id
+	 * @param   mixed  $id  User model, user array, user id, username
 	 * @return  array|null
 	 */
 	public static function find_user_light($id = null) {
 		static $_cache = array();
 
 		if ($id instanceof Model_User) {
-			$id = (int)$id->id;
+
+			// Got user model, no need to load, just fill caches
+			$user = $id->light_array();
+			$_cache[$id->id] = $user;
+			Cache::instance()->set('user_light_' . $id->id, $user, Date::DAY);
+			return $user;
+
 		} else if (is_array($id)) {
+
+			// Got user array, don't fill caches as we're not 100% sure it's valid
 			return $id;
+
+		} else if (is_string($id)) {
+
+			// Got user name, find id
+			$id = Model_User::user_id($id);
+			echo $id;
+
 		} else {
+
+			// Got id
 			$id = (int)$id;
+
+		}
+
+		if ($id == 0) {
+			return null;
 		}
 
 		// Try static cache
@@ -735,28 +757,36 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			if (!$user) {
 
 				// Load from DB
-				$model = Jelly::select('user', $id);
-				if ($model->loaded()) {
-					$user  = array(
-						'id'        => $id,
-						'username'  => $model->username,
-						'gender'    => $model->gender,
-						'title'     => $model->title,
-						'signature' => $model->signature,
-						'avatar'    => $model->avatar,
-						'thumb'     => $model->default_image->id ? $model->default_image->get_url('thumbnail') : ($model->picture ? $model->picture : null),
-					);
-				} else {
-					$user = null;
-				}
+				$model = Jelly::select('user')->where(is_int($id) ? 'id' : 'username_clean', '=', $id)->limit(1)->execute();
+				$user = $model->light_array();
 
 				Cache::instance()->set_('user_light_' . $id, $user, Date::DAY);
 			}
 
-			$_cache[$id] = $user;
+			$_cache[$user['id']] = $user;
 		}
 
 		return $user;
+	}
+
+
+	/**
+	 * Get light array from User Model
+	 *
+	 * @return  array
+	 */
+	public function light_array() {
+		if ($this->loaded()) {
+			return array(
+				'id'        => $this->id,
+				'username'  => $this->username,
+				'gender'    => $this->gender,
+				'title'     => $this->title,
+				'signature' => $this->signature,
+				'avatar'    => $this->avatar,
+				'thumb'     => $this->default_image->id ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
+			);
+		}
 	}
 
 
@@ -769,11 +799,32 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function user_id($user) {
 		if (is_int($user)) {
+
+			// Already got id
 			return $user;
+
 		} else if (is_array($user)) {
+
+			// Got user array
 			return (int)Arr::get($user, 'id');
+
 		}	else if ($user instanceof Model_User) {
-			return (int)$user->id;
+
+			// Got user model
+			return $user->id;
+
+		} else if (is_string($user)) {
+
+			// Got user name
+			$username = Text::clean($user);
+			if (!$id = (int)Cache::instance()->get_('user_uid_' . $username)) {
+				if ($user = Model_User::find_user($user)) {
+					$id = $user->id;
+					Cache::instance()->set_('user_uid_' . $username, $id, Date::DAY);
+				}
+			}
+
+			return $id;
 		}
 
 		return 0;

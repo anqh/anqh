@@ -91,7 +91,7 @@ class Anqh_BB extends BBCode {
 				// Parent post author
 				case 'author':
 					$author_name = $param['value'];
-					$author = Model_User::find_user($author_name);
+					$author = Model_User::find_user_light($author_name);
 					break;
 
 			}
@@ -102,7 +102,7 @@ class Anqh_BB extends BBCode {
 			$quote = '<blockquote cite="' . URL::site(Route::model($post->topic)) . '?post=' . $post->id . '#post-' . $post->id . '">';
 
 			// Override author
-			$author = $post->author;
+			$author = Model_User::find_user_light($post->original('author'));
 		} else {
 			$quote = '<blockquote>';
 		}
@@ -110,7 +110,7 @@ class Anqh_BB extends BBCode {
 		$quote .= '<p>' . trim($content) . '</p>';
 
 		// Post author
-		if (isset($author) && $author->loaded()) {
+		if (isset($author) && $author) {
 			$quote .= '<cite>' . __('-- :author', array(':author' => HTML::user($author))) . '</cite>';
 		} else if (isset($author_name)) {
 			$quote .= '<cite>' . __('-- :author', array(':author' => HTML::chars($author_name))) . '</cite>';
