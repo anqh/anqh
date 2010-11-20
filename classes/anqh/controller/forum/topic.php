@@ -111,7 +111,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			// Permission is already checked by the topic, no need to check for post
 
-			echo View::factory('forum/post', array('topic' => $topic, 'post'  => $post, 'user'  => self::$user));
+			echo View::factory('forum/post', array(
+				'topic'  => $topic,
+				'post'   => $post,
+				'number' => $topic->get_post_number($post->id) + 1,
+				'user'   => self::$user));
 			return;
 		}
 
