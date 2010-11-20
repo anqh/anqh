@@ -214,17 +214,19 @@ $(function() {
 			$form = array(
 				'action' => Route::model($topic, 'reply'),
 				'values' => Jelly::factory('forum_post'),
+				'save'   => array('label' => __('Reply')),
 				'groups' => array(
 					array(
 						'fields' => array(
-							'post' => array('label' => __('Reply')),
+							'post' => array('label' => null),
 						),
 					),
 				)
 			);
 
-			Widget::add('main', View_Module::factory('form/anqh', array(
+			Widget::add('main', View_Module::factory('forum/reply', array(
 				'mod_id' => 'reply',
+				'user'   => self::$user,
 				'form'   => $form
 			)));
 		}
@@ -344,13 +346,11 @@ $(function() {
 				throw new Model_Exception($post, $post_id);
 			}
 			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, self::$user);
-			$label = __('Edit post');
 
 		} else {
 
 			// New reply
 			$post = Jelly::factory('forum_post');
-			$label = __('Reply');
 
 		}
 
@@ -449,30 +449,48 @@ $(function() {
 		$form = array(
 			'values' => $post,
 			'errors' => $errors,
+			'save'   => array('label' => $quote_id ? __('Reply') : __('Save')),
 			'cancel' => $this->ajax
 				? Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $quote_id ? $quote->id : $post->id))
 				: Request::back(Route::model($topic), true),
 			'groups' => array(
 				array(
 					'fields' => array(
-						'post' => array('label' => $label),
+						'post' => array('label' => null),
 					),
 				),
 			)
 		);
 
 		if ($this->ajax) {
-
-			// Needed for cancel ajax
 			if ($quote_id) {
-				$form['attributes'] = array('id' => 'quote');
-			}
 
-			echo View::factory('form/anqh', array('form' => $form));
+				// Quote
+				$form['attributes'] = array('id' => 'quote');
+
+				echo View_Module::factory('forum/reply', array(
+					'mod_id'    => 'quote',
+					'mod_class' => 'quote first',
+					'form'      => $form,
+					'user'      => self::$user,
+				));
+
+			} else {
+
+				// Edit post
+				echo View::factory('form/anqh', array('form' => $form));
+
+			}
 			return;
 		}
 
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('forum/reply', array(
+			'mod_id' => 'reply',
+			'form'   => $form,
+			'user'   => self::$user,
+		)));
+
+		//Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
 

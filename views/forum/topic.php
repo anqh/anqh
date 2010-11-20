@@ -82,9 +82,9 @@ $(function() {
 		});
 	});
 
-	$("form#quote a").live("click", function(e) {
+	$("#quote form a").live("click", function(e) {
 		e.preventDefault();
-		var quote = $(this).closest("form");
+		var quote = $("#quote");
 		var article = quote.closest("article");
 		quote.slideUp(null, function() { quote.remove(); });
 		article.find(".actions").fadeIn();
