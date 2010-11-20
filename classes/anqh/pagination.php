@@ -10,20 +10,50 @@
 class Anqh_Pagination extends Kohana_Pagination {
 
 	/**
+	 * Go to page with item
+
+	 * @param   integer  $item
+	 */
+	public function item($item) {
+		$this->current_page = null;
+		$this->config['current_page']['page'] = ceil((int)$item / $this->items_per_page);
+
+		return $this->setup();
+	}
+
+
+	/**
 	 * Go to last page
 	 */
 	public function last() {
-		$this->current_page = $this->total_pages;
-		$this->current_first_item = (int)min((($this->current_page - 1) * $this->items_per_page) + 1, $this->total_items);
-		$this->current_last_item  = (int)min($this->current_first_item + $this->items_per_page - 1, $this->total_items);
-		$this->offset             = (int)($this->current_page - 1) * $this->items_per_page;
+		$this->current_page = null;
+		$this->config['current_page']['page'] = $this->total_pages;
 
-		// If there is no first/last/previous/next page, relative to the
-		// current page, value is set to FALSE. Valid page number otherwise.
-		$this->first_page         = ($this->current_page === 1) ? false : 1;
-		$this->last_page          = false;
-		$this->previous_page      = ($this->current_page > 1) ? $this->current_page - 1 : false;
-		$this->next_page          = false;
+		return $this->setup();
+	}
+
+
+	/**
+	 * Renders the pagination links.
+	 *
+	 * @return  string  pagination output (HTML)
+	 */
+	public function __toString() {
+		try {
+			return $this->render();
+		} catch (Exception $e) {
+
+			// Display the exception message only if not in production
+			ob_start();
+			Kohana::exception_handler($e);
+
+			if (Kohana::$environment == Kohana::PRODUCTION) {
+				ob_end_clean();
+				return __('An error occured and has been logged.');
+			} else {
+				return ob_get_clean();
+			}
+		}
 	}
 
 }
