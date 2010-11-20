@@ -88,14 +88,14 @@ body                                   { background: @body-background-color; col
 @mainmenu-selected-color:              #f6f6f6;
 
 #header                                { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; }
-h1                                     { float: left; .opacity(.5); margin-right: 30px; padding: 2px 0; .transition(opacity .25s ease-in-out); }
-h1:hover                               { .opacity(1); }
-h1 a                                   { display: block; }
 #header li                             { display: block; float: left; margin-right: 30px; padding: 0 2px; position: relative; }
 #header li a                           { color: @mainmenu-color; display: block; font-size: 1.1667em; line-height: 1.4286em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
 #header li a:hover                     { color: @mainmenu-selected-color; text-decoration: none; }
 #header li.selected > a                { color: @mainmenu-selected-color; }
 #header li ul                          { position: absolute; width: 400px; }
+h1                                     { float: left; .opacity(.5); margin-right: 30px; padding: 2px 0; .transition(opacity .25s ease-in-out); }
+h1:hover                               { .opacity(1); }
+h1 a                                   { display: block; }
 
 #visitor                               { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; border-top: 1px solid @groove-light; }
 #visitor .avatar                       { padding: 0 5px 0 0; }
@@ -121,7 +121,7 @@ h1 a                                   { display: block; }
 body.left #main                        { float: left; }
 body.right #main                       { float: right; }
 
-.widget                                { background: @midget-border-color; .border-radius(6px);padding: 5px 0; }
+.widget                                { background: @midget-border-color; .border-radius(6px); padding: 5px 0; }
 .widget-container                      { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; padding: 4px; }
 
 .mod                                   { background: @mod-background; }
@@ -129,7 +129,8 @@ body.right #main                       { float: right; }
 .tab                                   { background: none; margin: 0; padding: 0; }
 
 #title                                 { .widget; position: relative; }
-#title hgroup                          { padding: 0 10px; }
+#title hgroup,
+#title .actions                        { padding: 0 5px; }
 #title .subtitle .icon,
 #title h3 .icon                        { margin: 0 5px; }
 
@@ -166,6 +167,7 @@ aside .mod                             { margin-bottom: 10px; }
 #side-narrow .mod .container           { padding-left: 0; padding-right: 0; }
 
 aside .mod                             { .widget; }
+aside .mod.tabs                        { padding-top: 0; }
 aside .mod .container                  { .widget-container; overflow: hidden; padding: 9px; }
 aside h4,
 aside h5,
