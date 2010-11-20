@@ -121,19 +121,15 @@ h1 a                                   { display: block; }
 body.left #main                        { float: left; }
 body.right #main                       { float: right; }
 
+.widget                                { background: @midget-border-color; .border-radius(6px);padding: 5px 0; }
+.widget-container                      { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; padding: 4px; }
+
 .mod                                   { background: @mod-background; }
 .cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 .tab                                   { background: none; margin: 0; padding: 0; }
 
-#title                                 { background: @mod-background; position: relative; }
-#title .container                      { padding: 0 10px; }
-#title nav                             { overflow: hidden; }
-#title nav li                          { background: black; border-right: 1px solid #111; float: left; }
-#title nav li a                        { display: block; padding: 0.8333em 1em; }
-#title nav li a:hover                  { text-decoration: none; }
-#title nav li:hover,
-#title nav li.selected                 { background: #222; }
-#title nav li.selected a               { color: @header-color; }
+#title                                 { .widget; position: relative; }
+#title hgroup                          { padding: 0 10px; }
 #title .subtitle .icon,
 #title h3 .icon                        { margin: 0 5px; }
 
@@ -162,15 +158,12 @@ section article .details               { color: @text-color-alt; }
 #main .mod,
 #wide .mod,
 #header .mod,
-aside .mod                             {margin-bottom: 10px; }
+aside .mod                             { margin-bottom: 10px; }
 #title,
 #wide .mod,
-#main .mod                             { background: @mod-background; }
+#main .mod                             { /*background: @mod-background;*/ }
 .mod .mod                              { background: transparent; margin-bottom: 0; }
 #side-narrow .mod .container           { padding-left: 0; padding-right: 0; }
-
-.widget                                { background: @midget-border-color; .border-radius(6px);padding: 5px 0; }
-.widget-container                      { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; padding: 4px; }
 
 aside .mod                             { .widget; }
 aside .mod .container                  { .widget-container; overflow: hidden; padding: 9px; }

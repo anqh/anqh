@@ -210,15 +210,34 @@ a.ui-state-hover,
 .ui-datepicker a.ui-state-active       { background: @widget-border-color; }
 
 /* Tabs */
-.ui-tabs-nav .ui-state-default         { border-bottom: 1px solid @groove-light; }
-.ui-tabs-nav .ui-state-default a       { border-bottom: 1px solid @groove-shadow; border-left: 1px solid @groove-light; border-right: 1px solid @groove-shadow; }
-.ui-tabs-nav .ui-state-default:first-child a { border-left: 0 none; }
-.ui-tabs-nav .ui-state-default:last-child a  { border-right: 0 none; }
-.ui-tabs-nav .ui-state-hover           { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
-.ui-tabs-nav .ui-state-active,
-.ui-state-active a,
-.ui-state-active a:link,
-.ui-state-active a:visited             { border-bottom-color: transparent; color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+#title nav                             { overflow: hidden; }
+.ui-tabs                               { zoom: 1; }
+.ui-tabs {
+  .ui-tabs-panel                       { display: block; }
+  .ui-tabs-hide                        { display: none !important; }
+}
+#title nav ul,
+.ui-tabs .ui-tabs-nav                  { list-style: none; position: relative; }
+#title nav ul,
+.ui-tabs .ui-tabs-nav {
+  li                                   { border-bottom: 1px solid @groove-light; float: left; position: relative; }
+  li a                                 { border: 1px solid @groove-shadow; border-left-color: @groove-light; border-top-width: 0; color: @tab-color; display: block; float: left; padding: .8333em 1em 0.75em 1em; text-decoration: none; }
+  li:first-child a                     { border-left: 0 none; }
+  li:last-child a                      { border-right: 0 none; }
+  li:hover a,
+  .ui-state-hover a                    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+  .selected,
+  .ui-state-active,
+  .ui-tabs-selected,
+  .ui-tabs-selected a                  { border-bottom: 0 none; }
+  .selected a,
+  .selected a:link,
+  .selected a:visited,
+  .ui-state-active a,
+  .ui-state-active a:link,
+  .ui-state-active a:visited           { border-bottom-color: transparent; color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+}
+
 
 /* Interaction Cues */
 .ui-state-highlight,
@@ -251,11 +270,12 @@ a.ui-state-hover,
 .ui-draggable .ui-dialog-titlebar      { cursor: move; }
 
 /* Autocomplete */
-.ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; .border-radius(0 0 4px 4px); list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; z-index: 99999; }
+.ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; .border-radius(0 0 4px 4px); cursor: default; list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; position: absolute; z-index: 99999; }
 .ui-autocomplete li                    { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; text-shadow: @tab-text-shadow; }
 .ui-autocomplete-loading,
 .ui-autocomplete-loading:focus,
 .ui-autocomplete-loading:hover         { .ajax(@input-background); }
+* html .ui-autocomplete                { width:1px; } /* without this, the menu expands to 100% in IE6
 
 /***** /JQUERY UI *****/
 
@@ -277,6 +297,19 @@ a.ui-state-hover,
 #slideshow-image                       { position: relative; }
 
 /***** /JQUERY TOOLS ****/
+
+
+/***** TABS *****/
+/*
+#title nav                             { overflow: hidden; }
+#title nav li                          { background: black; border-right: 1px solid #111; float: left; }
+#title nav li a                        { display: block; padding: 0.8333em 1em; }
+#title nav li a:hover                  { text-decoration: none; }
+#title nav li:hover,
+#title nav li.selected                 { background: #222; }
+#title nav li.selected a               { color: @header-color; }
+*/
+/***** /TABS *****/
 
 
 /***** ICONS *****/
