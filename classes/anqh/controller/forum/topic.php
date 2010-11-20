@@ -94,6 +94,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Load topic
+		/** @var  Model_Forum_Topic  $topic */
 		$topic = Jelly::select('forum_topic')->load($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
@@ -172,7 +173,26 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			'total_items'    => max(1, $topic->post_count),
 		));
 		if (Arr::get($_GET, 'page') == 'last') {
+
+			// Go to last page
 			$pagination->last();
+
+		} else if (isset($post_id)) {
+
+			// Go to post
+			$pagination->item($topic->get_post_number($post_id));
+			/*
+			Widget::add('foot', HTML::script_source('
+$(function() {
+	var post = $("#post-' . $post_id . '");
+	if (post) {
+	 var position = post.offset();
+		$(window).scrollTop(position.top);
+	}
+});
+'));
+			 */
+
 		}
 
 		// Posts
@@ -181,6 +201,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			'user'       => self::$user,
 			'topic'      => $topic,
 			'posts'      => $topic->get('posts')->pagination($pagination)->execute(),
+			'first'      => $pagination->current_first_item,
 			'pagination' => $pagination
 		)));
 

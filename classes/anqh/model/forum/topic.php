@@ -160,6 +160,24 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 
 
 	/**
+	 * Find a post's number in topic
+	 *
+	 * @param   integer  $post_id
+	 * @return  integer
+	 */
+	public function get_post_number($post_id) {
+		$query = DB::select(array('COUNT("id")', 'posts'))
+			->from('forum_posts')
+			->where('forum_topic_id', '=', $this->id)
+			->and_where('id', '<', (int)$post_id)
+			->execute()
+			->current();
+
+		return (int)Arr::get($query, 'posts', 0);
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission

@@ -22,7 +22,11 @@
 <?php endif;
 	$previous = $current;
 
-	echo View::factory('forum/post', array('topic' => $topic, 'post'  => $post, 'user'  => $user));
+	echo View::factory('forum/post', array(
+		'topic'  => $topic,
+		'post'   => $post,
+		'number' => $first++,
+		'user'   => $user));
 
 endforeach; ?>
 
