@@ -16,23 +16,22 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected $ajax = false;
 
 	/**
-	 * Internal request?
-	 *
-	 * @var  boolean
+	 * @var  boolean  Internal request?
 	 */
 	protected $internal = false;
 
 	/**
-	 * Current language
-	 *
-	 * @var  string
+	 * @var  string  Current language
 	 */
 	protected $language = 'en';
 
 	/**
-	 * User Model
-	 *
-	 * @var  User_Model
+	 * @var  Request  Request that created the controller
+	 */
+	public $request;
+
+	/**
+	 * @var  Model_User  Current user
 	 */
 	protected static $user = false;
 
