@@ -10,15 +10,14 @@
 ?>
 
 <section<?php echo $id ? ' id="' . $id . '"' : '' ?> class="<?php echo $class ?>">
+	<?php if ($title): ?>
+	<header>
+		<h4><?php echo $title ?></h4>
+		<?php if (isset($subtitle)) echo '<span class="subtitle">' . $subtitle . '</span>' ?>
+	
+	</header>
+	<?php endif; ?>
 	<div class="container">
-		<?php if ($title): ?>
-
-		<header>
-			<h4><?php echo $title ?></h4>
-			<?php if (isset($subtitle)) echo '<span class="subtitle">' . $subtitle . '</span>' ?>
-
-		</header>
-		<?php endif; ?>
 
 <?php if ($actions) echo $actions; ?>
 

@@ -183,6 +183,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$skin = $session->get('skin', 'dark');
 			$skin_imports = array(
 				'ui/mixin.less',
+				'ui/grid.less',
 				'ui/layout.less',
 				'ui/widget.less',
 				'ui/custom.less'
