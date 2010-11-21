@@ -258,7 +258,7 @@ $.fn.geonamesCity = function(options) {
 		.autocomplete({
 			source: function(request, response) {
 				$.ajax({
-					url: 'http://ws.geonames.org/searchJSON',
+					url: 'http://ws2.geonames.org/searchJSON',
 					dataType: 'jsonp',
 					data: {
 						lang: options.lang,
@@ -377,7 +377,7 @@ $(function() {
 			position: 'top center'
 		})
 		.dynamic({
-			bottom: { offset: [-10, 0] }		
+			bottom: { offset: [-10, 0] }
 		});
 
 
