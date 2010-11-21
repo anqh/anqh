@@ -191,7 +191,7 @@ $(function() {
 	var post = $("#post-' . $post_id . '");
 	if (post) {
 	 var position = post.offset();
-		$(window).scrollTop(position.top);
+		window.scrollTo(0, position.top);
 	}
 });
 '));
@@ -362,7 +362,6 @@ $(function() {
 			}
 			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, self::$user);
 
-			$label = __('Quote');
 			if (!$post->loaded()) {
 				$post->post = '[quote author="' . $quote->author_name . '" post="' . $quote->id . '"]' . $quote->post . "[/quote]\n\n";
 			}
