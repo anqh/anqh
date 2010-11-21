@@ -121,7 +121,7 @@ h1 a                                   { display: block; }
 body.left #main                        { float: left; }
 body.right #main                       { float: right; }
 
-.widget                                { background: @midget-border-color; .border-radius(6px); padding: 5px 0; }
+.widget                                { background: @midget-border-color; .border-radius(4px); padding: 5px 0; }
 .widget-container                      { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; padding: 4px; }
 
 .mod                                   { background: @mod-background; }
@@ -159,14 +159,17 @@ section article .details               { color: @text-color-alt; }
 #main .mod,
 #wide .mod,
 #header .mod,
-aside .mod                             { margin-bottom: 10px; }
+aside .mod                             { .widget; margin-bottom: 10px; }
 #title,
 #wide .mod,
 #main .mod                             { /*background: @mod-background;*/ }
+.mod .container                        { padding: 9px; }
+.grid12 .container .container          { padding: 0; }
+.grid12 .container .container .mod     { .border-radius(0); }
 .mod .mod                              { background: transparent; margin-bottom: 0; }
-#side-narrow .mod .container           { padding-left: 0; padding-right: 0; }
+.mod > header                          { padding: 0 10px 5px 10px; }
 
-aside .mod                             { .widget; }
+aside .mod                             { /*.widget;*/ }
 aside .mod.tabs                        { padding-top: 0; }
 aside .mod .container                  { .widget-container; overflow: hidden; padding: 9px; }
 aside h4,
