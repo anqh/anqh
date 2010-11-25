@@ -135,6 +135,10 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			'tags'      => new Field_ManyToMany(array(
 				'label' => __('Music'),
 			)),
+			'flyers'    => new Field_ManyToMany(array(
+				'foreign' => 'image',
+				'through' => 'events_flyers',
+			)),
 			'images'    => new Field_ManyToMany,
 			'favorites' => new Field_ManyToMany(array(
 				'foreign' => 'user',

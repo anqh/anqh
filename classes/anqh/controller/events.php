@@ -156,24 +156,27 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Event performers and extra info
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
 
-		// Slideshow
-		if (count($event->images) > 1) {
+		// Event flyers
+		if (count($event->flyers) > 1) {
 			$images = array();
-			foreach ($event->images as $image) $images[] = $image;
+			foreach ($event->flyers as $image) $images[] = $image;
+			$classes = array();
+			$event->flyer_front and $classes[$event->flyer_front->id] = 'front default active ';
+			$event->flyer_back and $classes[$event->flyer_back->id] .= 'back ';
 			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
-				'images'     => array_reverse($images),
+				'images'  => array_reverse($images),
+				'classes' => $classes,
 			)));
 		}
 
-		// Event flyers
-		if ($event->flyer_front->id || $event->flyer_back->id || !($event->flyer_front_url || $event->flyer_back_url)) {
-			Widget::add('side', $this->_get_mod_image($event), Widget::TOP);
+		if (count($event->flyers)) {
+			Widget::add('side', $this->_get_mod_image($event));
 		} else if ($event->flyer_front_url || $event->flyer_back_url) {
 
 			// To be deprecated
 			Widget::add('side', View_Module::factory('events/flyers', array(
 				'event' => $event,
-			)), Widget::TOP);
+			)));
 
 		}
 
@@ -181,7 +184,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		Widget::add('side', View_Module::factory('events/event_info', array(
 			//'mod_title' => __('Event information'),
 			'event'     => $event
-		)), Widget::TOP);
+		)));
 
 		// Favorites
 		if ($event->favorite_count) {
@@ -189,7 +192,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				'mod_title' => _('Favorites'),
 				'viewer'    => self::$user,
 				'users'     => $event->find_favorites()
-			)), Widget::TOP);
+			)));
 		}
 
 	}
@@ -261,22 +264,48 @@ class Anqh_Controller_Events extends Controller_Template {
 			$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
 		}
 
-		// Delete existing
-		if (isset($_REQUEST['delete'])) {
+		if (isset($_REQUEST['front'])) {
+
+			// Change front flyer
+			/** @var  Model_Image  $image */
+			$image = Jelly::select('image')->load((int)$_REQUEST['front']);
+			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
+				$event->flyer_front = $image;
+				$event->flyer_front_url = $image->get_url();
+				$event->save();
+			}
+			$cancel = true;
+
+		} else if (isset($_REQUEST['back'])) {
+
+			// Change back flyer
+			/** @var  Model_Image  $image */
+			$image = Jelly::select('image')->load((int)$_REQUEST['back']);
+			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
+				$event->flyer_back = $image;
+				$event->flyer_back_url = $image->get_url();
+				$event->save();
+			}
+			$cancel = true;
+
+		} else if (isset($_REQUEST['delete'])) {
+
+			// Delete existing
 			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image)) {
-				$event->remove('images', $image);
+			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
+				$event->remove('flyers', $image);
 				if ($image->id == $event->flyer_front->id) {
 					$event->flyer_front = null;
 					$event->flyer_front_url = null;
 				} else if ($image->id == $event->flyer_back->id) {
 					$event->flyer_back = null;
-					$event->flyer_back_back = null;
+					$event->flyer_back_url = null;
 				}
 				$event->save();
 				$image->delete();
 			}
 			$cancel = true;
+
 		}
 
 		// Cancel change
@@ -288,9 +317,6 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			$this->request->redirect(Route::model($event));
 		}
-
-		// Front or back flyer
-		$flyer = isset($_REQUEST['back']) ? 'flyer_back' : 'flyer_front';
 
 		$image = Jelly::factory('image')->set(array(
 			'author' => self::$user,
@@ -311,9 +337,22 @@ class Anqh_Controller_Events extends Controller_Template {
 				} catch (Kohana_Exception $e) { }
 
 				// Set the image as flyer
-				$event->add('images', $image);
-				$event->$flyer = $image;
-				$event->{$flyer . '_url'} = $image->get_url();
+				$event->add('flyers', $image);
+				if ($event->flyer_front->id) {
+					if (!$event->flyer_back->id) {
+
+						// Back flyer not set, set it
+						$event->flyer_back = $image;
+						$event->flyer_back_url = $image->get_url();
+
+					}
+				} else {
+
+					// Front flyer not set, set it
+					$event->flyer_front = $image;
+					$event->flyer_front_url = $image->get_url();
+
+				}
 				$event->save();
 
 				NewsfeedItem_Events::event_edit(self::$user, $event);
@@ -340,7 +379,6 @@ class Anqh_Controller_Events extends Controller_Template {
 			'errors'     => $errors,
 			'attributes' => array('enctype' => 'multipart/form-data'),
 			'cancel'     => $this->ajax ? Route::model($event, 'image') . '?cancel' : Route::model($event),
-			'hidden'     => array(isset($_REQUEST['back']) ? 'back' : 'front' => 1),
 			'groups'     => array(
 				array(
 					'fields' => array(
@@ -751,15 +789,20 @@ class Anqh_Controller_Events extends Controller_Template {
 			$image = $event->flyer_front;
 		} else if ($event->flyer_back->id) {
 			$image = $event->flyer_back;
+		} else if (count($event->flyers)) {
+			$image = $event->flyers[0];
 		} else {
 			$image = null;
 		}
 
 		if (Permission::has($event, Model_User::PERMISSION_UPDATE, self::$user)) {
 			$actions = array();
-			!$event->flyer_front->id and $actions[] = array('link' => Route::model($event, 'image') . '?front', 'text' => __('Add front flyer'), 'class' => 'image-add ajaxify');
-			!$event->flyer_back->id and $actions[] = array('link' => Route::model($event, 'image') . '?back', 'text' => __('Add back flyer'), 'class' => 'image-add ajaxify');
-			$image and $actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&delete=' . $image->id, 'text' => __('Delete'), 'class' => 'image-delete');
+			$actions[] = array('link' => Route::model($event, 'image'), 'text' => __('Add flyer'), 'class' => 'image-add ajaxify');
+			if ($image) {
+				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&front=' . $image->id,  'text' => __('As front'), 'class' => 'image-change' . ($event->flyer_front->id == $image->id ? ' disabled' : ''), 'data-change' => 'front');
+				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&back=' . $image->id,   'text' => __('As back'), 'class' => 'image-change' . ($event->flyer_back->id == $image->id ? ' disabled' : ''), 'data-change' => 'back');
+				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&delete=' . $image->id, 'text' => __('Delete'), 'class' => 'image-delete');
+			}
 		} else {
 			$actions = null;
 		}
