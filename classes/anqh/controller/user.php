@@ -278,7 +278,7 @@ class Anqh_Controller_User extends Controller_Template {
 			foreach ($user->images as $image) $images[] = $image;
 			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
 				'images'     => array_reverse($images),
-				'default_id' => $user->default_image->id,
+				'classes'    => array($user->default_image->id => 'default active'),
 			)));
 		}
 
@@ -464,7 +464,7 @@ $(function() {
 			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
 				? array(
 						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
-						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-default disabled'),
+						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-change disabled', 'data-change' => 'default'),
 						array('link' => URL::user($user, 'image'), 'text' => __('Add image'), 'class' => 'image-add ajaxify')
 					)
 				: null,

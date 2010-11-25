@@ -18,8 +18,8 @@
 			echo HTML::anchor(
 				$image->get_url(),
 				HTML::image($image->get_url('icon')),
-				isset($default_id) && $default_id == $image->id
-					? array('data-image-id' => $image->id, 'class' => 'default active')
+				isset($classes) && isset($classes[$image->id])
+					? array('data-image-id' => $image->id, 'class' => $classes[$image->id])
 					: array('data-image-id' => $image->id)
 			);
 		endforeach; ?>
