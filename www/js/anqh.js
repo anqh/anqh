@@ -469,10 +469,15 @@ $(function() {
 
 	// User default picture
 	$('section.image-slideshow a[data-image-id]').click(function() {
-		var $default = $('a.image-default');
-		if ($default.length) {
-			$default.toggleClass('disabled', $(this).hasClass('default'));
-			$default.attr('href', $default.attr('href').replace(/default.*$/, 'default=' + $(this).attr('data-image-id')));
+		var $changes = $('a.image-change');
+		var $image = $(this);
+		if ($changes.length) {
+			$changes.each(function(i) {
+				var $link = $(this);
+				var change = $link.attr('data-change');
+				$link.toggleClass('disabled', $image.hasClass(change));
+				$link.attr('href', $link.attr('href').replace(new RegExp(change + '.*$'), change + '=' + $image.attr('data-image-id')));
+			});
 		}
 
 		var $delete = $('a.image-delete');
