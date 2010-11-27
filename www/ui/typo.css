@@ -19,7 +19,7 @@
  * H6 14px
  */
 
-body                                   { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 75%; font-size-adjust: none; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1.665em; }
+body                                   { font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; font-size: 75%; font-size-adjust: none; font-style: normal; font-variant: normal; font-weight: normal; line-height: 1.6667em; }
 
 p                                      { font-weight: 300; }
 p + p                                  { padding: 1.666em 0 0; /*text-indent: 1.666em;*/ }

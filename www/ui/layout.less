@@ -7,7 +7,7 @@
 /***** PAGE *****/
 
 .colright,
-body                                   { background: @body-background-color; color: @text-color; }
+body                                   { background: @body-background-color @body-background-image; color: @text-color; }
 .fixed .content                        { width: 960px; }
 .liquid .content                       { margin: 0 25px; width: auto; }
 .fixed .col1                           { width: 800px; }
@@ -24,7 +24,7 @@ body                                   { background: @body-background-color; col
 @dock-link-color:                      @link-color;
 @dock-text-shadow:                     none;
 
-#dock                                  { background: @dock-background; .box-shadow(0 0 10px @dock-background); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
+#dock                                  { background: @dock-background @background-image; .box-shadow(0 2px 2px rgba(0, 0, 0, 0.75)); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
 #dock                                  { margin-top: -27px; .transition(margin-top .25s ease-in-out); }
 #dock.open,
 #dock:hover                            { margin-top: 0; }
@@ -33,8 +33,6 @@ body                                   { background: @body-background-color; col
 #dock div                              { color: @dock-color; text-align: right; text-shadow: @dock-text-shadow; }
 #dock form                             { float: left; }
 #dock a                                { color: @dock-link-color; }
-#visitor label,
-#visitor input,
 #dock label,
 #dock input                            { display: inline; margin-left: 0; }
 #customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -22px; }
@@ -79,7 +77,7 @@ body                                   { background: @body-background-color; col
 
 /***** HEADER *****/
 
-@mainmenu-background:                  #121212;
+@mainmenu-background:                  #060606;
 @mainmenu-link-background:             rgba(0, 0, 0, 0.5);
 @mainmenu-link-hover-background:       rgba(0, 0, 0, 0.75);
 @mainmenu-color:                       #777;
@@ -87,20 +85,19 @@ body                                   { background: @body-background-color; col
 @mainmenu-hover-color:                 white;
 @mainmenu-selected-color:              #f6f6f6;
 
-#header                                { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; }
-#header li                             { display: block; float: left; margin-right: 30px; padding: 0 2px; position: relative; }
-#header li a                           { color: @mainmenu-color; display: block; font-size: 1.1667em; line-height: 1.4286em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
-#header li a:hover                     { color: @mainmenu-selected-color; text-decoration: none; }
-#header li.selected > a                { color: @mainmenu-selected-color; }
-#header li ul                          { position: absolute; width: 400px; }
-h1                                     { float: left; .opacity(.5); margin-right: 30px; padding: 2px 0; .transition(opacity .25s ease-in-out); }
-h1:hover                               { .opacity(1); }
-h1 a                                   { display: block; }
+#header                                { background: @mainmenu-background; .box-shadow(0 0 4px rgba(0, 0, 0, 0.75)); }
+#header ul                             { display: inline; display: inline-block; padding-top: 3px; }
 
-#visitor                               { background: @mainmenu-background; border-bottom: 1px solid @groove-shadow; border-top: 1px solid @groove-light; }
+#mainmenu                              { line-height: 1.4286em; }
+#mainmenu li                           { display: block; float: left; margin-right: 10px; padding: 0 2px; position: relative; }
+#mainmenu li a                         { color: @mainmenu-color; font-size: 1.1667em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
+#mainmenu li a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
+#mainmenu li.selected > a              { color: @mainmenu-selected-color; }
+
 #visitor .avatar                       { padding: 0 5px 0 0; }
-#visitor form ul li                    { margin-bottom: 1px; margin-top: 1px; }
-.new-messages                          { display: inline; display: inline-block; padding-left: 5px; padding-top: 3px; }
+#visitor form ul                       { padding-top: 0; }
+#visitor form ul li                    { margin-bottom: 0; margin-top: 0; }
+.new-messages                          { padding-left: 5px; }
 .new-messages li                       { display: inline; }
 .new-messages li a                     { background: rgba(0, 0, 0, .75) no-repeat 2px center; .border-radius(5px); color: @sidebar-selected-color; margin-right: 5px; padding: 2px 2px 2px 20px; }
 .new-messages li a:hover               { text-decoration: none; }
@@ -159,14 +156,14 @@ section article .details               { color: @text-color-alt; }
 #main .mod,
 #wide .mod,
 #header .mod,
-aside .mod                             { .widget; margin-bottom: 10px; }
+aside .mod                             { .widget; .box-shadow(0 0 4px rgba(0, 0, 0, 0.75)); margin-bottom: 10px; }
 #title,
 #wide .mod,
 #main .mod                             { /*background: @mod-background;*/ }
 .mod .container                        { padding: 9px; }
 .grid12 .container .container          { padding: 0; }
 .grid12 .container .container .mod     { .border-radius(0); }
-.mod .mod                              { background: transparent; margin-bottom: 0; }
+.mod .mod                              { background: transparent; .box-shadow(none); margin-bottom: 0; }
 .mod > header                          { padding: 0 10px 5px 10px; }
 
 aside .mod                             { /*.widget;*/ }
@@ -186,7 +183,7 @@ aside .mod .container form li          { border-top: 0 none; border-bottom: 0 no
 
 /***** FOOTER *****/
 
-#footer                                { background: @footer-background; clear: both; color: @footer-color; float: left; text-shadow: @footer-text-shadow; width: 100%; }
+#footer                                { background: @footer-background; border-top: 1px solid @groove-light; clear: both; color: @footer-color; float: left; text-shadow: @footer-text-shadow; width: 100%; }
 #footer .mod                           { background: none; margin-bottom: 1em; }
 #footer a                              { color: @footer-link-color; }
 #footer p,

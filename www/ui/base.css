@@ -28,7 +28,7 @@ section article:hover .hidden          { visibility: visible; }
 .mod.settings                { padding: 0 10px; }
 
 /*.subtitle { margin-bottom: 1.6667em; }*/
-.mod.ad                                { background: transparent; text-align: center; }
+.ad                                    { text-align: center; }
 .mod.ad728x90                          { padding: 0; margin: 0; }
 .ad728x90 .content *                   { margin: 0 auto 10px auto; margin-bottom: 10px; max-height: 90px; max-width: 728px; }
 .ad140x350                             { }
