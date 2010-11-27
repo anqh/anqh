@@ -735,7 +735,6 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			// Got user name, find id
 			$id = Model_User::user_id($id);
-			echo $id;
 
 		} else {
 
