@@ -57,20 +57,24 @@
 	<header id="header">
 		<div class="container grid12">
 
-			<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
+			<section id="logo" class="grid1 first">
+				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
+			</section>
 
-			<?php echo Widget::get('navigation') ?>
+			<section id="mainmenu" class="grid6">
 
-		</div><!-- #mainmenu -->
-	</header><!-- #header -->
+				<?php echo Widget::get('navigation') ?>
 
-	<section id="visitor">
-		<div class="container grid12">
+			</section>
+			<section id="visitor" class="grid5">
 
-<?php echo Widget::get('visitor') ?>
+				<?php echo Widget::get('visitor') ?>
+
+			</section>
 
 		</div>
-	</section><!-- #visitor -->
+	</header><!-- #header -->
+
 
 	<!-- /HEADER -->
 
