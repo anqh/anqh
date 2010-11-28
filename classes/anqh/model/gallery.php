@@ -136,6 +136,21 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find galleries by year and month
+	 *
+	 * @static
+	 * @param   integer  $year
+	 * @param   integer  $month
+	 * @return  Jelly_Collection
+	 */
+	public static function find_by_month($year, $month) {
+		return Jelly::select('gallery')
+			->year_month($year, $month)
+			->execute();
+	}
+
+
+	/**
 	 * Get visible gallery images
 	 *
 	 * @return  Jelly_Collection
@@ -167,6 +182,21 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 		}
 
 		return $images->execute();
+	}
+
+
+	/**
+	 * Find galleries with latest images
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_latest($limit = 15) {
+		return Jelly::select('gallery')
+			->latest()
+			->limit((int)$limit)
+			->execute();
 	}
 
 

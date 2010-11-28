@@ -18,6 +18,11 @@ Route::set('gallery_event', 'event/<id>/gallery')
 		'controller' => 'galleries',
 		'action'     => 'event'
 	));
+Route::set('flyer_image', 'flyer/<id>')
+	->defaults(array(
+		'controller' => 'galleries',
+		'action'     => 'flyer'
+	));
 Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default|hover', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',

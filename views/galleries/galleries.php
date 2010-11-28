@@ -15,15 +15,13 @@ $gallery = null;
 <ul>
 
 <?php foreach ($galleries as $gallery): ?>
-	<li class="grid2<?php echo Text::alternate(' first', '', '', '', '', '') ?>">
+	<li class="grid2<?php echo Text::alternate(' first', '', '', '') ?>">
 		<article>
-			<header>
-				<div class="thumb">
-					<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::image($gallery->default_image->get_url('thumbnail', $gallery->dir))) ?>
-				</div>
-				<h4><?= HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::chars($gallery->name), array('title' => HTML::chars($gallery->name))) ?></h4>
-			</header>
-			<div>
+			<div class="thumb">
+				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::image($gallery->default_image->get_url('thumbnail', $gallery->dir))) ?>
+			</div>
+			<h4><?= HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::chars($gallery->name)) ?></h4>
+			<div class="info">
 				<!--
 				<?php echo HTML::time(
 					Date::format('DMYYYY', $gallery->date),
@@ -46,19 +44,19 @@ $gallery = null;
 
 				<?php else: ?>
 
-					<?php if ($gallery->copyright):
-						$copyrights = explode(',', $gallery->copyright);
-						foreach ($copyrights as &$copyright) $copyright = HTML::user(trim($copyright));
-						echo '&copy; ', implode(', ', $copyrights), '<br />';
-					endif; ?>
+					<?php if ($gallery->rate_count > 0)
+						echo HTML::rating($gallery->rate_total, $gallery->rate_count, false, false) ?>
 
 					<?php echo HTML::icon_value(array(':images' => $gallery->image_count), ':images image', ':images images', 'images') ?><br />
 
 					<?php if ($gallery->comment_count > 0)
 						echo HTML::icon_value(array(':comments' => $gallery->comment_count), ':comments comment', ':comments comments', 'comments'), '<br />'; ?>
 
-					<?php if ($gallery->rate_count > 0)
-						echo HTML::rating($gallery->rate_total, $gallery->rate_count) ?>
+					<?php if ($gallery->copyright):
+						$copyrights = explode(',', $gallery->copyright);
+						foreach ($copyrights as &$copyright) $copyright = HTML::user(trim($copyright));
+						echo '&copy; ', implode(', ', $copyrights), '<br />';
+					endif; ?>
 
 				<?php endif; ?>
 

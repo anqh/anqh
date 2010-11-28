@@ -562,12 +562,23 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$this->page_actions[] = array('link' => Route::get('galleries')->uri(array('action' => 'upload')), 'text' => __('Upload images'), 'class' => 'images-add');
 		}
 
-		$galleries = Jelly::select('gallery')->latest()->limit(15)->execute();
+		// Galleries with latest images
+		$galleries = Model_Gallery::find_latest(16);
 		if (count($galleries)) {
-			Widget::add('wide', View_Module::factory('galleries/galleries', array(
+			Widget::add('main', View_Module::factory('galleries/galleries', array(
 				'galleries' => $galleries,
 			)));
 		}
+
+		// Latest flyers
+		$flyers = Model_Flyer::find_latest(6);
+		if (count($flyers)) {
+			Widget::add('side', View_Module::factory('galleries/flyers', array(
+				'mod_title' => __('Latest flyers'),
+				'flyers'    => $flyers,
+			)));
+		}
+
 	}
 
 
