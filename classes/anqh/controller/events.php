@@ -162,7 +162,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			foreach ($event->flyers as $image) $images[] = $image;
 			$classes = array();
 			$event->flyer_front and $classes[$event->flyer_front->id] = 'front default active ';
-			$event->flyer_back and $classes[$event->flyer_back->id] .= 'back ';
+			$event->flyer_back and $classes[$event->flyer_back->id] = 'back ';
 			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
 				'images'  => array_reverse($images),
 				'classes' => $classes,
@@ -337,6 +337,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				} catch (Kohana_Exception $e) { }
 
 				// Set the image as flyer
+				//$event->add_flyer($image);
 				$event->add('flyers', $image);
 				if ($event->flyer_front->id) {
 					if (!$event->flyer_back->id) {

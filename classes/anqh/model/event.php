@@ -137,12 +137,18 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			)),
 			'flyers'    => new Field_ManyToMany(array(
 				'foreign' => 'image',
-				'through' => 'events_flyers',
+				'through' => array(
+					'model'   => 'flyer',
+					'columns' => array('event_id', 'image_id')
+				),
 			)),
 			'images'    => new Field_ManyToMany,
 			'favorites' => new Field_ManyToMany(array(
 				'foreign' => 'user',
-				'through' => 'favorites',
+				'through' => array(
+					'model'   => 'favorite',
+					'columns' => array('event_id', 'user_id')
+				),
 			)),
 			'favorite_count' => new Field_Integer,
 		));
@@ -168,6 +174,21 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Add flyer to event
+	 *
+	 * @param   Model_Image  $image
+	 * @return  bool
+	 */
+	public function add_flyer(Model_Image $image) {
+		return $this->loaded() && Jelly::factory('flyer')
+			->set(array(
+				'image' => $image,
+				'event' => $this
+			))->save();
 	}
 
 
