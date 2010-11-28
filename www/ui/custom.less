@@ -88,16 +88,26 @@ section.reply                          { border-top: 1px solid @separator-color;
 
 /***** galleries *****/
 
-.galleries article                     { height: 25em; }
-.galleries article header h4           { height: 2.5em; overflow: hidden; }
 .galleries ol.rating                   { margin: 0; }
 
-#galleries .galleries li               { margin-bottom: 1em; }
-#galleries .galleries li h4            { padding-top: 0; }
-#galleries .gallery li                 { text-align: center; }
-#galleries .galleries li .thumb,
-#galleries .gallery li .thumb          { position: relative; text-align: center; }
-#galleries .thumb time                 { background: @hover-background; padding: 5px; position: absolute; right: 5px; top: 5px; }
+#galleries {
+  .flyers li,
+  .galleries li                        { margin-bottom: 1em; position: relative; }
+  .galleries li h4,
+  .galleries li .thumb img             { position: relative; }
+  .galleries li:hover                  { z-index: 2; }
+  .galleries li:hover h4,
+  .galleries li:hover .thumb img       { z-index: 3; }
+  .galleries li .info                  { .widget-container; .box-shadow(0 0 4px rgba(0, 0, 0, 0.75)); display: none; left: -10px; padding-top: 195px; position: absolute; top: -9px; width: 144px; }
+  .galleries li .info h4               { /*margin-bottom: 150px;*/ }
+  .galleries li:hover .info            { display: block; }
+  .flyers li h4,
+  .galleries li h4                     { height: 40px; overflow: hidden; padding-top: 0; }
+  .gallery li                          { text-align: center; }
+  .galleries li .thumb,
+  .gallery li .thumb                   { position: relative; text-align: center; }
+  .thumb time                          { background: @hover-background; padding: 5px; position: absolute; right: 5px; top: 5px; }
+}
 .gallery-image                         { text-align: center; }
 .gallery-image a img                   { opacity: 1; }
 
