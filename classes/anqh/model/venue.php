@@ -174,7 +174,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 
 				// Cache results for 15 minutes
 				Cache::instance()->set_('foursquare_venue_' . $this->foursquare_id, $foursquare, 60 * 15);
-				
+
 			}
 
 			return $foursquare;
@@ -202,7 +202,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_name($name) {
-		return Jelly::select('venue')->where('name', 'ILIKE', trim($name))->execute();
+		return Jelly::select('venue')->where(new Database_Expression('LOWER(name)'), '=', strtolower(trim($name)))->execute();
 	}
 
 
