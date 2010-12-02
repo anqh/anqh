@@ -147,6 +147,50 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
+	 * Action: comment flyer
+	 */
+	public function action_comment_flyer() {
+		$this->history = false;
+		$comment_id = (int)$this->request->param('id');
+		$action     = $this->request->param('commentaction');
+
+		// Load blog_comment
+		$comment = Jelly::select('image_comment')->load($comment_id);
+		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
+			$image = $comment->image;
+			$flyer = Model_Flyer::find_by_image($image->id);
+			switch ($action) {
+
+				// Delete comment
+				case 'delete':
+			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, self::$user)) {
+				    $comment->delete();
+				    $image->comment_count--;
+				    $image->save();
+			    }
+			    break;
+
+				// Set comment as private
+			  case 'private':
+				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, self::$user)) {
+					  $comment->private = true;
+					  $comment->save();
+				  }
+			    break;
+
+			}
+			if (!$this->ajax) {
+				$this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')));
+			}
+		}
+
+		if (!$this->ajax) {
+			Request::back('galleries');
+		}
+	}
+
+
+	/**
 	 * Action: default
 	 */
 	public function action_default() {
@@ -234,6 +278,114 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		} else {
 			$this->request->redirect(Route::get('galleries')->uri(array('action' => 'upload')) . '?event=' . $event->id);
 		}
+	}
+
+
+	/**
+	 * Action: flyer
+	 */
+	public function action_flyer() {
+		$flyer_id = (int)$this->request->param('id');
+
+		/** @var  Model_Flyer  $flyer */
+		$flyer = Jelly::select('flyer')->load($flyer_id);
+		if (!$flyer->loaded()) {
+			throw new Model_Exception($flyer, $flyer_id);
+		}
+
+		/** @var  Model_Image  $image */
+		$image = $flyer->image;
+
+		/** @var  Model_Event  $event */
+		$event = $flyer->event;
+
+		// Set title
+		$this->page_title = HTML::chars($event->name);
+		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $event->stamp_begin), $event->stamp_begin, true);
+
+		// Comments section
+		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, self::$user)) {
+			$errors = array();
+			$values = array();
+
+			// Handle comment
+			if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENT, self::$user) && $_POST) {
+				$comment = Jelly::factory('image_comment');
+				$comment->image = $image;
+				if ($image->author) {
+					$comment->user = $image->author;
+				}
+				$comment->author = self::$user;
+				$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));
+				try {
+					$comment->save();
+					$image->comment_count++;
+					if ($image->author->id != self::$user->id) {
+						$image->new_comment_count++;
+					}
+					$image->save();
+
+					// Newsfeed
+					if (!$comment->private) {
+						NewsfeedItem_Galleries::comment_flyer(self::$user, $flyer, $image);
+					}
+
+					if (!$this->ajax) {
+						$this->request->redirect(Route::get('flyer')->uri(array('id' => $image->id, 'action' => '')));
+					}
+				} catch (Validate_Exception $e) {
+					$errors = $e->array->errors('validation');
+					$values = $comment;
+				}
+
+			} else if (self::$user && $image->author->id == self::$user->id && $image->new_comment_count > 0) {
+
+				// Clear new comment count?
+				$image->new_comment_count = 0;
+				$image->save();
+
+			}
+
+			$comments = $image->comments;
+			$view = View_Module::factory('generic/comments', array(
+				'mod_title'  => __('Comments'),
+				'delete'     => Route::get('flyer_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
+				'private'    => false,
+				'comments'   => $comments,
+				'errors'     => $errors,
+				'values'     => $values,
+				'pagination' => null,
+				'user'       => self::$user,
+			));
+
+			if ($this->ajax) {
+				echo $view;
+				return;
+			}
+			Widget::add('main', $view);
+
+		} else if (!self::$user) {
+
+			// Guest user
+			$view = View_Module::factory('generic/comments_guest', array(
+				'mod_title'  => __('Comments'),
+				'comments'   => $image->comment_count,
+			));
+			if ($this->ajax) {
+				echo $view;
+				return;
+			}
+			Widget::add('main', $view);
+
+		}
+
+		// Flyer
+		Widget::add('wide', View_Module::factory('galleries/flyer', array(
+			'mod_id'    => 'image',
+			'mod_class' => 'gallery-image',
+			'flyer'     => $image,
+		)));
+
 	}
 
 
@@ -443,9 +595,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				// Handle comment
 				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, self::$user) && $_POST) {
 					$comment = Jelly::factory('image_comment');
-					$comment->image  = $current;
+					$comment->image = $current;
 					if ($current->author) {
-						$comment->user   = $current->author;
+						$comment->user = $current->author;
 					}
 					$comment->author = self::$user;
 					$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));

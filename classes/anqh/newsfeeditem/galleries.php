@@ -12,9 +12,16 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	/**
 	 * Comment an entry
 	 *
-	 * Data: entry_id
+	 * Data: gallery_id, image_id
 	 */
 	const TYPE_COMMENT = 'comment';
+
+	/**
+	 * Comment an entry
+	 *
+	 * Data: flyer_id, image_id
+	 */
+	const TYPE_COMMENT_FLYER = 'comment_flyer';
 
 
 	/**
@@ -40,6 +47,16 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				}
 				break;
 
+			case self::TYPE_COMMENT_FLYER:
+				$image = Jelly::select('image')->load($item->data['image_id']);
+				if ($image->loaded()) {
+					$text = __('commented to a :flyer', array(':flyer' => HTML::anchor(
+						Route::get('flyer')->uri(array('id' => $image->id, 'action' => '')),
+						__('flyer')
+					)));
+				}
+				break;
+
 		}
 
 		return $text;
@@ -56,6 +73,19 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	public static function comment(Model_User $user = null, Model_Gallery $gallery = null, Model_Image $image = null) {
 		if ($user && $gallery && $image) {
 			parent::add($user, 'galleries', self::TYPE_COMMENT, array('gallery_id' => (int)$gallery->id, 'image_id' => (int)$image->id));
+		}
+	}
+
+
+	/**
+	 * Comment a flyer
+	 *
+	 * @param  Model_User     $user
+	 * @param  Model_Image    $image
+	 */
+	public static function comment_flyer(Model_User $user = null, Model_Flyer $flyer = null, Model_Image $image = null) {
+		if ($user && $flyer && $image) {
+			parent::add($user, 'galleries', self::TYPE_COMMENT_FLYER, array('flyer_id' => (int)$flyer->id, 'image_id' => (int)$image->id));
 		}
 	}
 

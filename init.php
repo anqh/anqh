@@ -18,7 +18,12 @@ Route::set('gallery_event', 'event/<id>/gallery')
 		'controller' => 'galleries',
 		'action'     => 'event'
 	));
-Route::set('flyer_image', 'flyer/<id>')
+Route::set('flyer_comment', 'flyer/comment/<id>/<commentaction>', array('commentaction' => 'delete|private'))
+	->defaults(array(
+		'controller' => 'galleries',
+		'action'     => 'comment_flyer',
+	));
+Route::set('flyer', 'flyer/<id>')
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'flyer'

@@ -16,9 +16,9 @@
 		<article>
 			<header>
 				<div class="thumb">
-					<?php echo HTML::anchor(Route::model($flyer->event), HTML::image($flyer->image->get_url('thumbnail'))) ?>
+					<?php echo HTML::anchor(Route::get('flyer')->uri(array('id' => $flyer->id)), HTML::image($flyer->image->get_url('thumbnail'))) ?>
 				</div>
-				<h4><?= HTML::anchor(Route::model($flyer->event), HTML::chars($flyer->event->name), array('title' => HTML::chars($flyer->event->name))) ?></h4>
+				<h4><?= HTML::anchor(Route::get('flyer')->uri(array('id' => $flyer->id)), HTML::chars($flyer->event->name), array('title' => HTML::chars($flyer->event->name))) ?></h4>
 			</header>
 		</article>
 	</li>
