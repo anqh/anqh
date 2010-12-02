@@ -19,6 +19,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->tabs = array(
 			'latest' => array('url' => Route::get('galleries')->uri(), 'text' => __('Latest updates')),
 			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
+			'flyers' => array('url' => Route::get('flyers')->uri(array('action' => '')), 'text' => __('Browse flyers')),
 		);
 	}
 
@@ -83,6 +84,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Month browser
 		Widget::add('wide', View_Module::factory('galleries/month_browser', array(
+			'route'  => 'galleries',
+			'action' => 'browse',
 			'year'   => $year,
 			'month'  => $month,
 			'months' => $months
@@ -95,7 +98,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'galleries' => $galleries
 			)));
 		}
-
 
 	}
 
@@ -303,6 +305,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->page_title = HTML::chars($event->name);
 		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $event->stamp_begin), $event->stamp_begin, true);
 
+		$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Show event'));
+
 		// Comments section
 		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, self::$user)) {
 			$errors = array();
@@ -385,6 +389,61 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			'mod_class' => 'gallery-image',
 			'flyer'     => $image,
 		)));
+
+	}
+
+
+	/**
+	 * Action: browse flyers
+	 */
+	public function action_flyers() {
+		$this->tab_id = 'flyers';
+
+		$months = Model_Flyer::find_months();
+
+		// Default to current month
+		$year  = (int)$this->request->param('year');
+		$month = (int)$this->request->param('month');
+		if (!$year) {
+			if (isset($months[(int)date('Y')][(int)date('n')])) {
+
+				// Flyers for current month found
+				$year = date('Y');
+				$month = date('n');
+
+			} else {
+
+				// No flyers for current month found, default to last month
+				$year  = max(array_keys($months));
+				$month = max(array_keys($months[$year]));
+
+			}
+		} else if (!$month) {
+			$month = isset($months[$year]) ? min(array_keys($months[$year])) : 1;
+		}
+
+		// Quick validation
+		$year  = min($year, max(array_keys($months)));
+		$month = min(12, max(1, $month));
+
+		$this->page_title = __('Flyers') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
+
+		// Month browser
+		Widget::add('wide', View_Module::factory('galleries/month_browser', array(
+			'route'  => 'flyers',
+			'action' => '',
+			'year'   => $year,
+			'month'  => $month,
+			'months' => $months
+		)));
+
+		// Latest flyers
+		$flyers = Model_Flyer::find_by_month($year, $month);
+		if (count($flyers)) {
+			Widget::add('wide', View_Module::factory('galleries/flyers', array(
+				'flyers' => $flyers,
+			)));
+		}
 
 	}
 

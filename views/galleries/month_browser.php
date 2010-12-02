@@ -15,8 +15,8 @@
 	<?php foreach ($months as $years => $y): ?>
 		<li>
 			<header><?php echo HTML::anchor(
-				Route::get('galleries')->uri(array(
-					'action' => 'browse',
+				Route::get($route)->uri(array(
+					'action' => $action,
 					'year'   => $years,
 				)),
 				$years,
@@ -25,8 +25,8 @@
 
 			<?php foreach ($y as $m => $count): ?>
 				<li><?php echo HTML::anchor(
-					Route::get('galleries')->uri(array(
-						'action' => 'browse',
+					Route::get($route)->uri(array(
+						'action' => $action,
 						'year'   => $years,
 						'month'  => $m
 					)),
