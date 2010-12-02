@@ -155,8 +155,8 @@
 
 <?php echo Widget::get('dock') ?>
 
-			<a id="customize" class="icon customize" onclick="$('#dock').toggleClass('open'); return false;"><?php echo __('Customize') ?></a>
 		</div>
+		<a id="customize" class="icon customize" onclick="$('#dock').toggleClass('open'); return false;">&darr;</a>
 	</section><!-- #dock -->
 
 	<!-- /DOCK -->
