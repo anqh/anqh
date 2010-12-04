@@ -83,6 +83,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				'label' => __('Image'),
 				'path'  => Kohana::config('image.upload_path'),
 			)),
+			'remote'  => new Field_String,
 			'legacy_filename' => new Field_String,
 
 			'author' => new Field_BelongsTo(array(
@@ -265,6 +266,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * Get url of specific image size or empty for default
 	 *
 	 * @param   string   $size
+	 * @param   string   $legacy_dir  To be deprecated
 	 * @return  string
 	 */
 	public function get_url($size = null, $legacy_dir = null) {
@@ -326,18 +328,31 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param   mixed  $key
 	 * @return  $this
+	 *
+	 * @throws  Kohana_Exception
 	 */
 	public function save($key = null) {
 		$new = !$this->loaded() && !$key;
 
+		// Validate new image
 		if ($new) {
-			if (!$this->file || !Upload::not_empty($this->file)) {
+			if ($this->remote && !$this->file) {
+				$this->file = Remote::download($this->remote, null, Kohana::config('image.upload_path'));
+			}
+
+			if (!$this->file || (!$this->remote && !Upload::not_empty($this->file))) {
 				throw new Kohana_Exception(__('No image'));
 			} else if (!Upload::size($this->file, Kohana::config('image.filesize'))) {
 				throw new Kohana_Exception(__('Image too big (limit :size)', array(':size' => Kohana::config('image.filesize'))));
 			} else if (!Upload::type($this->file, Kohana::config('image.filetypes'))) {
 				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::config('image.filetypes')))));
 			}
+
+			// As a remote file is no actual file field, manually set the filename
+			if ($this->remote && !is_uploaded_file($this->file['tmp_name'])) {
+				$this->file = basename($this->file['tmp_name']);
+			}
+
 		}
 
 		parent::save($key);
