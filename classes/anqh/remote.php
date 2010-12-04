@@ -58,6 +58,10 @@ class Anqh_Remote extends Kohana_Remote {
 
 		// Download file
 		try {
+
+			// Dummy escape to get rid of spaces to awoid 400 Bad Request
+			$url = str_replace(' ', '%20', $url);
+
 			$fh = fopen($filename, 'w');
 			Remote::get($url, null, array(
 				CURLOPT_RETURNTRANSFER => true, // Must be declared before CURLOPT_FILE
