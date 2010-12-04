@@ -9,10 +9,11 @@
  */
 
 if ($image):
+	$image = HTML::image(is_string($image) ? $image : $image->get_url(), array('width' => 290));
 ?>
 
 <div id="slideshow-image">
-	<?php echo HTML::image(is_string($image) ? $image : $image->get_url(), array('width' => 290)) ?>
+	<?php echo isset($link) && $link ? HTML::anchor($link, $image) : $image ?>
 </div>
 
 <?php else:
