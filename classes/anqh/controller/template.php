@@ -204,7 +204,6 @@ abstract class Anqh_Controller_Template extends Controller {
 					array(
 						'class' => 'theme',
 						'rel'   => $skin_name,
-						'title' => $skin_config['name'],
 					));
 			}
 
