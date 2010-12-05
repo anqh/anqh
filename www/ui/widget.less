@@ -188,11 +188,11 @@ a.expander:after                       { content: '\21D3'; }
 .ui-widget-content                     { background: @widget-background; }
 #main .ui-widget-content               { background: none; }
 .ui-widget-header                      { /*background: transparent;*/ }
-.ui-widget-header a                    { color: #ca3; }
+.ui-widget-header a                    { color: @tab-color; }
 
 /* Interaction states */
 .ui-state-default,
-.ui-widget-content .ui-state-default   { border: 1px solid @widget-border-color; color: @tab-color; text-shadow: @tab-text-shadow; }
+.ui-widget-content .ui-state-default   { border: 1px solid @widget-border-color; color: @tab-color; /*text-shadow: @tab-text-shadow;*/ }
 .ui-tabs .ui-state-default             { border-width: 0; }
 .ui-state-default a,
 .ui-state-default a:link,
@@ -203,16 +203,16 @@ a.expander:after                       { content: '\21D3'; }
 .ui-widget-content .ui-state-focus     { color: @tab-selected-color; }
 a.ui-state-hover,
 .ui-state-hover a,
-.ui-state-hover a:hover                { color: @tab-hover-color; text-decoration: none; text-shadow: @tab-hover-shadow; }
+.ui-state-hover a:hover                { color: @tab-hover-color; text-decoration: none; }
 .ui-state-active,
-.ui-widget-content .ui-state-active    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+.ui-widget-content .ui-state-active    { color: @tab-selected-color; }
 
 /* Datepicker */
 .ui-datepicker a.ui-state-active       { background: @widget-border-color; }
 
 /* Tabs */
 #title nav                             { margin-top: -5px; overflow: hidden; }
-#main .tabs                            { margin-left: -4px; margin-top: -14px; }
+#main .tabs                            { margin-left: -4px; margin-top: -9px; }
 .ui-tabs                               { zoom: 1; }
 .ui-tabs {
   .ui-tabs-panel                       { display: block; }
@@ -223,11 +223,11 @@ a.ui-state-hover,
 #title nav ul,
 .ui-tabs .ui-tabs-nav {
   li                                   { border-bottom: 1px solid @groove-light; float: left; position: relative; }
-  li a                                 { border: 1px solid @groove-shadow; border-left-color: @groove-light; border-top-width: 0; color: @tab-color; display: block; float: left; padding: .8333em 1em 0.75em 1em; text-decoration: none; }
+  li a                                 { border: 1px solid @groove-shadow; border-left-color: @groove-light; border-top-width: 0; color: @tab-color; display: block; float: left; padding: .8333em 1em 0.75em 1em; text-decoration: none; text-shadow: @tab-text-shadow; }
   li:first-child a                     { border-left: 0 none; }
   li:last-child a                      { border-right: 0 none; }
   li:hover a,
-  .ui-state-hover a                    { color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
+  .ui-state-hover a                    { color: @tab-selected-color; }
   .selected,
   .ui-state-active,
   .ui-tabs-selected,
@@ -239,7 +239,6 @@ a.ui-state-hover,
   .ui-state-active a:link,
   .ui-state-active a:visited           { border-bottom-color: transparent; color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
 }
-
 
 /* Interaction Cues */
 .ui-state-highlight,
@@ -299,19 +298,6 @@ a.ui-state-hover,
 #slideshow-image                       { position: relative; }
 
 /***** /JQUERY TOOLS ****/
-
-
-/***** TABS *****/
-/*
-#title nav                             { overflow: hidden; }
-#title nav li                          { background: black; border-right: 1px solid #111; float: left; }
-#title nav li a                        { display: block; padding: 0.8333em 1em; }
-#title nav li a:hover                  { text-decoration: none; }
-#title nav li:hover,
-#title nav li.selected                 { background: #222; }
-#title nav li.selected a               { color: @header-color; }
-*/
-/***** /TABS *****/
 
 
 /***** ICONS *****/
@@ -440,8 +426,8 @@ figure.thumb:hover ficaption           { .opacity(1); }
 
 /***** PAGINATION *****/
 
-.pagination                            { .widget; margin: 5px 0; }
-.pagination div                        { .widget-container; }
+.pagination                            { .midget; margin: 5px 0; }
+.pagination div                        { .midget-container; }
 
 /***** /PAGINATION *****/
 

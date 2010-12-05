@@ -12,6 +12,8 @@ body                                   { background: @body-background-color @bod
 .liquid .content                       { margin: 0 25px; width: auto; }
 .fixed .col1                           { width: 800px; }
 .kohana                                { display: none; }
+body.left #main                        { float: left; }
+body.right #main                       { float: right; }
 
 /***** /PAGE *****/
 
@@ -20,11 +22,12 @@ body                                   { background: @body-background-color @bod
 
 @dock-background:                      black;
 @dock-separator:                       1px solid #333;
-@dock-color:                           #f2f2f2;
-@dock-link-color:                      @link-color;
+@dock-color:                           #a7a7a7;
+@dock-link-color:                      #777;
 @dock-text-shadow:                     none;
+@dock-shadow:                          0 0 4px rgba(0, 0, 0, 0.75);
 
-#dock                                  { background: @dock-background @background-image; .box-shadow(0 2px 2px rgba(0, 0, 0, 0.75)); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
+#dock                                  { background: @dock-background @background-image; .box-shadow(@dock-shadow); left: 0; padding: 0.4116em 0; position: absolute; right: 0; top: 0; z-index: 100; }
 #dock                                  { margin-top: -27px; .transition(margin-top .25s ease-in-out); }
 #dock.open,
 #dock:hover                            { margin-top: 0; }
@@ -35,63 +38,31 @@ body                                   { background: @body-background-color @bod
 #dock a                                { color: @dock-link-color; }
 #dock label,
 #dock input                            { display: inline; margin-left: 0; }
-#customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(0 0 10px @dock-background); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -21px; }
+#customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(@dock-shadow); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -20px; }
 
 /***** /DOCK *****/
-
-
-/***** SIDEBAR *****/
-
-@sidebar-background:                   #121212;
-@sidebar-link-background:              rgba(0, 0, 0, 0.5);
-@sidebar-link-hover-background:        rgba(0, 0, 0, 0.75);
-@sidebar-color:                        #777;
-@sidebar-text-shadow:                  1px 1px 0 rgba(0, 0, 0, 0.75);
-@sidebar-hover-color:                  white;
-@sidebar-selected-color:               #f6f6f6;
-
-.leftmenu                              { background: #333; }
-.col2                                  { text-shadow: @sidebar-text-shadow; }
-.colright                              { .box-shadow(0 0 10px rgba(0, 0, 0, .5)); }
-
-#side-narrow nav                       { border-bottom: 1px solid #111; }
-#side-narrow .mod                      { border-bottom: 1px solid #111; border-top: 1px solid #444; }
-#side-narrow .mod:last-child           { border-bottom: 0 none; }
-
-#side-narrow var,
-#side-narrow a                         { color: @sidebar-color; }
-#side-narrow a:hover                   { color: @sidebar-selected-color; text-decoration: none; }
-#side-narrow nav ul,
-#side-narrow nav ul li                 { display: block; }
-#side-narrow nav ul li a               { color: @sidebar-color; display: block; font-size: 1.1667em; height: 1.7857em; .transition(color .25s ease-in-out); vertical-align: middle; }
-#side-narrow nav ul li.selected > a    { color: @sidebar-selected-color; }
-#side-narrow nav ul.submenu li         { background: transparent; }
-#side-narrow nav ul.submenu li a       { padding-left: 20px; }
-#side-narrow .user                     { color: @sidebar-selected-color; }
-#side-narrow input                     { margin-bottom: 10px; margin-left: 0; }
-#side-narrow input:last-child          { margin-bottom: 0; }
-#side-narrow input[type=submit]        { margin-left: 2px; }
-
-/***** /SIDEBAR *****/
 
 
 /***** HEADER *****/
 
 @mainmenu-background:                  #060606;
+@mainmenu-text-color:                  #a7a7a7;
 @mainmenu-link-background:             rgba(0, 0, 0, 0.5);
 @mainmenu-link-hover-background:       rgba(0, 0, 0, 0.75);
-@mainmenu-color:                       #777;
+@mainmenu-link-color:                  #777;
 @mainmenu-text-shadow:                 1px 1px 0 rgba(0, 0, 0, 0.75);
 @mainmenu-hover-color:                 white;
 @mainmenu-selected-color:              #f6f6f6;
 
-#header                                { background: @mainmenu-background; .box-shadow(0 0 4px rgba(0, 0, 0, 0.75)); }
+#header                                { background: @mainmenu-background; .box-shadow(0 0 4px rgba(0, 0, 0, 0.75)); color: @mainmenu-text-color; }
+#header a                              { color: @mainmenu-link-color; }
+#header a:hover                        { color: @mainmenu-selected-color; }
 #header ul                             { display: inline; display: inline-block; padding-top: 3px; }
 
 #mainmenu                              { line-height: 1.4286em; }
 #mainmenu li                           { display: block; float: left; margin-right: 10px; padding: 0 2px; position: relative; }
-#mainmenu li a                         { color: @mainmenu-color; font-size: 1.1667em; text-shadow: @sidebar-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
-#mainmenu li a:hover                   { color: @mainmenu-selected-color; text-decoration: none; }
+#mainmenu li a                         { font-size: 1.1667em; text-shadow: @mainmenu-text-shadow; .transition(color .25s ease-in-out); vertical-align: middle; }
+#mainmenu li a:hover                   { text-decoration: none; }
 #mainmenu li.selected > a              { color: @mainmenu-selected-color; }
 
 #visitor .avatar                       { padding: 0 5px 0 0; }
@@ -99,8 +70,8 @@ body                                   { background: @body-background-color @bod
 #visitor form ul li                    { margin-bottom: 0; margin-top: 0; }
 .new-messages                          { padding-left: 5px; }
 .new-messages li                       { display: inline; }
-.new-messages li a                     { background: rgba(0, 0, 0, .75) no-repeat 2px center; .border-radius(5px); color: @sidebar-selected-color; margin-right: 5px; padding: 2px 2px 2px 20px; }
-.new-messages li a:hover               { text-decoration: none; }
+.new-messages li a                     { background: white no-repeat 2px center; .border-radius(5px); color: @mainmenu-selected-color; margin-right: 5px; padding: 2px 2px 2px 20px; }
+.new-messages li a:hover               { color: @mainmenu-link-color; text-decoration: none; }
 .new-messages {
   .new-comments a                      { background-image: url(/ui/icon/16/spechbubble.png); }
   .new-blog-comments a                 { background-image: url(/ui/icon/16/notepad_2.png); }
@@ -114,35 +85,21 @@ body                                   { background: @body-background-color @bod
 
 /***** BODY *****/
 
-#side-ads                              { float: right; _margin-left: -3px; text-align: center; }
-body.left #main                        { float: left; }
-body.right #main                       { float: right; }
+.midget                                { .border-radius(@midget-border-radius); .box-shadow(@midget-shadow); margin-bottom: 10px; padding: 5px 0; }
+.midget-container                      { .border-radius(@midget-border-radius - 1); margin: 0 5px; padding: 4px;}
 
-.widget                                { background: @midget-border-color; .border-radius(4px); padding: 5px 0; }
-.widget-container                      { background: @midget-background; .border-radius(3px); border: 1px solid #111; border-top: 1px solid #222; margin: 0 5px; padding: 4px; }
-
-.mod                                   { background: @mod-background; }
-.cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 .tab                                   { background: none; margin: 0; padding: 0; }
-
-#title                                 { .widget; position: relative; }
-#title hgroup,
-#title .actions                        { padding: 0 5px; }
-#title .subtitle .icon,
-#title h3 .icon                        { margin: 0 5px; }
-
 .actions                               { float: left; }
 .actions.alt                           { float: right; }
-#title .actions                        { float: none; }
+.cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 
 section .article,
-section article                        {/* border-bottom: 1px solid @body-background-color;*/ /*background: @section-background-alt; overflow: hidden;*/ position: relative; }
+section article                        { position: relative; }
 section .divider + article,
 section article + article              { border-top: 1px solid @separator-color; }
 article article + article              { border-top: 0 none; }
 
-.mod article header                    { border-bottom: @separator-light-border; /*margin-bottom: 0.6667em; overflow: hidden;*/ }
-/*.mod article header h4                 { float: left; }*/
+.mod article header                    { border-bottom: @separator-light-border; }
 .mod article header h4 a               { padding-right: 10px; }
 .mod article header ul.details         { float: right; }
 .mod article header ul.details li      { border-left: 1px solid @body-background-color; float: left; margin: 0 -5px 0 -6px; padding: 0 5px; }
@@ -152,26 +109,36 @@ section article .details               { color: @text-color-alt; }
 
 .mod[class*="-edit"] .container        { overflow: visible; }
 
-#title,
-#main .mod,
-#wide .mod,
-#header .mod,
-aside .mod                             { .widget; .box-shadow(0 0 4px rgba(0, 0, 0, 0.75)); margin-bottom: 10px; }
-#title,
-#wide .mod,
-#main .mod                             { /*background: @mod-background;*/ }
 .mod .container                        { padding: 9px; }
 .grid12 .container .container          { padding: 0; }
 .grid12 .container .container .mod     { .border-radius(0); }
 .mod .mod                              { background: transparent; .box-shadow(none); margin-bottom: 0; }
 .mod > header                          { padding: 0 10px 5px 10px; }
 
-aside .mod                             { /*.widget;*/ }
+
+/* Title */
+#title                                 { .midget; background: @title-background; position: relative; }
+#title hgroup,
+#title .actions                        { float: none; padding: 0 5px; }
+#title .subtitle .icon,
+#title h3 .icon                        { margin: 0 5px; }
+
+/* Wide */
+#wide .mod                             { .midget; }
+
+/* Main */
+#main .mod                             { .midget; background: @main-background; }
+#main .mod .container                  { .midget-container; background: @main-background-cntainer; }
+
+/* Side */
+#side                                  { }
+
+aside .mod                             { .midget; background: @side-background; }
 aside .mod.tabs                        { padding-top: 0; }
-aside .mod .container                  { .widget-container; overflow: hidden; padding: 9px; }
+aside .mod .container                  { .midget-container; background: @side-background-container; overflow: hidden; padding: 9px; }
 aside h4,
 aside h5,
-aside .mod .container li               { text-shadow: @mainmenu-text-shadow; }
+aside .mod .container li               { text-shadow: @side-text-shadow; }
 aside .mod .container ul li            { border-top: 1px solid @groove-light; border-bottom: 1px solid @groove-shadow; }
 aside .mod .container ul li.grid2,
 aside .mod .container ul li.group      { border: 0 none; }
@@ -184,7 +151,7 @@ aside .mod .container form li          { border-top: 0 none; border-bottom: 0 no
 
 /***** FOOTER *****/
 
-#footer                                { background: @footer-background; border-top: 1px solid @groove-light; clear: both; color: @footer-color; float: left; text-shadow: @footer-text-shadow; width: 100%; }
+#footer                                { background: @footer-background; border-top: 1px solid @groove-light; clear: both; color: @footer-color; float: left; width: 100%; }
 #footer .mod                           { background: none; margin-bottom: 1em; }
 #footer a                              { color: @footer-link-color; }
 #footer p,

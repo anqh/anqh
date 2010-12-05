@@ -4,15 +4,31 @@
  * Copyright (c) 2010 Anqh
  */
 
-
-@body-background-color:                #f0efe5;
-@body-background-image:                none;
+@body-background-color:                #ddd;
+@body-background-image:                url(background.jpg) no-repeat fixed left bottom;
 @section-background:                   @body-background-color;
 @section-background-alt:               @body-background-color;
 @mod-background:                       transparent;
 
-@header-color:                         #555;
-@header-shadow:                        1px 1px 0 white;
+@widget-background:                    @body-background-color;
+@widget-border-color:                  @input-border-color;
+@widget-border:                        1px solid @widget-border-color;
+
+@midget-border-color:                  transparent;
+@midget-background:                    #ddd;
+@midget-border:                        1px solid @midget-border-color;
+@midget-border-radius:                 4px;
+@midget-shadow:                        0 0 1px black;
+
+@title-background:                     @main-background;
+@main-background:                      url(main-background.jpg) no-repeat fixed left bottom;
+@main-background-container:            none;
+@side-background:                      @main-background;
+@side-background-container:            none;
+@side-text-shadow:                     none;
+
+@header-color:                         black;
+@header-shadow:                        1px 1px 0 @text-color-alt;
 @header-font:                          Cantarell, Arial, sans-serif;
 @subheader-color:                      #737272;
 
@@ -20,36 +36,27 @@
 @separator-border:                     1px dotted @separator-color;
 @separator-light-border:               1px dotted #dfded5;
 
-@input-background:                     #f8f7f2;
-@input-background-alt:                 #ebebd9;
-@input-color:                          inherit;
-@input-hint-color:                     #8e8d8d;
-@input-border-bottom:                  #e0dfd7;
-@input-border-left:                    @input-border-bottom;
-@input-border-right:                   @input-border-bottom;
-@input-border-top:                     @input-border-bottom;
-@input-border-color:                   #d4d4b2;
-@input-border-hover-color:             @input-border-color;
-@input-border-focus-color:             @input-border-hover-color;
-
-@widget-background:                    @body-background-color;
-@widget-border-color:                  @input-border-color;
-@widget-border:                        1px solid @widget-border-color;
-
-@midget-border-color:                  transparent;
-@midget-background:                    transparent;
-@midget-border:                        1px solid @midget-border-color;
-.midget-shadow                         { }
+@input-background:                     #222;
+@input-background-alt:                 #222;
+@input-color:                          #f2f2f2;
+@input-hint-color:                     #666;
+@input-border-bottom:                  #333;
+@input-border-left:                    @input-background;
+@input-border-right:                   @input-background;
+@input-border-top:                     #111;
+@input-border-color:                   @input-border-bottom;
+@input-border-hover-color:             #999;
+@input-border-focus-color:             @input-hint-color;
 
 @hover-background:                     rgba(0, 0, 0, 0.5);
 
-@tooltip-background:                   rgba(249, 247, 243, 1);
-@tooltip-border:                       1px solid #d8d8cf;
-@tooltip-shadow:                       0 0 10px rgba(216, 216, 207, 1);
+@tooltip-background:                   #ddd;
+@tooltip-border:                       1px solid #777;
+@tooltip-shadow:                       0 0 5px white;
 
-@text-color:                           #555;
-@text-color-alt:                       @777;
-@link-color:                           #107174;
+@text-color:                           #111;
+@text-color-alt:                       #666;
+@link-color:                           #5d5e4f;
 @link-rgba:                            rgba(16, 113, 116, 0.69);
 @link-hover-color:                     #a0a0a0;
 @action-background:                    #222;
@@ -63,33 +70,32 @@
 @error-color:                          @link-color;
 @info-color:                           @action-link-color;
 @tip-color:                            #999;
-@owner-color:                          #a9ba6d;
-@my-color:                             #b0a88a;
+@owner-color:                          @text-color;
+@my-color:                             @text-color;
 @private-color:                        #a3a;
 @private-rgba:                         rgba(170, 51, 170, 69);
 @pill-checked-color:                   white;
-@user-color:                           #bebb73;
-@male-color:                           #738abe;
-@female-color:                         #be7391;
+@user-color:                           @link-color;
+@male-color:                           #393d72;
+@female-color:                         #723939;
 
 @badge-background:                     @input-background;
 @badge-background-alt:                 #dcdfe0;
 @badge-border:                         1px solid @badge-background-alt;
 @badge-border-radius:                  5px;
 
-@tab-background:                       @mainmenu-link-background;
-@tab-color:                            @header-color;
-@tab-text-shadow:                      @mainmenu-text-shadow;
+@tab-color:                            @text-color-alt;
+@tab-text-shadow:                      1px 1px 0 #333;
 @tab-selected-color:                   @mainmenu-selected-color;
 @tab-selected-shadow:                  @mainmenu-selected-shadow;
 
-@groove-light:                         @input-background;
-@groove-shadow:                        @input-border-bottom;
+@groove-light:                         white;
+@groove-shadow:                        #c4c3be;
 
-@footer-background:                    #c1bbab;
-@footer-color:                         #4b4b4b;
+@footer-background:                    @main-background;
+@footer-color:                         @text-color;
 @footer-link-color:                    @link-color;
-@footer-text-shadow:                   0 1px 0 #ccc;
+@footer-text-shadow:                   @tab-text-shadow;
 
 @import "../mixin.less";
 @import "../grid.less";

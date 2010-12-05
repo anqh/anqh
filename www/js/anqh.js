@@ -371,6 +371,7 @@ $(function() {
 
 
 	// Tooltips
+	/*
 	$('a[title], var[title], time[title]')
 		.tooltip({
 			effect: 'slide',
@@ -379,7 +380,7 @@ $(function() {
 		.dynamic({
 			bottom: { offset: [-10, 0] }
 		});
-
+	*/
 
 	// Hover card
 	$('a.hoverable').hovercard();
