@@ -173,7 +173,7 @@ a[class*="-delete"]:hover              { color: @negative-color; .box-shadow(0 0
 form .buttons                          { display: block; margin-bottom: 1em; margin-top: 1em; text-align: center; }
 
 .pills li                              { display: inline; }
-.pills li label                        { background: @input-background; .border-radius(5px); color: @text-color; cursor: pointer; display: inline; padding: 0 0.5em; }
+.pills li label                        { background: @input-background; .border-radius(5px); color: @input-color; cursor: pointer; display: inline; padding: 0 0.5em; }
 .pills li label:hover                  { background: @link-hover-color; color: @action-link-color; }
 .pills li input[type="checkbox"]       { display: none; }
 .pills li input[type="checkbox"]:checked + label { background: @positive-color; color: @pill-checked-color; }
@@ -361,13 +361,13 @@ ol.rating .icon                        { display: inline-block; height: 1em; min
 
 .step                                  { font-family: Georgia, serif; font-size: 3em; line-height: 1.5em; }
 .step,
-time.date                              { background: @badge-background; border: @badge-border; .border-radius(@badge-border-radius); display: block; width: 60px; }
+time.date                              { background: @badge-background; /*border: @badge-border;*/ .border-radius(@badge-border-radius); display: block; width: 60px; }
 time.date *                            { display: block; text-align: center; }
 .step,
 time.date .day                         { color: @subheader-color; font-family: Georgia, serif; font-size: 2em; line-height: 0.833em; }
 time.date span                         { }
 time.date .weekday                     { background: @badge-background-alt; /*.border-radius(5px 0 0 0);*/ font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
-time.date .month                       { /*.border-radius(0 0 5px 5px);*/ text-transform: uppercase; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
+time.date .month                       { color: @input-color; /*.border-radius(0 0 5px 5px);*/ text-transform: uppercase; font-family: Lucida Grande, Lucida Sans Unicode, sans-serif; }
 time.date.today .weekday               { background: @subheader-color; color: @action-link-color; }
 
 /***** /BADGES *****/
