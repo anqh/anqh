@@ -16,7 +16,7 @@ h3 span,
 h4 span,
 h5 span,
 h6 span                                { color: @text-color; }
-h2                                     { color: @header-color; text-shadow: @header-shadow; }
+h2                                     { color: @header-color; text-shadow: @header-text-shadow; }
 article header:first-child h3,
 article header:first-child h4          { padding-top: 0; }
 legend,
@@ -239,6 +239,8 @@ a.ui-state-hover,
   .ui-state-active a:link,
   .ui-state-active a:visited           { border-bottom-color: transparent; color: @tab-selected-color; text-shadow: @tab-selected-shadow; }
 }
+#title nav a                           { color: @tab-color; }
+#title nav .selected a                 { color: @tab-selected-color; }
 
 /* Interaction Cues */
 .ui-state-highlight,
