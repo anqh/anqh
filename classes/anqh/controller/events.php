@@ -155,7 +155,16 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->page_actions[] = array('link' => Route::get('gallery_event')->uri(array('id' => $event->id)), 'text' => __('Gallery'));
 
 		$this->page_title = HTML::chars($event->name);
-		$this->page_subtitle  = HTML::time(Date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true) . '. ';
+		$this->page_subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
+
+		// Facebook
+		if (Kohana::config('site.facebook')) {
+			Anqh::open_graph('type', 'activity');
+			Anqh::open_graph('title', $this->page_title);
+			Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
+			Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
+			$event->flyer_front->loaded() and Anqh::open_graph('image', URL::site($event->flyer_front->get_url('thumbnail'), true));
+		}
 
 		// Event performers and extra info
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
