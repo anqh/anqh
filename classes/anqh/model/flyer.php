@@ -67,11 +67,9 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 		$start = mktime(0, 0, 0, $month, 1, $year);
 		$end   = strtotime('+1 month', $start);
 		return Jelly::select('flyer')
-			->join('event')
-			->on('flyer.event:foreign_key', '=', 'events.id')
 			->where('stamp_begin', 'BETWEEN', array($start, $end))
 			->order_by('stamp_begin', 'DESC')
-			->order_by('events.id', 'DESC')
+			->order_by('event_id', 'DESC')
 			->execute();
 	}
 
