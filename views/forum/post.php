@@ -29,17 +29,18 @@ $owners = ($post->original('author') == $topic->original('author'));
 		<section class="post-content grid6">
 			<header<?php echo $post->id == $topic->last_post->id ? ' id="last"' : '' ?>>
 				<small class="ago">
-					<?php echo HTML::anchor(
-						Route::get('forum_post')->uri(array(
-							'id'       => Route::model_id($post),
-							'topic_id' => Route::model_id($topic)
-						)) . '#post-' . $post->id,
-						'#' . $number,
-						array('title' => __('Permalink'))) ?>
 					<?php echo HTML::time(Date::short_span($post->created, true, true), $post->created) ?>
 				</small>
 
 				<span class="actions">
+				<?php echo HTML::anchor(
+					Route::get('forum_post')->uri(array(
+						'id'       => Route::model_id($post),
+						'topic_id' => Route::model_id($topic)
+					)) . '#post-' . $post->id,
+					'#' . $number,
+					array('title' => __('Permalink'))) ?>
+
 				<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_UPDATE, $user)) echo HTML::anchor(
 						Route::get('forum_post')->uri(array(
 							'id'       => Route::model_id($post),
