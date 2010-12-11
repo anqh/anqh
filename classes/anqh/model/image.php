@@ -83,7 +83,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				'label' => __('Image'),
 				'path'  => Kohana::config('image.upload_path'),
 			)),
-			'remote'  => new Field_String,
+			'remote' => new Field_URL,
 			'legacy_filename' => new Field_String,
 
 			'author' => new Field_BelongsTo(array(
