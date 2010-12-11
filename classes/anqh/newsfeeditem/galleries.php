@@ -48,12 +48,11 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				break;
 
 			case self::TYPE_COMMENT_FLYER:
-				$image = Jelly::select('image')->load($item->data['image_id']);
-				if ($image->loaded()) {
+				$flyer = Jelly::select('flyer')->load($item->data['flyer_id']);
+				if ($flyer->loaded()) {
 					$text = __('commented to a :flyer', array(':flyer' => HTML::anchor(
-						Route::get('flyer')->uri(array('id' => $image->id, 'action' => '')),
-						__('flyer')
-					)));
+						Route::get('flyer')->uri(array('id' => $flyer->id)),
+						__('flyer'))));
 				}
 				break;
 
