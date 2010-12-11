@@ -67,7 +67,7 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 		if ($year == 1970 && $month == 0) {
 			return Jelly::select('flyer')
 				->where('stamp_begin', 'IS', null)
-				->order_by('event_id', 'DESC')
+				->order_by('id', 'DESC')
 				->execute();
 		} else {
 			$start = mktime(0, 0, 0, $month, 1, $year);
