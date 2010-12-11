@@ -304,12 +304,30 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Set title
 		if ($event->loaded()) {
 			$this->page_title = HTML::chars($event->name);
-			$this->page_subtitle = HTML::time(Date::format('DMYYYY', $event->stamp_begin), $event->stamp_begin, true);
+			$this->page_subtitle = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
 			$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Show event'));
+
+			// Facebook
+			if (Kohana::config('site.facebook')) {
+				Anqh::open_graph('title', __('Flyer') . ': ' . $event->name);
+				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+				Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
+				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
+			}
+
 		} else {
 			$this->page_title = HTML::chars($flyer->name);
-			$this->page_subtitle = $flyer->stamp_time ? HTML::time(Date::format('DMYYYY', $flyer->stamp_begin), $flyer->stamp_begin, true) : __('Date unknown');
+			$this->page_subtitle = $flyer->stamp_time ? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true) : __('Date unknown');
 			//$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Add event'));
+
+			// Facebook
+			if (Kohana::config('site.facebook')) {
+				Anqh::open_graph('title', __('Flyer') . ': ' . $flyer->name);
+				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+				$flyer->stamp_time and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
+				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
+			}
+
 		}
 
 		// Comments section
@@ -531,7 +549,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 
 		// Event info
-		if ($gallery->event) {
+		if ($gallery->event->loaded()) {
 
 			// Event flyers
 			if ($gallery->event->flyer_front->id || $gallery->event->flyer_back->id || $gallery->event->flyer_front_url || $gallery->event->flyer_back_url) {
@@ -544,6 +562,18 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'event' => $gallery->event,
 				'user'  => self::$user,
 			)), Widget::TOP);
+		}
+
+		// Facebook
+		if (Kohana::config('site.facebook')) {
+			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
+			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
+			Anqh::open_graph('description', __2(':images image', ':images images', count($gallery->images), array(':images' => count($gallery->images))) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($gallery->event->loaded() ? ' @ ' . $gallery->event->venue_name : ''));
+			if ($gallery->event->loaded() && $gallery->event->flyer_front->loaded()) {
+				Anqh::open_graph('image', URL::site($gallery->event->flyer_front->get_url('thumbnail'), true));
+			} else {
+				Anqh::open_graph('image', URL::site($gallery->default_image->get_url('thumbnail'), true));
+			}
 		}
 
 		// Set title and tabs
@@ -650,6 +680,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Show image
 		if (!is_null($current)) {
+
+			// Facebook
+			if (Kohana::config('site.facebook')) {
+				Anqh::open_graph('title', __('Image') . ': ' . $gallery->name);
+				Anqh::open_graph('url', URL::site(Route::get('gallery_image')->uri(array('id' => $current->id, 'gallery_id' => $gallery->id, 'action' => '')), true));
+				$current->description and Anqh::open_graph('description', $current->description);
+				Anqh::open_graph('image', URL::site($current->get_url('thumbnail'), true));
+			}
 
 			// Comments section
 			if (!isset($approve) && Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
@@ -1128,8 +1166,9 @@ $("#field-name")
 		$this->tabs['gallery'] = array('url' => Route::model($gallery), 'text' => __('Gallery'));
 
 		// Set title
+		$images = count($gallery->images);
 		$this->page_title = HTML::chars($gallery->name);
-		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
+		$this->page_subtitle = __2(':images image', ':images images', $images, array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
 		// Set actions
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
