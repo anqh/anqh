@@ -302,10 +302,15 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$event = $flyer->event;
 
 		// Set title
-		$this->page_title = HTML::chars($event->name);
-		$this->page_subtitle = HTML::time(Date::format('DMYYYY', $event->stamp_begin), $event->stamp_begin, true);
-
-		$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Show event'));
+		if ($event->loaded()) {
+			$this->page_title = HTML::chars($event->name);
+			$this->page_subtitle = HTML::time(Date::format('DMYYYY', $event->stamp_begin), $event->stamp_begin, true);
+			$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Show event'));
+		} else {
+			$this->page_title = HTML::chars($flyer->name);
+			$this->page_subtitle = $flyer->stamp_time ? HTML::time(Date::format('DMYYYY', $flyer->stamp_begin), $flyer->stamp_begin, true) : __('Date unknown');
+			//$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Add event'));
+		}
 
 		// Comments section
 		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, self::$user)) {
@@ -403,7 +408,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Default to current month
 		$year  = (int)$this->request->param('year');
-		$month = (int)$this->request->param('month');
+		$month = (int)$this->request->param('month', false);
 		if (!$year) {
 			if (isset($months[(int)date('Y')][(int)date('n')])) {
 
@@ -418,15 +423,15 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$month = max(array_keys($months[$year]));
 
 			}
-		} else if (!$month) {
+		} else if ($month === false) {
 			$month = isset($months[$year]) ? min(array_keys($months[$year])) : 1;
 		}
 
 		// Quick validation
 		$year  = min($year, max(array_keys($months)));
-		$month = min(12, max(1, $month));
+		$month = min(12, max(0, $month));
 
-		$this->page_title = __('Flyers') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
+		$this->page_title = __('Flyers') . ' - ' . ($month ? HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) : (__('Date unknown') . ($year == 1970 ? '' : ' ' . $year)));
 
 		// Month browser
 		Widget::add('side', View_Module::factory('galleries/month_browser', array(
@@ -801,7 +806,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		return $this->action_gallery();
 	}
-
 
 
 	/**
