@@ -101,6 +101,7 @@
 				</hgroup>
 
 <?php echo Widget::get('actions') ?>
+<?php echo Widget::get('facebook') ?>
 
 			</header><!-- #title -->
 

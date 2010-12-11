@@ -36,6 +36,11 @@ return array(
 	'google_analytics' => false, // UA-123456-7
 
 	/**
+	 * Facebook configs
+	 */
+	'facebook' => false, // Facebook App id
+
+	/**
 	 * Main menu
 	 */
 	'menu' => array(
