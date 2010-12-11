@@ -19,7 +19,7 @@
 					'action' => $action,
 					'year'   => $years,
 				)),
-				$years,
+				$years == 1970 ? __('Unknown') : $years,
 				array('class' => 'year' . ($year == $years ? ' selected' : ''))) ?></h4>
 			<ol>
 
@@ -30,7 +30,7 @@
 						'year'   => $years,
 						'month'  => $m
 					)),
-					strftime('%b', strtotime("$years-$m-1")),
+					$m > 0 ? strftime('%b', strtotime("$years-$m-1")) : '???',
 					array('class' => 'month' . ($year == $years && $month == $m ? ' selected' : ''))) ?> (<?= $count ?>)</li>
 			<?php endforeach ?>
 
