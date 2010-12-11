@@ -21,6 +21,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
 			'flyers' => array('url' => Route::get('flyers')->uri(array('action' => '')), 'text' => __('Browse flyers')),
 		);
+	  if (self::$user && self::$user->has_role('admin')) {
+		  $this->tabs['platinum'] = array('url' => Route::get('platinum')->uri(), 'text' => __('Platinum'));
+	  }
 	}
 
 
@@ -83,7 +86,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->page_title .= ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
 
 		// Month browser
-		Widget::add('wide', View_Module::factory('galleries/month_browser', array(
+		Widget::add('side', View_Module::factory('galleries/month_browser', array(
 			'route'  => 'galleries',
 			'action' => 'browse',
 			'year'   => $year,
@@ -94,7 +97,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Galleries
 		$galleries = Jelly::select('gallery')->year_month($year, $month)->execute();
 		if (count($galleries)) {
-			Widget::add('wide', View_Module::factory('galleries/galleries', array(
+			Widget::add('main', View_Module::factory('galleries/galleries', array(
 				'galleries' => $galleries
 			)));
 		}
@@ -429,7 +432,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->page_title = __('Flyers') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
 
 		// Month browser
-		Widget::add('wide', View_Module::factory('galleries/month_browser', array(
+		Widget::add('side', View_Module::factory('galleries/month_browser', array(
 			'route'  => 'flyers',
 			'action' => '',
 			'year'   => $year,
@@ -440,7 +443,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Latest flyers
 		$flyers = Model_Flyer::find_by_month($year, $month);
 		if (count($flyers)) {
-			Widget::add('wide', View_Module::factory('galleries/flyers', array(
+			Widget::add('main', View_Module::factory('galleries/flyers', array(
 				'flyers' => $flyers,
 			)));
 		}

@@ -14,13 +14,13 @@
 
 	<?php foreach ($months as $years => $y): ?>
 		<li>
-			<header><?php echo HTML::anchor(
+			<h4><?php echo HTML::anchor(
 				Route::get($route)->uri(array(
 					'action' => $action,
 					'year'   => $years,
 				)),
 				$years,
-				array('class' => 'year' . ($year == $years ? ' selected' : ''))) ?></header>
+				array('class' => 'year' . ($year == $years ? ' selected' : ''))) ?></h4>
 			<ol>
 
 			<?php foreach ($y as $m => $count): ?>
@@ -30,7 +30,7 @@
 						'year'   => $years,
 						'month'  => $m
 					)),
-					$m,
+					strftime('%b', strtotime("$years-$m-1")),
 					array('class' => 'month' . ($year == $years && $month == $m ? ' selected' : ''))) ?> (<?= $count ?>)</li>
 			<?php endforeach ?>
 
