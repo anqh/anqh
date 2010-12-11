@@ -9,7 +9,7 @@
  */
 
 $attributes = array(
-	'show_faces' => false,
+	'show_faces' => 'false',
 	'font'       => 'lucida grande',
 	'height'     => 35,
 	'width'      => isset($width) ? $width : 300,
