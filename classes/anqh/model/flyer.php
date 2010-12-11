@@ -64,13 +64,20 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_month($year, $month) {
-		$start = mktime(0, 0, 0, $month, 1, $year);
-		$end   = strtotime('+1 month', $start);
-		return Jelly::select('flyer')
-			->where('stamp_begin', 'BETWEEN', array($start, $end))
-			->order_by('stamp_begin', 'DESC')
-			->order_by('event_id', 'DESC')
-			->execute();
+		if ($year == 1970 && $month == 0) {
+			return Jelly::select('flyer')
+				->where('stamp_begin', 'IS', null)
+				->order_by('event_id', 'DESC')
+				->execute();
+		} else {
+			$start = mktime(0, 0, 0, $month, 1, $year);
+			$end   = strtotime('+1 month', $start);
+			return Jelly::select('flyer')
+				->where('stamp_begin', 'BETWEEN', array($start, $end))
+				->order_by('stamp_begin', 'DESC')
+				->order_by('event_id', 'DESC')
+				->execute();
+		}
 	}
 
 
@@ -103,8 +110,8 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 		$flyers = DB::query(
 			Database::SELECT,
 			"
-SELECT TO_CHAR(TO_TIMESTAMP(events.stamp_begin), 'YYYY MM') AS month, COUNT(image_id) AS flyers
-FROM flyers INNER JOIN events ON (flyers.event_id = events.id)
+SELECT (CASE WHEN event_id IS NULL THEN TO_CHAR(TO_TIMESTAMP(COALESCE(stamp_begin, 0)), 'YYYY 00') ELSE TO_CHAR(TO_TIMESTAMP(stamp_begin), 'YYYY MM') END) AS month, COUNT(image_id) AS flyers
+FROM flyers
 GROUP BY 1
 "
 		)->execute();
