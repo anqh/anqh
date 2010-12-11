@@ -17,28 +17,6 @@ abstract class Anqh_Cache extends Kohana_Cache {
 
 
 	/**
-	 * Creates a singleton of a Kohana Cache group. If no group is supplied
-	 * the __default__ cache group is used.
-	 *
-	 *     // Create an instance of the default group
-	 *     $default_group = Cache::instance();
-	 *
-	 *     // Create an instance of a group
-	 *     $foo_group = Cache::instance('foo');
-	 *
-	 *     // Access an instantiated group directly
-	 *     $foo_group = Cache::$instances['default'];
-	 *
-	 * @param   string   the name of the cache group to use [Optional]
-	 * @return  Anqh_Cache
-	 * @throws  Kohana_Cache_Exception
-	 */
-	public static function instance($group = NULL) {
-		return parent::instance($group);
-	}
-
-
-	/**
 	 * Replaces troublesome characters with underscores and prefixes if necessary
 	 *
 	 * @param   string  $id  of cache to sanitize
