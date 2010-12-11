@@ -19,6 +19,11 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 */
 	const PERMISSION_COMMENTS = 'comments';
 
+	/**
+	 * Permission to import flyers from flyer_url
+	 */
+	const PERMISSION_IMPORT = 'import';
+
 
 	/**
 	 * Create new model
@@ -27,9 +32,11 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'      => new Field_Primary,
-			'image'   => new Field_BelongsTo,
-			'event'   => new Field_BelongsTo,
+			'id'          => new Field_Primary,
+			'image'       => new Field_BelongsTo,
+			'event'       => new Field_BelongsTo,
+			'name'        => new Field_String,
+			'stamp_begin' => new Field_Timestamp
 		));
 	}
 
@@ -129,6 +136,7 @@ GROUP BY 1
 	public function has_permission($permission, $user) {
 		switch ($permission) {
 			case self::PERMISSION_DELETE:
+			case self::PERMISSION_IMPORT:
 			case self::PERMISSION_UPDATE:
 				return $user && $user->has_role(array('admin', 'photo moderator'));
 

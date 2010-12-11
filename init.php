@@ -28,7 +28,7 @@ Route::set('events_ymd', 'events/<year>(/<month>(/<day>))', array('year' => '\d{
 		'controller' => 'events',
 		'action'     => 'browse',
 	));
-Route::set('events', 'events(/<action>)', array('action' => 'add|upcoming|past|browser'))
+Route::set('events', 'events(/<action>)', array('action' => 'add|upcoming|past|browser|flyers'))
 	->defaults(array(
 		'controller' => 'events',
 	));

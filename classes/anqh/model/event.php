@@ -285,6 +285,22 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get forum topic like string
+	 * [name] [date] @ [city]
+	 *
+	 * @return  string
+	 */
+	public function get_forum_topic() {
+		$topic = $this->name . ' ' . Date::format(Date::DMY_SHORT, $this->stamp_begin);
+	  if ($this->city_name) {
+		  $topic .= ' @ ' . $this->city_name;
+	  }
+
+	  return $topic;
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
