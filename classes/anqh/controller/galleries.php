@@ -21,9 +21,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
 			'flyers' => array('url' => Route::get('flyers')->uri(array('action' => '')), 'text' => __('Browse flyers')),
 		);
-	  if (self::$user && self::$user->has_role('admin')) {
-		  $this->tabs['platinum'] = array('url' => Route::get('platinum')->uri(), 'text' => __('Platinum'));
-	  }
 	}
 
 
@@ -804,6 +801,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		return $this->action_gallery();
 	}
+
 
 
 	/**
