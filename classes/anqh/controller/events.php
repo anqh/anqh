@@ -260,7 +260,17 @@ class Anqh_Controller_Events extends Controller_Template {
 							$image->save();
 
 							// Set the image as flyer
-							$event->add('flyers', $image);
+							try {
+								Jelly::factory('flyer')->set(array(
+									'image'       => $image,
+									'event'       => $event,
+									'name'        => $event->name,
+									'stamp_begin' => $event->stamp_begin,
+								))->save();
+							} catch (Kohana_Exception $e) {
+								$event->add('flyers', $image);
+							}
+
 							if ($side == 'front') {
 								$event->flyer_front = $image;
 								$event->flyer_front_url = $image->get_url();
@@ -850,6 +860,9 @@ class Anqh_Controller_Events extends Controller_Template {
 			'event'  => $event,
 			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
 			'tags'   => $tags,
+
+			'flyer_front' => $event->flyer_front->loaded() ? $event->flyer_front : null,
+			'flyer_back'  => $event->flyer_back->loaded() ? $event->flyer_back : null,
 
 			'venue'  => isset($venue) ? $venue : $event->venue,
 			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
