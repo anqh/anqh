@@ -27,6 +27,28 @@ abstract class Anqh_Arr extends Kohana_Arr {
 
 
 	/**
+	 * Get values by key from $array1 using values from $array2
+	 *
+	 * @static
+	 * @param   array    $array1  Get values from this array
+	 * @param   array    $array2  Using values from this array as keys
+	 * @param   boolean  $once    Remove found values from $array1
+	 * @return  array
+	 */
+	public static function intersect(array &$array1, array $array2, $once = false) {
+		$intersect = array();
+		foreach ($array2 as $key) {
+			if (isset($array1[$key])) {
+				$intersect[$key] = $array1[$key];
+			  if ($once) unset($array1[$key]);
+			}
+		}
+
+	  return $intersect;
+	}
+
+
+	/**
 	 * Get first non-false value
 	 *
 	 * @static
