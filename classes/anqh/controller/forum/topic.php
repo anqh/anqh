@@ -633,7 +633,7 @@ $(function() {
 			} else {
 
 				// Old topic
-				$topic->set(Arr::extract($_POST, array('name', 'status')));
+				$topic->set(Arr::intersect($_POST, array('name', 'status')));
 				try {
 					$topic->save();
 					$this->request->redirect(Route::model($topic));
