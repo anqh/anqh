@@ -343,7 +343,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					$comment->user = $image->author;
 				}
 				$comment->author = self::$user;
-				$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));
+				$comment->set(Arr::intersect($_POST, Model_Image_Comment::$editable_fields));
 				try {
 					$comment->save();
 					$image->comment_count++;
@@ -702,7 +702,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						$comment->user = $current->author;
 					}
 					$comment->author = self::$user;
-					$comment->set(Arr::extract($_POST, Model_Image_Comment::$editable_fields));
+					$comment->set(Arr::intersect($_POST, Model_Image_Comment::$editable_fields));
 					try {
 						$comment->save();
 						$current->comment_count++;
@@ -1066,7 +1066,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			} else if ($gallery->loaded()) {
 
 				// Editing old
-				$gallery->set(Arr::extract($_POST, Model_Gallery::$editable_fields));
+				$gallery->set(Arr::intersect($_POST, Model_Gallery::$editable_fields));
 
 			}
 
