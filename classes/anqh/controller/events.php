@@ -791,7 +791,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			}
 
-			$post = Arr::extract($_POST, Model_Event::$editable_fields);
+			$post = Arr::intersect($_POST, Model_Event::$editable_fields);
 			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time'])) {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
