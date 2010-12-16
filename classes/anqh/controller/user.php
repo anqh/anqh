@@ -214,7 +214,7 @@ class Anqh_Controller_User extends Controller_Template {
 				$comment = Jelly::factory('user_comment');
 				$comment->user       = $user;
 				$comment->author     = self::$user;
-				$comment->set(Arr::extract($_POST, Model_User_Comment::$editable_fields));
+				$comment->set(Arr::intersect($_POST, Model_User_Comment::$editable_fields));
 				try {
 					$comment->save();
 
@@ -308,7 +308,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
-			$user->set(Arr::extract($_POST, Model_User::$editable_fields));
+			$user->set(Arr::intersect($_POST, Model_User::$editable_fields));
 
 			// GeoNames
 			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {

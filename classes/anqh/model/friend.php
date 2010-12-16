@@ -16,13 +16,15 @@ class Anqh_Model_Friend extends Jelly_Model {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id' => new Field_Primary,
-			'user' => new Field_BelongsTo,
+			'id'     => new Field_Primary,
+			'user'   => new Field_BelongsTo,
 			'friend' => new Field_BelongsTo(array(
 				'column'  => 'friend_id',
-				'foreign' => 'user.id'
+				'foreign' => 'user'
 			)),
-			'created' => new Field_Timestamp,
+			'created' => new Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
 		));
 	}
 

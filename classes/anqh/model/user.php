@@ -20,11 +20,6 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	const PERMISSION_COMMENTS = 'comments';
 
 	/**
-	 * @var  Cache  cache instance
-	 */
-	protected static $_cache;
-
-	/**
 	 * @var  array  Static cache of Model_Users loaded
 	 */
 	protected static $_users = array();
@@ -216,12 +211,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			// Date of birth
 			case 'dob':
-				$value = date::format(date::DATE_SQL, $value);
+				$value = Date::format(Date::DATE_SQL, $value);
 				break;
 
 			// Always lowercase e-mail
 			case 'email':
-				$value = utf8::strtolower($value);
+				$value = UTF8::strtolower($value);
 				break;
 
 		}
@@ -573,29 +568,22 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_friends() {
-		static $_cache = array();
+		$ckey = 'friends_';
 
 		// Try static cache
-		$friends = Arr::get($_cache, $this->id);
+		$friends = Anqh::cache_get($ckey . $this->id);
 		if (is_null($friends)) {
 
-			// Try cache
-			$friends = Cache::instance()->get_('friends_' . $this->id);
-			if (is_null($friends)) {
-
-				// Load from DB
-				$friends = array();
-				foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
-					$friends[] = $friend->friend->id;
-				}
-
-				Cache::instance()->set_('friends_'  . $this->id, $friends, Date::HOUR);
+			// Load from DB
+			$friends = array();
+			foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
+				$friends[] = $friend->friend->id;
 			}
 
-			$_cache[$this->id] = $friends;
+			Anqh::cache_set($ckey . $this->id, $friends, Date::HOUR);
 		}
 
-		return $_cache[$this->id];
+		return $friends;
 	}
 
 
@@ -716,14 +704,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array|null
 	 */
 	public static function find_user_light($id = null) {
-		static $_cache = array();
-
+		$ckey = 'user_light_';
 		if ($id instanceof Model_User) {
 
 			// Got user model, no need to load, just fill caches
 			$user = $id->light_array();
-			$_cache[$id->id] = $user;
-			Cache::instance()->set('user_light_' . $id->id, $user, Date::DAY);
+			Anqh::cache_set($ckey . $id->id, $user, Date::DAY);
 			return $user;
 
 		} else if (is_array($id)) {
@@ -748,21 +734,13 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		}
 
 		// Try static cache
-		$user = Arr::get($_cache, $id);
-		if (!$user) {
+		if (!$user = Anqh::cache_get($ckey . $id)) {
 
-			// Try cache
-			$user = Cache::instance()->get_('user_light_' . $id);
-			if (!$user) {
+			// Load from DB
+			$model = Jelly::select('user')->where(is_int($id) ? 'id' : 'username_clean', '=', $id)->limit(1)->execute();
+			$user = $model->light_array();
 
-				// Load from DB
-				$model = Jelly::select('user')->where(is_int($id) ? 'id' : 'username_clean', '=', $id)->limit(1)->execute();
-				$user = $model->light_array();
-
-				Cache::instance()->set_('user_light_' . $id, $user, Date::DAY);
-			}
-
-			$_cache[$user['id']] = $user;
+			Anqh::cache_set($ckey . $id, $user, Date::DAY);
 		}
 
 		return $user;
@@ -783,7 +761,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'title'     => $this->title,
 				'signature' => $this->signature,
 				'avatar'    => $this->avatar,
-				'thumb'     => $this->default_image->id ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
+				'thumb'     => $this->default_image->loaded() ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
 			);
 		}
 	}
@@ -816,10 +794,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			// Got user name
 			$username = Text::clean($user);
-			if (!$id = (int)Cache::instance()->get_('user_uid_' . $username)) {
+			if (!$id = (int)Anqh::cache_get('user_uid_' . $username)) {
 				if ($user = Model_User::find_user($user)) {
 					$id = $user->id;
-					Cache::instance()->set_('user_uid_' . $username, $id, Date::DAY);
+					Anqh::cache_set('user_uid_' . $username, $id, Date::DAY);
 				}
 			}
 
@@ -875,21 +853,5 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 		return false;
 	}
-
-
-	/**
-	 * Allows a model to be loaded by username or email address.
-	 *
-	 * @param   mixed  $id  id, username, email
-	 * @return  string
-	 */
-	public function unique_key($id)	{
-		if (!empty($id) && is_string($id) && ! ctype_digit($id)) {
-			return valid::email($id) ? 'email' : 'username';
-		}
-
-		return parent::unique_key($id);
-	}
-
 
 }
