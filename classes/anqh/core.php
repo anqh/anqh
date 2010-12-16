@@ -14,6 +14,71 @@ class Anqh_Core {
 	 */
 	const VERSION = 0.5;
 
+	/**
+	 * @var  array  Static local cache in front of external cache
+	 */
+	private static $_cache = array();
+
+	/**
+	 * @var  Cache  Cache instance for default cache
+	 */
+	private static $_cache_instance;
+
+
+	/**
+	 * Delete a cache entry based on id
+	 *
+	 * @param   string  $id  id to remove from cache
+	 * @return  boolean
+	 */
+	public static function cache_delete($id) {
+		!self::$_cache_instance and self::$_cache_instance = Cache::instance();
+
+		unset(self::$_cache[$id]);
+
+		return self::$_cache_instance->delete($id);
+	}
+
+
+	/**
+	 * Retrieve a cached value entry by id.
+	 *
+	 * @param   string  $id       id of cache to entry
+	 * @param   string  $default  default value to return if cache miss
+	 * @return  mixed
+	 * @throws  Kohana_Cache_Exception
+	 */
+	public static function cache_get($id, $default = null) {
+		!self::$_cache_instance and self::$_cache_instance = Cache::instance();
+
+		if (!isset(self::$_cache[$id])) {
+			self::$_cache[$id] = self::$_cache_instance->get($id, $default);
+		}
+
+		return Arr::get(self::$_cache, $id, $default);
+	}
+
+
+	/**
+	 * Set a value to cache with id and lifetime
+	 *
+	 * @param   string   $id        id of cache entry
+	 * @param   string   $data      data to set to cache
+	 * @param   integer  $lifetime  in seconds
+	 * @return  boolean
+	 */
+	public static function cache_set($id, $data, $lifetime = 3600) {
+		!self::$_cache_instance and self::$_cache_instance = Cache::instance();
+
+		if (self::$_cache_instance->set($id, $data, $lifetime)) {
+			self::$_cache[$id] = $data;
+
+		  return true;
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * Get/set Open Graph tags
