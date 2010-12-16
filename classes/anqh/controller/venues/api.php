@@ -38,9 +38,9 @@ class Anqh_Controller_Venues_API extends Controller_API {
 
 		}
 
-		$params = array_filter(Arr::extract($_REQUEST, $required));
+		$params = array_filter(Arr::intersect($_REQUEST, $required));
 		if (!empty($params)) {
-			$params += array_filter(Arr::extract($_REQUEST, $optional));
+			$params += array_filter(Arr::intersect($_REQUEST, $optional));
 			try {
 				$data = ($method == 'GET') ? Remote::get($url, $params) : Remote::post($url, $params);
 				$this->data[$foursquare] = json_decode($data);

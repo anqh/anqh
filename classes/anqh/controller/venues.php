@@ -192,7 +192,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		if (Security::csrf_valid() && isset($_POST['foursquare_id'])) {
 			try {
 				$venue
-					->set(Arr::extract($_POST, array('foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address')))
+					->set(Arr::intersect($_POST, array('foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address')))
 					->save();
 
 				NewsfeedItem_Venues::venue_edit(self::$user, $venue);
@@ -525,7 +525,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
-			$venue->set(Arr::extract($_POST, Model_Venue::$editable_fields));
+			$venue->set(Arr::intersect($_POST, Model_Venue::$editable_fields));
 
 			// GeoNames
 			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
