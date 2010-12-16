@@ -109,7 +109,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 				$comment->blog_entry = $entry;
 				$comment->user       = $entry->author;
 				$comment->author     = self::$user;
-				$comment->set(Arr::extract($_POST, Model_Blog_Comment::$editable_fields));
+				$comment->set(Arr::intersect($_POST, Model_Blog_Comment::$editable_fields));
 				try {
 					$comment->save();
 					$entry->comment_count++;
@@ -218,7 +218,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
-			$entry->set(Arr::extract($_POST, Model_Blog_Entry::$editable_fields));
+			$entry->set(Arr::intersect($_POST, Model_Blog_Entry::$editable_fields));
 			try {
 				$entry->save();
 
