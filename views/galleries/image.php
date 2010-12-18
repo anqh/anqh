@@ -15,7 +15,7 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 
 	<?php if ($previous): ?>
 	<?php echo HTML::anchor(
-		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve)) . '#image',
+		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve)),
 		'&laquo; ' . __('Previous'),
 		array('title' => __('Previous image'), 'class' => 'prev')) ?>
 	<?php else: ?>
@@ -26,7 +26,7 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 
 	<?php if ($next): ?>
 	<?php echo HTML::anchor(
-		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)) . '#image',
+		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)),
 		__('Next') . ' &raquo;',
 		array('title' => __('Next image'), 'class' => 'next')) ?>
 	<?php else: ?>
@@ -37,7 +37,7 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 
 <?php if ($next): ?>
 <?php echo HTML::anchor(
-	Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)) . '#image',
+	Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)),
 	HTML::image($image->get_url(null, $gallery->dir)),
 	array('title' => __('Next image'), 'class' => 'image')) ?>
 <?php else: ?>

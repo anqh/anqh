@@ -305,7 +305,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if ($event->loaded()) {
 			$this->page_title = HTML::chars($event->name);
 			$this->page_subtitle = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
-			$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Show event'));
+			$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($event),  __('Go to event'));
 
 			// Facebook
 			if (Kohana::config('site.facebook')) {
@@ -652,6 +652,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Set title and tabs
 		$this->_set_gallery($gallery);
+		$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery),  __('Back to Gallery'));
 
 		// Find current, previous and next images
 		$i = 0;
@@ -1168,7 +1169,8 @@ $("#field-name")
 		// Set title
 		$images = count($gallery->images);
 		$this->page_title = HTML::chars($gallery->name);
-		$this->page_subtitle = __2(':images image', ':images images', $images, array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
+		$this->page_subtitle  = __2(':images image', ':images images', $images, array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
+	  $this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery->event),  __('Go to event'));
 
 		// Set actions
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
@@ -1177,7 +1179,6 @@ $("#field-name")
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($gallery, 'update'), 'text' => __('Update gallery'), 'class' => 'gallery-update');
 		}
-		$this->page_actions[] = array('link' => Route::model($gallery->event), 'text' => __('Show event'));
 
 	}
 
