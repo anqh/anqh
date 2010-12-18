@@ -148,14 +148,14 @@ class Anqh_Controller_Events extends Controller_Template {
 			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(), 'text' => __('Remove favorite'), 'class' => 'favorite-delete');
 			} else {
-				$this->page_actions[] = array('link' => Route::model($event, 'favorite') . '?token=' . Security::csrf(), 'text' => __('Add favorite'), 'class' => 'favorite-add');
+				$this->page_actions[] = array('link' => Route::model($event, 'favorite') . '?token=' . Security::csrf(), 'text' => __('Add to favorites'), 'class' => 'favorite-add');
 			}
 		}
-		$this->page_actions[] = array('link' => Route::get('forum_event')->uri(array('id' => $event->id)), 'text' => __('Forum'));
-		$this->page_actions[] = array('link' => Route::get('gallery_event')->uri(array('id' => $event->id)), 'text' => __('Gallery'));
 
 		$this->page_title = HTML::chars($event->name);
 		$this->page_subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
+		$this->page_subtitle .= ' | ' . HTML::anchor(Route::get('forum_event')->uri(array('id' => $event->id)), __('Go to discussion'));
+		$this->page_subtitle .= ' | ' . HTML::anchor(Route::get('gallery_event')->uri(array('id' => $event->id)), __('Go to gallery'));
 
 		// Facebook
 		if (Kohana::config('site.facebook')) {

@@ -35,7 +35,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'rules' => array(
 					'not_empty'  => array(true),
 					'min_length' => array(3),
-					'max_length' => array(100),
+					'max_length' => array(64),
 				),
 			)),
 			'title'    => new Field_String,
@@ -122,8 +122,12 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'column' => 'views',
 			)),
 
-			'flyer_front_url' => new Field_String,
-			'flyer_back_url' => new Field_String,
+			'flyer_front_url' => new Field_Url(array(
+				'label' => __('Flyer front')
+			)),
+			'flyer_back_url'  => new Field_Url(array(
+				'label' => __('Flyer back')
+			)),
 			'flyer_front' => new Field_BelongsTo(array(
 				'column'  => 'flyer_front_image_id',
 				'foreign' => 'image',
