@@ -93,7 +93,7 @@ caption                                { font-family: Georgia, serif; text-align
 mark                                   { font-style: italic; font-weight: bold; }
 abbr[title]                            { font-variant: small-caps; letter-spacing: 0.1em; text-transform: lowercase; }
 address                                { font-style: italic; }
-small                                  { font-size: 0.75em; line-height: 2.222em; }
+small                                  { font-size: 0.75em; /*line-height: 2.222em;*/ }
 dfn,
 strong                                 { font-weight: bold; }
 em,
