@@ -34,7 +34,7 @@
 	echo
 		HTML::style('ui/jquery-ui.css'),
 		HTML::style('ui/site.css'),
-		HTML::style('http://fonts.googleapis.com/css?family=Cantarell');
+		HTML::style('http://fonts.googleapis.com/css?family=Nobile:regular,bold');
 	?>
 
 	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
