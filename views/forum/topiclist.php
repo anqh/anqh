@@ -15,7 +15,9 @@
 <ul>
 
 	<?php foreach ($topics as $topic): ?>
-	<li><?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('title' => HTML::chars($topic->name))) ?></li>
+	<li>
+		<?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('title' => '[' . Date::short_span($topic->last_posted, false) . '] ' . $topic->name)) ?>
+	</li>
 	<?php endforeach; ?>
 
 </ul>
