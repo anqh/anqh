@@ -122,7 +122,9 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		}
 
 		$this->page_title = count($groups) > 1 ? __('Forum areas') : $groups[0]->name;
-		Widget::add('main', View_Module::factory('forum/groups', array('groups' => $groups)));
+		foreach ($groups as $group) {
+			Widget::add('main', View_Module::factory('forum/group', array('group' => $group)));
+		}
 
 		$this->side_views();
 	}

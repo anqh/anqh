@@ -283,7 +283,7 @@ $(function() {
 
 		// Editing a post
 		$post = Jelly::select('forum_post')->load($post_id);
-		if (!$post->loaded() || $post->topic->id != $topic->id) {
+		if (!$post->loaded() || $post->topic->id != $topic->id || !Security::csrf_valid()) {
 			throw new Model_Exception($post, $post_id);
 		}
 		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, self::$user);
@@ -311,7 +311,7 @@ $(function() {
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
 		$topic = Jelly::select('forum_topic')->load($topic_id);
-		if (!$topic->loaded()) {
+		if (!$topic->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
 
