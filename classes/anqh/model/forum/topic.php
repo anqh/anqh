@@ -50,7 +50,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 					'label' => __('Topic'),
 					'rules' => array(
 						'not_empty'  => array(true),
-						'max_length' => array(200),
+						'max_length' => array(128),
 					),
 					'filters' => array(
 						'trim' => null,

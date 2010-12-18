@@ -179,6 +179,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Pagination
 		$pagination = Pagination::factory(array(
+			'url'            => Route::get('forum_topic')->uri(array('id' => Route::model_id($topic))),
 			'items_per_page' => Kohana::config('forum.posts_per_page'),
 			'total_items'    => max(1, $topic->post_count),
 		));
