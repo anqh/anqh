@@ -11,8 +11,9 @@ class Anqh_Pagination extends Kohana_Pagination {
 
 	/**
 	 * Go to page with item
-
+	 *
 	 * @param   integer  $item
+	 * @return  Pagination
 	 */
 	public function item($item) {
 		$this->current_page = null;
@@ -30,6 +31,30 @@ class Anqh_Pagination extends Kohana_Pagination {
 		$this->config['current_page']['page'] = $this->total_pages;
 
 		return $this->setup();
+	}
+
+
+	/**
+	 * Generates the full URL for a certain page.
+	 *
+	 * @param   integer  page number
+	 * @return  string   page URL
+	 */
+	public function url($page = 1) {
+		if ($this->config['current_page']['source'] == 'query_string' && $url = Arr::get($this->config, 'url')) {
+
+			// Clean the page number
+			$page = max(1, (int) $page);
+
+			// No page number in URLs to first page
+			if ($page === 1) {
+				$page = NULL;
+			}
+
+			return URL::site($url) . URL::query(array($this->config['current_page']['key'] => $page));
+		}
+
+		return parent::url($page);
 	}
 
 
