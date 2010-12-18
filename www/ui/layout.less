@@ -89,6 +89,7 @@ body.right #main                       { float: right; }
 .tab                                   { background: none; margin: 0; padding: 0; }
 .actions                               { float: left; }
 .actions.alt                           { float: right; }
+p.cut,
 .cut li                                { overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; white-space: nowrap; }
 
 section .article,
@@ -111,6 +112,7 @@ section article .details               { color: @text-color-alt; }
 .grid12 .container .container          { padding: 0; }
 .grid12 .container .container .mod     { .border-radius(0); }
 .mod .mod                              { background: transparent; border: 0 none; .box-shadow(none); margin-bottom: 0; }
+.mod .mod .container                   { margin: 0; }
 .mod > header                          { padding: 0 10px 5px 10px; }
 
 
@@ -125,10 +127,14 @@ section article .details               { color: @text-color-alt; }
 /* Wide */
 #wide .mod                             { .midget; background: @wide-background; }
 #wide .mod .container                  { .midget-container; background: @wide-background-container; border: 0 none; }
+#wide .mod .mod                        { .box-shadow(none); }
+#wide .mod .mod .container             { margin: 0; padding: 0; }
 
 /* Main */
 #main .mod                             { .midget; background: @main-background; }
 #main .mod .container                  { .midget-container; background: @main-background-container; border: 0 none; }
+#main .mod .mod                        { .box-shadow(none); }
+#main .mod .mod .container             { margin: 0; padding: 0; }
 
 /* Side */
 #side                                  { }
