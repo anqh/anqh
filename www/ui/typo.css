@@ -37,10 +37,10 @@ h6                                     { font-weight: normal; }
 h1                                     { font-size: 2em; line-height: 1.666em; /*margin-top: 0.833em;*/ }
 h2                                     { font-size: 1.75em; letter-spacing: -.05em; line-height: 1.25em; padding: .5em 0; }
 legend                                 { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
-h3                                     { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
+/*h3                                     { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
 h4                                     { font-size: 1.3333em; letter-spacing: -1px; line-height: 1.25em; padding-top: 1.25em; }
 h5,
-h6                                     { font-size: 1.1667em; line-height: 1.4286em; padding-top: 1.4286em; }
+h6                                     { font-size: 1.1667em; line-height: 1.4286em; padding-top: 1.4286em; }*/
 table h3,
 table h4,
 header h3,
