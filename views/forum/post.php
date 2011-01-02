@@ -23,7 +23,11 @@ $owners = ($post->original('author') == $topic->original('author'));
 		<section class="author grid2 first">
 			<?php echo HTML::avatar($author['avatar'], $author['username']) ?>
 
-			<?php echo HTML::user($author, $post->author_name) ?>
+			<?php echo HTML::user($author, $author['username']) ?><br />
+			<small><?php echo HTML::chars($author['title']) ?></small>
+			<p>
+				<small><?php echo __('Posts: :posts', array(':posts' => '<var>' . Num::format($post->author->post_count, 0))) ?></small>
+			</p>
 		</section>
 
 		<section class="post-content grid6">
@@ -32,7 +36,7 @@ $owners = ($post->original('author') == $topic->original('author'));
 					<?php echo HTML::time(Date::short_span($post->created, true, true), $post->created) ?>
 				</small>
 
-				<span class="actions">
+				<nav class="actions">
 				<?php echo HTML::anchor(
 					Route::get('forum_post')->uri(array(
 						'id'       => Route::model_id($post),
@@ -64,7 +68,7 @@ $owners = ($post->original('author') == $topic->original('author'));
 							'action'   => 'quote')),
 						__('Quote'),
 						array('class' => 'action post-quote small')) ?>
-				</span>
+				</nav>
 			</header>
 
 			<?php if ($post->parent->id) echo __('Replying to :parent', array(
