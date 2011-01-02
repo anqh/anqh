@@ -132,6 +132,23 @@ GROUP BY 1
 
 
 	/**
+	 * Get flyers with new comments
+	 *
+	 * @static
+	 * @param   Model_User $user
+	 * @return  Jelly_Collection
+	 */
+	public static function find_new_comments(Model_User $user) {
+		return Jelly::select('flyer')
+			->join('image', 'INNER')
+			->on('images.image:primary_key', '=', 'image:foreign_key')
+			->where('author_id', '=', $user->id)
+			->and_where('new_comment_count', '>', 0)
+			->execute();
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
