@@ -38,14 +38,26 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 			case self::TYPE_COMMENT:
 				$entry = Jelly::select('blog_entry')->load($item->data['entry_id']);
 				if ($entry->loaded()) {
-					$text = __('commented to blog :blog', array(':blog' => HTML::anchor(Route::model($entry), HTML::chars($entry->name), array('title' => $entry->name))));
+					$text = __('commented to blog<br />:blog', array(
+						':blog' => HTML::anchor(
+							Route::model($entry),
+							HTML::chars($entry->name),
+							array('title' => $entry->name, 'class' => 'blog')
+						)
+					));
 				}
 				break;
 
 			case self::TYPE_ENTRY:
 				$entry = Jelly::select('blog_entry')->load($item->data['entry_id']);
 				if ($entry->loaded()) {
-					$text = __('wrote a new blog entry :blog', array(':blog' => HTML::anchor(Route::model($entry), HTML::chars($entry->name), array('title' => $entry->name))));
+					$text = __('wrote a new blog entry<br />:blog', array(
+						':blog' => HTML::anchor(
+							Route::model($entry),
+							HTML::chars($entry->name),
+							array('title' => $entry->name, 'class' => 'blog')
+						)
+					));
 				}
 				break;
 
