@@ -35,7 +35,7 @@
 		<?php if ($area->topic_count > 0): ?>
 
 		<small class="ago"><?php echo HTML::time(Date::short_span($area->last_topic->last_posted, true, true), $area->last_topic->last_posted) ?></small>
-		<?php echo HTML::user($area->last_topic->author, $area->last_topic->last_poster) ?><br />
+		<?php echo HTML::user($area->last_topic->last_post->author, $area->last_topic->last_poster) ?><br />
 		<?php echo HTML::anchor(Route::model($area->last_topic, '?page=last#last'), HTML::chars($area->last_topic->name), array('title' => HTML::chars($area->last_topic->name))) ?>
 
 		<?php else: ?>
