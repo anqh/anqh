@@ -46,8 +46,12 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 			case self::TYPE_EVENT:
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
-					$text = __('added new event :event', array(
-						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable'))
+					$text = __('added new event<br />:event', array(
+						':event' => HTML::anchor(
+							Route::model($event),
+							HTML::chars($event->name),
+							array('class' => 'icon event hoverable')
+						)
 					));
 				}
 				break;
@@ -55,8 +59,12 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 			case self::TYPE_EVENT_EDIT:
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
-					$text = __('updated event :event', array(
-						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable'))
+					$text = __('updated event<br />:event', array(
+						':event' => HTML::anchor(
+							Route::model($event),
+							HTML::chars($event->name),
+							array('class' => 'icon event hoverable')
+						)
 					));
 				}
 				break;
@@ -64,8 +72,12 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 			case self::TYPE_FAVORITE:
 				$event = Jelly::select('event')->load($item->data['event_id']);
 				if ($event->loaded()) {
-					$text = __('added event :event to favorites', array(
-						':event' => HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable'))
+					$text = __('added event to favorites<br />:event', array(
+						':event' => HTML::anchor(
+							Route::model($event),
+							HTML::chars($event->name),
+							array('class' => 'icon event hoverable')
+						)
 					));
 				}
 				break;
