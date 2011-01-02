@@ -426,18 +426,45 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			}
 		}
 
+		// Flyer comments
+		$flyer_comments = Model_Flyer::find_new_comments($this);
+		$flyers = array();
+		if (count($flyer_comments)) {
+			$new_comments = 0;
+			foreach ($flyer_comments as $flyer) {
+				$flyers[$flyer->image->id] = true;
+				$new_comments += $flyer->image->new_comment_count;
+			}
+			$new['new-flyer-comments'] = HTML::anchor(
+				Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')),
+				$new_comments,
+				array('title' => __('New flyer comments')
+			));
+		}
+		unset($flyer_comments);
+
 		// Image comments
 		$image_comments = Model_Image::find_new_comments($this);
 		if (count($image_comments)) {
 			$new_comments = 0;
+			$new_image = null;
 			foreach ($image_comments as $image) {
-				$new_comments += $image->new_comment_count;
+
+				// @TODO: Until flyer comments are fixed..
+				if (!isset($flyers[$image->id])) {
+					$new_comments += $image->new_comment_count;
+				  $new_image = $image;
+				}
+
 			}
-			$new['new-image-comments'] = HTML::anchor(
-				Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($image->id)), 'id' => $image->id, 'action' => '')),
-				$new_comments,
-				array('title' => __('New image comments')
-			));
+
+			if ($new_comments) {
+				$new['new-image-comments'] = HTML::anchor(
+					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_image->id)), 'id' => $new_image->id, 'action' => '')),
+					$new_comments,
+					array('title' => __('New image comments')
+				));
+			}
 		}
 		unset($image_comments);
 
