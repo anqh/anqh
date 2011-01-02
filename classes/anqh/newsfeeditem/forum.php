@@ -39,19 +39,26 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 			case self::TYPE_REPLY:
 				$topic = Jelly::select('forum_topic')->load($item->data['topic_id']);
 				if ($topic->loaded()) {
-					$text = __('replied to topic :topic', array(
+					$text = __('replied to topic<br />:topic', array(
 						':topic' => HTML::anchor(
 							Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $item->data['post_id'])) . '#post-' . $item->data['post_id'],
-							HTML::chars($topic->name), array('title' => $topic->name))
+							HTML::chars($topic->name),
+							array('title' => $topic->name, 'class' => 'icon topic')
 						)
-					);
+					));
 				}
 				break;
 
 			case self::TYPE_TOPIC:
 				$topic = Jelly::select('forum_topic')->load($item->data['topic_id']);
 				if ($topic->loaded()) {
-					$text = __('started a new topic :topic', array(':topic' => HTML::anchor(Route::model($topic), HTML::chars($topic->name), array('title' => $topic->name))));
+					$text = __('started a new topic<br />:topic', array(
+						':topic' => HTML::anchor(
+							Route::model($topic),
+							HTML::chars($topic->name),
+							array('title' => $topic->name, 'class' => 'icon topic')
+						)
+					));
 				}
 				break;
 
