@@ -39,20 +39,26 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				$gallery = Jelly::select('gallery')->load($item->data['gallery_id']);
 				$image   = Jelly::select('image')->load($item->data['image_id']);
 				if ($gallery->loaded() && $image->loaded()) {
-					$text = __('commented to an image in :gallery', array(':gallery' => HTML::anchor(
-						Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-						HTML::chars($gallery->name),
-						array('class' => 'hoverable')
-					)));
+					$text = __('commented to an image<br />:gallery', array(
+						':gallery' => HTML::anchor(
+							Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
+							HTML::chars($gallery->name),
+							array('class' => 'icon photo hoverable')
+						)
+					));
 				}
 				break;
 
 			case self::TYPE_COMMENT_FLYER:
 				$flyer = Jelly::select('flyer')->load($item->data['flyer_id']);
 				if ($flyer->loaded()) {
-					$text = __('commented to a :flyer', array(':flyer' => HTML::anchor(
-						Route::get('flyer')->uri(array('id' => $flyer->id)),
-						__('flyer'))));
+					$text = __('commented to a flyer<br />:flyer', array(
+						':flyer' => HTML::anchor(
+							Route::get('flyer')->uri(array('id' => $flyer->id)),
+							$flyer->name ? HTML::chars($flyer->name) : __('flyer'),
+							array('class' => 'icon flyer')
+						)
+					));
 				}
 				break;
 
