@@ -38,8 +38,8 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 			case self::TYPE_VENUE:
 		    $venue = Jelly::select('venue')->load($item->data['venue_id']);
 		    if ($venue->loaded()) {
-			    $text = __('added new venue :venue', array(
-				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name))
+			    $text = __('added new venue<br />:venue', array(
+				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
 			    ));
 		    }
 		    break;
@@ -47,8 +47,8 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 			case self::TYPE_VENUE_EDIT:
 		    $venue = Jelly::select('venue')->load($item->data['venue_id']);
 		    if ($venue->loaded()) {
-			    $text = __('updated venue :venue', array(
-				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name))
+			    $text = __('updated venue<br />:venue', array(
+				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
 			    ));
 		    }
 		    break;
