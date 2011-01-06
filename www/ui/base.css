@@ -27,77 +27,13 @@ section article:hover .hidden          { visibility: visible; }
 
 .mod.settings                { padding: 0 10px; }
 
-/*.subtitle { margin-bottom: 1.6667em; }*/
-.ad                                    { text-align: center; }
-.mod.ad728x90                          { padding: 0; margin: 0; }
-.ad728x90 .content *                   { margin: 0 auto 10px auto; margin-bottom: 10px; max-height: 90px; max-width: 728px; }
-.ad140x350                             { }
-
 .extra-actions { text-align: right; }
 
 .pagination { text-align: center; }
 
-/*
-.button               { background: transparent no-repeat left top; display: block; float: left; margin: 0 5px 0 -5px; padding: 0.833em 0; text-align: center; }
-.button.x-small       { background-position: left top; width: 50px; }
-.button.small         { background-position: 0 -40px; width: 75px; }
-.button.medium        { background-position: 0 -80px; width: 100px; }
-.button.large         { background-position: 0 -120px; width: 125px; }
-.button.x-large       { background-position: 0 -160px; width: 150px; }
-.button:hover         { text-decoration: none; }
-.button.x-small:hover { background-position: -150px 0; }
-.button.small:hover   { background-position: -150px -40px; }
-.button.medium:hover  { background-position: -150px -80px; }
-.button.large:hover   { background-position: -150px -120px; }
-.button.x-large:hover { background-position: -150px -160px; }
-*/
-
 .aside a.action { float: right; }
 
 /***** /ELEMENTS *****/
-
-
-
-
-/***** ICONS *****/
-
-.icon16     { background: no-repeat left center; padding-left: 20px; }
-.icon24     { text-align: right; }
-.icon24 img { height: 24px; width: 24px; }
-.icon48     { background: transparent no-repeat center top; height: 48px; }
-
-/*.type-calendar { background-image: url(icons/16x16/calendar.png); }
-.type-forum    { background-image: url(icons/16x16/forum.png); }
-.type-photos   { background-image: url(icons/16x16/photo.png); }
-.type-music    { background-image: url(icons/16x16/music.png); }
-.type-blogs    { background-image: url(icons/16x16/blog.png); }
-.type-venues   { background-image: url(icons/16x16/globe.png); }
-.type-groups   { background-image: url(icons/16x16/group.png); }
-.type-members  { background-image: url(icons/16x16/member.png); }*/
-
-/*#main > .icon48  { position: relative; top: -0.667em; }*/
-
-/*#forum #group-18 .icon48,
-#calendar .icon48 { background-image: url(icons/48x48/calendar.png); }*/
-/*#member .group,*/
-/*#forum .icon48    { background-image: url(icons/48x48/forum.png); }
-#photos .icon48   { background-image: url(icons/48x48/photos.png); }
-#forum #group-17 .icon48,
-#music .icon48    { background-image: url(icons/48x48/music.png); }
-#blogs .icon48    { background-image: url(icons/48x48/blog.png); }
-#venues .icon48   { background-imagE: url(icons/48x48/globe.png); }
-#forum #group-20 .icon48,
-#sign .icon48,
-#members .icon48  { background-image: url(icons/48x48/member.png); }
-
-#tabs li.tab-list a                    { background-image: url(icons/48x48/list.png); }
-#tabs li.tab-map a,
-.address .icon48                       { background-image: url(icons/48x48/map.png); }
-.homepage .icon48                      { background-image: url(icons/48x48/web.png); }*/
-
-/***** /ICONS *****/
-
-
 /***** JQUERY *****/
 
 #side .ui-tabs-panel header            { display: none; }
