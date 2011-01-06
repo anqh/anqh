@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -61,16 +61,16 @@
 				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
 			</section>
 
-			<section id="mainmenu" class="grid6">
+			<section id="mainmenu" class="grid7">
 
 				<?php echo Widget::get('navigation') ?>
 
 			</section>
-			<section id="visitor" class="grid5">
+			<nav id="visitor" class="grid4">
 
 				<?php echo Widget::get('visitor') ?>
 
-			</section>
+			</nav>
 
 		</div>
 	</header><!-- #header -->
@@ -157,7 +157,7 @@
 <?php echo Widget::get('dock') ?>
 
 		</div>
-		<a id="customize" class="icon customize" onclick="$('#dock').toggleClass('open'); return false;">&darr;</a>
+		<a id="customize" class="icon customize" onclick="$('#dock').toggleClass('open'); return false;">&#9660;</a>
 	</section><!-- #dock -->
 
 	<!-- /DOCK -->

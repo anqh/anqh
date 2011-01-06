@@ -1,36 +1,45 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Visitor card
+ * Visitor section
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
 if ($user):
 
 	// Member
-	echo HTML::avatar($user->avatar, $user->username, true);
-	echo __(':user <var class="uid">[#:id]</var>', array(
-		':id'      => $user->id,
-		':user'    => HTML::user($user),
-	));
-
-	$new_comments = $user->find_new_comments();
-	if (!empty($new_comments)):
 ?>
- ::
-<ul class="new-messages">
-	<?php foreach ($new_comments as $class => $link): ?>
-	<li class="<?php echo $class ?>"><?php echo $link ?></li>
-	<?php endforeach; ?>
+<ul>
+
+	<?php if ($new_comments = $user->find_new_comments()): ?>
+	<li class="menu-messages">
+		<ul class="new-messages">
+			<?php foreach ($new_comments as $class => $link): ?>
+			<li class="<?php echo $class ?>"><?php echo $link ?></li>
+			<?php endforeach; ?>
+		</ul>
+	</li>
+	<?php endif; ?>
+
+	<li class="menu-profile">
+		<?php echo HTML::avatar($user->avatar, $user->username, true); ?>
+		<?php echo __(':user <var class="uid">[#:id]</var>', array(
+				':id'      => $user->id,
+				':user'    => HTML::user($user),
+			)); ?>
+		<?php echo HTML::anchor('#', '&#9660;', array('class' => 'toggler', 'onclick' => '$("#visitor .submenu").toggleClass("toggled"); return false;')); ?>
+		<ul class="submenu">
+			<li class="menu-settings"><?php echo HTML::anchor(URL::user($user, 'settings'), __('Settings'), array('class' => 'icon settings')) ?></li>
+		</ul>
+	</li>
+
+	<li class="menu-logout"><?php echo HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out')); ?></li>
+
 </ul>
 <?php
-	endif;
-
-	echo ' :: ', HTML::anchor(URL::user($user, 'settings'), __('Settings'));
-	echo ' :: ', HTML::anchor(Route::get('sign')->uri(array('action' => 'out')), __('Sign out'));
 
 // Logout also from Facebook
 /*
