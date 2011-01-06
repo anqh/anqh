@@ -100,9 +100,21 @@ class Anqh_HTML extends Kohana_HTML {
 			$var = key($value);
 			$value = $value[$var];
 		}
-		$formatted = Num::format($value, 0);
-		$plural = $plural ? $plural : $singular;
-		$title = ($singular && $plural) ? ' title="' . __2($singular, $plural, $value, array($var => $formatted)) . '"' : '';
+
+		if (is_numeric($value)) {
+
+			// Format number
+			$formatted = Num::format($value, 0);
+			$plural = $plural ? $plural : $singular;
+			$title = ($singular && $plural) ? ' title="' . __2($singular, $plural, $value, array($var => $formatted)) . '"' : '';
+
+		} else {
+
+			// Value is a string, no formatting
+			$formatted = HTML::chars($singular);
+			$title     = '';
+
+		}
 
 		return '<var class="' . $class . '"' . $title . '>' . $formatted . '</var>';
 	}
