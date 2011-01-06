@@ -43,7 +43,7 @@ body.right #main                       { float: right; }
 
 /***** HEADER *****/
 
-@header-shadow:                        @dock-shadow;
+@header-shadow:                        -4px 0 4px rgba(0, 0, 0, 0.75); /* To avoid horizontal scroll in FF */
 @header-background:                    @dock-background;
 @header-link-color:                    @dock-link-color;
 @header-hover-color:                   white;
@@ -53,7 +53,7 @@ body.right #main                       { float: right; }
 @mainmenu-selected-color:              #f6f6f6;
 
 #header {
-  &                                    { background: @header-background; .box-shadow(@header-shadow); color: @header-text-color; }
+  &                                    { background: @header-background; .box-shadow(@header-shadow); color: @header-text-color; left: 0; position: absolute; top: 0; width: 100%; }
   a                                    { color: @header-link-color; }
   a:hover                              { color: @header-hover-color; }
   ul                                   { display: inline; display: inline-block; padding-top: 3px; }
@@ -190,7 +190,7 @@ aside .mod .container form li          { border-top: 0 none; border-bottom: 0 no
 /***** AD SLOTS *****/
 
 .ad                                    { text-align: center; }
-.ad728x90                              { padding: 0; margin: 0; }
+.ad728x90                              { padding: 0; margin: 35px 0 0; }
 .ad728x90 .content div                 { margin: 10px auto; max-height: 90px; max-width: 728px; }
 .ad140x350                             { }
 
