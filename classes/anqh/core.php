@@ -36,7 +36,7 @@ class Anqh_Core {
 
 		unset(self::$_cache[$id]);
 
-		return self::$_cache_instance->delete($id);
+		return self::$_cache_instance->delete_($id);
 	}
 
 
@@ -52,7 +52,7 @@ class Anqh_Core {
 		!self::$_cache_instance and self::$_cache_instance = Cache::instance();
 
 		if (!isset(self::$_cache[$id])) {
-			self::$_cache[$id] = self::$_cache_instance->get($id, $default);
+			self::$_cache[$id] = self::$_cache_instance->get_($id, $default);
 		}
 
 		return Arr::get(self::$_cache, $id, $default);
@@ -70,7 +70,7 @@ class Anqh_Core {
 	public static function cache_set($id, $data, $lifetime = 3600) {
 		!self::$_cache_instance and self::$_cache_instance = Cache::instance();
 
-		if (self::$_cache_instance->set($id, $data, $lifetime)) {
+		if (self::$_cache_instance->set_($id, $data, $lifetime)) {
 			self::$_cache[$id] = $data;
 
 		  return true;
