@@ -42,7 +42,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 						':blog' => HTML::anchor(
 							Route::model($entry),
 							HTML::chars($entry->name),
-							array('title' => $entry->name, 'class' => 'blog')
+							array('title' => $entry->name, 'class' => 'icon blog')
 						)
 					));
 				}
@@ -55,7 +55,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 						':blog' => HTML::anchor(
 							Route::model($entry),
 							HTML::chars($entry->name),
-							array('title' => $entry->name, 'class' => 'blog')
+							array('title' => $entry->name, 'class' => 'icon blog')
 						)
 					));
 				}
