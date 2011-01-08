@@ -1,7 +1,7 @@
 /*
  * Widget LESS styles. Generic UI widgets: buttons, inputs etc
  *
- * Copyright (c) 2009-2010 Anqh
+ * Copyright (c) 2009-2011 Anqh
  */
 
 /***** TEXT *****/
@@ -256,17 +256,19 @@ a.ui-state-hover,
 .ui-widget-shadow                      { background: black; }
 
 /* Dialog */
-.ui-dialog                             { border: 1px solid @widget-border-color; padding: 2px; position: absolute; width: 300px; }
-.ui-dialog .ui-dialog-titlebar         { color: @subheader-color; font-family: @header-font; padding: .5em 10px .3em 10px; position: relative;  }
-.ui-dialog .ui-dialog-title            { float: left; }
-.ui-dialog .ui-dialog-titlebar-close   { position: absolute; right: 10px; top: 50%; width: 16px; margin: -8px 0 0 0; height: 16px; }
-.ui-dialog .ui-dialog-titlebar-close span { display: block; }
-.ui-dialog .ui-dialog-titlebar-close:hover,
-.ui-dialog .ui-dialog-titlebar-close:focus {  }
-.ui-dialog .ui-dialog-content          { border: 0; padding: .5em 10px; overflow: auto; zoom: 1; }
-.ui-dialog .ui-dialog-buttonpane       { border-width: 1px 0 0 0; margin: .5em 0 0 0; padding: .3em 10px 10px 10px; text-align: left; }
-.ui-dialog .ui-dialog-buttonpane button { float: right; }
-.ui-dialog .ui-resizable-se            { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-dialog {
+  &                                    { border: 1px solid @widget-border-color; padding: 2px; position: absolute; width: 300px; }
+  .ui-dialog-titlebar                  { color: @subheader-color; font-family: @header-font; padding: .5em 10px .3em 10px; position: relative;  }
+  .ui-dialog-title                     { float: left; }
+  .ui-dialog-titlebar-close            { height: 16px; margin: -8px 0 0 0; position: absolute; right: 10px; top: 50%; width: 16px; }
+  .ui-dialog-titlebar-close span       { display: block; }
+  .ui-dialog-titlebar-close:hover,
+  .ui-dialog-titlebar-close:focus      {  }
+  .ui-dialog-content                   { border: 0; padding: .5em 10px; overflow: auto; zoom: 1; }
+  .ui-dialog-buttonpane                { border-width: 1px 0 0 0; margin: .5em 0 0 0; padding: .3em 10px 10px 10px; text-align: left; }
+  .ui-dialog-buttonpane button         { float: right; }
+  .ui-resizable-se                     { bottom: 3px; height: 14px; right: 3px; width: 14px; }
+}
 .ui-draggable .ui-dialog-titlebar      { cursor: move; }
 
 /* Autocomplete */
@@ -312,27 +314,30 @@ var.icon[title]                        { cursor: help; }
 span.icon.grid1,
 li.icon.grid1,
 var.icon.grid1                         { width: 47px; }
-.icon.approve                          { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
-.icon.blog                             { background: url(/ui/icon/16/doc_lines_stright.png) no-repeat left center; }
+.icon                                  { background: no-repeat left center; }
+.icon.approve                          { background-image: url(/ui/icon/16/checkmark.png); }
+.icon.blog                             { background-image: url(/ui/icon/16/doc_lines_stright.png); }
 .icon.delete,
-.icon.deny                             { background: url(/ui/icon/16/delete.png) no-repeat left center; }
-.icon.event                            { background: url(/ui/icon/16/calendar_1.png) no-repeat left center; }
+.icon.deny                             { background-image: url(/ui/icon/16/delete.png); }
+.icon.event                            { background-image: url(/ui/icon/16/calendar_1.png); }
+.icon.friends                          { background-image: url(/ui/icon/16/users.png); }
+.icon.ignores                          { background-image: url(/ui/icon/16/sound_mute.png); }
 .icon.flyer,
-.icon.images                           { background: url(/ui/icon/16/picture.png) no-repeat left center; }
-.icon.image                            { background: url(/ui/icon/16/photo.png) no-repeat left center; display: inline; }
+.icon.images                           { background-image: url(/ui/icon/16/picture.png); }
+.icon.image                            { background-image: url(/ui/icon/16/photo.png); display: inline; }
 .icon.topic,
 .icon.comments,
-.icon.posts                            { background: url(/ui/icon/16/spechbubble.png) no-repeat left center; }
-.icon.posts.hot                        { background: url(16/spechbubble.png) no-repeat left center; }
+.icon.posts                            { background-image: url(/ui/icon/16/spechbubble.png); }
+.icon.posts.hot                        { background-image: url(16/spechbubble.png); }
 .icon.customize                        { background: url(/ui/icon/16/page_layout.png) no-repeat 5px center; }
-.icon.rate                             { background: url(/ui/icon/16/star_fav.png) no-repeat left center; }
-.icon.rate-half                        { background: url(/ui/icon/16/star_fav_half.png) no-repeat left center; }
-.icon.rate-empty                       { background: url(/ui/icon/16/star_fav_empty.png) no-repeat left center; }
-.icon.settings                         { background: url(/ui/icon/16/wrench.png) no-repeat left center; }
-.icon.topics                           { background: url(/ui/icon/16/spechbubble_2.png) no-repeat left center; }
-.icon.venue                            { background: url(/ui/icon/16/pin_map.png) no-repeat left center; }
-.icon.views                            { background: url(/ui/icon/16/eye.png) no-repeat left center; }
-.icon.wait                             { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
+.icon.rate                             { background-image: url(/ui/icon/16/star_fav.png); }
+.icon.rate-half                        { background-image: url(/ui/icon/16/star_fav_half.png); }
+.icon.rate-empty                       { background-image: url(/ui/icon/16/star_fav_empty.png); }
+.icon.settings                         { background-image: url(/ui/icon/16/wrench.png); }
+.icon.topics                           { background-image: url(/ui/icon/16/spechbubble_2.png); }
+.icon.venue                            { background-image: url(/ui/icon/16/pin_map.png); }
+.icon.views                            { background-image: url(/ui/icon/16/eye.png); }
+.icon.wait                             { background-image: url(/ui/icon/16/playback_pause.png); }
 
 input.search                           { background-image: url(/ui/icon/16/zoom.png); background-position: right center; background-repeat: no-repeat; }
 
