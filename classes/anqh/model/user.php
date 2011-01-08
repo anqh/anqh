@@ -20,6 +20,16 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	const PERMISSION_COMMENTS = 'comments';
 
 	/**
+	 * Permission to add/remove friend
+	 */
+	const PERMISSION_FRIEND = 'friend';
+
+	/**
+	 * Permission to (un)ignore
+	 */
+	const PERMISSION_IGNORE = 'ignore';
+
+	/**
 	 * @var  array  Static cache of Model_Users loaded
 	 */
 	protected static $_users = array();
@@ -551,21 +561,52 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/***** /EXTERNAL ACCOUNTS *****/
 
 
-	/***** FRIENDS *****/
+	/***** FRIENDS & FOES *****/
 
 	/**
 	 * Create friendship
 	 *
-	 * @param  User_Model  $friend
+	 * @param  Model_User  $friend
 	 */
-	public function add_friend(User_Model $friend) {
+	public function add_friend(Model_User $friend) {
 
-		// don't add duplicate friends or oneself
-		if ($this->loaded() && $this->id != $friend->id && !$this->is_friend($friend)) {
-			$friendship = new Friend_Model();
-			$friendship->user_id = $this->id;
-			$friendship->friend_id = $friend->id;
-			$friendship->save();
+		// Don't add duplicate friends or oneself
+		if ($this->loaded()
+			&& $this->id != $friend->id
+			&& !$this->is_friend($friend)
+			&& (bool)Jelly::factory('friend')->set(array(
+				'user'   => $this,
+				'friend' => $friend
+			))->save()) {
+
+			// Clear cache
+			Anqh::cache_delete('friends_' . $this->id);
+
+			return true;
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Add user to ignore
+	 *
+	 * @param  Model_User  $ignore
+	 */
+	public function add_ignore(Model_User $ignore) {
+		if ($this->loaded()
+			&& $this->id != $ignore->id
+			&& !$this->is_ignored($ignore)
+			&& (bool)Jelly::factory('ignore')->set(array(
+				'user'   => $this,
+				'ignore' => $ignore
+			))->save()) {
+
+			// Clear caches
+			Anqh::cache_delete('ignores_' . $this->id);
+			Anqh::cache_delete('ignorers_' . $ignore->id);
+
 			return true;
 		}
 
@@ -576,16 +617,47 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Delete friendship
 	 *
-	 * @param  User_Model  $friend
+	 * @param  Model_User  $friend
 	 */
-	public function delete_friend(User_Model $friend) {
-		return $this->loaded()
+	public function delete_friend(Model_User $friend) {
+		if ($this->loaded()
 			&& $this->is_friend($friend)
-			&& (bool)count(DB::build()
-				->delete('friends')
+			&& (bool)Jelly::delete('friend')
 				->where('user_id', '=', $this->id)
 				->where('friend_id', '=', $friend->id)
-				->execute());
+				->execute()) {
+
+			// Clear cache
+			Anqh::cache_delete('friends_' . $this->id);
+
+		  return true;
+		}
+
+	  return false;
+	}
+
+
+	/**
+	 * Remove ignore
+	 *
+	 * @param  Model_User  $ignore
+	 */
+	public function delete_ignore(Model_User $ignore) {
+		if ($this->loaded()
+			&& $this->is_ignored($ignore)
+			&& (bool)Jelly::delete('ignore')
+				->where('user_id', '=', $this->id)
+				->where('ignore_id', '=', $ignore->id)
+				->execute()) {
+
+			// Clear caches
+			Anqh::cache_delete('ignores_' . $this->id);
+			Anqh::cache_delete('ignorers_' . $ignore->id);
+
+		  return true;
+		}
+
+	  return false;
 	}
 
 
@@ -611,6 +683,32 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		}
 
 		return $friends;
+	}
+
+
+	/**
+	 * Get user's ignores or users ignoring user
+	 *
+	 * @param   boolean  $ignorers  true for ignorers, false for ignores
+	 * @return  array
+	 */
+	public function find_ignores($ignorers = false) {
+		$ckey = $ignorers ? 'ignorers_' : 'ignores_';
+
+		// Try static cache
+		$ignores = Anqh::cache_get($ckey . $this->id);
+		if (is_null($ignores)) {
+
+			// Load from DB
+			$ignores = array();
+			foreach (Jelly::select('ignore')->where($ignorers ? 'ignore_id' : 'user_id', '=', $this->id)->execute() as $ignore) {
+				$ignores[] = $ignore->ignore->id;
+			}
+
+			Anqh::cache_set($ckey . $this->id, $ignores, Date::HOUR);
+		}
+
+		return $ignores;
 	}
 
 
@@ -643,7 +741,28 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		return in_array($friend, $this->find_friends());
 	}
 
-	/***** /FRIENDS *****/
+
+	/**
+	 * Check for friendship
+	 *
+	 * @param  mixed    $friend      Model_User, array, $id
+	 * @param  boolean  $ignored_by  Check if the user ignored by $ignore or ignoring $ignore
+	 */
+	public function is_ignored($ignore, $ignored_by = false) {
+		if ($ignore instanceof Model_User) {
+			$ignore = (int)$ignore->id;
+		} else if (is_array($ignore)) {
+			$ignore = (int)Arr::get($ignore, 'id');
+		}
+
+		if (!is_int($ignore) || $ignore == 0) {
+			return false;
+		}
+
+		return in_array($ignore, $this->find_ignores($ignored_by));
+	}
+
+	/***** /FRIENDS & FOES *****/
 
 
 	/**
@@ -735,6 +854,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($id instanceof Model_User) {
 
 			// Got user model, no need to load, just fill caches
+			/** @var  Model_User  $user */
 			$user = $id->light_array();
 			Anqh::cache_set($ckey . $id->id, $user, Date::DAY);
 			return $user;
@@ -782,13 +902,14 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	public function light_array() {
 		if ($this->loaded()) {
 			return array(
-				'id'        => $this->id,
-				'username'  => $this->username,
-				'gender'    => $this->gender,
-				'title'     => $this->title,
-				'signature' => $this->signature,
-				'avatar'    => $this->avatar,
-				'thumb'     => $this->default_image->loaded() ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
+				'id'         => $this->id,
+				'username'   => $this->username,
+				'gender'     => $this->gender,
+				'title'      => $this->title,
+				'signature'  => $this->signature,
+				'avatar'     => $this->avatar,
+				'thumb'      => $this->default_image->loaded() ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
+				'last_login' => $this->last_login,
 			);
 		}
 	}
@@ -851,6 +972,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			case self::PERMISSION_COMMENT:
 			case self::PERMISSION_COMMENTS:
 		    return (bool)$user;
+
+			case self::PERMISSION_FRIEND:
+		    return $user && ($this->id != $user->id) && !$this->is_ignored($user) && !$this->is_ignored($user, true);
+
+			case self::PERMISSION_IGNORE:
+		    return $user && ($this->id != $user->id);
 
 			case self::PERMISSION_UPDATE:
 				return $user && ($this->id == $user->id || $user->has_role('admin'));

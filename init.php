@@ -13,8 +13,10 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
-Route::set('user', 'member(/<username>(/<action>(/<param>)))', array('action' => 'hover|settings|friends|favorites|image', 'username' => '[^/]+'))
-	->defaults(array(
+Route::set('user', 'member(/<username>(/<action>(/<param>)))', array(
+	'action'   => 'hover|settings|friends?|unfriend|favorites|image|ignores?|unignore',
+	'username' => '[^/]+')
+)->defaults(array(
 		'controller' => 'user',
 	));
 Route::set('user_comment', 'member/comment/<id>/<commentaction>', array('commentaction' => 'delete|private'))

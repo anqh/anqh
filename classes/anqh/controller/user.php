@@ -52,6 +52,56 @@ class Anqh_Controller_User extends Controller_Template {
 
 
 	/**
+	 * Action: Add to friends
+	 */
+	public function action_friend() {
+		$this->history = false;
+
+		// Load user
+		$user = $this->_get_user();
+		Permission::required($user, Model_User::PERMISSION_FRIEND, self::$user);
+
+		if (Security::csrf_valid()) {
+			self::$user->add_friend($user);
+
+			// News feed
+			NewsfeedItem_User::friend(self::$user, $user);
+
+		}
+
+		$this->request->redirect(URL::user($user));
+	}
+
+
+	/**
+	 * Action: List friends
+	 */
+	public function action_friends() {
+		$user = $this->_get_user();
+
+		// Set generic page parameters
+		$this->_set_page($user);
+
+		// Helper variables
+		$owner = (self::$user && self::$user->id == $user->id);
+
+		// Get friends and order by nick
+		// @todo: needs serious optimization
+		$friends = array();
+	  foreach ($user->find_friends() as $friend_id) {
+		  $friend = Model_User::find_user_light($friend_id);
+		  $friends[$friend['username']] = $friend;
+	  }
+	  ksort($friends, SORT_LOCALE_STRING);
+
+	  Widget::add('main', View_Module::factory('user/friends', array(
+			'mod_title' => __('Friends'),
+			'friends'   => $friends,
+	  )));
+	}
+
+
+	/**
 	 * Action: hover card
 	 */
 	public function action_hover() {
@@ -70,6 +120,52 @@ class Anqh_Controller_User extends Controller_Template {
 		} else {
 			echo __('Member not found o_O');
 		}
+	}
+
+
+	/**
+	 * Action: Add to ignore
+	 */
+	public function action_ignore() {
+		$this->history = false;
+
+		// Load user
+		$user = $this->_get_user();
+		Permission::required($user, Model_User::PERMISSION_IGNORE, self::$user);
+
+		if (Security::csrf_valid()) {
+			self::$user->add_ignore($user);
+		}
+
+		$this->request->redirect(URL::user($user));
+	}
+
+
+	/**
+	 * Action: ignores
+	 */
+	public function action_ignores() {
+		$user = $this->_get_user();
+
+		// Set generic page parameters
+		$this->_set_page($user);
+
+		// Helper variables
+		$owner = (self::$user && self::$user->id == $user->id);
+
+		// Get friends and order by nick
+		// @todo: needs serious optimization
+		$ignores = array();
+	  foreach ($user->find_ignores() as $ignore_id) {
+		  $ignore = Model_User::find_user_light($ignore_id);
+		  $ignores[$ignore['username']] = $ignore;
+	  }
+	  ksort($ignores, SORT_LOCALE_STRING);
+
+	  Widget::add('main', View_Module::factory('user/ignores', array(
+			'mod_title' => __('Ignores'),
+			'ignores'   => $ignores,
+	  )));
 	}
 
 
@@ -446,6 +542,42 @@ $(function() {
 
 
 	/**
+	 * Action: Remove from friends
+	 */
+	public function action_unfriend() {
+		$this->history = false;
+
+		// Load user
+		$user = $this->_get_user();
+		Permission::required($user, Model_User::PERMISSION_FRIEND, self::$user);
+
+		if (Security::csrf_valid()) {
+			self::$user->delete_friend($user);
+		}
+
+		$this->request->redirect(URL::user($user));
+	}
+
+
+	/**
+	 * Action: Remove from ignore
+	 */
+	public function action_unignore() {
+		$this->history = false;
+
+		// Load user
+		$user = $this->_get_user();
+		Permission::required($user, Model_User::PERMISSION_IGNORE, self::$user);
+
+		if (Security::csrf_valid()) {
+			self::$user->delete_ignore($user);
+		}
+
+		$this->request->redirect(URL::user($user));
+	}
+
+
+	/**
 	 * Get image mod
 	 *
 	 * @param   Model_User  $user
@@ -506,8 +638,29 @@ $(function() {
 		}
 
 		// Set actions
-		if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => URL::user($user, 'settings'), 'text' => __('Settings'), 'class' => 'settings');
+		if (self::$user) {
+			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
+				$this->page_actions[] = array('link' => URL::user($user, 'settings'), 'text' => __('Settings'), 'class' => 'settings');
+			}
+
+			// Friend actions
+			if (Permission::has($user, Model_User::PERMISSION_FRIEND, self::$user)) {
+				if (self::$user->is_friend($user)) {
+					$this->page_actions[] = array('link' => URL::user($user, 'unfriend') . '?token=' . Security::csrf(), 'text' => __('Remove friend'), 'class' => 'friend-delete');
+				} else {
+					$this->page_actions[] = array('link' => URL::user($user, 'friend') . '?token=' . Security::csrf(), 'text' => __('Add to friends'), 'class' => 'friend-add');
+				}
+			}
+
+			// Ignore actions
+			if (Permission::has($user, Model_User::PERMISSION_IGNORE, self::$user)) {
+				if (self::$user->is_ignored($user)) {
+					$this->page_actions[] = array('link' => URL::user($user, 'unignore') . '?token=' . Security::csrf(), 'text' => __('Unignore'), 'class' => 'ignore-delete');
+				} else {
+					$this->page_actions[] = array('link' => URL::user($user, 'ignore') . '?token=' . Security::csrf(), 'text' => __('Ignore'), 'class' => 'ignore-add');
+				}
+			}
+
 		}
 
 	}
