@@ -25,6 +25,10 @@
 <?php echo Form::close() ?>
 
 <?php foreach ($comments as $comment):
+
+	// Ignore
+	if ($user && $user->is_ignored($comment->author)) continue;
+
 	$classes = array();
 
 	if ($comment->private) {

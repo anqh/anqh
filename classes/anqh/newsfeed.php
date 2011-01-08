@@ -79,6 +79,10 @@ class Anqh_Newsfeed {
 
 		// Print items
 		foreach ($this->_items as $item) {
+
+			// Ignore
+			if ($this->_user && $this->_user->is_ignored($item->original('user'))) continue;
+
 			$class = 'Newsfeeditem_' . $item->class;
 			if (method_exists($class, 'get') && $text = call_user_func(array($class, 'get'), $item)) {
 				$feed[] = array(
@@ -115,8 +119,8 @@ class Anqh_Newsfeed {
 				// All users
 		    case self::ALL:
 		    default:
-				$this->_items = Model_NewsfeedItem::find_items($this->max_items);
-		    break;
+					$this->_items = Model_NewsfeedItem::find_items($this->max_items);
+			    break;
 
 			}
 		}
