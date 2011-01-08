@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
@@ -702,7 +702,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			// Load from DB
 			$ignores = array();
 			foreach (Jelly::select('ignore')->where($ignorers ? 'ignore_id' : 'user_id', '=', $this->id)->execute() as $ignore) {
-				$ignores[] = $ignore->ignore->id;
+				$ignores[] = $ignorers ? $ignore->user->id : $ignore->ignore->id;
 			}
 
 			Anqh::cache_set($ckey . $this->id, $ignores, Date::HOUR);
@@ -728,6 +728,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  mixed  $friend  Model_User, array, $id
 	 */
 	public function is_friend($friend) {
+		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('Anqh', __METHOD__);
+		}
+
 		if ($friend instanceof Model_User) {
 			$friend = (int)$friend->id;
 		} else if (is_array($friend)) {
@@ -738,7 +742,13 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		return in_array($friend, $this->find_friends());
+		$is_friend = in_array($friend, $this->find_friends());
+
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
+		}
+
+		return $is_friend;
 	}
 
 
@@ -749,6 +759,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  boolean  $ignored_by  Check if the user ignored by $ignore or ignoring $ignore
 	 */
 	public function is_ignored($ignore, $ignored_by = false) {
+		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('Anqh', __METHOD__);
+		}
+
 		if ($ignore instanceof Model_User) {
 			$ignore = (int)$ignore->id;
 		} else if (is_array($ignore)) {
@@ -759,7 +773,13 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		return in_array($ignore, $this->find_ignores($ignored_by));
+		$is_ignored = in_array($ignore, $this->find_ignores($ignored_by));
+
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
+		}
+
+		return $is_ignored;
 	}
 
 	/***** /FRIENDS & FOES *****/
@@ -971,7 +991,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			case self::PERMISSION_COMMENT:
 			case self::PERMISSION_COMMENTS:
-		    return (bool)$user;
+		    return $user && ($this->id == $user->id || (!$this->is_ignored($user) && !$this->is_ignored($user, true)));
 
 			case self::PERMISSION_FRIEND:
 		    return $user && ($this->id != $user->id) && !$this->is_ignored($user) && !$this->is_ignored($user, true);
@@ -984,6 +1004,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_DELETE:
+		    return $user && ($this->id == $user->id);
 
 		}
 
