@@ -35,8 +35,17 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 			'id'          => new Field_Primary,
 			'image'       => new Field_BelongsTo,
 			'event'       => new Field_BelongsTo,
-			'name'        => new Field_String,
-			'stamp_begin' => new Field_Timestamp
+			'name'        => new Field_String(array(
+				'label' => __('Name'),
+			)),
+			'stamp_begin' => new Field_DateTime(array(
+				'label'      => __('From'),
+				'label_date' => __('Date'),
+				'label_time' => __('At'),
+				'rules' => array(
+					'not_empty' => null,
+				),
+			)),
 		));
 	}
 
@@ -108,9 +117,14 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 
 		// Build counts
 		$flyers = DB::query(
-			Database::SELECT,
-			"
-SELECT (CASE WHEN event_id IS NULL THEN TO_CHAR(TO_TIMESTAMP(COALESCE(stamp_begin, 0)), 'YYYY 00') ELSE TO_CHAR(TO_TIMESTAMP(stamp_begin), 'YYYY MM') END) AS month, COUNT(image_id) AS flyers
+			Database::SELECT, "
+SELECT
+	(CASE
+		WHEN stamp_begin IS NULL THEN '1970 00'
+		WHEN TO_CHAR(TO_TIMESTAMP(stamp_begin), 'DDD HH24 MI') = '001 00 00' THEN TO_CHAR(TO_TIMESTAMP(stamp_begin), 'YYYY 00')
+		ELSE TO_CHAR(TO_TIMESTAMP(stamp_begin), 'YYYY MM')
+	END) AS month,
+	COUNT(image_id) AS flyers
 FROM flyers
 GROUP BY 1
 "
@@ -149,6 +163,16 @@ GROUP BY 1
 
 
 	/**
+	 * Does the flyer has a proper date or 1.1.2000 00:00:00 style
+	 *
+	 * @return  boolean
+	 */
+	public function has_full_date() {
+		return $this->stamp_begin && date('j.n. H:i', $this->stamp_begin) != '1.1. 00:00';
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
@@ -159,7 +183,6 @@ GROUP BY 1
 		switch ($permission) {
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_IMPORT:
-			case self::PERMISSION_UPDATE:
 				return $user && $user->has_role(array('admin', 'photo moderator'));
 
 			case self::PERMISSION_COMMENT:
@@ -167,6 +190,9 @@ GROUP BY 1
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_READ:
 		    return (bool)$user;
+
+			case self::PERMISSION_UPDATE:
+		    return $user && (!$this->has_full_date()/* || $user->has_role(array('admin', 'photo moderator'))*/);
 		}
 
 		return false;
