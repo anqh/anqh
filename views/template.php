@@ -18,7 +18,6 @@
 	<link rel="icon" type="image/png" href="/ui/favicon.png" />
 	<?php echo
 		HTML::style('ui/boot.css'),
-		//HTML::style('ui/grid.css'),
 		HTML::style('ui/typo.css'),
 		HTML::style('ui/base.css');
 	foreach ($skins as $skin_name => $available_skin) echo Less::style(
@@ -101,7 +100,7 @@
 				</hgroup>
 
 <?php echo Widget::get('actions') ?>
-<?php echo Widget::get('facebook') ?>
+<?php echo Widget::get('share') ?>
 
 			</header><!-- #title -->
 

@@ -262,7 +262,10 @@ abstract class Anqh_Controller_Template extends Controller {
 			// Analytics
 			if ($google_analytics = Kohana::config('site.google_analytics')) {
 				Widget::add('head', HTML::script_source("
-var _gaq = _gaq || []; _gaq.push(['_setAccount', '" . $google_analytics . "']); _gaq.push(['_trackPageview']);
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', '" . $google_analytics . "']);
+_gaq.push(['_trackPageview']);
+
 (function() {
 	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -271,41 +274,32 @@ var _gaq = _gaq || []; _gaq.push(['_setAccount', '" . $google_analytics . "']); 
 "));
 			}
 
-		  // Facebook
-			if ($facebook = Kohana::config('site.facebook')) {
-
-				// Open Graph support
-				$og = array();
-			  foreach ((array)Anqh::open_graph() as $key => $value) {
-				  $og[] = '<meta property="' . $key . '" content="' . HTML::chars($value) . '" />';
-			  }
-			  if (!empty($og)) {
-				  Widget::add('head', implode("\n", $og));
-
-				  // Like
-				  Widget::add('facebook', View_Module::factory('facebook/like'));
-
-					// FBML
-					Widget::add('ad_top', '<div id="fb-root"></div>' . HTML::script_source("
-window.fbAsyncInit = function() {
-	FB.init({
-		appId: " . ($facebook === true ? 'null' : "'" . $facebook . "'") . ",
-		status: true,
-		cookie: true,
-		xfbml: true
-	});
-};
-
-(function() {
-	var e = document.createElement('script');
-	e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-	e.async = true;
-	document.getElementById('fb-root').appendChild(e);
-}());
-"));
-			  }
-
+			// Open Graph
+			$og = array();
+			foreach ((array)Anqh::open_graph() as $key => $value) {
+				$og[] = '<meta property="' . $key . '" content="' . HTML::chars($value) . '" />';
 			}
+			if (!empty($og)) {
+				Widget::add('head', implode("\n", $og));
+			}
+
+			// Share
+			if (Anqh::share()) {
+				if ($share = Kohana::config('site.share')) {
+
+					// 3rd party share
+					Widget::add('share', View_Module::factory('share/share', array('mod_class' => 'like', 'id' => $share)));
+					Widget::add('foot', View::factory('share/foot', array('id' => $share)));
+
+				} else if ($facebook = Kohana::config('site.facebook')) {
+
+					// Facebook Like
+					Widget::add('share', View_Module::factory('facebook/like'));
+					Widget::add('ad_top', View::factory('facebook/connect', array('id' => $facebook)));
+
+				}
+			}
+
 
 			// Ads
 			$ads = Kohana::config('site.ads');

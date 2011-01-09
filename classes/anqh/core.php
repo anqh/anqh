@@ -129,4 +129,28 @@ class Anqh_Core {
 	  }
 	}
 
+
+	/**
+	 * Get/set shareability
+	 *
+	 * @static
+	 * @param   boolean  $shareable  boolean to set, null to get
+	 * @return  boolean
+	 */
+	public static function share($shareable = null) {
+		static $share;
+
+	  if (is_bool($shareable)) {
+
+		  // Set shareability
+		  $share = $shareable;
+
+	  } else {
+
+		  // Get shareability
+		  return (bool)$share;
+
+	  }
+	}
+
 }

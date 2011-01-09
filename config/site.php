@@ -41,6 +41,11 @@ return array(
 	'facebook' => false, // Facebook App id
 
 	/**
+	 * 3rd party share id
+	 */
+	'share' => false,
+
+	/**
 	 * Main menu
 	 */
 	'menu' => array(
