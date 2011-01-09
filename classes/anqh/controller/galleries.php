@@ -352,7 +352,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		}
 		if ($flyer->stamp_begin) {
-			if ($flyer->has_full_date()) {
+			if (!$flyer->has_full_date()) {
 				$this->page_subtitle .= ' | ' . HTML::anchor(
 					Route::get('flyers')->uri(array('year' => date('Y', $flyer->stamp_begin))),
 					__('Back to :date', array(':date' => strftime('%Y', $flyer->stamp_begin)))
