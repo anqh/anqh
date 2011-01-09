@@ -14,9 +14,6 @@ $author = Model_User::find_user_light($post->original('author'));
 // Viewer's post
 $my = ($user && $author && $author['id'] == $user->id);
 
-// Ignore
-if ($user && $author && $user->is_ignored($author)) return;
-
 // Topic author's post
 $owners = ($post->original('author') == $topic->original('author'));
 ?>

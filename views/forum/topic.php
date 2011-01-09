@@ -11,6 +11,9 @@
 
 <?php foreach ($posts as $post):
 
+	// Ignore
+	if (!Permission::has($post, Model_Forum_Post::PERMISSION_READ, $user)) continue;
+
 	// Time difference between posts
 	$current = strtotime($post->created);
 	$difference = (isset($previous) && $current - $previous > Date::YEAR) ? Date::fuzzy_span($previous, $current) : false;

@@ -62,23 +62,20 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 	 * @return  boolean
 	 */
 	public function has_permission($permission, $user) {
-		$status = false;
-
 		switch ($permission) {
 
 			case self::PERMISSION_READ:
-		    $status = Permission::has($this->topic, Model_Forum_Topic::PERMISSION_READ, $user);
+		    return
+			    Permission::has($this->topic, Model_Forum_Topic::PERMISSION_READ, $user) // Need read permission for topic
+			      && (!$user || !$user->is_ignored($this->original('author')));          // No permission if the author is ignored
 		    break;
 
 			// Allow modifying and deleting also from locked topics, fyi
 			case self::PERMISSION_UPDATE:
 			case self::PERMISSION_DELETE:
-		    $status = $user && ($user->id == $this->author->id || $user->has_role('admin'));
-		    break;
+		    return $user && ($user->id == $this->original('author') || $user->has_role('admin'));
 
 		}
-
-		return $status;
 	}
 
 }
