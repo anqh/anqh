@@ -145,6 +145,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			Anqh::open_graph('title', $topic->name);
 			Anqh::open_graph('url', URL::site(Route::get('forum_topic')->uri(array('id' => $topic->id, 'action' => '')), true));
 		}
+		Anqh::share(true);
 
 		// Set title
 		$this->_set_title($topic);
