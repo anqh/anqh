@@ -76,6 +76,8 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 		    return $user && ($user->id == $this->original('author') || $user->has_role('admin'));
 
 		}
+
+	  return false;
 	}
 
 }

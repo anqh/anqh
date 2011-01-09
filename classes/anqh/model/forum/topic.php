@@ -200,6 +200,8 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				return $user && (($this->status != self::STATUS_LOCKED && $user->id == $this->original('author')) || $user->has_role('admin'));
 
 		}
+
+	  return false;
 	}
 
 
