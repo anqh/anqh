@@ -116,24 +116,38 @@ section.reply                          { border-top: 1px solid @separator-color;
 .gallery-image                         { text-align: center; }
 .gallery-image a img                   { opacity: 1; }
 
-.gallery #form-image-approval li:last-of-type { clear: both; }
-.gallery input[value=approve],
-.gallery input[value=deny],
-.gallery input[value=wait]             { display: none; }
-.gallery input[value=approve] + label,
-.gallery input[value=deny] + label,
-.gallery input[value=wait] + label     { cursor: pointer; display: inline-block; .opacity(.25); overflow: hidden; padding: 0 0 0 20px; .transition(opacity .15s ease-in-out); vertical-align: middle; width: 0; }
-.gallery input[name=all] + label       { .opacity(1); width: auto; }
-.gallery input[value=approve] + label  { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
-.gallery input[value=deny] + label     { background: url(/ui/icon/16/delete.png) no-repeat left center; }
-.gallery input[value=wait] + label     { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
-.gallery input[value=approve]:checked + label,
-.gallery input[value=deny]:checked + label,
-.gallery input[value=wait]:checked + label { .opacity(1); }
-.gallery input[value=approve] + label:hover,
-.gallery input[value=deny] + label:hover,
-.gallery input[value=wait] + label:hover { .opacity(1); }
+/* Approval */
+.gallery {
+  #form-image-approval li:last-of-type { clear: both; }
+  input[value=approve],
+  input[value=deny],
+  input[value=wait]                    { display: none; }
+  input[value=approve] + label,
+  input[value=deny] + label,
+  input[value=wait] + label            { cursor: pointer; display: inline-block; .opacity(.25); overflow: hidden; padding: 0 0 0 20px; .transition(opacity .15s ease-in-out); vertical-align: middle; width: 0; }
+  input[name=all] + label              { .opacity(1); width: auto; }
+  input[value=approve] + label         { background: url(/ui/icon/16/checkmark.png) no-repeat left center; }
+  input[value=deny] + label            { background: url(/ui/icon/16/delete.png) no-repeat left center; }
+  input[value=wait] + label            { background: url(/ui/icon/16/playback_pause.png) no-repeat left center; }
+  input[value=approve]:checked + label,
+  input[value=deny]:checked + label,
+  input[value=wait]:checked + label    { .opacity(1); }
+  input[value=approve] + label:hover,
+  input[value=deny] + label:hover,
+  input[value=wait] + label:hover      { .opacity(1); }
+}
 
+/* Edit flyer */
+#form-flyer-edit {
+  #fields-date {
+    li                                 { float: left; }
+    li + li                            { margin-top: 1.665em; }
+    li + li label                      { display: inline; margin: 0 1em; }
+  }
+  .grid1 fieldset                      { margin-top: 1.665em; }
+}
+
+/* Upload */
 .multiple-upload {
   #progress-files,
   #progress-report                     { display: none; }
