@@ -330,6 +330,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		}
 
+	  Anqh::share(true);
+
 		// Comments section
 		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, self::$user)) {
 			$errors = array();
@@ -575,6 +577,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				Anqh::open_graph('image', URL::site($gallery->default_image->get_url('thumbnail'), true));
 			}
 		}
+		Anqh::share(true);
 
 		// Set title and tabs
 		$this->_set_gallery($gallery);
@@ -689,6 +692,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$current->description and Anqh::open_graph('description', $current->description);
 				Anqh::open_graph('image', URL::site($current->get_url('thumbnail'), true));
 			}
+			Anqh::share(true);
 
 			// Comments section
 			if (!isset($approve) && Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
