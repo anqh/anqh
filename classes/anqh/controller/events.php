@@ -165,6 +165,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
 			$event->flyer_front->loaded() and Anqh::open_graph('image', URL::site($event->flyer_front->get_url('thumbnail'), true));
 		}
+		Anqh::share(true);
 
 		// Event performers and extra info
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
