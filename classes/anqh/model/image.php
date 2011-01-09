@@ -227,12 +227,11 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Get new image comments count for user.
-	 * Return array of ids and counts
+	 * Get images with new comments
 	 *
 	 * @static
 	 * @param   Model_User $user
-	 * @return  array
+	 * @return  Jelly_Collection
 	 */
 	public static function find_new_comments(Model_User $user) {
 		return Jelly::select('image')
