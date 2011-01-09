@@ -10,7 +10,7 @@
 ?>
 
 <ul>
-	<?php foreach ($flyers as $flyer): ?>
+	<?php foreach ($flyers as $flyer): $name = $flyer->event->loaded() ? $flyer->event->name : $flyer->name ?>
 
 	<li class="grid2">
 		<article>
@@ -18,7 +18,7 @@
 				<div class="thumb">
 					<?php echo HTML::anchor(Route::get('flyer')->uri(array('id' => $flyer->id)), HTML::image($flyer->image->get_url('thumbnail'))) ?>
 				</div>
-				<h4><?= HTML::anchor(Route::get('flyer')->uri(array('id' => $flyer->id)), HTML::chars($flyer->event->name), array('title' => HTML::chars($flyer->event->name))) ?></h4>
+				<h4><?= HTML::anchor(Route::get('flyer')->uri(array('id' => $flyer->id)), HTML::chars($name), array('title' => HTML::chars($name))) ?></h4>
 			</header>
 		</article>
 	</li>

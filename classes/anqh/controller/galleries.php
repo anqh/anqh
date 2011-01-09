@@ -301,6 +301,26 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		/** @var  Model_Event  $event */
 		$event = $flyer->event;
 
+
+		// Handle post
+		$errors = array();
+		if ($_POST && Security::csrf_valid()) {
+			Permission::required($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user);
+
+			try {
+				$flyer->set(Arr::intersect($_POST, array('name', 'stamp_begin')));
+				$flyer->save();
+
+				// Newsfeed
+				NewsfeedItem_Galleries::flyer_edit(self::$user, $flyer);
+
+			  $this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));
+			} catch (Validate_Exception $e) {
+				$errors = $e->array->errors('validation');
+			}
+		}
+
+
 		// Set title
 		if ($event->loaded()) {
 			$this->page_title = HTML::chars($event->name);
@@ -317,20 +337,36 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		} else {
 			$this->page_title = HTML::chars($flyer->name);
-			$this->page_subtitle = $flyer->stamp_time ? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true) : __('Date unknown');
+			$this->page_subtitle = $flyer->has_full_date()
+				? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true)
+				: __('Date unknown');
 			//$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Add event'));
 
 			// Facebook
 			if (Kohana::config('site.facebook')) {
 				Anqh::open_graph('title', __('Flyer') . ': ' . $flyer->name);
 				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
-				$flyer->stamp_time and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
+				$flyer->has_full_date() and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
 				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
 			}
 
 		}
+		if ($flyer->stamp_begin) {
+			if ($flyer->has_full_date()) {
+				$this->page_subtitle .= ' | ' . HTML::anchor(
+					Route::get('flyers')->uri(array('year' => date('Y', $flyer->stamp_begin))),
+					__('Back to :date', array(':date' => strftime('%Y', $flyer->stamp_begin)))
+				);
+			} else {
+				$this->page_subtitle .= ' | ' . HTML::anchor(
+					Route::get('flyers')->uri(array('year' => date('Y', $flyer->stamp_begin), 'month' => date('n', $flyer->stamp_begin))),
+					__('Back to :date', array(':date' => strftime('%B %Y', $flyer->stamp_begin)))
+				);
+			}
+		}
 
 	  Anqh::share(true);
+
 
 		// Comments section
 		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, self::$user)) {
@@ -408,6 +444,15 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		}
 
+		// Edit flyer
+		if (Permission::has($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user)) {
+			Widget::add('wide', View_Module::factory('galleries/flyer_edit', array(
+				'mod_title' => __('Edit flyer'),
+				'flyer'     => $flyer,
+				'errors'    => $errors,
+			)));
+		}
+
 		// Flyer
 		Widget::add('wide', View_Module::factory('galleries/flyer', array(
 			'mod_id'    => 'image',
@@ -428,7 +473,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Default to current month
 		$year  = (int)$this->request->param('year');
-		$month = (int)$this->request->param('month', false);
+		$month = (int)$this->request->param('month');
 		if (!$year) {
 			if (isset($months[(int)date('Y')][(int)date('n')])) {
 
@@ -443,7 +488,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$month = max(array_keys($months[$year]));
 
 			}
-		} else if ($month === false) {
+		} else if (!$month) {
 			$month = isset($months[$year]) ? min(array_keys($months[$year])) : 1;
 		}
 

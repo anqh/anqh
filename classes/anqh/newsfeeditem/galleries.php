@@ -23,6 +23,13 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	 */
 	const TYPE_COMMENT_FLYER = 'comment_flyer';
 
+	/**
+	 * Edit a flyer
+	 *
+	 * Date: flyer_id
+	 */
+	const TYPE_FLYER_EDIT = 'flyer_edit';
+
 
 	/**
 	 * Get newsfeed item as HTML
@@ -62,6 +69,19 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				}
 				break;
 
+			case self::TYPE_FLYER_EDIT:
+				$flyer = Jelly::select('flyer')->load($item->data['flyer_id']);
+				if ($flyer->loaded()) {
+					$text = __('updated flyer<br />:flyer', array(
+						':flyer' => HTML::anchor(
+							Route::get('flyer')->uri(array('id' => $flyer->id)),
+							$flyer->name ? HTML::chars($flyer->name) : __('flyer'),
+							array('class' => 'icon flyer')
+						)
+					));
+				}
+				break;
+
 		}
 
 		return $text;
@@ -86,11 +106,25 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	 * Comment a flyer
 	 *
 	 * @param  Model_User     $user
+	 * @param  Model_Flyer    $flyer
 	 * @param  Model_Image    $image
 	 */
 	public static function comment_flyer(Model_User $user = null, Model_Flyer $flyer = null, Model_Image $image = null) {
 		if ($user && $flyer && $image) {
 			parent::add($user, 'galleries', self::TYPE_COMMENT_FLYER, array('flyer_id' => (int)$flyer->id, 'image_id' => (int)$image->id));
+		}
+	}
+
+
+	/**
+	 * Edit a flyer
+	 *
+	 * @param  Model_User   $user
+	 * @param  Model_Flyer  $flyer
+	 */
+	public static function flyer_edit(Model_User $user = null, Model_Flyer $flyer = null) {
+		if ($user && $flyer) {
+			parent::add($user, 'galleries', self::TYPE_FLYER_EDIT, array('flyer_id' => (int)$flyer->id));
 		}
 	}
 
