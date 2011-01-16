@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
@@ -31,8 +31,8 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 		$meta
 			->sorting(array('city_name' => 'ASC', 'name' => 'ASC'))
 			->fields(array(
-				'id' => new Field_Primary,
-				'category' => new Field_BelongsTo(array(
+				'id' => new Jelly_Field_Primary,
+				'category' => new Jelly_Field_BelongsTo(array(
 					'label'   => 'Category',
 					'foreign' => 'venue_category',
 				)),
@@ -85,38 +85,38 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 						'not_empty'  => null,
 					),
 				)),
-				'city'       => new Field_BelongsTo(array(
+				'city'       => new Jelly_Field_BelongsTo(array(
 					'foreign' => 'geo_city',
 				)),
-				'country' => new Field_BelongsTo(array(
+				'country' => new Jelly_Field_BelongsTo(array(
 					'foreign' => 'geo_country',
 					'null'    => true,
 				)),
 
-				'latitude'   => new Field_Float,
-				'longitude'  => new Field_Float,
-				'event_host' => new Field_Boolean(array(
+				'latitude'   => new Jelly_Field_Float,
+				'longitude'  => new Jelly_Field_Float,
+				'event_host' => new Jelly_Field_Boolean(array(
 					'label' => __('Event host'),
 				)),
-				'created'    => new Field_Timestamp(array(
+				'created'    => new Jelly_Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
-				'modified'   => new Field_Timestamp(array(
+				'modified'   => new Jelly_Field_Timestamp(array(
 					'auto_now_update' => true,
 				)),
 
-				'foursquare_id'          => new Field_Integer(array(
+				'foursquare_id'          => new Jelly_Field_Integer(array(
 					'label' => __('Foursquare ID')
 				)),
-				'foursquare_category_id' => new Field_Integer(array(
+				'foursquare_category_id' => new Jelly_Field_Integer(array(
 					'label' => __('Foursquare Category ID')
 				)),
 
-				'author' => new Field_BelongsTo(array(
+				'author' => new Jelly_Field_BelongsTo(array(
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
-				'default_image' => new Field_BelongsTo(array(
+				'default_image' => new Jelly_Field_BelongsTo(array(
 					'column'  => 'default_image_id',
 					'foreign' => 'image',
 				)),
@@ -125,7 +125,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 					'label' => __('Tags'),
 					'null'  => true,
 				)),
-				'events' => new Field_HasMany,
+				'events' => new Jelly_Field_HasMany,
 		));
 	}
 
@@ -137,7 +137,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_all() {
-		return Jelly::select('venue')
+		return Jelly::query('venue')
 			->with('venue_category')
 			->order_by('city_name', 'ASC')
 			->order_by('name', 'ASC')
@@ -154,7 +154,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 		if ($this->foursquare_id) {
 
 			// Use cache to avoid flooding Foursquare
-			$foursquare = Cache::instance()->get_('foursquare_venue_' . $this->foursquare_id);
+			$foursquare = Anqh::cache_get('foursquare_venue_' . $this->foursquare_id);
 			if (!$foursquare) {
 
 				// Store the original request
@@ -173,7 +173,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 				$foursquare = Arr::path(json_decode($response, true), 'venue.venue');
 
 				// Cache results for 15 minutes
-				Cache::instance()->set_('foursquare_venue_' . $this->foursquare_id, $foursquare, 60 * 15);
+				Anqh::cache_set('foursquare_venue_' . $this->foursquare_id, $foursquare, 60 * 15);
 
 			}
 
@@ -190,7 +190,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Model_Venue
 	 */
 	public static function find_by_foursquare($foursquare_id) {
-		return Jelly::select('venue')->where('foursquare_id', '=', (int)$foursquare_id)->limit(1)->execute();
+		return Jelly::factory('venue')->where('foursquare_id', '=', (int)$foursquare_id)->limit(1)->execute();
 	}
 
 
@@ -202,7 +202,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_name($name) {
-		return Jelly::select('venue')->where(new Database_Expression('LOWER(name)'), '=', strtolower(trim($name)))->execute();
+		return Jelly::query('venue')->where(new Database_Expression('LOWER(name)'), '=', strtolower(trim($name)))->execute();
 	}
 
 
@@ -214,7 +214,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new($limit = 20) {
-		return Jelly::select('venue')->order_by('id', 'DESC')->limit((int)$limit)->execute();
+		return Jelly::query('venue')->order_by('id', 'DESC')->limit((int)$limit)->execute();
 	}
 
 
@@ -226,7 +226,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_updated($limit = 20) {
-		return Jelly::select('venue')->where('modified', 'IS NOT', null)->order_by('modified', 'DESC')->limit((int)$limit)->execute();
+		return Jelly::query('venue')->where('modified', 'IS NOT', null)->order_by('modified', 'DESC')->limit((int)$limit)->execute();
 	}
 
 

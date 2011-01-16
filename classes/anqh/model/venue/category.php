@@ -24,7 +24,7 @@ class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interf
 		$meta
 			->sorting(array('name' => 'DESC'))
 			->fields(array(
-				'id' => new Field_Primary,
+				'id' => new Jelly_Field_Primary,
 				'name' => new Field_String(array(
 					'label'  => __('Category'),
 					'unique' => true,
@@ -39,19 +39,19 @@ class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interf
 						'max_length' => array(250),
 					),
 				)),
-				'author' => new Field_BelongsTo(array(
+				'author' => new Jelly_Field_BelongsTo(array(
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
-				'created' => new Field_Timestamp(array(
+				'created' => new Jelly_Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
 
-				'tag_group' => new Field_BelongsTo(array(
+				'tag_group' => new Jelly_Field_BelongsTo(array(
 					'label' => __('Tag group'),
 					'null'  => true,
 				)),
-				'venues'    => new Field_HasMany,
+				'venues'    => new Jelly_Field_HasMany,
 		));
 	}
 
