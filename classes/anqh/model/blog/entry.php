@@ -36,7 +36,7 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 		$meta
 			->sorting(array('id' => 'DESC'))
 			->fields(array(
-				'id' => new Field_Primary,
+				'id' => new Jelly_Field_Primary,
 				'name' => new Field_String(array(
 					'label' => __('Title'),
 					'rules' => array(
@@ -52,22 +52,22 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 					)
 				)),
 
-				'created' => new Field_Timestamp(array(
+				'created' => new Jelly_Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
-				'modified' => new Field_Timestamp(array(
+				'modified' => new Jelly_Field_Timestamp(array(
 					'auto_now_update' => true,
 				)),
-				'modify_count' => new Field_Integer,
-				'comment_count' => new Field_Integer,
-				'new_comment_count' => new Field_Integer,
-				'view_count' => new Field_Integer,
+				'modify_count' => new Jelly_Field_Integer,
+				'comment_count' => new Jelly_Field_Integer,
+				'new_comment_count' => new Jelly_Field_Integer,
+				'view_count' => new Jelly_Field_Integer,
 
-				'author' => new Field_BelongsTo(array(
+				'author' => new Jelly_Field_BelongsTo(array(
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
-				'comments' => new Field_HasMany(array(
+				'comments' => new Jelly_Field_HasMany(array(
 					'foreign' => 'blog_comment'
 				))
 			));
