@@ -92,7 +92,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		)));
 
 		// Galleries
-		$galleries = Jelly::select('gallery')->year_month($year, $month)->execute();
+		$galleries = Model_Gallery::find_by_month($year, $month);
 		if (count($galleries)) {
 			Widget::add('main', View_Module::factory('galleries/galleries', array(
 				'galleries' => $galleries
@@ -111,7 +111,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Jelly::select('image_comment')->load($comment_id);
+		$comment = Model_Image_Comment::find($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$image = $comment->image;
 			$gallery = Model_Gallery::find_by_image($image->id);
@@ -157,7 +157,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Jelly::select('image_comment')->load($comment_id);
+		$comment = Model_Image_Comment::find($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$image = $comment->image;
 			$flyer = Model_Flyer::find_by_image($image->id);
@@ -202,7 +202,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Jelly::select('gallery')->load($gallery_id);
+		$gallery = Model_Gallery::find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -233,13 +233,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Jelly::select('gallery')->load($gallery_id);
+		$gallery = Model_Gallery::find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
 		/** @var  Model_Image  $image */
-		$image = Jelly::select('image')->load($image_id);
+		$image = Model_Image::find($image_id);
 		if (!$image->loaded()) {
 			throw new Model_Exception($image, $image_id);
 		}
@@ -268,7 +268,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	public function action_event() {
 		$event_id = (int)$this->request->param('id');
 
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -290,7 +290,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$flyer_id = (int)$this->request->param('id');
 
 		/** @var  Model_Flyer  $flyer */
-		$flyer = Jelly::select('flyer')->load($flyer_id);
+		$flyer = Model_Flyer::find($flyer_id);
 		if (!$flyer->loaded()) {
 			throw new Model_Exception($flyer, $flyer_id);
 		}
@@ -375,12 +375,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			// Handle comment
 			if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENT, self::$user) && $_POST) {
-				$comment = Jelly::factory('image_comment');
-				$comment->image = $image;
+				$comment = Model_Image_Comment::factory()->set(array(
+					'image'  => $image,
+					'author' => self::$user,
+				));
 				if ($image->author) {
 					$comment->user = $image->author;
 				}
-				$comment->author = self::$user;
 				$comment->set(Arr::intersect($_POST, Model_Image_Comment::$editable_fields));
 				try {
 					$comment->save();
@@ -525,7 +526,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		/** @var  Model_Gallery  $gallery */
 		$gallery_id = (int)$this->request->param('id');
-		$gallery = Jelly::select('gallery')->load($gallery_id);
+		$gallery = Model_Gallery::find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -653,10 +654,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = (int)$this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Jelly::select('gallery')->load($gallery_id);
+		$gallery = Model_Gallery::find($gallery_id);
 		if ($gallery->loaded()) {
 			/** @var  Model_Image  $image */
-			$image = Jelly::select('image')->load($image_id);
+			$image = Model_Image::find($image_id);
 			if ($image->loaded()) {
 				echo View_Module::factory('galleries/hovercard', array(
 					'mod_title' => HTML::chars($gallery->name),
@@ -676,7 +677,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Jelly::select('gallery')->load($gallery_id);
+		$gallery = Model_Gallery::find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -746,12 +747,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				// Handle comment
 				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, self::$user) && $_POST) {
-					$comment = Jelly::factory('image_comment');
-					$comment->image = $current;
+					$comment = Model_Image_Comment::factory()->set(array(
+						'image'  => $current,
+						'author' => self::$user
+					));
 					if ($current->author) {
 						$comment->user = $current->author;
 					}
-					$comment->author = self::$user;
 					$comment->set(Arr::intersect($_POST, Model_Image_Comment::$editable_fields));
 					try {
 						$comment->save();
@@ -904,7 +906,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		/** @var  Model_Gallery  $gallery */
 		$gallery_id = (int)$this->request->param('id');
-		$gallery = Jelly::select('gallery')->load($gallery_id);
+		$gallery = Model_Gallery::find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -935,7 +937,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$gallery_id = (int)$this->request->param('id');
 		}
 		if ($gallery_id) {
-			$gallery = Jelly::select('gallery')->load($gallery_id);
+			$gallery = Model_Gallery::find($gallery_id);
 			if (!$gallery->loaded()) {
 				throw new Model_Exception($gallery, $gallery_id);
 			}
@@ -972,7 +974,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						throw new Kohana_Exception(__('Already uploaded'));
 					}
 
-					$image = Jelly::factory('image')
+					$image = Model_Image::factory()
 						->set(array(
 							'author' => self::$user,
 							'file'   => $file,
@@ -985,7 +987,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 					// Save exif
 					try {
-						Jelly::factory('image_exif')
+						Model_Image_Exif::factory()
 							->set(array('image' => $image))
 							->save();
 					} catch (Kohana_Exception $e) { }
@@ -1070,7 +1072,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if ($gallery_id) {
 
 			// Editing old
-			$gallery = Jelly::select('gallery')->load($gallery_id);
+			$gallery = Model_Gallery::find($gallery_id);
 			if (!$gallery->loaded()) {
 				throw new Model_Exception($gallery, $gallery_id);
 			}
@@ -1082,7 +1084,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		} else {
 
 			// Creating new
-			$gallery = Jelly::factory('gallery');
+			$gallery = Model_Gallery::factory();
 			Permission::required($gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('galleries')->uri(), true);
 			$save   = __('Continue');
@@ -1090,7 +1092,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			if ($event_id) {
 				/** @var  Model_Event  $event */
-				$event = Jelly::select('event')->load($event_id);
+				$event = Model_Event::find($event_id);
 			}
 		}
 
@@ -1098,7 +1100,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$errors = array();
 		if ($_POST || isset($_GET['from'])) {
 			$event_id = $_POST ? (int)Arr::get($_POST, 'event') : (int)Arr::get($_GET, 'from');
-			$event = Jelly::select('event')->load($event_id);
+			$event = Model_Event::find($event_id);
 
 			if (!$gallery->loaded() && $event->loaded()) {
 
