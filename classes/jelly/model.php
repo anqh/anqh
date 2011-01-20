@@ -26,6 +26,18 @@ class Jelly_Model extends Jelly_Model_Core {
 
 
 	/**
+	 * Load a Jelly model
+	 *
+	 * @static
+	 * @param   integer|string  $id  Primary key
+	 * @return  Jelly_Model
+	 */
+	public static function find($id) {
+		return Jelly::select(get_called_class())->load($id);
+	}
+
+
+	/**
 	 * Find all models
 	 *
 	 * @static
