@@ -45,7 +45,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 	public function action_category() {
 		$category_id = (int)$this->request->param('id');
 
-		$category = Jelly::select('venue_category')->load($category_id);
+		$category = Model_Venue_Category::find($category_id);
 		if (!$category->loaded()) {
 			throw new Model_Exception($category, $category_id);
 		}
@@ -79,14 +79,14 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Load original venue
 		$venue_id = (int)$this->request->param('id');
-		$venue = Jelly::select('venue')->load($venue_id);
+		$venue = Model_Venue::find($venue_id);
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
 		// Load duplicate venue
 		$duplicate_id = (int)$this->request->param('param');
-		$duplicate = Jelly::select('venue')->load($duplicate_id);
+		$duplicate = Model_Venue::find($duplicate_id);
 		if (!$duplicate->loaded()) {
 			throw new Model_Exception($duplicate, $duplicate_id);
 		}
@@ -115,7 +115,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Load venue
 		$venue_id = (int)$this->request->param('id');
-		$venue = Jelly::select('venue')->load($venue_id);
+		$venue = Model_Venue::find($venue_id);
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
@@ -141,7 +141,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Load category
 		$category_id = (int)$this->request->param('id');
-		$category = Jelly::select('venue_category')->load($category_id);
+		$category = Model_Venue_Category::find($category_id);
 		if (!$category->loaded()) {
 			throw new Model_Exception($category, $category_id);
 		}
@@ -182,7 +182,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Load venue
 		$venue_id = (int)$this->request->param('id');
-		$venue = Jelly::select('venue')->load($venue_id);
+		$venue = Model_Venue::find($venue_id);
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
@@ -213,7 +213,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Load venue
 		$venue_id = (int)$this->request->param('id');
-		$venue = Jelly::select('venue')->load($venue_id);
+		$venue = Model_Venue::find($venue_id);
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
@@ -228,7 +228,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Change existing
 		if (isset($_REQUEST['default'])) {
-			$image = Jelly::select('image')->load((int)$_REQUEST['default']);
+			$image = Model_Image::find((int)$_REQUEST['default']);
 			if (Security::csrf_valid() && $image->loaded() && $venue->has('images', $image)) {
 				$venue->default_image = $image;
 				$venue->save();
@@ -238,7 +238,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Delete existing
 		if (isset($_REQUEST['delete'])) {
-			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
+			$image = Model_Image::find((int)$_REQUEST['delete']);
 			if (Security::csrf_valid() && $image->loaded() && $image->id != $venue->default_image->id && $venue->has('images', $image)) {
 				$venue->remove('images', $image);
 				$venue->save();
@@ -257,7 +257,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 			$this->request->redirect(Route::model($venue));
 		}
 
-		$image = Jelly::factory('image')->set(array(
+		$image = Model_Image::factory()->set(array(
 			'author' => self::$user,
 		));
 
@@ -270,7 +270,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 				// Add exif, silently continue if failed - not critical
 				try {
-					Jelly::factory('image_exif')
+					Model_Image_Exif::factory()
 						->set(array('image' => $image))
 						->save();
 				} catch (Kohana_Exception $e) { }
@@ -350,7 +350,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		$venue_id =(int)$this->request->param('id');
 
 		// Load venue
-		$venue = Jelly::select('venue')->load($venue_id);
+		$venue = Model_Venue::find($venue_id);
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
@@ -425,7 +425,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		if ($category_id) {
 
 			// Editing old
-			$category = Jelly::select('venue_category')->load($category_id);
+			$category = Model_Venue_Category::find($category_id);
 			if (!$category->loaded()) {
 				throw new Model_Exception($category, $category_id);
 			}
@@ -440,7 +440,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		} else {
 
 			// Creating new
-			$category = Jelly::factory('venue_category');
+			$category = Model_Venue_Category::factory();
 			Permission::required($category, Model_Venue_Category::PERMISSION_CREATE, self::$user);
 			$cancel = Route::get('venues')->uri();
 
@@ -491,7 +491,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		if ($venue_id) {
 
 			// Editing old
-			$venue = Jelly::select('venue')->load($venue_id);
+			$venue = Model_Venue::find($venue_id);
 			if (!$venue->loaded()) {
 				throw new Model_Exception($venue, $venue_id);
 			}
@@ -508,13 +508,13 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 			// Creating new
 			$edit = false;
-			$category = Jelly::select('venue_category')->load($category_id);
+			$category = Model_Venue_Category::find($category_id);
 			if (!$category->loaded()) {
 				throw new Model_Exception($category, $category_id);
 			}
 			Permission::required($category, Model_Venue_Category::PERMISSION_VENUE, self::$user);
 
-			$venue = Jelly::factory('venue')->set(array(
+			$venue = Model_Venue::factory()->set(array(
 				'category' => $category,
 				'author'   => self::$user,
 			));
