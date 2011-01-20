@@ -25,7 +25,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Jelly::select('blog_comment')->load($comment_id);
+		$comment = Model_Blog_Comment::factory($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$entry = $comment->blog_entry;
 			switch ($action) {
@@ -74,7 +74,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$entry_id = (int)$this->request->param('id');
 
 		// Load blog entry
-		$entry = Jelly::select('blog_entry')->load($entry_id);
+		$entry = Model_Blog_Entry::factory($entry_id);
 		if (!$entry->loaded()) {
 			throw new Model_Exception($entry, $entry_id);
 		}
@@ -105,10 +105,11 @@ class Anqh_Controller_Blog extends Controller_Template {
 			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, self::$user)) {
 
 				// Handle comment
-				$comment = Jelly::factory('blog_comment');
-				$comment->blog_entry = $entry;
-				$comment->user       = $entry->author;
-				$comment->author     = self::$user;
+				$comment = Model_Blog_Comment::factory()->set(array(
+					'blog_entry' => $entry,
+					'user'       => $entry->author,
+					'author'     => self::$user,
+				));
 				$comment->set(Arr::intersect($_POST, Model_Blog_Comment::$editable_fields));
 				try {
 					$comment->save();
@@ -179,7 +180,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('blog/entries', array(
 			'mod_class' => 'blog_entries',
-			'entries'   => Jelly::select('blog_entry')->limit(20)->execute(),
+			'entries'   => Model_Blog_Entry::find_new(20),
 		)));
 	}
 
@@ -195,7 +196,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		if ($entry_id) {
 
 			// Editing old
-			$entry = Jelly::select('blog_entry')->load($entry_id);
+			$entry = Model_Blog_Entry::factory($entry_id);
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
@@ -206,7 +207,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		} else {
 
 			// Creating new
-			$entry = Jelly::factory('blog_entry');
+			$entry = Model_Blog_Entry::factory();
 			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;

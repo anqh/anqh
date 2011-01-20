@@ -75,6 +75,18 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 
 
 	/**
+	 * Find latest blog entries
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_new($limit = 10) {
+		return Jelly::select('blog_entry')->limit($limit)->execute();
+	}
+
+
+	/**
 	 * Get new blog comments count for user.
 	 * Return array of ids and counts
 	 *
