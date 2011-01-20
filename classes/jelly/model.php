@@ -4,24 +4,19 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Jelly_Model extends Jelly_Model_Core {
 
 	/**
-	 * Create or load a Jelly model
+	 * Create a Jelly model
 	 *
 	 * @static
-	 * @param   integer|string  $id  Primary key
 	 * @return  Jelly_Model
 	 */
-	public static function factory($id = null) {
-
-		// Late static binding <3
-		$class = get_called_class();
-
-	  return $id ? Jelly::select($class, $id) : Jelly::factory(Jelly::model_name($class));
+	public static function factory() {
+	  return Jelly::factory(Jelly::model_name(get_called_class()));
 	}
 
 

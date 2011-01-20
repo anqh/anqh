@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Controller_Template extends Controller {
@@ -105,7 +105,7 @@ abstract class Anqh_Controller_Template extends Controller {
 
 		// Online users
 		if (!$this->internal) {
-			$online = Model_User_Online::factory(Session::instance()->id());
+			$online = Model_User_Online::find(Session::instance()->id());
 			if (!$online->loaded()) {
 				$online->id = Session::instance()->id();
 			}

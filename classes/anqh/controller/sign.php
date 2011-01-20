@@ -75,7 +75,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 	public function action_out() {
 
 		// Remove from online list
-		Model_User_Online::factory(Session::instance()->id())->delete();
+		Model_User_Online::find(Session::instance()->id())->delete();
 
 		// Logout visitor
 		Visitor::instance()->logout();

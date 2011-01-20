@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Roles extends Controller_Template {
@@ -40,7 +40,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		$this->history = false;
 
 		$role_id = (int)$this->request->param('id');
-		$role = Model_Role::factory($role_id);
+		$role = Model_Role::find($role_id);
 		if (!$role->loaded()) {
 			throw new Model_Exception($role, $role_id);
 		}
@@ -61,7 +61,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		// Load role
 		$role_id = (int)$this->request->param('id', 0);
 		if ($role_id) {
-			$role = Model_Role::factory($role_id);
+			$role = Model_Role::find($role_id);
 			if (!$role->loaded()) {
 				throw new Model_Exception($role, $role_id);
 			}

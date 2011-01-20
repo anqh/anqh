@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_User extends Controller_Template {
@@ -17,7 +17,7 @@ class Anqh_Controller_User extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Model_User_Comment::factory($comment_id);
+		$comment = Model_User_Comment::find($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$user = $comment->user;
 			switch ($action) {
@@ -185,7 +185,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Change existing
 		if (isset($_REQUEST['default'])) {
 			/** @var  Model_Image  $image */
-			$image = Model_Image::factory((int)$_REQUEST['default']);
+			$image = Model_Image::find((int)$_REQUEST['default']);
 			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image)) {
 				$user->default_image = $image;
 				$user->picture = $image->get_url();
@@ -197,7 +197,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Delete existing
 		if (isset($_REQUEST['delete'])) {
 			/** @var  Model_Image  $image */
-			$image = Model_Image::factory((int)$_REQUEST['delete']);
+			$image = Model_Image::find((int)$_REQUEST['delete']);
 			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image->id && $user->has('images', $image)) {
 				$user->remove('images', $image);
 				$user->picture = null;

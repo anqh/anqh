@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Tags extends Controller_Template {
@@ -46,7 +46,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::factory($tag_id);
+		$tag = Model_Tag::find($tag_id);
 		if (!$tag->loaded()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
@@ -65,7 +65,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::factory($group_id);
+		$group = Model_Tag_Group::find($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -109,7 +109,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_group() {
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::factory($group_id);
+		$group = Model_Tag_Group::find($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -131,7 +131,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_tag() {
 		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::factory($tag_id);
+		$tag = Model_Tag::find($tag_id);
 		if (!$tag->loaded()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
@@ -154,7 +154,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Edit group
-			$group = Model_Tag_Group::factory($group_id);
+			$group = Model_Tag_Group::find($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -215,7 +215,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Add new tag
-			$group = Model_Tag_Group::factory($group_id);
+			$group = Model_Tag_Group::find($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -227,7 +227,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		} else if ($tag_id) {
 
 			// Edit old tag
-			$tag = Model_Tag::factory($tag_id);
+			$tag = Model_Tag::find($tag_id);
 			if (!$tag->loaded()) {
 				throw new Model_Exception($tag, $tag_id);
 			}
