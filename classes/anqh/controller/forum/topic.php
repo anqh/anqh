@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Topic extends Controller_Forum {
@@ -59,7 +59,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	public function action_event() {
 		$event_id = (int)$this->request->param('id');
 
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -95,7 +95,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Load topic
 		/** @var  Model_Forum_Topic  $topic */
-		$topic = Jelly::select('forum_topic')->load($topic_id);
+		$topic = Model_Forum_Topic::find($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -104,7 +104,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Did we request single post with ajax?
 		if ($this->ajax && isset($post_id)) {
 			$this->history = false;
-			$post = Jelly::select('forum_post')->load($post_id);
+			$post = Model_Forum_Post::find($post_id);
 			if (!$post->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}
@@ -221,7 +221,7 @@ $(function() {
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
 			$form = array(
 				'action' => Route::model($topic, 'reply'),
-				'values' => Jelly::factory('forum_post'),
+				'values' => Model_Forum_Post::factory(),
 				'save'   => array('label' => __('Reply')),
 				'groups' => array(
 					array(
@@ -277,13 +277,13 @@ $(function() {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
-		$topic = Jelly::select('forum_topic')->load($topic_id);
+		$topic = Model_Forum_Topic::find($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
 
 		// Editing a post
-		$post = Jelly::select('forum_post')->load($post_id);
+		$post = Model_Forum_Post::find($post_id);
 		if (!$post->loaded() || $post->topic->id != $topic->id || !Security::csrf_valid()) {
 			throw new Model_Exception($post, $post_id);
 		}
@@ -311,7 +311,7 @@ $(function() {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
-		$topic = Jelly::select('forum_topic')->load($topic_id);
+		$topic = Model_Forum_Topic::find($topic_id);
 		if (!$topic->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -340,7 +340,7 @@ $(function() {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
-		$topic = Jelly::select('forum_topic')->load($topic_id);
+		$topic = Model_Forum_Topic::find($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -349,7 +349,7 @@ $(function() {
 		if ($post_id) {
 
 			// Editing a post
-			$post = Jelly::select('forum_post')->load($post_id);
+			$post = Model_Forum_Post::find($post_id);
 			if (!$post->loaded() || $post->topic->id != $topic->id) {
 				throw new Model_Exception($post, $post_id);
 			}
@@ -358,13 +358,13 @@ $(function() {
 		} else {
 
 			// New reply
-			$post = Jelly::factory('forum_post');
+			$post = Model_Forum_Post::factory();
 
 		}
 
 		// Quoting a post
 		if ($quote_id) {
-			$quote = Jelly::select('forum_post')->load($quote_id);
+			$quote = Model_Forum_Post::find($quote_id);
 			if (!$quote->loaded() || $quote->topic->id != $topic->id) {
 				throw new Model_Exception($quote, $quote_id);
 			}
@@ -411,7 +411,7 @@ $(function() {
 
 					// Quote
 					if ($quote_id && $quote->author->id) {
-						Jelly::factory('forum_quote')
+						Model_Forum_Quote::factory()
 							->set(array(
 								'user'   => $quote->author,
 								'author' => self::$user,
@@ -513,14 +513,14 @@ $(function() {
 		if ($area_id) {
 
 			// Start new topic
-			$area = Jelly::select('forum_area')->load($area_id);
+			$area = Model_Forum_Area::find($area_id);
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
 			Permission::required($area, Model_Forum_Area::PERMISSION_POST, self::$user);
 			$this->page_title = HTML::chars($area->name);
-			$topic = Jelly::factory('forum_topic');
-			$post  = Jelly::factory('forum_post');
+			$topic  = Model_Forum_Topic::factory();
+			$post   = Model_Forum_Post::factory();
 			$cancel = Route::model($area);
 
 			// Build form
@@ -548,7 +548,7 @@ $(function() {
 		} else {
 
 			// Edit old topic
-			$topic = Jelly::select('forum_topic')->load($topic_id);
+			$topic = Model_Forum_Topic::find($topic_id);
 			if (!$topic->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}

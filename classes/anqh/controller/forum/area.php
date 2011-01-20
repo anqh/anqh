@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Area extends Controller_Forum {
@@ -34,7 +34,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->history = false;
 
 		$area_id = (int)$this->request->param('id');
-		$area = Jelly::select('forum_area', $area_id);
+		$area = Model_Forum_Area::find($area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, $area_id);
 		}
@@ -55,20 +55,20 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Load area
 		$area_id = (int)$this->request->param('id');
 		if ($area_id) {
-			$area = Jelly::select('forum_area', $area_id);
+			$area = Model_Forum_Area::find($area_id);
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
 			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user);
 		} else {
-			$area = Jelly::factory('forum_area');
+			$area = Model_Forum_Area::factory();
 		}
 
 		// Load group
 		if ($area->loaded()) {
 			$group = $area->group;
 		} else if ($group_id = (int)$this->request->param('group_id')) {
-			$group = Jelly::select('forum_group', $group_id);
+			$group = Model_Forum_Group::find($group_id);
 			$area->group = $group;
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
@@ -134,7 +134,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 		// Load area
 		$area_id = (int)$this->request->param('id');
-		$area = Jelly::select('forum_area')->load((int)$area_id);
+		$area = Model_Forum_Area::find((int)$area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, (int)$area_id);
 		}

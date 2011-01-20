@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface {
@@ -107,6 +107,18 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 
 
 	/**
+	 * Find active topics
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_active($limit = 10) {
+		return Jelly::select('forum_topic')->active()->limit($limit)->execute();
+	}
+
+
+	/**
 	 * Load topic by bound model
 	 *
 	 * @static
@@ -156,6 +168,30 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * Find latest topics
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_by_latest_post($limit = 10) {
+		return Jelly::select('forum_topic')->order_by('last_post_id', 'DESC')->limit($limit)->execute();
+	}
+
+
+	/**
+	 * Find new topics
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_new($limit = 10) {
+		return Jelly::select('forum_topic')->latest()->limit($limit)->execute();
 	}
 
 

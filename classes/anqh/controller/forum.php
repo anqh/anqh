@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum extends Controller_Template {
@@ -35,7 +35,7 @@ class Anqh_Controller_Forum extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('forum/topics', array(
 			'mod_class' => 'topics articles',
-			'topics'    => Jelly::select('forum_topic')->active()->limit(20)->execute()
+			'topics'    => Model_Forum_Topic::find_active(20)
 		)));
 
 		$this->side_views();
@@ -51,19 +51,19 @@ class Anqh_Controller_Forum extends Controller_Template {
 				'mod_id'    => 'topics-active',
 				'mod_class' => 'cut tab topics',
 				'title'     => __('New posts'),
-				'topics'    =>  Jelly::select('forum_topic')->active()->limit(20)->execute(),
+				'topics'    => Model_Forum_Topic::find_active(20),
 			))),
 			'latest' => array('href' => '#topics-new', 'title' => __('New topics'), 'tab' => View_Module::factory('forum/topiclist', array(
 				'mod_id'    => 'topics-new',
 				'mod_class' => 'cut tab topics',
 				'title'     => __('New topics'),
-				'topics'    =>  Jelly::select('forum_topic')->latest()->limit(20)->execute(),
+				'topics'    => Model_Forum_Topic::find_new(20),
 			))),
 			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => $this->tab_id == 'index', 'tab' => View_Module::factory('forum/grouplist', array(
 				'mod_id'    => 'forum-areas',
 				'mod_class' => 'cut tab areas',
 				'title'     => __('Forum areas'),
-				'groups'    => Jelly::select('forum_group')->execute(),
+				'groups'    => Model_Forum_Group::find_all(),
 				'user'      => self::$user,
 			))),
 		);

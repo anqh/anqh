@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Group extends Controller_Forum {
@@ -16,7 +16,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		$this->history = false;
 
 		$group_id = (int)$this->request->param('id');
-		$group = Jelly::select('forum_group', $group_id);
+		$group = Model_Forum_Group::find($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -38,12 +38,12 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 		// Load group
 		if ($group_id) {
-			$group = Jelly::select('forum_group')->load((int)$group_id);
+			$group = Model_Forum_Group::find((int)$group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, (int)$group_id);
 			}
 		} else {
-			$group = Jelly::factory('forum_group');
+			$group = Model_Forum_Group::factory();
 		}
 		Permission::required($group, $group->loaded() ? Model_Forum_Group::PERMISSION_UPDATE : Model_Forum_Group::PERMISSION_CREATE, self::$user);
 
@@ -98,7 +98,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		if (!$group_id) {
 
 			// All groups
-			$groups = Jelly::select('forum_group')->execute();
+			$groups = Model_Forum_Group::find_all();
 			if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::get('forum_group_add')->uri(), 'text' => __('New group'), 'class' => 'group-add');
 			}
@@ -106,7 +106,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		} else {
 
 			// One group
-			$group = Jelly::select('forum_group', $group_id);
+			$group = Model_Forum_Topic::find($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
