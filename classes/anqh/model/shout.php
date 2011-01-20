@@ -41,6 +41,18 @@ class Anqh_Model_Shout extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find latest shouts
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public static function find_latest($limit = 10) {
+		return Jelly::select('shout')->limit($limit)->execute();
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission

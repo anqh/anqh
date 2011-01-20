@@ -46,7 +46,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$tag_id = (int)$this->request->param('id');
-		$tag = Jelly::select('tag', $tag_id);
+		$tag = Model_Tag::factory($tag_id);
 		if (!$tag->loaded()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
@@ -65,7 +65,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$group_id = (int)$this->request->param('id');
-		$group = Jelly::select('tag_group', $group_id);
+		$group = Model_Tag_Group::factory($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -99,7 +99,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->page_actions[] = array('link' => Route::get('tag_group_add')->uri(), 'text' => __('Add group'), 'class' => 'group-add');
 
 		Widget::add('main', View_Module::factory('tags/groups', array(
-			'groups' => Jelly::select('tag_group')->execute(),
+			'groups' => Model_Tag_Group::find_all(),
 		)));
 	}
 
@@ -109,7 +109,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_group() {
 		$group_id = (int)$this->request->param('id');
-		$group = Jelly::select('tag_group', $group_id);
+		$group = Model_Tag_Group::factory($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -131,7 +131,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_tag() {
 		$tag_id = (int)$this->request->param('id');
-		$tag = Jelly::select('tag')->load($tag_id);
+		$tag = Model_Tag::factory($tag_id);
 		if (!$tag->loaded()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
@@ -154,7 +154,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Edit group
-			$group = Jelly::select('tag_group')->load($group_id);
+			$group = Model_Tag_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -167,7 +167,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		} else {
 
 			// Create new group
-			$group = Jelly::factory('tag_group');
+			$group = Model_Tag_Group::factory();
 			$this->page_title = __('Tag group');
 			$cancel = Route::get('tags')->uri();
 
@@ -215,19 +215,19 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Add new tag
-			$group = Jelly::select('tag_group')->load($group_id);
+			$group = Model_Tag_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
 			$this->page_title = HTML::chars($group->name);
 			$this->page_subtitle = HTML::chars($group->description);
-			$tag = Jelly::factory('tag')->set(array('group' => $group));
+			$tag = Model_Tag::factory()->set(array('group' => $group));
 			$cancel = Route::model($group);
 
 		} else if ($tag_id) {
 
 			// Edit old tag
-			$tag = Jelly::select('tag')->load($tag_id);
+			$tag = Model_Tag::factory($tag_id);
 			if (!$tag->loaded()) {
 				throw new Model_Exception($tag, $tag_id);
 			}

@@ -44,7 +44,7 @@ class Anqh_Controller_API extends Controller {
 	public function before() {
 
 		// Log request
-		Jelly::factory('api_request')->set(array(
+		Model_API_Request::factory()->set(array(
 			'ip'      => Request::$client_ip,
 			'request' => $this->request->uri . (empty($_GET) ? '' : '?' . http_build_query($_GET)),
 		))->save();

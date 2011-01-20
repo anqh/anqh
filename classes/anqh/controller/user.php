@@ -17,7 +17,7 @@ class Anqh_Controller_User extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Jelly::select('user_comment')->load($comment_id);
+		$comment = Model_User_Comment::factory($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$user = $comment->user;
 			switch ($action) {
@@ -185,7 +185,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Change existing
 		if (isset($_REQUEST['default'])) {
 			/** @var  Model_Image  $image */
-			$image = Jelly::select('image')->load((int)$_REQUEST['default']);
+			$image = Model_Image::factory((int)$_REQUEST['default']);
 			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image)) {
 				$user->default_image = $image;
 				$user->picture = $image->get_url();
@@ -197,7 +197,7 @@ class Anqh_Controller_User extends Controller_Template {
 		// Delete existing
 		if (isset($_REQUEST['delete'])) {
 			/** @var  Model_Image  $image */
-			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
+			$image = Model_Image::factory((int)$_REQUEST['delete']);
 			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image->id && $user->has('images', $image)) {
 				$user->remove('images', $image);
 				$user->picture = null;
@@ -217,7 +217,7 @@ class Anqh_Controller_User extends Controller_Template {
 			$this->request->redirect(URL::user($user));
 		}
 
-		$image = Jelly::factory('image')->set(array(
+		$image = Model_Image::factory()->set(array(
 			'author' => $user,
 		));
 
@@ -230,7 +230,7 @@ class Anqh_Controller_User extends Controller_Template {
 
 				// Add exif, silently continue if failed - not critical
 				try {
-					Jelly::factory('image_exif')
+					Model_Image_Exif::factory()
 						->set(array('image' => $image))
 						->save();
 				} catch (Kohana_Exception $e) { }
@@ -307,7 +307,7 @@ class Anqh_Controller_User extends Controller_Template {
 
 			// Handle comment
 			if (Permission::has($user, Model_User::PERMISSION_COMMENT, self::$user) && $_POST) {
-				$comment = Jelly::factory('user_comment');
+				$comment = Model_User_Comment::factory();
 				$comment->user       = $user;
 				$comment->author     = self::$user;
 				$comment->set(Arr::intersect($_POST, Model_User_Comment::$editable_fields));

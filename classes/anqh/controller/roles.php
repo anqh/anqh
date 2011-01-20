@@ -29,18 +29,18 @@ class Anqh_Controller_Roles extends Controller_Template {
 		$this->page_title = __('Roles');
 		$this->page_actions[] = array('link' => Route::get('role')->uri(), 'text' => __('New role'), 'class' => 'role-add');
 
-		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Jelly::select('role')->execute())));
+		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Model_Role::find_all())));
 	}
 
 
 	/**
 	 * Action: delete
 	 */
-	public function action_delete($role_id) {
+	public function action_delete() {
 		$this->history = false;
 
 		$role_id = (int)$this->request->param('id');
-		$role = Jelly::select('role', $role_id);
+		$role = Model_Role::factory($role_id);
 		if (!$role->loaded()) {
 			throw new Model_Exception($role, $role_id);
 		}
@@ -61,13 +61,13 @@ class Anqh_Controller_Roles extends Controller_Template {
 		// Load role
 		$role_id = (int)$this->request->param('id', 0);
 		if ($role_id) {
-			$role = Jelly::select('role', $role_id);
+			$role = Model_Role::factory($role_id);
 			if (!$role->loaded()) {
 				throw new Model_Exception($role, $role_id);
 			}
 			Permission::required($role, Model_Role::PERMISSION_UPDATE, self::$user);
 		} else {
-			$role = Jelly::factory('role');
+			$role = Model_Role::factory();
 			Permission::required($role, Model_Role::PERMISSION_CREATE, self::$user);
 		}
 

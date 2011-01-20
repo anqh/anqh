@@ -13,23 +13,22 @@ class Anqh_Controller_Shouts extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
-		$shouts = Jelly::select('shout')->limit(50)->execute();
 		$view = View_Module::factory('generic/shout', array(
 			'mod_title' => __('Shouts'),
-			'shouts'    => $shouts,
+			'shouts'    => Model_Shout::find_latest(50),
 			'can_shout' => Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE),
 			'errors'    => array(),
 		));
 
 		Widget::add('main', $view);
-}
+	}
 
 
 	/**
 	 * Action: shout
 	 */
 	public function action_shout() {
-		$shout = Jelly::factory('shout');
+		$shout = Model_Shout::factory();
 		$errors = array();
 
 		if (Permission::has($shout, Permission_Interface::PERMISSION_CREATE) && Security::csrf_valid()) {
@@ -45,7 +44,7 @@ class Anqh_Controller_Shouts extends Controller_Template {
 			}
 		}
 
-		$shouts = Jelly::select('shout')->limit(10)->execute();
+		$shouts = Model_Shout::find_latest(10);
 		$view = View_Module::factory('generic/shout', array(
 			'mod_title' => __('Shouts'),
 			'shouts'    => $shouts,

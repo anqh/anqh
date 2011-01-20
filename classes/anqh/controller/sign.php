@@ -31,7 +31,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 			$visitor = Visitor::instance();
 
 			// Log login attempt
-			$login = Jelly::factory('login')->set(array(
+			$login = Model_Login::factory()->set(array(
 				'password' => !empty($_POST['password']),
 				'username' => $_POST['username'],
 				'ip'       => Request::$client_ip,
@@ -75,7 +75,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 	public function action_out() {
 
 		// Remove from online list
-		Jelly::factory('user_online')->delete(Session::instance()->id());
+		Model_User_Online::factory(Session::instance()->id())->delete();
 
 		// Logout visitor
 		Visitor::instance()->logout();
@@ -124,7 +124,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 	protected function _invite($code = null) {
 
 		/** @var  Model_Invitation  $invitation */
-		$invitation = Jelly::factory('invitation');
+		$invitation = Model_Invitation::factory();
 
 		$errors = array();
 		$message = '';
@@ -196,7 +196,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 
 		// Enter invitation
 		$form = array(
-			'values' => Jelly::factory('invitation'),
+			'values' => Model_Invitation::factory(),
 			'errors' => $errors,
 			'cancel' => Request::back('/', true),
 			'save'   => array(
@@ -231,7 +231,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 * @param  Model_Invitation  $invitation
 	 */
 	public function _join(Model_Invitation $invitation) {
-		$user = Jelly::factory('user');
+		$user = Model_User::factory();
 		$user->email = $invitation->email;
 
 		// Handle post

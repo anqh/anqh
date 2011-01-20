@@ -52,10 +52,9 @@ class Anqh_Controller_Index extends Controller_Template {
 		Widget::add('main', $view);
 
 		// Shout
-		$shouts = Jelly::select('shout')->limit(10)->execute();
 		Widget::add('side', View_Module::factory('generic/shout', array(
 			'mod_title' => __('Shouts'),
-			'shouts'    => $shouts,
+			'shouts'    => Model_Shout::find_latest(10),
 			'can_shout' => Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE),
 			'errors'    => array(),
 			'values'    => array(),

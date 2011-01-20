@@ -10,6 +10,33 @@
 class Jelly_Model extends Jelly_Model_Core {
 
 	/**
+	 * Create or load a Jelly model
+	 *
+	 * @static
+	 * @param   integer|string  $id  Primary key
+	 * @return  Jelly_Model
+	 */
+	public static function factory($id = null) {
+
+		// Late static binding <3
+		$class = get_called_class();
+
+	  return $id ? Jelly::select($class, $id) : Jelly::factory(Jelly::model_name($class));
+	}
+
+
+	/**
+	 * Find all models
+	 *
+	 * @static
+	 * @return  Jelly_Collection
+	 */
+	public static function find_all() {
+		return Jelly::select(get_called_class())->execute();
+	}
+
+
+	/**
 	 * Get model original value, e.g., foreign model id
 	 *
 	 * @param   string  $name
