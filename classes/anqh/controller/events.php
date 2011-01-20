@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Events extends Controller_Template {
@@ -101,7 +101,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load venue
 		$event_id = (int)$this->request->param('id');
-		$event = Model_Event::factory($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -134,7 +134,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$event_id = (int)$this->request->param('id');
 
 		// Load event
-		$event = Model_Event::factory($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -211,7 +211,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load event
 		$event_id = (int)$this->request->param('id');
-		$event = Model_Event::factory($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -243,7 +243,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			foreach ($event_ids as $event_id) {
 
 				/** @var  Model_Event  $event */
-				$event = Model_Event::factory($event_id);
+				$event = Model_Event::find($event_id);
 				if (!$event->loaded()) {
 					throw new Model_Exception($event, $event_id);
 				}
