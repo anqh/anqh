@@ -46,4 +46,16 @@ class Anqh_Model_Tag_Group extends Jelly_Model {
 			));
 	}
 
+
+	/**
+	 * Find tag group by name
+	 *
+	 * @static
+	 * @param   string  $name
+	 * @return  Model_Tag_Group
+	 */
+	public static function find_by_name($name) {
+		return Jelly::select('tag_group')->where('name', '=', $name)->limit(1)->execute();
+	}
+
 }
