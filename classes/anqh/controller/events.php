@@ -68,7 +68,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Load events
-		$events = Jelly::select('event')->between($first, $last, 'ASC')->execute_grouped();
+		$events = Model_Event::find_grouped_between($first, $last);
 		if (count($events)) {
 			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
@@ -101,7 +101,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load venue
 		$event_id = (int)$this->request->param('id');
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -134,7 +134,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$event_id = (int)$this->request->param('id');
 
 		// Load event
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -211,7 +211,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load event
 		$event_id = (int)$this->request->param('id');
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -243,7 +243,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			foreach ($event_ids as $event_id) {
 
 				/** @var  Model_Event  $event */
-				$event = Jelly::select('event')->load($event_id);
+				$event = Model_Event::factory($event_id);
 				if (!$event->loaded()) {
 					throw new Model_Exception($event, $event_id);
 				}
@@ -262,7 +262,7 @@ class Anqh_Controller_Events extends Controller_Template {
 					foreach ($urls as $side => $url) {
 						if (!$url) continue;
 
-						$image = Jelly::factory('image')->set(array(
+						$image = Model_Image::factory()->set(array(
 							'remote' => $url
 						));
 						$event->author->loaded() and $image->author = $event->author;
@@ -271,7 +271,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 							// Set the image as flyer
 							try {
-								Jelly::factory('flyer')->set(array(
+								Model_Flyer::factory()->set(array(
 									'image'       => $image,
 									'event'       => $event,
 									'name'        => $event->name,
@@ -376,7 +376,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			return $this->action_event();
 		}
 
-		$event = Jelly::select('event')->load((int)$this->request->param('id'));
+		$event = Model_Event::find((int)$this->request->param('id'));
 		if ($event->loaded())	{
 			echo View_Module::factory('events/hovercard', array(
 				'mod_title' => HTML::chars($event->name),
@@ -395,7 +395,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Load event
 		$event_id = (int)$this->request->param('id');
 		/** @var  Model_Event  $event */
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -410,7 +410,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			// Change front flyer
 			/** @var  Model_Image  $image */
-			$image = Jelly::select('image')->load((int)$_REQUEST['front']);
+			$image = Model_Image::find((int)$_REQUEST['front']);
 			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
 				$event->flyer_front = $image;
 				$event->flyer_front_url = $image->get_url();
@@ -422,7 +422,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			// Change back flyer
 			/** @var  Model_Image  $image */
-			$image = Jelly::select('image')->load((int)$_REQUEST['back']);
+			$image = Model_Image::find((int)$_REQUEST['back']);
 			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
 				$event->flyer_back = $image;
 				$event->flyer_back_url = $image->get_url();
@@ -433,7 +433,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		} else if (isset($_REQUEST['delete'])) {
 
 			// Delete existing
-			$image = Jelly::select('image')->load((int)$_REQUEST['delete']);
+			$image = Model_Image::find((int)$_REQUEST['delete']);
 			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
 				$event->remove('flyers', $image);
 				if ($image->id == $event->flyer_front->id) {
@@ -460,7 +460,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			$this->request->redirect(Route::model($event));
 		}
 
-		$image = Jelly::factory('image')->set(array(
+		$image = Model_Image::factory()->set(array(
 			'author' => self::$user,
 		));
 
@@ -474,14 +474,14 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				// Add exif, silently continue if failed - not critical
 				try {
-					Jelly::factory('image_exif')
+					Model_Image_Exif::factory()
 						->set(array('image' => $image))
 						->save();
 				} catch (Kohana_Exception $e) { }
 
 				// Add flyer
 				try {
-					Jelly::factory('flyer')->set(array(
+					Model_Flyer::factory()->set(array(
 						'image'       => $image,
 						'event'       => $event,
 						'name'        => $event->name,
@@ -575,7 +575,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Load events
-		$events = Jelly::select('event')->past()->limit(25)->execute_grouped();
+		$events = Model_Event::find_grouped_past(25);
 		if (count($events)) {
 			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
@@ -607,7 +607,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load event
 		$event_id = (int)$this->request->param('id');
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::find($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -634,7 +634,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Load events
-		$events = Jelly::select('event')->upcoming()->limit(25)->execute_grouped();
+		$events = Model_Event::find_grouped_upcoming(25);
 		if (count($events)) {
 			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
@@ -672,32 +672,12 @@ class Anqh_Controller_Events extends Controller_Template {
 		if ($event_id) {
 
 			// Editing old
-			$event = Jelly::select('event')->load($event_id);
+			$event = Model_Event::find($event_id);
 			if (!$event->loaded()) {
 				throw new Model_Exception($event, $event_id);
 			}
 			Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
 			$cancel = Request::back(Route::model($event), true);
-
-			// Old version
-			/*
-			if (!count($event->tags) && $event->music) {
-				$tag_group = Jelly::select('tag_group')->where('name', '=', 'Music')->limit(1)->execute();
-				if ($tag_group->loaded() && count($tag_group->tags)) {
-					$tags = array();
-					foreach ($tag_group->tags as $tag) {
-						$tags[$tag->name()] = $tag->id();
-					}
-				}
-				$musics = explode(',', $event->music);
-				foreach ($musics as $music) {
-					$music = trim($music);
-					if ($tags[$music]) {
-						$event->add('tag', $tags[$music]);
-					}
-				}
-			}
-			 */
 
 			$this->page_title = HTML::chars($event->name);
 
@@ -711,7 +691,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		} else {
 
 			// Creating new
-			$event = Jelly::factory('event');
+			$event = Model_Event::factory();
 			Permission::required($event, Model_Event::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
@@ -729,7 +709,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			if ($venue_id = (int)Arr::get_once($_POST, 'venue')) {
 
 				// Old venue
-				$venue = Jelly::select('venue')->load($venue_id);
+				$venue = Model_Venue::find($venue_id);
 
 			} else if ($venue_name = Arr::get($_POST, 'venue_name')) {
 
@@ -743,7 +723,7 @@ class Anqh_Controller_Events extends Controller_Template {
 					// @todo: Refetch data using id?
 					$venue = Model_Venue::find_by_foursquare($foursquare_id);
 					if (!$venue->loaded()) {
-						$venue = Jelly::factory('venue')->set(array(
+						$venue = Model_Venue::factory()->set(array(
 							'foursquare_id'          => $foursquare_id,
 							'foursquare_category_id' => Arr::get_once($_POST, 'foursquare_category_id')
 						));
@@ -770,7 +750,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				}
 
 				// Fill rest of the venue info if not found
-				!isset($venue) and $venue = Jelly::factory('venue');
+				!isset($venue) and $venue = Model_Venue::factory();
 				if (!$venue->loaded()) {
 					$venue->name       = Arr::get($_POST, 'venue_name');
 					$venue->address    = Arr::get($_POST, 'address');
@@ -840,7 +820,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Tags
 		$tags = array();
-		$tag_group = Jelly::select('tag_group')->where('name', '=', 'Music')->limit(1)->execute();
+		$tag_group = Model_Tag_Group::find_by_name('Music');
 		if ($tag_group->loaded() && count($tag_group->tags)) {
 			foreach ($tag_group->tags as $tag) {
 				$tags[$tag->id()] = $tag->name();

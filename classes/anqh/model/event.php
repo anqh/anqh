@@ -241,6 +241,43 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find events between given time period, return grouped by date
+	 *
+	 * @static
+	 * @param   integer  $from  From timestamp
+	 * @param   integer  $to    To timestamp
+	 * @return  array
+	 */
+	public static function find_grouped_between($from, $to) {
+		return Jelly::select('event')->between($from, $to, 'ASC')->execute_grouped();
+	}
+
+
+	/**
+	 * Find past events, return grouped by date
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  array
+	 */
+	public static function find_grouped_past($limit = 10) {
+		return Jelly::select('event')->past()->limit($limit)->execute_grouped();
+	}
+
+
+	/**
+	 * Find upcoming events, return grouped by date
+	 *
+	 * @static
+	 * @param   integer  $limit
+	 * @return  array
+	 */
+	public static function find_grouped_upcoming($limit = 10) {
+		return Jelly::select('event')->upcoming()->limit($limit)->execute_grouped();
+	}
+
+
+	/**
 	 * Find hot (=favorites) events
 	 *
 	 * @static

@@ -41,7 +41,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 		$event_id = Arr::get($_REQUEST, 'id');
 
 		// Load event
-		$event = Jelly::select('event')->load($event_id);
+		$event = Model_Event::find($event_id);
 		if ($event->loaded()) {
 			$this->data['events'] = array($this->_prepare_event($event));
 		} else {
