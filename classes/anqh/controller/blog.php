@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Blog extends Controller_Template {
@@ -25,7 +25,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Model_Blog_Comment::factory($comment_id);
+		$comment = Model_Blog_Comment::find($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$entry = $comment->blog_entry;
 			switch ($action) {
@@ -74,7 +74,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$entry_id = (int)$this->request->param('id');
 
 		// Load blog entry
-		$entry = Model_Blog_Entry::factory($entry_id);
+		$entry = Model_Blog_Entry::find($entry_id);
 		if (!$entry->loaded()) {
 			throw new Model_Exception($entry, $entry_id);
 		}
@@ -196,7 +196,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		if ($entry_id) {
 
 			// Editing old
-			$entry = Model_Blog_Entry::factory($entry_id);
+			$entry = Model_Blog_Entry::find($entry_id);
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
