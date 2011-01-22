@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Form extends Kohana_Form {
@@ -411,7 +411,17 @@ class Anqh_Form extends Kohana_Form {
 
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
 		if ($bbcode) {
-			$input .= HTML::script_source('$(function() { $("#' . $attributes['id'] . '").markItUp(bbCodeSettings); });');
+			$input .= HTML::script_source('
+head.ready("jquery", function() {
+	head.js(
+		{ "jquery-markitup": "' . URL::base() . 'js/jquery.markitup.pack.js" },
+		{ "bbcode": "' . URL::base() . 'js/markitup.bbcode.js" },
+		function() {
+			$("#' . $attributes['id'] . '").markItUp(bbCodeSettings);
+		}
+	);
+});
+');
 		}
 
 		return Form::wrap($input, $name, $label, $error, $tip);

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -33,7 +33,7 @@ foreach ($shouts as $shout)
 
 // AJAX hooks
 	echo HTML::script_source('
-$(function() {
+head.ready("jquery", function() {
 
 	$("section.shout form").live("submit", function(e) {
 		e.preventDefault();

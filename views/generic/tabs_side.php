@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -18,6 +18,18 @@
 	<?php	foreach ($tabs as $tab) echo $tab['tab']; ?>
 </section>
 <?php
-// Initialize tabs immediately to aviod ugly jumping
-echo HTML::script_source('$("#' . $id . '").tabs({ selected: ' . $selected . ', collapsible: true, fx: { height: "toggle", opacity: "toggle", duration: "fast" } });');
-//echo html::script_source('$("#' . $id . ' > ul").tabs("#' . $id . ' .tab", { initialIndex: ' . $selected . ', effect: "fade" });');
+
+echo HTML::script_source('
+head.ready("jquery-ui", function() {
+	$("#' . $id . '")
+		.tabs({
+			"selected": ' . $selected . ',
+			"collapsible": true,
+			"fx": {
+				"height": "toggle",
+				"opacity": "toggle",
+				"duration": "fast"
+			}
+		})
+	.show();
+});');

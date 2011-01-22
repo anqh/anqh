@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -38,18 +38,20 @@ if (!empty($tabs)):
 
 <?php
 	echo HTML::script_source('
-$("#newsfeed-tabs").tabs({
-	selected: ' . (isset($tab) && $tab == 'friends' ? 1 : 0) . ',
-	fx: {
-		height: "toggle",
-		opacity: "toggle",
-		duration: "fast"
-	},
-	ajaxOptions: {
-		error: function(xhr, status, index, anchor) {
-			$(anchor.hash).html("' . __('Frak, error loading newsfeed :(') . '");
+head("jquery-ui", function() {
+	$("#newsfeed-tabs").tabs({
+		selected: ' . (isset($tab) && $tab == 'friends' ? 1 : 0) . ',
+		fx: {
+			height: "toggle",
+			opacity: "toggle",
+			duration: "fast"
+		},
+		ajaxOptions: {
+			error: function(xhr, status, index, anchor) {
+				$(anchor.hash).html("' . __('Frak, error loading newsfeed :(') . '");
+			}
 		}
-	}
+	});
 });
 ');
 endif;

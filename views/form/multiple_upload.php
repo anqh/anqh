@@ -4,7 +4,7 @@
  *
  * @package    Anhq
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -58,69 +58,81 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 <div id="progress-thumbnails"></div>
 
 <?php echo HTML::script_source('
-$(function() {
+head.ready("jquery", function() {
+	head.js(
+		{ "jquery-upload": "' . URL::base() . 'js/jquery.html5_upload.js" },
+		function() {
 
-	$("#' . $field_id . '")
-		.html5_upload({
-			url: $("#form-multiple-upload").attr("action"),
-			autostart: false,
-			sendBoundary: window.FormData || $.browser.mozilla,
-			fieldName: "' . $field_name . '",
-			onStart: function(event, total) {
-				return true;
-				//return confirm("You are trying to upload " + total + " files. Are you sure?");
-			},
-			onStartOne: function(event, name, number, total) {
-				$("#upload-" + number + " .progress").text("Uploading...");
-				return true;
-			},
-			onProgress: function(event, progress, name, number, total) {
-				progress = Math.ceil(progress * 100);
-				$("#upload-" + number + " .progress").text(progress == 100 ? "Processing..." : progress + "%");
-				$("#progress-report .progress-bar var").text(progress + "%");
-				return true;
-			},
-			onFinishOne: function(event, response, name, number, total) {
-				try {
-					response = $.parseJSON(response);
-					var message = (response.error) ? "Failed: " + response.error : "Done";
-					if (response.thumbnail) {
-						$("#progress-thumbnails").append(response.thumbnail);
+			$("#' . $field_id . '")
+				.html5_upload({
+					url: $("#form-multiple-upload").attr("action"),
+					autostart: false,
+					sendBoundary: window.FormData || $.browser.mozilla,
+					fieldName: "' . $field_name . '",
+
+					onStart: function(event, total) {
+						return true;
+						//return confirm("You are trying to upload " + total + " files. Are you sure?");
+					},
+
+					onStartOne: function(event, name, number, total) {
+						$("#upload-" + number + " .progress").text("Uploading...");
+						return true;
+					},
+
+					onProgress: function(event, progress, name, number, total) {
+						progress = Math.ceil(progress * 100);
+						$("#upload-" + number + " .progress").text(progress == 100 ? "Processing..." : progress + "%");
+						$("#progress-report .progress-bar var").text(progress + "%");
+						return true;
+					},
+
+					onFinishOne: function(event, response, name, number, total) {
+						try {
+							response = $.parseJSON(response);
+							var message = (response.error) ? "Failed: " + response.error : "Done";
+							if (response.thumbnail) {
+								$("#progress-thumbnails").append(response.thumbnail);
+							}
+						} catch (e) {
+							var message = "Failed";
+						}
+						$("#upload-" + number).addClass(response.error ? "error" : "done");
+						$("#upload-" + number + " .progress").text(message);
+					},
+
+					setName: function(text) {
+						$("#progress-report-name").text(text);
+					},
+
+					setStatus: function(text) {
+						$("#progress-report-status").text(text);
+					},
+
+					setProgress: function(val) {
+						$("#progress-report .progress-bar div").css("width", Math.ceil(val * 100) + "%");
 					}
-				} catch (e) {
-					var message = "Failed";
-				}
-				$("#upload-" + number).addClass(response.error ? "error" : "done");
-				$("#upload-" + number + " .progress").text(message);
-			},
-			setName: function(text) {
-				$("#progress-report-name").text(text);
-			},
-			setStatus: function(text) {
-				$("#progress-report-status").text(text);
-			},
-			setProgress: function(val) {
-				$("#progress-report .progress-bar div").css("width", Math.ceil(val * 100) + "%");
-			}
-		})
-	.bind("change", function() {
-		$("#progress-files").show();
-		var files = this.files;
-		var total = files.length;
-		var $files = $("#progress-files tbody").empty();
-		var size = 0;
-		$.each(files, function(index, file) {
-			size += file.fileSize;
-			$files.append("<tr id=\"upload-" + index + "\"><td>" + file.fileName + "</td><td>" + Math.round(file.fileSize / 1024) + "kB</td><td class=\"progress\"></td></tr>");
-		});
-		$("#progress-files tfoot").html("<tr><th>" + total + " file(s)</th><th colspan=\"2\">" + Math.round(size / 1024) + "kB</th></tr>");
-	});
+				})
+			.bind("change", function() {
+				$("#progress-files").show();
+				var files = this.files;
+				var total = files.length;
+				var $files = $("#progress-files tbody").empty();
+				var size = 0;
+				$.each(files, function(index, file) {
+					size += file.fileSize;
+					$files.append("<tr id=\"upload-" + index + "\"><td>" + file.fileName + "</td><td>" + Math.round(file.fileSize / 1024) + "kB</td><td class=\"progress\"></td></tr>");
+				});
+				$("#progress-files tfoot").html("<tr><th>" + total + " file(s)</th><th colspan=\"2\">" + Math.round(size / 1024) + "kB</th></tr>");
+			});
 
-	$("#form-multiple-upload").bind("submit", function() {
-		$("#progress-report").show();
-		$("#' . $field_id . '").trigger("html5_upload.start");
-		return false;
-	});
+			$("#form-multiple-upload").bind("submit", function() {
+				$("#progress-report").show();
+				$("#' . $field_id . '").trigger("html5_upload.start");
+				return false;
+			});
 
+		}
+	);
 });
 ');

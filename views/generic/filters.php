@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -32,49 +32,49 @@ echo Form::open(null, array('class' => 'filters pills'));
 <?php
 echo form::close();
 
-Widget::add('footer', html::script_source("
+Widget::add('footer', html::script_source('
 function filters(all) {
 	if (all) {
 
 		// Open all
-		$('form.filters input').each(function() {
-			$('.' + this.id + ':hidden').slideDown('normal');
+		$("form.filters input").each(function() {
+			$("." + this.id + ":hidden").slideDown("normal");
 		});
 
 	} else {
 
 		// Filter individually
-		$('form.filters input').each(function() {
-			if ($(this).is(':checked')) {
-				$('.' + this.id + ':hidden').slideDown('normal');
+		$("form.filters input").each(function() {
+			if ($(this).is(":checked")) {
+				$("." + this.id + ":hidden").slideDown("normal");
 			} else {
-				$('.' + this.id + ':visible').slideUp('normal');
+				$("." + this.id + ":visible").slideUp("normal");
 			}
 		});
 
 	}
 }
 
-$(function() {
+head.ready("jquery-ui", function() {
 
 	// Hook clicks
-	$('form.filters :checkbox').click(function() {
+	$("form.filters :checkbox").click(function() {
 
-		var checked = $(this).is(':checked');
+		var checked = $(this).is(":checked");
 
-		if ($(this).val() != 'all') {
+		if ($(this).val() != "all") {
 
 			// Individual filters
 			if (checked) {
 
-				// Uncheck 'all'
-				$('form.filters input[value=\"all\"]').attr('checked', false);
+				// Uncheck "all"
+				$("form.filters input[value=all]").attr("checked", false);
 
 			}
 
-			// Check 'all' if no other filters
-			if ($('form.filters input[value!=\"all\"]').is(':checked') == false) {
-				$('form.filters input[value=\"all\"]').attr('checked', 'checked');
+			// Check "all" if no other filters
+			if ($("form.filters input[value!=all]").is(":checked") == false) {
+				$("form.filters input[value=all]").attr("checked", "checked");
 				filters(true);
 			} else {
 				filters();
@@ -87,11 +87,11 @@ $(function() {
 				return false;
 			}
 
-			$('form.filters input[value!=\"all\"]').attr('checked', false);
+			$("form.filters input[value!=all]").attr("checked", false);
 			filters(checked);
 
 		}
 
 	});
 });
-"));
+'));

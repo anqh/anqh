@@ -8,14 +8,14 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-if (Kohana::config('site.google_analytics')) {
+if ($google_analytics = Kohana::config('site.google_analytics')) {
 
 	// Google Analytics integration
 	echo HTML::script_source("
 var addthis_config;
-_gaq.push(function() {
+head.ready('google-analytics',	function() {
 	addthis_config = {
-		data_ga_tracker: _gaq._getAsyncTracker(''),
+		data_ga_tracker: tracker,
 		data_track_clickback: true,
 		username: '" . $id . "'
 	};

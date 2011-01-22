@@ -12,37 +12,36 @@
 <html lang="<?php echo $language ?>">
 
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?php echo HTML::chars($page_title) ?><?php echo (!empty($page_title) ? ' | ' : '') . Kohana::config('site.site_name') ?></title>
+	<meta charset="<?php echo Kohana::$charset ?>" />
+	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo Kohana::$charset ?>" />
+	<title><?php echo $page_title ? HTML::chars($page_title) . ' | ' : '' ?><?php echo Kohana::config('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="/ui/favicon.png" />
-	<?php echo
-		HTML::style('ui/boot.css'),
-		HTML::style('ui/typo.css'),
-		HTML::style('ui/base.css');
-	foreach ($skins as $skin_name => $available_skin) echo Less::style(
-		$available_skin['path'],
-		array(
-			'title' => $skin_name,
-			'rel'   => $skin_name == $skin ? 'stylesheet' : 'alternate stylesheet',
-		),
-		false,
-		$skin_imports
-	);
-		//Less::style($skin, null, false, $skin_imports),
-	echo
-		HTML::style('ui/jquery-ui.css'),
-		HTML::style('ui/site.css'),
-		HTML::style('http://fonts.googleapis.com/css?family=Nobile:regular,bold');
-	?>
 
-	<!--[if IE]><?php echo HTML::script('http://html5shiv.googlecode.com/svn/trunk/html5.js'); ?><![endif]-->
-	<?php echo
-		//HTML::script('http://www.google.com/jsapi?key=' . Kohana::config('site.google_api_key')),
-		HTML::script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'),
-		HTML::script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js'),
-		HTML::script('http://maps.google.com/maps/api/js?sensor=false'),
-		HTML::script('js/jquery.tools.min.js'); ?>
+	<?php foreach ($styles as $file => $attributes) echo HTML::style($file, $attributes), "\n" ?>
+	<?php foreach ($skins as $skin_name => $available_skin)
+		echo Less::style(
+			$available_skin['path'],
+			array(
+				'title' => $skin_name,
+				'rel'   => $skin_name == $skin ? 'stylesheet' : 'alternate stylesheet',
+			),
+			false,
+			$skin_imports
+		); ?>
+	<?php echo HTML::style('ui/site.css') ?>
+
+	<?php echo HTML::script(Kohana::$environment == Kohana::PRODUCTION ? 'js/head.min.js' : 'js/head.js') ?>
+	<?php /*echo HTML::script_source("
+head
+	.js(
+		{ 'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js' },
+		{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js' },
+		{ 'jquery-tools': '" . URL::base() . "js/jquery.tools.min.js' }
+	)
+	.js(
+		{ 'google-maps': 'http://maps.google.com/maps/api/js?sensor=false' }
+	);
+");*/ ?>
 
 <?php echo Widget::get('head') ?>
 
@@ -195,10 +194,16 @@
 	</div>
 
 
-<?php echo
-	HTML::script('js/jquery.form.js'),
-	HTML::script('js/jquery.text-overflow.js'),
-	HTML::script('js/anqh.js'); ?>
+<?php echo HTML::script_source("
+head.js(
+	{ 'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js' },
+	{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js' },
+	{ 'jquery-tools': '" . URL::base() . "js/jquery.tools.min.js' },
+	{ 'jquery-form': '" . URL::base() . "js/jquery.form.js' },
+	{ 'jquery-overflow': '" . URL::base() . "js/jquery.text-overflow.js' },
+	{ 'anqh': '" . URL::base() . "js/anqh.js?2' }
+);
+"); ?>
 
 <?php echo Widget::get('foot') ?>
 

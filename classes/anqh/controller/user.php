@@ -508,13 +508,19 @@ class Anqh_Controller_User extends Controller_Template {
 			'weekHeader'      => __('Wk'),
 			'yearRange'       => '1900:+0',
 		);
-		Widget::add('foot', HTML::script_source('$("#field-dob").datepicker(' . json_encode($options) . ');'));
+		Widget::add('foot', HTML::script_source('
+head.ready("jquery-ui", function() {
+	$("#field-dob").datepicker(' . json_encode($options) . ');
+});
+'));
 
 		// Maps
 		Widget::add('foot', HTML::script_source('
-$(function() {
+head.ready("jquery", function() {
 	$("#fields-contact ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
+});
 
+head.ready("anqh", function() {
 	$("#map").googleMap(' . ($user->latitude ? json_encode(array('marker' => true, 'lat' => $user->latitude, 'long' => $user->longitude)) : '') . ');
 
 	$("input[name=address_street], input[name=address_city]").blur(function(event) {

@@ -123,13 +123,18 @@ abstract class Anqh_Controller_Template extends Controller {
 	 */
 	public function after() {
 		if ($this->ajax || $this->internal) {
+
+			// AJAX and HMVC requests
 			$this->request->response .= '';
+
 		} else if ($this->auto_render) {
+
+			// Normal requests
 
 			$session = Session::instance();
 
 			// Save current URI
-			if (!$this->ajax && !$this->internal && $this->history && $this->request->status < 400) {
+			if ($this->history && $this->request->status < 400) {
 				$uri = $this->request->uri;
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
@@ -141,6 +146,17 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Controller name as the default page id if none set
 			empty($this->page_id) && $this->page_id = $this->request->controller;
+
+
+			// Stylesheets
+			$styles = array(
+				'ui/boot.css'      => null, // Reset
+				'ui/typo.css'      => null, // Typography
+				'ui/base.css'      => null, // Deprecated
+				'ui/jquery-ui.css' => null, // Deprecated
+				'http://fonts.googleapis.com/css?family=Nobile:regular,bold' => null,
+			);
+
 
 			// Generic views
 			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb, 'last' => !$this->history)));
@@ -262,15 +278,14 @@ abstract class Anqh_Controller_Template extends Controller {
 			// Analytics
 			if ($google_analytics = Kohana::config('site.google_analytics')) {
 				Widget::add('head', HTML::script_source("
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', '" . $google_analytics . "']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
-})();
+var tracker;
+head.js(
+	{ 'google-analytics': 'http://www.google-analytics.com/ga.js' },
+	function() {
+		tracker = _gat._getTracker('" . $google_analytics . "');
+		tracker._trackPageview();
+	}
+);
 "));
 			}
 
@@ -326,6 +341,7 @@ _gaq.push(['_trackPageview']);
 
 			// Bind the generic page variables
 			$this->template
+				->set('styles',        $styles)
 				->set('skin',          $skin)
 				->set('skins',         $skins)
 				->set('skin_imports',  $skin_imports)
@@ -353,7 +369,7 @@ _gaq.push(['_trackPageview']);
 	 */
 	public function autocomplete_city($name = 'city_name', $id = 'city_id') {
 		Widget::add('foot', HTML::script_source('
-$(function() {
+head.ready("anqh", function() {
 	$("input[name=' . $name . ']")
 		.autocomplete({
 			source: function(request, response) {
