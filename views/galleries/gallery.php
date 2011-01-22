@@ -4,11 +4,11 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-/** @var  Model_Gallery $gallery  */
+/** @var  Model_Gallery  $gallery */
 
 $images = $pending
 	? $gallery->find_images_pending($approve ? null : $user)
@@ -92,7 +92,7 @@ if ($pending):
 	echo Form::close();
 
 	echo HTML::script_source('
-$(function() {
+head.ready("jquery", function() {
 
 	$("form input[name=all]").change(function() {
 		$("form input[value=" + $(this).val() + "]").attr("checked", true);

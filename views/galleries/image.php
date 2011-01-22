@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -56,16 +56,18 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 endif;
 
 echo HTML::script_source('
-$(document).keyup(function(e) {
-var key = e.keyCode || e.which;
-if (e.target.type === undefined) {
-	switch (key) {
-		case 37: var link = $(".gallery-image a.prev").first().attr("href"); break;
-		case 39: var link = $(".gallery-image a.next").first().attr("href"); break;
-	}
-	if (link) {
-		window.location = link;
-	}
-}
+head.ready("jquery-ui", function() {
+	$(document).keyup(function(e) {
+		var key = e.keyCode || e.which;
+		if (e.target.type === undefined) {
+			switch (key) {
+				case 37: var link = $(".gallery-image a.prev").first().attr("href"); break;
+				case 39: var link = $(".gallery-image a.next").first().attr("href"); break;
+			}
+			if (link) {
+				window.location = link;
+			}
+		}
+	});
 });
 ');

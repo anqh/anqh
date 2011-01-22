@@ -64,7 +64,7 @@ $options = array(
 
 // Date
 echo HTML::script_source('
-$(function() {
+head.ready("jquery-ui", function() {
 	$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');
 });
 ');
