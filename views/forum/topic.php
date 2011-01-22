@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -35,7 +35,8 @@ endforeach; ?>
 
 <?php
 echo HTML::script_source('
-$(function() {
+head.ready("anqh", function() {
+
 	$("a.post-edit").live("click", function(e) {
 		e.preventDefault();
 		var href = $(this).attr("href");
@@ -95,5 +96,6 @@ $(function() {
 		quote.slideUp(null, function() { quote.remove(); });
 		article.find(".actions").fadeIn();
 	});
+
 });
 ');
