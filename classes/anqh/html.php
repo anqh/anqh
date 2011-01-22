@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * HTML
+ * HTML helper
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_HTML extends Kohana_HTML {
@@ -143,7 +143,7 @@ class Anqh_HTML extends Kohana_HTML {
 	/**
 	 * JavaScript source code block
 	 *
-	 * @param   string  $source
+	 * @param   string|array  $source
 	 * @return  string
 	 */
 	public static function script_source($source) {
