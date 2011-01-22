@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Venues extends Controller_Template {
@@ -600,9 +600,11 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Maps
 		Widget::add('foot', HTML::script_source('
-$(function() {
+head.ready("jquery-ui", function() {
 	$("#fields-contact ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
+});
 
+head.read("anqh", function() {
 	$("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
 
 	$("input[name=address], input[name=city_name]").blur(function(event) {

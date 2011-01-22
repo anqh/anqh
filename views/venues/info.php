@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -57,9 +57,14 @@ $options = array(
 	'long'       => $venue->longitude
 );
 Widget::add('foot', HTML::script_source('
-$(function() {
-	//$("#map").googleMap(' .  json_encode($options) . ');
-	$(".contact a[href=#map]").click(function() { $("#map").toggle("fast", function() { $("#map").googleMap(' .  json_encode($options) . '); }); return false; });
+head.ready("anqh", function() {
+	$(".contact a[href=#map]").click(function() {
+		$("#map").toggle("fast", function() {
+			$("#map").googleMap(' .  json_encode($options) . ');
+		});
+
+		return false;
+	});
 });
 '));
 ?>
@@ -135,7 +140,7 @@ $(function() {
 		echo Form::close();
 
 		echo HTML::script_source('
-$(function() {
+head.ready("anqh", function() {
 	$("#link-foursquare").click(function() {
 		$(this).hide();
 		$("#form-foursquare-link").show("fast");
@@ -143,7 +148,9 @@ $(function() {
 			$("#map").googleMap(' .  json_encode($options) . ');
 		});
 	});
+
 	$("#field-city-name").geonamesCity({ latitude: "latitude", longitude: "longitude" });
+
 	$("#field-name").foursquareVenue({
 		venueId: "foursquare_id",
 		categoryId: "foursquare_category_id",
