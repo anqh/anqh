@@ -4,11 +4,11 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-if ($event->venue->id):
+if ($event->venue && $event->venue->id):
 
 	// Venue found from db
 	$venue = HTML::anchor(Route::model($event->venue), HTML::chars($event->venue->name));
@@ -23,8 +23,13 @@ if ($event->venue->id):
 			'long'       => $event->venue->longitude
 		);
 		Widget::add('foot', HTML::script_source('
-$(function() {
-	$(".event-info a[href=#map]").click(function() { $("#map").toggle("fast", function() { $("#map").googleMap(' .  json_encode($map) . '); }); return false; });
+head.ready("anqh", function() {
+	$(".event-info a[href=#map]").click(function() {
+		$("#map").toggle("fast", function() {
+			$("#map").googleMap(' .  json_encode($map) . ');
+		});
+		return false;
+	});
 });
 '));
 	endif;

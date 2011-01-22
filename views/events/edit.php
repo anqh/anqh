@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -47,6 +47,40 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 				<?php echo $event->input('stamp_end',   'form/anqh', array('default_time' => '04:00', 'errors' => $event_errors)) ?>
 			</ul>
 		</fieldset>
+
+		<!--
+		<fieldset id="fields-flyers">
+			<legend><?php echo __('Flyers') ?></legend>
+			<ul>
+
+				<?php if ($event->flyer_front_url || $event->flyer_back_url): ?>
+				<li>
+					<?php if ($event->flyer_front_url) echo HTML::anchor('#flyer-front', HTML::image($event->flyer_front_url, array('width' => 150)), array('title' => __('Change front flyer'), 'onclick' => "\$('input[name=flyer_front_url]').toggle(); return false;")) ?>
+					<?php if ($event->flyer_back_url)  echo HTML::anchor('#flyer-back',  HTML::image($event->flyer_back_url,  array('width' => 150)), array('title' => __('Change back flyer'),  'onclick' => "\$('input[name=flyer_back_url]').toggle(); return false;")) ?>
+				</li>
+				<?php endif; ?>
+
+				<?php echo $event->input('flyer_front_url', 'form/anqh', array(
+					'label'      => null,
+					'errors'     => $event_errors,
+					'attributes' => array(
+						'style'       => $event->flyer_front_url ? 'display: none' : '',
+						'title'       => __('Front flyer'),
+						'placeholder' => __('Front flyer'),
+					))) ?>
+				<?php echo $event->input('flyer_back_url',  'form/anqh', array(
+					'label'  => null,
+					'errors' => $event_errors,
+					'tip'    => __('You can also upload flyers after saving the event'),
+					'attributes' => array(
+						'style'       => $event->flyer_back_url ? 'display: none' : '',
+						'title'       => __('Back flyer'),
+						'placeholder' => __('Back flyer'),
+					))) ?>
+
+			</ul>
+		</fieldset>
+		-->
 
 		<fieldset id="fields-tickets">
 			<legend><?php echo __('Tickets') ?></legend>
@@ -101,7 +135,7 @@ $options = array(
 
 // Venues, Maps and tickets
 echo HTML::script_source('
-$(function() {
+head.ready("anqh", function() {
 
 	// Datepicker
 	$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');

@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -76,4 +76,7 @@ if (isset($url_day)) {
 }
 
 echo HTML::script_source('
-$("#calendar").datepicker(' . $options . ')');
+head.ready("jquery-ui", function() {
+	$("#calendar").datepicker(' . $options . ');
+});
+');
