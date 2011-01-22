@@ -208,17 +208,17 @@ a.ui-state-hover,
 .ui-datepicker a.ui-state-active       { background: @widget-border-color; }
 
 /* Tabs */
+.mod.tabs                              { display: none; }
 #title nav                             { margin-top: -5px; overflow: hidden; }
 #main .tabs                            { margin-left: -4px; margin-top: -9px; }
-.ui-tabs                               { zoom: 1; }
 .ui-tabs {
+  &                                    { zoom: 1; }
   .ui-tabs-panel                       { display: block; }
   .ui-tabs-hide                        { display: none !important; }
 }
 #title nav ul,
-.ui-tabs .ui-tabs-nav                  { list-style: none; position: relative; }
-#title nav ul,
 .ui-tabs .ui-tabs-nav {
+  &                                    { list-style: none; position: relative; }
   li                                   { border-bottom: 1px solid @groove-light; float: left; position: relative; }
   li a                                 { border: 1px solid @groove-shadow; border-left-color: @groove-light; border-top-width: 0; color: @tab-color; display: block; float: left; padding: .8333em 1em 0.75em 1em; text-decoration: none; text-shadow: @tab-text-shadow; }
   li:first-child a                     { border-left: 0 none; }

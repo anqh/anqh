@@ -144,12 +144,11 @@
 .container-16 .suffix-15               { margin-right: 900px; }
 
 .clear                                 { clear: both; display: block; height: 0; overflow: hidden; visibility: hidden; width: 0; }
-.clearfix:after                        { clear: both; content: ' '; display: block; font-size: 0; height: 0; line-height: 0; visibility: hidden; width: 0; }
-.clearfix                              { display: inline-block; }
-* html .clearfix                       { height: 1%; }
 .clearfix                              { display: block; }
+.clearfix:after                        { clear: both; content: ' '; display: block; font-size: 0; height: 0; line-height: 0; visibility: hidden; width: 0; }
 
 /***** /960GS *****/
+
 
 /***** OOCSS *****/
 
@@ -233,7 +232,7 @@ footer:after,
 /***** /Matthew James Taylor *****/
 
 
-/***** Nick La & Darcy Clarke, 978px 30px gutter *****/
+/***** Nick La & Darcy Clarke, 974px 30px gutter *****/
 
 .grid1,
 .grid2,
@@ -274,6 +273,13 @@ footer:after,
 aside .container .grid2                { clear: none; margin-left: 0; }
 
 /***** /Nick La & Darcy Clarke, 978px 30px gutter *****/
+
+
+@grids:                                12;
+@gutter:                               10px;
+@page-width:                           974px;
+@spacing:                              @gutter;
+.grid (@col: 1)                        { float: left; margin-left: @gutter; position: relative; width: (@page-width - @gutter) / @grids * @col; }
 
 
 .label2 label,
