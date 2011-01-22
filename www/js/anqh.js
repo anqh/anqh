@@ -3,7 +3,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -11,6 +11,17 @@
 var map;
 var geocoder;
 $.fn.googleMap = function(options) {
+
+	// Asynchronous loading
+	if (!geocoder) {
+		var func = this;
+		return $.getJSON('http://maps.google.com/maps/api/js?sensor=false&callback=?', function() {
+			geocoder = new google.maps.Geocoder();
+			func.googleMap(options);
+		});
+	}
+
+
 	var defaults = {
 		lat: 60.1695,
 		long: 24.9355,
@@ -38,8 +49,8 @@ $.fn.googleMap = function(options) {
 	map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
 	if (options.marker) {
 		var marker = new google.maps.Marker({
-		  position: center,
-		  map: map,
+			position: center,
+			map: map,
 			title: options.marker ? '' : options.marker
 		});
 		if (options.infowindow) {
@@ -51,6 +62,7 @@ $.fn.googleMap = function(options) {
 			});
 		}
 	}
+
 };
 
 
@@ -214,7 +226,7 @@ $.fn.loading = function(loaded) {
 	}
 
 	return this;
-}
+};
 
 
 // Slideshow
@@ -357,10 +369,6 @@ $.fn.foursquareVenue = function(options) {
 
 
 $(function() {
-
-	// Google Maps
-	geocoder = new google.maps.Geocoder();
-
 
 	// Form input hints
 	$('input:text, textarea, input:password').hint('hint');

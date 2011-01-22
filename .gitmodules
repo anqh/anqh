@@ -36,10 +36,13 @@
 	url = git@github.com:anqh/galleries.git
 [submodule "modules/jelly"]
 	path = modules/jelly
-	url = http://github.com/jonathangeiger/kohana-jelly.git
+	url = git@github.com:anqqa/kohana-jelly.git
 [submodule "modules/postgresql"]
 	path = modules/postgresql
-	url = http://github.com/cbandy/kohana-postgresql.git
+	url = git@github.com:anqqa/kohana-postgresql.git
 [submodule "modules/email"]
 	path = modules/email
 	url = http://github.com/banks/kohana-email.git
+[submodule "www/js/headjs"]
+	path = www/js/headjs
+	url = https://github.com/headjs/headjs.git
