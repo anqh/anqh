@@ -25,7 +25,7 @@ body.right #main                       { float: right; }
 @dock-text-color:                      #a7a7a7;
 @dock-link-color:                      #f7f7f7;
 @dock-shadow:                          0 0 4px rgba(0, 0, 0, 0.75);
-
+/*
 #dock                                  { background: @dock-background @background-image; .box-shadow(@dock-shadow); left: 0; margin-top: -27px; padding: 0.4116em 0; position: absolute; right: 0; top: 0; .transition(margin-top .25s ease-in-out); z-index: 100; }
 #dock.open,
 #dock:hover                            { margin-top: 0; }
@@ -37,6 +37,7 @@ body.right #main                       { float: right; }
 #dock label,
 #dock input                            { display: inline; margin-left: 0; }
 #customize                             { background-color: @dock-background; .border-radius(0 0 5px 5px); .box-shadow(@dock-shadow); cursor: pointer; padding: 0 5px 0 25px; position: absolute; right: 0; bottom: -20px; }
+*/
 
 /***** /DOCK *****/
 
@@ -53,10 +54,21 @@ body.right #main                       { float: right; }
 @mainmenu-selected-color:              #f6f6f6;
 
 #header {
-  &                                    { background: @header-background; .box-shadow(@header-shadow); color: @header-text-color; left: 0; position: absolute; top: 0; width: 100%; }
+  &                                    { background: @header-background; .box-shadow(@header-shadow); color: @header-text-color; }
   a                                    { color: @header-link-color; }
   a:hover                              { color: @header-hover-color; }
   ul                                   { display: inline; display: inline-block; padding-top: 3px; }
+}
+.mozilla #header                       { margin-top: -10px; }
+
+#logo {
+  h1                                   { background: url(/ui/logo.png) no-repeat left center; height: 25px; .opacity(.5); text-indent: -9999px; .transition(opacity .25s ease-in-out); }
+  h1:hover                             { .opacity(1); }
+  h1 a                                 { display: block; }
+}
+
+#dock {
+  &                                    { text-align: right; }
 }
 
 #mainmenu {
@@ -190,7 +202,7 @@ aside .mod .container form li          { border-top: 0 none; border-bottom: 0 no
 /***** AD SLOTS *****/
 
 .ad                                    { text-align: center; }
-.ad728x90                              { padding: 0; margin: 35px 0 0; }
+.ad728x90                              { padding: 0; margin: 0; }
 .ad728x90 .content div                 { margin: 10px auto; max-height: 90px; max-width: 728px; }
 .ad140x350                             { }
 
