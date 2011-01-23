@@ -4,12 +4,16 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
+if (isset($attributes))
+	$attributes['role'] = Arr::get($attributes, 'role', 'navigation');
+else
+	$attributes = array('role' => 'navigation');
 ?>
 
-<nav role="navigation">
+<nav<?php echo HTML::attributes($attributes) ?>>
 	<ul>
 	<?php	foreach ($items as $id => $link): ?>
 		<li class="menu-<?php echo $id . ($selected == $id ? ' selected' : '') ?>">
