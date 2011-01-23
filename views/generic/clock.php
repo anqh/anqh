@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -17,12 +17,15 @@ if ($user && $user->latitude && $user->longitude) {
 	$longitude = 24.9549;
 }
 $sun = date_sun_info(time(), $latitude, $longitude);
-$sunrise = __('Sun rises at :sunrise, sun sets at :sunset', array(
+$sunrise = __(':day, week :week | Sunrise: :sunrise | Sunset: :sunset', array(
+	':day'     => strftime('%A'),
+	':week'    => strftime('%V'),
 	':sunrise' => Date::format(Date::TIME, $sun['sunrise']),
 	':sunset'  => Date::format(Date::TIME, $sun['sunset'])
 ));
 
 // Weather
+/*
 if ($user && $user->city_name) {
 	$location = $user->city_name;
 } else {
@@ -43,17 +46,16 @@ foreach ($weather['forecast'] as $day => $forecast) {
 	}
 	$d++;
 }
+*/
 ?>
 
-<time class="clock" title="<?= HTML::chars($sunrise) ?>">
-	<span class="day"><?php echo __(':day, week :week', array(':day' => date('l'), ':week' => date('W'))) ?></span><br />
-	<span class="time"><?php echo Date::format(Date::TIME) ?></span><br />
-	<span class="date"><?php echo Date::format(Date::DMY_LONG) ?></span>
+<time class="clock">
+	<span class="time"><?php echo Date::format(Date::TIME) ?></span>
+	<span class="icon date" title="<?= HTML::chars($sunrise) ?>"><?php echo Date::format(Date::DMY_MEDIUM) ?></span>
 </time>
 
-<br />
 
-<?php if ($weather): ?>
+<?php if (isset($weather) && $weather): ?>
 <p class="weather">
 	<?php echo HTML::chars($weather['postal_code']), ' ', __('today') ?><br />
 	<var title="<?php echo $today ?>"><?php echo ($weather['temperature'] > 0 ? '+' : ''), $weather['temperature'] ?>&deg; <?php echo $weather['condition'] ?></var><br />

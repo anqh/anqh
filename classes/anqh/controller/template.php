@@ -222,8 +222,7 @@ abstract class Anqh_Controller_Template extends Controller {
 						'rel'   => $skin_name,
 					));
 			}
-
-			Widget::add('dock', __('Layout: ') . implode(', ', $classes));
+			Widget::add('dock', __('Theme') . ': ' . implode(', ', $classes));
 
 			// Language selection
 			$available_languages  = Kohana::config('locale.languages');
@@ -244,21 +243,17 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Visitor card
 			Widget::add('visitor', View::factory('generic/visitor', array(
-				'user'      => self::$user,
+				'user' => self::$user,
 			)));
 
 			// Online
+			/*
 			Widget::add('sidebar', View_Module::factory('user/online', array(
 				'mod_id'    => 'online-users',
 				'mod_title' => __('Online'),
 				'viewer'    => self::$user,
 			)));
-
-			// Time & weather
-			Widget::add('sidebar', View_Module::factory('generic/clock', array(
-				'mod_id' => 'clock',
-				'user'   => self::$user,
-			)));
+			 */
 
 			// Admin functions
 			if (self::$user && self::$user->has_role('admin')) {
@@ -269,8 +264,13 @@ abstract class Anqh_Controller_Template extends Controller {
 				);
 			}
 
+			// Time & weather
+			Widget::add('dock', ' | ' . View::factory('generic/clock', array(
+				'user' => self::$user,
+			)));
+
 			// Pin
-			Widget::add('dock', ' | ' . HTML::anchor('#pin', __('Pin'), array('class' => 'pin', 'onclick' => '$("#dock").toggleClass("pinned"); return false;')));
+			Widget::add('dock', ' | ' . HTML::anchor('#pin', '&#9650;', array('title' => __('Lock menu'), 'class' => 'icon unlock', 'onclick' => '$("#header").toggleClass("pinned"); return false;')));
 
 			// End
 			Widget::add('end', View::factory('generic/end'));
