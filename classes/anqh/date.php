@@ -45,6 +45,11 @@ class Anqh_Date extends Kohana_Date {
 	const DMY_LONG = 'DMY_LONG';
 
 	/**
+	 * Day, short month name and year
+	 */
+	const DMY_MEDIUM = 'DMY_MEDIUM';
+
+	/**
 	 * Day, month and year
 	 */
 	const DMY_SHORT  = 'DMYYYY';
@@ -111,20 +116,20 @@ class Anqh_Date extends Kohana_Date {
 
 		switch ($format) {
 			case self::DATE_SQL:
-			case self::DATE_8601:  $format = 'Y-m-d'; break;
-			case self::DATETIME:   $format = __('j.n.Y H:i'); break;
-			case self::DM_LONG:    $format = __('F j'); break;
-			case self::DM_SHORT:   $format = __('j.n.'); break;
-			case self::DM_PADDED:  $format = __('d.m.'); break;
-			case self::DMY_LONG:   $format = __('F j, Y'); break;
-			case self::DMY_SHORT:  $format = __('j.n.Y'); break;
-			case self::DMY_PADDED: $format = __('d.m.Y'); break;
-			case self::TIME:       $format = __('H:i'); break;
-			case self::TIME_SQL:   $format = 'Y-m-d H:i:s'; break;
-			case self::TIME_8601:  $format = DateTime::ISO8601; break;
+			case self::DATE_8601:  return date('Y-m-d', $date);
+			case self::DATETIME:   return date(__('j.n.Y H:i'), $date);
+			case self::DM_LONG:    return date(__('F j'), $date);
+			case self::DM_SHORT:   return date(__('j.n.'), $date);
+			case self::DM_PADDED:  return date(__('d.m.'), $date);
+			case self::DMY_LONG:   return strftime(__('%B %e, %G'), $date);
+			case self::DMY_MEDIUM: return strftime(__('%b %e, %G'), $date);
+			case self::DMY_SHORT:  return date(__('j.n.Y'), $date);
+			case self::DMY_PADDED: return date(__('d.m.Y'), $date);
+			case self::TIME:       return date(__('H:i'), $date);
+			case self::TIME_SQL:   return date('Y-m-d H:i:s', $date);
+			case self::TIME_8601:  return date(DateTime::ISO8601, $date);
+			default:               return date($format, $date);
 		}
-
-		return date($format, $date);
 	}
 
 
