@@ -55,15 +55,22 @@ head
 	<header id="header">
 		<div class="container grid12">
 
-			<section id="logo" class="grid1 first">
+			<hgroup id="logo" class="grid1 first">
 				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
+			</hgroup>
+
+			<section id="dock" class="grid11">
+
+				<?php echo Widget::get('dock') ?>
+
 			</section>
 
-			<section id="mainmenu" class="grid7">
+			<section id="mainmenu" class="grid8 first">
 
 				<?php echo Widget::get('navigation') ?>
 
 			</section>
+
 			<nav id="visitor" class="grid4">
 
 				<?php echo Widget::get('visitor') ?>
@@ -146,7 +153,7 @@ head
 
 	<!-- /CONTENT -->
 
-
+<?php /*
 	<!-- DOCK -->
 
 	<section id="dock" class="pinned">
@@ -159,7 +166,7 @@ head
 	</section><!-- #dock -->
 
 	<!-- /DOCK -->
-
+*/ ?>
 
 	<!-- FOOTER -->
 
