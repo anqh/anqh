@@ -141,6 +141,7 @@ head.ready("anqh", function() {
 
 		echo HTML::script_source('
 head.ready("anqh", function() {
+
 	$("#link-foursquare").click(function() {
 		$(this).hide();
 		$("#form-foursquare-link").show("fast");
@@ -149,7 +150,7 @@ head.ready("anqh", function() {
 		});
 	});
 
-	$("#field-city-name").geonamesCity({ latitude: "latitude", longitude: "longitude" });
+	$("#field-city-name").autocompleteCity({ latitude: "latitude", longitude: "longitude" });
 
 	$("#field-name").foursquareVenue({
 		venueId: "foursquare_id",
@@ -157,6 +158,7 @@ head.ready("anqh", function() {
 		latitudeSearch: "latitude",
 		longitudeSearch: "longitude",
 	});
+
 });
 ');
 
