@@ -595,31 +595,30 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 
-		// Autocomplete
-		$this->autocomplete_city('city_name', 'city_id');
-
 		// Maps
 		Widget::add('foot', HTML::script_source('
 head.ready("jquery-ui", function() {
 	$("#fields-contact ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
 });
 
-head.read("anqh", function() {
+head.ready("anqh", function() {
 	$("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
+
+	$("input[name=city_name]").autoCompleteCity();
 
 	$("input[name=address], input[name=city_name]").blur(function(event) {
 		var address = $("input[name=address]").val();
 		var city = $("input[name=city_name]").val();
 		if (address != "" && city != "") {
 			var geocode = address + ", " + city;
-			geocoder.geocode({ address: geocode }, function(results, status) {
+			Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK && results.length) {
-				  map.setCenter(results[0].geometry.location);
+				  Anqh.map.setCenter(results[0].geometry.location);
 				  $("input[name=latitude]").val(results[0].geometry.location.lat());
 				  $("input[name=longitude]").val(results[0].geometry.location.lng());
 				  var marker = new google.maps.Marker({
 				    position: results[0].geometry.location,
-				    map: map
+				    map: Anqh.map
 				  });
 				}
 			});
