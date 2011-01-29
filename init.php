@@ -13,6 +13,11 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
+Route::set('api_user', 'api/<version>/user/<action>(.<format>)', array('version' => 'v[0-9\.]+', 'action' => 'search', 'format' => 'xml|json'))
+	->defaults(array(
+		'controller' => 'user_api',
+		'version'    => 'v1',
+	));
 Route::set('user', 'member(/<username>(/<action>(/<param>)))', array(
 	'action'   => 'hover|settings|friends?|unfriend|favorites|image|ignores?|unignore',
 	'username' => '[^/]+')
