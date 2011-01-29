@@ -55,6 +55,13 @@
   box-shadow: 0 0 @size @color;
 }
 
+.transform (@transform: scale(1.0)) {
+  -moz-transform: @transform;
+  -o-transform: @transform;
+  -webkit-transform: @transform;
+  transform: @transform;
+}
+
 .transition (@transition: all 1s ease-in-out) {
 	-moz-transition: @transition;
 	-o-transition: @transition;

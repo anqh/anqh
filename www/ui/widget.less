@@ -274,10 +274,10 @@ a.ui-state-hover,
 /* Autocomplete */
 .ui-autocomplete                       { background: @input-background; border: 1px solid @input-border-focus-color; .border-radius(0 0 4px 4px); cursor: default; list-style-position: outside; list-style: none; margin: 0; overflow: hidden; padding: 0; position: absolute; z-index: 99999; }
 .ui-autocomplete li                    { cursor: default; display: block; font: menu; margin: 0; padding: 2px 5px; overflow: hidden; text-shadow: @tab-text-shadow; }
+.ui-autocomplete a.ui-state-hover      { background: @input-border-focus-color; }
 .ui-autocomplete-loading,
 .ui-autocomplete-loading:focus,
 .ui-autocomplete-loading:hover         { .ajax(@input-background); }
-* html .ui-autocomplete                { width:1px; } /* without this, the menu expands to 100% in IE6
 
 /***** /JQUERY UI *****/
 
@@ -335,10 +335,13 @@ var.icon.grid1                         { width: 47px; }
 .icon.posts                            { background-image: url(/ui/icon/16/spechbubble.png); }
 .icon.posts.hot                        { background-image: url(16/spechbubble.png); }
 .icon.customize                        { background: url(/ui/icon/16/page_layout.png) no-repeat 5px center; }
+.icon.profiler                         { background-image: url(/ui/icon/16/bug.png); }
 .icon.rate                             { background-image: url(/ui/icon/16/star_fav.png); }
 .icon.rate-half                        { background-image: url(/ui/icon/16/star_fav_half.png); }
 .icon.rate-empty                       { background-image: url(/ui/icon/16/star_fav_empty.png); }
+.icon.role                             { background-image: url(/ui/icon/16/contact_card.png); }
 .icon.settings                         { background-image: url(/ui/icon/16/wrench.png); }
+.icon.tag                              { background-image: url(/ui/icon/16/tag.png); }
 .icon.time                             { background-image: url(/ui/icon/16/clock.png); }
 .icon.topics                           { background-image: url(/ui/icon/16/spechbubble_2.png); }
 .icon.venue                            { background-image: url(/ui/icon/16/pin_map.png); }
@@ -400,7 +403,7 @@ time.date.today .weekday               { background: @subheader-color; color: @a
 .avatar.small                          { height: 25px; width: 25px; }
 .avatar.small img                      { max-height: 25px; max-width: 25px; }
 .thumb a,
-a.image                                { display: block; }
+a.image                                { display: inline-block; }
 a img                                  { opacity: .9; }
 a:hover img                            { opacity: 1; }
 
@@ -412,6 +415,31 @@ figure.thumb ficaption                 { background: @hover-background; bottom: 
 figure.thumb:hover ficaption           { .opacity(1); }
 
 /***** /MEDIA *****/
+
+
+/***** NOTES *****/
+
+figure .note                           { .opacity(0); position: absolute; .transition(opacity .25s ease-in-out); }
+figure .notea                          { border: 1px solid white; .border-radius(2px); }
+figure .notet                          { background: black; .opacity(0); margin-top: @spacing; .transition(opacity .25s ease-in-out); }
+figure:hover .note,
+figure .note:hover .notet              { .opacity(1); }
+
+#form-note                             { background: @tooltip-background; .box-shadow(@tooltip-shadow); .border-radius(5px); display: none; padding: @gutter; position: absolute; width: 180px; z-index: 10; }
+
+.imgareaselect-border1                 { background: url(/ui/border-anim-v.gif) repeat-y left top; }
+.imgareaselect-border2                 { background: url(/ui/border-anim-h.gif) repeat-x left top; }
+.imgareaselect-border3                 { background: url(/ui/border-anim-v.gif) repeat-y right top; }
+.imgareaselect-border4                 { background: url(/ui/border-anim-h.gif) repeat-x left bottom; }
+.imgareaselect-border1,
+.imgareaselect-border2,
+.imgareaselect-border3,
+.imgareaselect-border4                 { .opacity(.5); }
+.imgareaselect-handle                  { background-color: #fff; border: solid 1px #000; .opacity(.5); }
+.imgareaselect-outer                   { background-color: #000; .opacity(.5); }
+.imgareaselect-selection               { }
+
+/***** /NOTES *****/
 
 
 /***** LIGHTBOX *****/

@@ -7,20 +7,56 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+// Anqh 'namespace'
+var Anqh = {
+
+	// GeoNames API URL
+	geoNamesURL: null,
+
+	// GeoNames username
+	geoNamesUser: null,
+
+	// Google Maps Geocoder
+	geocoder: null,
+
+	// Google Maps Map
+	map: null,
+
+	// Delete confirmation dialog
+	confirm_delete: function(title, action) {
+		if (title === undefined) title = 'Are you sure you want to do this?';
+		if (action === undefined) action = function() { return true; };
+		if ($('#dialog-confirm').length == 0) {
+			$('body').append('<div id="dialog-confirm" title="' + title + '">Are you sure?</div>');
+			$('#dialog-confirm').dialog({
+				dialogClass: 'confirm-delete',
+				modal: true,
+				close: function(ev, ui) { $(this).remove(); },
+				closeText: '✕',
+				buttons: {
+					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
+					'✕ No, cancel': function() { $(this).dialog('close'); }
+				}
+			});
+		} else {
+			$('#confirm-dialog').dialog('open');
+		}
+	}
+
+};
+
+
 // Google Maps
-var map;
-var geocoder;
 $.fn.googleMap = function(options) {
 
 	// Asynchronous loading
-	if (!geocoder) {
+	if (!Anqh.geocoder) {
 		var func = this;
 		return $.getJSON('http://maps.google.com/maps/api/js?sensor=false&callback=?', function() {
-			geocoder = new google.maps.Geocoder();
+			Anqh.geocoder = new google.maps.Geocoder();
 			func.googleMap(options);
 		});
 	}
-
 
 	var defaults = {
 		lat: 60.1695,
@@ -34,9 +70,10 @@ $.fn.googleMap = function(options) {
 
 	options = $.extend(defaults, options || {});
 
+	// Geocode address if given
 	if (options.address && options.city && options.address != '' && options.city != '') {
 		var geocode = options.address + ", " + options.city;
-		geocoder.geocode({ address: geocode }, function(results, status) {
+		Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
 			if (status == google.maps.GeocoderStatus.OK && results.length) {
 				options.lat = results[0].geometry.location.lat();
 				options.long = results[0].geometry.location.lng();
@@ -46,11 +83,13 @@ $.fn.googleMap = function(options) {
 	}
 
 	var center = new google.maps.LatLng(options.lat, options.long);
-	map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
+	Anqh.map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
+
+	// Add marker
 	if (options.marker) {
 		var marker = new google.maps.Marker({
 			position: center,
-			map: map,
+			map: Anqh.map,
 			title: options.marker ? '' : options.marker
 		});
 		if (options.infowindow) {
@@ -58,34 +97,12 @@ $.fn.googleMap = function(options) {
 				content: options.infowindow
 			});
 			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.open(map, marker);
+				infowindow.open(Anqh.map, marker);
 			});
 		}
 	}
 
 };
-
-
-// Delete confirmation dialog
-function confirm_delete(title, action) {
-	if (title === undefined) title = 'Are you sure you want to do this?';
-	if (action === undefined) action = function() { return true; };
-	if ($('#dialog-confirm').length == 0) {
-		$('body').append('<div id="dialog-confirm" title="' + title + '">Are you sure?</div>');
-		$('#dialog-confirm').dialog({
-			dialogClass: 'confirm-delete',
-			modal: true,
-			close: function(ev, ui) { $(this).remove(); },
-			closeText: '✕',
-			buttons: {
-				'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
-				'✕ No, cancel': function() { $(this).dialog('close'); }
-			}
-		});
-	} else {
-		$('#confirm-dialog').dialog('open');
-	}
-}
 
 
 // Hovercards
@@ -254,46 +271,54 @@ $.fn.slideshow = function() {
 
 
 // City autocomplete
-$.fn.geonamesCity = function(options) {
+$.fn.autocompleteCity = function(options) {
 	var defaults = {
-		map: 'map',
-		cityId: 'city_id',
-		country: 'FI',
-		lang: 'en',
-		address: 'address',
-		latitude: 'latitude',
-		longitude: 'longitude'
+		'map':       'map',
+		'cityId':    'city_id',
+		'country':   'FI',
+		'lang':      'en',
+		'address':   'address',
+		'latitude':  'latitude',
+		'longitude': 'longitude',
+		'limit':     10,
+		'minLength': 2
 	};
-
 	options = $.extend(defaults, options || {});
+
 	$(this)
 		.autocomplete({
 			source: function(request, response) {
 				$.ajax({
-					url: 'http://ws2.geonames.org/searchJSON',
+					url: Anqh.geoNamesURL + '/searchJSON',
+
 					dataType: 'jsonp',
+
 					data: {
-						lang: options.lang,
-						featureClass: 'P',
-						countryBias: options.country,
-						style: 'full',
-						maxRows: 10,
-						name_startsWith: request.term
+						'username':        Anqh.geoNamesUser,
+						'lang':            options.lang,
+						'featureClass':    'P',
+						'countryBias':     options.country,
+						'style':           'full',
+						'maxRows':         10,
+						'name_startsWith': request.term
 					},
+
 					success: function(data) {
 						response($.map(data.geonames, function(item) {
 							return {
-								id: item.geonameId,
-								label: item.name + (item.adminName1 ? ', ' + item.adminName1 : '') + ', ' + item.countryName,
-								value: item.name,
-								lat: item.lat,
-								long: item.lng
-							}
-						}))
+								'id':    item.geonameId,
+								'label': item.name + (item.adminName1 ? ', ' + item.adminName1 : '') + ', ' + item.countryName,
+								'value': item.name,
+								'lat':   item.lat,
+								'long':  item.lng
+							};
+						}));
 					}
 				})
 			},
-			minLength: 2,
+
+			minLength: options.minLength,
+
 			select: function(event, ui) {
 				$('input[name=' + options.cityId + ']').val(ui.item.id);
 				$('input[name=' + options.latitude + ']').val(ui.item.lat);
@@ -301,6 +326,76 @@ $.fn.geonamesCity = function(options) {
 				$('#' + options.map).googleMap({ lat: ui.item.lat, long: ui.item.long });
 			}
 		});
+};
+
+
+// User autocomplete
+$.fn.autocompleteUser = function(options) {
+	var field = $(this);
+	var defaults = {
+		'userId':    'user_id',
+		'limit':     25,
+		'minLength': 3,
+		'action':    'form',
+		'search':    'username',
+		'field':     'id:username:avatar:url',
+		'order':     'username.asc'
+	};
+	options = $.extend(defaults, options || {});
+
+	$(this)
+		.autocomplete({
+			minLength: options.minLength,
+
+			source: function(request, response) {
+				$.ajax({
+					url: '/api/v1/user/search',
+					dataType: 'json',
+					'data': {
+						'q':     request.term,
+						'limit': options.limit,
+						'field': options.field,
+						'order': options.order
+					},
+
+					success: function(data) {
+						response($.map(data.users, function(item) {
+							return {
+								'label': item.username,
+								'value': item.username,
+								'image': item.avatar,
+								'id':    item.id,
+								'url':   item.url
+							};
+						}));
+					}
+				});
+			},
+
+			select: function(event, ui) {
+				switch (options.action) {
+
+					// Fill form
+					case 'form':
+						$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
+						field.val(ui.item.value);
+						break;
+
+					// Navigate URL
+					case 'redirect':
+						window.location = ui.item.url;
+						break;
+
+				}
+			}
+		})
+		.data('autocomplete')._renderItem = function(ul, item) {
+			return $('<li></li>')
+				.data('item.autocomplete', item)
+				.append('<a>' + (item.image ? '<img src="' + item.image + '" alt="Avatar" width="22" height="22" align="middle" />' : '') + item.label + '</a>')
+				.appendTo(ul);
+		};
+
 };
 
 
@@ -368,6 +463,52 @@ $.fn.foursquareVenue = function(options) {
 };
 
 
+// Image notes
+$.fn.notes = function(n) {
+	var notes;
+	var image = this;
+
+	if (undefined != n) {
+		notes = n;
+	}
+
+	$(notes).each(function() {
+		add(this);
+	});
+
+	$(window).resize(function() {
+		$('.note').remove();
+
+		$(notes).each(function() {
+			add(this);
+		});
+	});
+
+
+	function add(note_data){
+		var note_left  = parseInt(note_data.x);
+		var note_top   = parseInt(note_data.y);
+
+		var note = $('<div class="note"></div>').css({
+			'left': note_left + 'px',
+			'top': note_top + 'px'
+		});
+		var area = $('<div class="notea"></div>').css({
+			'width': note_data.width + 'px',
+			'height': note_data.height + 'px'
+		});
+		var text = $('<div class="notet">' + note_data.note + '</div>');
+
+		note
+			.append(area)
+			.append(text);
+		image.after(note);
+	}
+
+};
+
+
+// Initialize
 $(function() {
 
 	// Form input hints
@@ -443,11 +584,11 @@ $(function() {
 		e.preventDefault();
 		var action = $(this);
 		if (action.data('action')) {
-			confirm_delete(action.text(), function() { action.data('action')(); });
+			Anqh.confirm_delete(action.text(), function() { action.data('action')(); });
 		} else if (action.is('a')) {
-			confirm_delete(action.text(), function() { window.location = action.attr('href'); });
+			Anqh.confirm_delete(action.text(), function() { window.location = action.attr('href'); });
 		} else {
-			confirm_delete(action.text(), function() { action.parent('form').submit(); });
+			Anqh.confirm_delete(action.text(), function() { action.parent('form').submit(); });
 		}
 	});
 
@@ -459,7 +600,7 @@ $(function() {
 		return false;
 	});
 	$('form.ajaxify').live('submit', function() {
-		$form = $(this);
+		var $form = $(this);
 		$(this).closest('section.mod').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
 	});
 
