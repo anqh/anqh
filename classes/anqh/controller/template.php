@@ -255,15 +255,6 @@ abstract class Anqh_Controller_Template extends Controller {
 			)));
 			 */
 
-			// Admin functions
-			if (self::$user && self::$user->has_role('admin')) {
-				Widget::add('dock', ' | ' . __('Admin: ')
-					. HTML::anchor(Route::get('roles')->uri(), __('Roles')) . ', '
-					. HTML::anchor(Route::get('tags')->uri(), __('Tags')) . ', '
-					. HTML::anchor('#debug', __('Profiler'), array('onclick' => '$("div.kohana").toggle();'))
-				);
-			}
-
 			// Time & weather
 			Widget::add('dock', ' | ' . View::factory('generic/clock', array(
 				'user' => self::$user,
@@ -358,57 +349,6 @@ head.js(
 		}
 
 		return parent::after();
-	}
-
-
-	/**
-	 * Autocomplete for city
-	 *
-	 * @param  string  $name  Form input name for city name
-	 * @param  string  $id    Form input name for city id
-	 */
-	public function autocomplete_city($name = 'city_name', $id = 'city_id') {
-		Widget::add('foot', HTML::script_source('
-head.ready("anqh", function() {
-	$("input[name=' . $name . ']")
-		.autocomplete({
-			source: function(request, response) {
-				$.ajax({
-					url: "http://ws.geonames.org/searchJSON",
-					dataType: "jsonp",
-					data: {
-						lang: "' . $this->language . '",
-						featureClass: "P",
-						countryBias: "FI",
-						style: "full",
-						maxRows: 10,
-						name_startsWith: request.term
-					},
-					success: function(data) {
-						response($.map(data.geonames, function(item) {
-							return {
-								id: item.geonameId,
-								label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
-								value: item.name,
-								lat: item.lat,
-								long: item.lng
-							}
-						}))
-					}
-				})
-			},
-			minLength: 2,
-			select: function(event, ui) {
-				$("input[name=' . $id . ']").val(ui.item.id);
-				if ($("input[name=address]") && $("input[name=address]").val() == "") {
-					$("input[name=latitude]").val(ui.item.lat);
-					$("input[name=longitude]").val(ui.item.long);
-					map && map.setCenter(new google.maps.LatLng(ui.item.lat, ui.item.long));
-				}
-			},
-		});
-});
-		'));
 	}
 
 

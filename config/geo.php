@@ -4,13 +4,18 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 return array(
-	'base_url'  => 'http://ws.geonames.org',
+
+	// GeoNames free account username
+	'username' => 'anqh',
+
+	// GeoNames API URL
+	'base_url'  => 'http://api.geonames.org',
 
 	// Load names for these languages
 	'languages' => array('en', 'fi'),
-	
+
 );

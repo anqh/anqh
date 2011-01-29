@@ -475,9 +475,6 @@ class Anqh_Controller_User extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 
-		// Autocomplete
-		$this->autocomplete_city('address_city', 'city_id');
-
 		// Date picker
 		$options = array(
 			'changeMonth'     => true,
@@ -508,14 +505,15 @@ class Anqh_Controller_User extends Controller_Template {
 			'weekHeader'      => __('Wk'),
 			'yearRange'       => '1900:+0',
 		);
+
 		Widget::add('foot', HTML::script_source('
+
+// Date picker
 head.ready("jquery-ui", function() {
 	$("#field-dob").datepicker(' . json_encode($options) . ');
 });
-'));
 
-		// Maps
-		Widget::add('foot', HTML::script_source('
+// Maps
 head.ready("jquery", function() {
 	$("#fields-contact ul").append("<li><div id=\"map\">' . __('Loading map..') . '</div></li>");
 });
@@ -523,19 +521,21 @@ head.ready("jquery", function() {
 head.ready("anqh", function() {
 	$("#map").googleMap(' . ($user->latitude ? json_encode(array('marker' => true, 'lat' => $user->latitude, 'long' => $user->longitude)) : '') . ');
 
+	$("input[name=address_city]").autocompleteCity();
+
 	$("input[name=address_street], input[name=address_city]").blur(function(event) {
 		var address = $("input[name=address_street]").val();
 		var city = $("input[name=address_city]").val();
 		if (address != "" && city != "") {
 			var geocode = address + ", " + city;
-			geocoder.geocode({ address: geocode }, function(results, status) {
+			Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK && results.length) {
-				  map.setCenter(results[0].geometry.location);
+				  Anqh.map.setCenter(results[0].geometry.location);
 				  $("input[name=latitude]").val(results[0].geometry.location.lat());
 				  $("input[name=longitude]").val(results[0].geometry.location.lng());
 				  var marker = new google.maps.Marker({
 				    position: results[0].geometry.location,
-				    map: map
+				    map: Anqh.map
 				  });
 				}
 			});
