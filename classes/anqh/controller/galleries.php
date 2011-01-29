@@ -844,6 +844,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'next'      => $next,
 				'previous'  => $previous,
 				'approve'   => isset($approve) ? $approve : null,
+				'notes'     => null,
+				'note'      => Permission::has($current, Model_Image::PERMISSION_NOTE, self::$user),
 			)));
 
 			// Image info
