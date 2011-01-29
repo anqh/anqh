@@ -604,7 +604,7 @@ head.ready("jquery-ui", function() {
 head.ready("anqh", function() {
 	$("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
 
-	$("input[name=city_name]").autoCompleteCity();
+	$("input[name=city_name]").autocompleteCity();
 
 	$("input[name=address], input[name=city_name]").blur(function(event) {
 		var address = $("input[name=address]").val();
