@@ -161,7 +161,7 @@ head.ready("anqh", function() {
 
 	$("#fields-where").append("<div id=\"map\">' . __('Loading map..') . '</div>");
 	$("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
-	$("#field-city-name").geonamesCity({ latitude: "city_latitude", longitude: "city_longitude" });
+	$("#field-city-name").autocompleteCity({ latitude: "city_latitude", longitude: "city_longitude" });
 	$("#field-venue-name").foursquareVenue({ venueId: "foursquare_id", categoryId: "foursquare_category_id" });
 
 	$("input[name=address]").blur(function(event) {
@@ -169,7 +169,7 @@ head.ready("anqh", function() {
 		var city = $("input[name=city_name]").val();
 		if (address != "" && city != "") {
 			var geocode = address + ", " + city;
-			geocoder.geocode({ address: geocode }, function(results, status) {
+			Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK && results.length) {
 					$("input[name=latitude]").val(results[0].geometry.location.lat());
 					$("input[name=longitude]").val(results[0].geometry.location.lng());
