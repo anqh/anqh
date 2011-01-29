@@ -14,9 +14,16 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	const NOT_ACCEPTED = 'n';
 	const VISIBLE      = 'v';
 
-	// Deprecated
+	/**
+	 * Permission to add/edit notes
+	 */
+	const PERMISSION_NOTE = 'note';
+
+	/** @deprecated */
 	const NORMAL   = 'normal';
+	/** @deprecated */
 	const ORIGINAL = '';
+	/** @deprecated */
 	const THUMB    = 'thumb';
 
 	/**
@@ -303,7 +310,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 */
 	public function has_permission($permission, $user) {
 		switch ($permission) {
+
 			case self::PERMISSION_CREATE:
+			case self::PERMISSION_NOTE:
 		    return (bool)$user;
 
 			case self::PERMISSION_DELETE:
