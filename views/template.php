@@ -208,7 +208,12 @@ head.js(
 	{ 'jquery-tools': '" . URL::base() . "js/jquery.tools.min.js' },
 	{ 'jquery-form': '" . URL::base() . "js/jquery.form.js' },
 	{ 'jquery-overflow': '" . URL::base() . "js/jquery.text-overflow.js' },
-	{ 'anqh': '" . URL::base() . "js/anqh.js?2' }
+	{ 'jquery-imgarea': '" . URL::base() . "js/jquery.imgareaselect.js' },
+	{ 'anqh': '" . URL::base() . "js/anqh.js?2' },
+	function() {
+		Anqh.geoNamesURL = '" . Kohana::config('geo.base_url') . "';
+		Anqh.geoNamesUser = '" . Kohana::config('geo.username') . "';
+	}
 );
 "); ?>
 
