@@ -117,5 +117,5 @@ blockquote:before                      { content: "\201C"; float: left; font-fam
 blockquote em                          { font-style: normal; }
 blockquote cite                        { font-size: 0.9em; margin: 0.1em; opacity: 0.75; padding-left: 2em; }
 
-.note                                  { font-family: Georgia, "Times New Roman", Times, serif; font-size: 0.9em; font-style: italic; margin: 0.1em; }
+/*.note                                  { font-family: Georgia, "Times New Roman", Times, serif; font-size: 0.9em; font-style: italic; margin: 0.1em; }*/
 .mono                                  { font-family: Courier New, Courier, monospace; }

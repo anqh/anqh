@@ -467,6 +467,7 @@ $.fn.foursquareVenue = function(options) {
 $.fn.notes = function(n) {
 	var notes;
 	var image = this;
+	var imageOffset = $(image).position();
 
 	if (undefined != n) {
 		notes = n;
@@ -486,10 +487,10 @@ $.fn.notes = function(n) {
 
 
 	function add(note_data){
-		var note_left  = parseInt(note_data.x);
-		var note_top   = parseInt(note_data.y);
+		var note_left = parseInt(imageOffset.left) + parseInt(note_data.x);
+		var note_top  = parseInt(imageOffset.top) + parseInt(note_data.y);
 
-		var note = $('<div class="note"></div>').css({
+		var note = $('<div class="note" id="note-' + note_data.id + '"></div>').css({
 			'left': note_left + 'px',
 			'top': note_top + 'px'
 		});
@@ -497,12 +498,26 @@ $.fn.notes = function(n) {
 			'width': note_data.width + 'px',
 			'height': note_data.height + 'px'
 		});
-		var text = $('<div class="notet">' + note_data.note + '</div>');
+		var text = $('<div class="notet"></div>');
+		if (note_data.url) {
+			text.append($('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>'));
+		} else {
+			text.append(note_data.name);
+		}
 
 		note
 			.append(area)
 			.append(text);
 		image.after(note);
+
+		$('[data-note-id=' + note_data.id + ']') && $('[data-note-id=' + note_data.id + ']').hover(
+			function() {
+				area.css({ 'visibility': 'visible' });
+			},
+			function() {
+				area.css({ 'visibility': 'hidden' });
+			}
+		);
 	}
 
 };
@@ -584,11 +599,11 @@ $(function() {
 		e.preventDefault();
 		var action = $(this);
 		if (action.data('action')) {
-			Anqh.confirm_delete(action.text(), function() { action.data('action')(); });
+			Anqh.confirm_delete(action.data('confirm') ? action.data('confirm') : action.text(), function() { action.data('action')(); });
 		} else if (action.is('a')) {
-			Anqh.confirm_delete(action.text(), function() { window.location = action.attr('href'); });
+			Anqh.confirm_delete(action.data('confirm') ? action.data('confirm') : action.text(), function() { window.location = action.attr('href'); });
 		} else {
-			Anqh.confirm_delete(action.text(), function() { action.parent('form').submit(); });
+			Anqh.confirm_delete(action.data('confirm') ? action.data('confirm') : action.text(), function() { action.parent('form').submit(); });
 		}
 	});
 

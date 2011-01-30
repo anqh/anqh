@@ -156,15 +156,18 @@ section article:hover .actions         { .opacity(1); }
 button:hover,
 input[type=submit]:hover,
 a.action:hover                         { color: @button-color; .box-shadow(0 0 5px @button-rgba); text-shadow: 0 0 5px @button-rgba; }
-section article:hover .actions a[class*="-private"]:hover,
-a[class*="-private"]:hover             { color: @private-color; .box-shadow(0 0 4px @private-rgba); text-shadow: 0 0 5px @private-rgba; }
-section article:hover .actions a[class*="-add"]:hover,
-a[class*="-add"]:hover                 { color: @positive-color; .box-shadow(0 0 4px @positive-rgba); text-shadow: 0 0 5px @positive-rgba; }
+section article:hover .actions a[class*=-private]:hover,
+a.action[class*=-private]:hover        { color: @private-color; .box-shadow(0 0 4px @private-rgba); text-shadow: 0 0 5px @private-rgba; }
+a[class*=-private]:hover               { color: @private-color; text-shadow: 0 0 5px @private-rgba; }
+section article:hover .actions a[class*=-add]:hover,
+a.action[class*=-add]:hover            { color: @positive-color; .box-shadow(0 0 4px @positive-rgba); text-shadow: 0 0 5px @positive-rgba; }
+a[class*=-add]:hover                   { color: @positive-color; text-shadow: 0 0 5px @positive-rgba; }
 a.action.disabled                      { visibility: hidden; }
 .confirm-delete .ui-dialog-buttonpane button:first-of-type:hover,
-section article:hover .actions a[class*="-delete"]:hover,
+section article:hover .actions a[class*=-delete]:hover,
 a.action.close:hover,
-a[class*="-delete"]:hover              { color: @negative-color; .box-shadow(0 0 5px @negative-rgba); text-shadow: 0 0 5px @negative-rgba; }
+a.action[class*=-delete]:hover         { color: @negative-color; .box-shadow(0 0 5px @negative-rgba); text-shadow: 0 0 5px @negative-rgba; }
+a[class*=-delete]:hover                { color: @negative-color; text-shadow: 0 0 5px @negative-rgba; }
 .confirm-delete                        { .box-shadow(0 0 5px @negative-rgba); }
 
 form .buttons                          { display: block; margin-bottom: 1em; margin-top: 1em; text-align: center; }
@@ -172,8 +175,8 @@ form .buttons                          { display: block; margin-bottom: 1em; mar
 .pills li                              { display: inline; }
 .pills li label                        { background: @input-background; .border-radius(5px); color: @input-color; cursor: pointer; display: inline; padding: 0 0.5em; }
 .pills li label:hover                  { background: @link-hover-color; color: @action-link-color; }
-.pills li input[type="checkbox"]       { display: none; }
-.pills li input[type="checkbox"]:checked + label { background: @positive-color; color: @pill-checked-color; }
+.pills li input[type=checkbox]         { display: none; }
+.pills li input[type=checkbox]:checked + label { background: @positive-color; color: @pill-checked-color; }
 
 a.expander:after                       { content: '\21D3'; }
 
@@ -411,18 +414,23 @@ a:hover img                            { opacity: 1; }
 
 figure                                 { position: relative; }
 figure.thumb                           { display: block; height: 140px; margin: 0 auto 10px auto; position: relative; width: 140px; }
-figure.thumb ficaption                 { background: @hover-background; bottom: 0; display: block; margin: 0 auto; .opacity(.5); padding: 5px; position: absolute; .transition(opacity .25s ease-in-out); width: 130px; }
-figure.thumb:hover ficaption           { .opacity(1); }
+figure.thumb figcaption                { background: @hover-background; bottom: 0; display: block; margin: 0 auto; .opacity(.5); padding: 5px; position: absolute; .transition(opacity .25s ease-in-out); width: 130px; }
+figure.thumb:hover figcaption          { .opacity(1); }
 
 /***** /MEDIA *****/
 
 
 /***** NOTES *****/
 
-figure .note                           { .opacity(0); position: absolute; .transition(opacity .25s ease-in-out); }
-figure .notea                          { border: 1px solid white; .border-radius(2px); }
-figure .notet                          { background: black; .opacity(0); margin-top: @spacing; .transition(opacity .25s ease-in-out); }
-figure:hover .note,
+figure figcaption.notes {
+  &                                    { display: block; padding-left: 20px; }
+  li                                   { display: inline; }
+}
+
+figure .note                           { cursor: help; position: absolute; }
+figure .notea                          { border: 1px solid rgba(255, 255, 255, .75); .border-radius(2px); .shadow(5px; rgba(0, 0, 0, .75)); position: relative; visibility: hidden; }
+/*figure .notea:before                   { border: 1px solid black; .border-radius(3px); content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
+figure .notet                          { background: black; .opacity(0); margin-top: @spacing; padding: 0 @gutter; .transition(opacity .25s ease-in-out); }
 figure .note:hover .notet              { .opacity(1); }
 
 #form-note                             { background: @tooltip-background; .box-shadow(@tooltip-shadow); .border-radius(5px); display: none; padding: @gutter; position: absolute; width: 180px; z-index: 10; }
