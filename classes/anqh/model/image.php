@@ -103,6 +103,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			'comments' => new Field_HasMany(array(
 				'foreign' => 'image_comment',
 			)),
+			'notes' => new Field_HasMany(array(
+				'foreign' => 'image_note',
+			)),
 		));
 	}
 

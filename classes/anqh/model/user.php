@@ -455,7 +455,8 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 		// Image comments
 		$image_comments = Model_Image::find_new_comments($this);
-		if (count($image_comments)) {
+		$note_comments  = Model_Image_Note::find_new_comments($this);
+		if (count($image_comments) || count($note_comments)) {
 			$new_comments = 0;
 			$new_image = null;
 			foreach ($image_comments as $image) {
@@ -467,6 +468,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				}
 
 			}
+			foreach ($note_comments as $note) {
+				$new_comments += $note->new_comment_count;
+			  $new_image = $note->image;
+			}
 
 			if ($new_comments) {
 				$new['new-image-comments'] = HTML::anchor(
@@ -476,7 +481,27 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				));
 			}
 		}
-		unset($image_comments);
+		unset($image_comments, $note_comments, $new_image);
+
+		// Image tags
+		$notes  = Model_Image_Note::find_new_notes($this);
+		if (count($notes)) {
+			$new_notes = 0;
+			$new_note = null;
+			foreach ($notes as $note) {
+				$new_notes++;
+			  $new_note_image = $note->image;
+			}
+
+			if ($new_notes) {
+				$new['new-image-notes'] = HTML::anchor(
+					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_note_image->id)), 'id' => $new_note_image->id, 'action' => '')),
+					$new_notes,
+					array('title' => __('New image tags')
+				));
+			}
+		}
+		unset($note_comments, $new_note_image);
 
 		// Private messages
 
