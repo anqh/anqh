@@ -41,10 +41,10 @@ $copyright = $multiple = null;
 					$image->description ? array('title' => HTML::chars($image->description)) : null) ?>
 			<?php if (!$pending): ?>
 
-			<ficaption>
+			<figcaption>
 				<?php echo HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
 				<?php echo HTML::icon_value(array(':views' => $image->view_count), ':views view', ':views views', 'views') ?><br />
-			</ficaption>
+			</figcaption>
 
 			<?php endif; ?>
 
