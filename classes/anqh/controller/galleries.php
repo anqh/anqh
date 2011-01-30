@@ -699,10 +699,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		}
 
-		// Set title and tabs
-		$this->_set_gallery($gallery);
-		$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery),  __('Back to Gallery'));
-
 		// Find current, previous and next images
 		$i = 0;
 		$previous = $next = $current = null;
@@ -727,6 +723,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			}
 		}
+
+		// Set title and tabs
+		$this->_set_gallery($gallery);
+		$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery),  __('Back to Gallery'));
 
 		// Show image
 		if (!is_null($current)) {
@@ -765,6 +765,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						$gallery->comment_count++;
 						$gallery->save();
 
+						// Noted users
+						if (!$comment->private) {
+							foreach ($current->notes as $note) {
+								$note->new_comment_count++;
+								$note->save();
+							}
+						}
+
 						// Newsfeed
 						if (!$comment->private) {
 							NewsfeedItem_Galleries::comment(self::$user, $gallery, $current);
@@ -778,11 +786,19 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						$values = $comment;
 					}
 
-				} else if (self::$user && $current->author->id == self::$user->id && $current->new_comment_count > 0) {
+				} else if (self::$user) {
 
 					// Clear new comment count?
-					$current->new_comment_count = 0;
-					$current->save();
+					if ($current->author->id == self::$user->id && $current->new_comment_count > 0) {
+						$current->new_comment_count = 0;
+						$current->save();
+					}
+					foreach ($current->notes as $note) {
+						if ($note->user->id == self::$user->id && $note->new_comment_count > 0) {
+							$note->new_comment_count = 0;
+							$note->save();
+						}
+					}
 
 				}
 
@@ -844,8 +860,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'next'      => $next,
 				'previous'  => $previous,
 				'approve'   => isset($approve) ? $approve : null,
-				'notes'     => null,
+				'notes'     => $current->notes,
 				'note'      => Permission::has($current, Model_Image::PERMISSION_NOTE, self::$user),
+				'user'      => self::$user,
 			)));
 
 			// Image info
@@ -891,12 +908,102 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 	/**
+	 * Action: add note
+	 */
+	public function action_note() {
+		$this->history = false;
+
+		/** @var  Model_Gallery  $gallery */
+		$gallery_id = (int)$this->request->param('gallery_id');
+		$gallery    = Model_Gallery::find($gallery_id);
+		if (!$gallery->loaded()) {
+			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		/** @var  Model_Image $image */
+		$image_id = $this->request->param('id');
+		$image    = Model_Image::find($image_id);
+		if (!$image->loaded()) {
+			throw new Model_Exception($image, $image_id);
+		}
+
+		// Permission check
+		Permission::required($image, Model_Image::PERMISSION_NOTE, self::$user);
+
+		// Create note
+		if (isset($_POST['name']) && trim($_POST['name'] != '')) {
+
+			// Try to load user even if no user id was given, ie. not using autocomplete
+			$user_id = Arr::get($_POST, 'user_id');
+			if (!$user_id) {
+				if ($user = Model_User::find_user(trim($_POST['name']))) {
+					$user_id = $user->id;
+				}
+			}
+
+			try {
+				$note = Model_Image_Note::factory()->set(array(
+					'image'    => $image,
+					'author'   => self::$user,
+					'name'     => Arr::get($_POST, 'name'),
+					'new_note' => true,
+				));
+
+				// Set user only if set
+				if ($user_id) {
+					$note->user = $user_id;
+				}
+
+				// Set position only if all fields are set
+				$position = Arr::intersect($_POST, array('x', 'y', 'width', 'height'), true);
+				if (count($position) == 4) {
+					$note->set($position);
+				}
+
+				$note->save();
+			} catch (Validate_Exception $e) {}
+		}
+
+		// Redirect back to image
+		// @todo: ajaxify for more graceful approach
+		$this->request->redirect(Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')));
+	}
+
+
+	/**
 	 * Action: pending
 	 */
 	public function action_pending() {
 		$this->history = false;
 
 		return $this->action_gallery();
+	}
+
+
+	/**
+	 * Action: remove note
+	 */
+	public function action_unnote() {
+		$this->history = false;
+
+		/** @var  Model_Image_Note  $note */
+		$note_id = (int)$this->request->param('id');
+		$note    = Model_Image_Note::find($note_id);
+		if (!$note->loaded()) {
+			throw new Model_Exception($note, $note_id);
+		}
+
+		// Permission check
+		Permission::required($note, Model_Image_Note::PERMISSION_DELETE, self::$user);
+
+		$image   = $note->image;
+		$gallery = Model_Gallery::find_by_image($image->id);
+
+		$note->delete();
+
+		// Redirect back to image
+		// @todo: ajaxify for more graceful approach
+		$this->request->redirect(Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')));
 	}
 
 

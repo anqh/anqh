@@ -33,7 +33,12 @@ Route::set('flyers', 'flyers(/<year>(/<month>))', array('year' => '\d{4}', 'mont
 		'controller' => 'galleries',
 		'action'     => 'flyers'
 	));
-Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default|hover', 'id' => '\d+'))
+Route::set('image_note', 'note/<id>(/<action>)', array('action' => 'unnote'))
+	->defaults(array(
+		'controller' => 'galleries',
+		'action'     => 'note'
+	));
+Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default|hover|note|unnote', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'image',

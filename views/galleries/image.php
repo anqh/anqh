@@ -9,6 +9,21 @@
  */
 
 $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
+
+$note_array = array();
+if (count($notes)):
+	foreach ($notes as $noted):
+		$note_array[] = array(
+			'id'     => (int)$noted->id,
+			'x'      => (int)$noted->x,
+			'y'      => (int)$noted->y,
+			'width'  => (int)$noted->width,
+			'height' => (int)$noted->height,
+			'name'   => $noted->user->loaded() ? $noted->user->username : $noted->name,
+			'url'    => $noted->user->loaded() ? URL::base() . URL::user($noted->user) : null
+		);
+	endforeach;
+endif;
 ?>
 
 <nav>
@@ -36,6 +51,7 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 </nav>
 
 <figure>
+
 <?php if ($next):
 	echo HTML::anchor(
 		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve)),
@@ -48,11 +64,44 @@ else:
 		array('title' => __('Back to gallery'), 'class' => 'image'));
 endif; ?>
 
-<?php if ($note): ?>
-	<?php echo Form::open(null, array('id' => 'form-note', 'class' => 'ajaxify')) ?>
+<?php if ($note || $notes): ?>
+	<figcaption class="notes icon tag">
+		<ul>
+
+			<?php $i = 0; if ($notes) foreach ($notes as $noted): $i++; $name = $noted->user->loaded() ? $noted->user->username : $noted->name; ?>
+			<li>
+				<?php if ($url = ($noted->user->loaded() ? URL::base() . URL::user($noted->user) : null)): ?>
+					<?php echo HTML::anchor($url, $name, array('data-note-id' => $noted->id)) ?>
+				<?php else: ?>
+					<span data-note-id="<?php echo $noted->id ?>"><?php echo HTML::chars($name) ?></span>
+				<?php endif; ?>
+
+				<?php if (Permission::has($noted, Model_Image_Note::PERMISSION_DELETE, $user)): ?>
+					<?php echo HTML::anchor(
+						Route::get('image_note')->uri(array('id' => $noted->id, 'action' => 'unnote')),
+						'&#215;',
+						array('class' => 'note-delete', 'data-confirm' => __('Delete note'), 'title' => __('Delete note'))
+					) ?>
+				<?php endif; ?>
+
+				<?php if ($i < count($notes)) echo ',' ?>
+			</li>
+			<?php endforeach; // Notes list ?>
+
+			<?php if ($note): ?>
+			<li><a href="#" class="action small note-add"><?php echo __('Tag people'); ?></a></li>
+			<?php endif; ?>
+
+		</ul>
+	</figcaption>
+
+	<?php echo Form::open(
+		Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => 'note')),
+		array('id' => 'form-note'/*, 'class' => 'ajaxify'*/)
+	) ?>
 		<fieldset>
 			<ul>
-				<?php echo Form::input_wrap('note') ?>
+				<?php echo Form::input_wrap('name') ?>
 			</ul>
 			<?php echo Form::submit_wrap('save', __('Save'), null, '#cancel', null, array(
 				'x'       => null,
@@ -62,8 +111,10 @@ endif; ?>
 				'user_id' => null,
 			)) ?>
 		</fieldset>
-	<?php echo Form::close() ?>
-<?php endif; ?>
+	<?php echo Form::close() // Note form ?>
+
+<?php endif; // Notes ?>
+
 </figure>
 
 <?php if ($image->description): ?>
@@ -72,14 +123,6 @@ endif; ?>
 	<?php echo __('In picture: :users', array(':users' => implode(', ', $names))) ?>
 </footer>
 <?php endif ?>
-
-<?php if (true || $image->notes): ?>
-<br />
-<caption>
-	<a href="#" class="note-add"><?php echo __('Tag people'); ?></a>
-	Huomiot
-</caption>
-<?php endif; ?>
 
 <?php
 echo HTML::script_source('
@@ -103,25 +146,29 @@ head.ready("jquery-ui", function() {
 
 // Notes
 head.ready("anqh", function() {
-	$("a.image").notes([{ "x": 10, "y": 10, "width": 50, "height": 50, "note": "Jee!" }]);
+	$("a.image").notes(' . json_encode($note_array) . ');
 
-	$("input[name=note]").autocompleteUser();
+	$("input[name=name]").autocompleteUser();
 
 	$("a.note-add").click(function() {
-		$("a.image").imgAreaSelect({
-			onSelectChange: function (img, area) {
-				$("#form-note")
-					.css({
-						left: area.x1 + "px",
-						top: area.y1 + area.height + 5 + "px"
-					});
-					.show();
 
-				$("#form-note input[name=x]").val(area.x1);
-				$("#form-note input[name=y]").val(area.y1);
-				$("#form-note input[name=width]").val(area.width);
-				$("#form-note input[name=height]").val(area.height);
-			},
+		function updateForm(img, area) {
+			$("#form-note")
+				.css({
+					left: area.x1 + "px",
+					top: area.y1 + area.height + 5 + "px"
+				})
+				.show();
+
+			$("#form-note input[name=x]").val(area.x1);
+			$("#form-note input[name=y]").val(area.y1);
+			$("#form-note input[name=width]").val(area.width);
+			$("#form-note input[name=height]").val(area.height);
+		}
+
+		$("a.image img").imgAreaSelect({
+			onInit: updateForm,
+			onSelectChange: updateForm,
 			handles: true,
 			persistent: true,
 			minWidth: 50,
@@ -138,7 +185,7 @@ head.ready("anqh", function() {
 	});
 
 	$("#form-note a.cancel").click(function() {
-		$("a.image").imgAreaSelect({ hide: true });
+		$("a.image img").imgAreaSelect({ hide: true });
 		$("#form-note").hide();
 	});
 
