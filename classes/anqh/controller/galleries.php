@@ -794,9 +794,16 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						$current->save();
 					}
 					foreach ($current->notes as $note) {
-						if ($note->user->id == self::$user->id && $note->new_comment_count > 0) {
-							$note->new_comment_count = 0;
-							$note->save();
+						if ($note->user->id == self::$user->id) {
+							if ($note->new_comment_count > 0) {
+								$note->new_comment_count = 0;
+							}
+							if ($note->new_note > 0) {
+								$note->new_note = null;
+							}
+							if ($note->changed()) {
+								$note->save();
+							}
 						}
 					}
 
@@ -961,6 +968,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				}
 
 				$note->save();
+
+				// Newsfeed
+				if ($user_id) {
+					!isset($user) && $user = Model_User::find_user($user_id);
+					NewsfeedItem_Galleries::note(self::$user, $gallery, $image, $user);
+				}
+
 			} catch (Validate_Exception $e) {}
 		}
 

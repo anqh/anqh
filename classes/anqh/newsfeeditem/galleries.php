@@ -26,9 +26,16 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	/**
 	 * Edit a flyer
 	 *
-	 * Date: flyer_id
+	 * Data: flyer_id
 	 */
 	const TYPE_FLYER_EDIT = 'flyer_edit';
+
+	/**
+	 * Tag a user to image
+	 *
+	 * Data: gallery_id, image_id, user_id
+	 */
+	const TYPE_NOTE = 'note';
 
 
 	/**
@@ -43,8 +50,8 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_COMMENT:
-				$gallery = Jelly::select('gallery')->load($item->data['gallery_id']);
-				$image   = Jelly::select('image')->load($item->data['image_id']);
+				$gallery = Model_Gallery::find($item->data['gallery_id']);
+				$image   = Model_Image::find($item->data['image_id']);
 				if ($gallery->loaded() && $image->loaded()) {
 					$text = __('commented to an image<br />:gallery', array(
 						':gallery' => HTML::anchor(
@@ -57,7 +64,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				break;
 
 			case self::TYPE_COMMENT_FLYER:
-				$flyer = Jelly::select('flyer')->load($item->data['flyer_id']);
+				$flyer = Model_Flyer::find($item->data['flyer_id']);
 				if ($flyer->loaded()) {
 					$text = __('commented to a flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
@@ -70,13 +77,29 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				break;
 
 			case self::TYPE_FLYER_EDIT:
-				$flyer = Jelly::select('flyer')->load($item->data['flyer_id']);
+				$flyer = Model_Flyer::find($item->data['flyer_id']);
 				if ($flyer->loaded()) {
 					$text = __('updated flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
 							Route::get('flyer')->uri(array('id' => $flyer->id)),
 							$flyer->name ? HTML::chars($flyer->name) : __('flyer'),
 							array('class' => 'icon flyer')
+						)
+					));
+				}
+				break;
+
+			case self::TYPE_NOTE:
+				$gallery = Model_Gallery::find($item->data['gallery_id']);
+				$image   = Model_Image::find($item->data['image_id']);
+				$user    = Model_User::find_user($item->data['user_id']);
+				if ($gallery->loaded() && $image->loaded() && $user->loaded()) {
+					$text = __('tagged :user to an image<br />:gallery', array(
+						':user' => HTML::user($user),
+						':gallery' => HTML::anchor(
+							Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
+							HTML::chars($gallery->name),
+							array('class' => 'icon tag hoverable')
 						)
 					));
 				}
@@ -127,5 +150,21 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 			parent::add($user, 'galleries', self::TYPE_FLYER_EDIT, array('flyer_id' => (int)$flyer->id));
 		}
 	}
+
+
+	/**
+	 * Tag a user to an image
+	 *
+	 * @param  Model_User     $user
+	 * @param  Model_Gallery  $gallery
+	 * @param  Model_Image    $image
+	 * @param  Model_User     $note_user
+	 */
+	public static function note(Model_User $user = null, Model_Gallery $gallery = null, Model_Image $image = null, Model_User $note_user = null) {
+		if ($user && $gallery && $image && $note_user) {
+			parent::add($user, 'galleries', self::TYPE_NOTE, array('gallery_id' => (int)$gallery->id, 'image_id' => (int)$image->id, 'user_id' => (int)$note_user->id));
+		}
+	}
+
 
 }
