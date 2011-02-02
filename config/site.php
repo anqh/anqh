@@ -61,6 +61,18 @@ return array(
 	),
 
 	/**
+	 * Available skins
+	 */
+	'skins' => array(
+		'light' => array(
+			'name' => __('Light'),
+		),
+		'dark' =>array(
+			'name' => __('Dark'),
+		),
+	),
+
+	/**
 	 * Default skin
 	 */
 	'skin' => 'dark',
