@@ -22,7 +22,7 @@ class Anqh_HTML extends Kohana_HTML {
 		$class = $mini ? 'avatar small' : 'avatar';
 
 		if (empty($title)) {
-			return '<div class="' . $class . '">' . HTML::image($avatar, array('alt' => 'Avatar')) . '</div>';
+			return '<div class="' . $class . '">' . HTML::image($avatar, array('alt' => __('Avatar'))) . '</div>';
 		} else {
 			return '<div class="' . $class . '">' . HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title, 'class' => 'hoverable'))) . '</div>';
 		}

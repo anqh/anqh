@@ -11,6 +11,18 @@
 abstract class Anqh_Text extends Kohana_Text {
 
 	/**
+	 * Capitalize initials
+	 *
+	 * @static
+	 * @param   string  $str
+	 * @return  string
+	 */
+	public static function capitalize($str) {
+		return mb_convert_case($str, MB_CASE_TITLE, Kohana::$charset);
+	}
+
+
+	/**
 	 * Recursively cleans arrays, objects, and strings. Removes ASCII control
 	 * codes and converts to the requested charset while silently discarding
 	 * incompatible characters.
