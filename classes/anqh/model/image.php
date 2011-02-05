@@ -252,6 +252,16 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get image notes
+	 *
+	 * @return  Jelly_Collection
+	 */
+	public function find_notes() {
+		return $this->get('notes')->order_by('x', 'ASC')->order_by('id', 'ASC')->execute();
+	}
+
+
+	/**
 	 * Get full path and filename of specific image size or empty for default
 	 *
 	 * @param   string   $size
@@ -400,6 +410,22 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 			parent::save();
 		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Update deprecated description field
+	 *
+	 * @return  Model_Image
+	 */
+	public function update_description() {
+		$description = array();
+		foreach ($this->find_notes() as $note) {
+			$description[] = ($note->user->loaded() ? $note->user->username : $note->name);
+		}
+		$this->description = implode(', ', $description);
 
 		return $this;
 	}
