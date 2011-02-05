@@ -60,6 +60,13 @@ class Anqh_Controller_Index extends Controller_Template {
 			'values'    => array(),
 		)));
 
+		// Online
+		Widget::add('side', View_Module::factory('user/online', array(
+			'mod_id'    => 'online-users',
+			'mod_title' => __('Online'),
+			'viewer'    => self::$user,
+		)), Widget::BOTTOM);
+
 	}
 
 }

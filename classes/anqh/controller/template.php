@@ -246,15 +246,6 @@ abstract class Anqh_Controller_Template extends Controller {
 				'user' => self::$user,
 			)));
 
-			// Online
-			/*
-			Widget::add('sidebar', View_Module::factory('user/online', array(
-				'mod_id'    => 'online-users',
-				'mod_title' => __('Online'),
-				'viewer'    => self::$user,
-			)));
-			 */
-
 			// Time & weather
 			Widget::add('dock', ' | ' . View::factory('generic/clock', array(
 				'user' => self::$user,
