@@ -9,8 +9,28 @@
  */
 
 // Build venue list
-//$list = array(__('Choose venue..'));
-//foreach ($venues as $v) $list[$v['value']] = $v['label'] . ', ' . $v['city'];
+$venues_json = array();
+$list        = array(__('Choose venue..'));
+$_city       = '';
+foreach ($venues as $v):
+
+	// Group by city
+	$_city = Text::capitalize($v->city->loaded() ? $v->city->name : $v->city_name);
+	!isset($list[$_city]) and $list[$_city] = array();
+	$list[$_city][$v->id] = $v->name;
+
+	// JSON list for map
+	$venues_json[$v->id] = array(
+		'id'        => $v->id,
+		'name'      => $v->name,
+		'address'   => $v->address,
+		'city'      => $_city,
+		'latitude'  => $v->latitude,
+		'longitude' => $v->longitude,
+	);
+
+endforeach;
+unset($venues, $v);
 
 echo Form::open(null, array('id' => 'form-event-edit'));
 ?>
@@ -92,14 +112,14 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 			</ul>
 		</fieldset>
 
-		<fieldset id="fields-where">
-			<legend><?php echo __('Where?') ?></legend>
+		<fieldset id="fields-venue">
+			<legend><?php echo __('Venue') ?></legend>
 			<ul>
-				<?php //echo Form::select_wrap('venue', $list, $venue && $venue->loaded() ? $venue->id : '', null,	__('Venue')) ?>
+				<li class="choice"><?php echo Form::checkbox('venue_hidden', 'true', $event->venue_hidden, array('id' => 'field-ug')), Form::label('field-ug', __('Secret')) ?></li>
+				<?php echo Form::select_wrap('venue', $list, $venue && $venue->loaded() ? $venue->id : '', null,	__('Venue')) ?>
+				<li class="choice"><?php echo HTML::anchor('#new-venue', __('Not in list?'), array('class' => 'venue-add')) ?></li>
+				<?php echo $event->input('venue_name', 'form/anqh', array('errors' => $event_errors)) ?>
 				<?php echo $event->input('city_name',  'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('venue_name', 'form/anqh', array('errors' => $event_errors, 'attributes' => array('placeholder' => __('Fill city first')))) ?>
-				<?php //echo Form::input_wrap('venue_name', $venue ? $venue->name : $event->venue_name, array('placeholder' => __('Fill city first')), __('Venue'), Arr::get($venue_errors, 'venue_name')) ?>
-				<?php echo $venue->input('address', 'form/anqh', array('errors' => $venue_errors, 'attributes' => array('placeholder' => __('Fill venue first')))) ?>
 			</ul>
 		</fieldset>
 	</div>
@@ -159,11 +179,12 @@ head.ready("anqh", function() {
 	});
 	*/
 
-	$("#fields-where").append("<div id=\"map\">' . __('Loading map..') . '</div>");
-	$("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
+	// $("#fields-venue").append("<div id=\"map\">' . __('Loading map..') . '</div>");
+	// $("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
 	$("#field-city-name").autocompleteCity({ latitude: "city_latitude", longitude: "city_longitude" });
-	$("#field-venue-name").foursquareVenue({ venueId: "foursquare_id", categoryId: "foursquare_category_id" });
+	// $("#field-venue-name").foursquareVenue({ venueId: "foursquare_id", categoryId: "foursquare_category_id" });
 
+	/*
 	$("input[name=address]").blur(function(event) {
 		var address = $("input[name=address]").val();
 		var city = $("input[name=city_name]").val();
@@ -178,11 +199,28 @@ head.ready("anqh", function() {
 			});
 		}
 	});
+	*/
 
 
 	// Tickets
 	$("#field-free").change(function() {
 		$("#field-price, label[for=field-price], #field-price2, label[for=field-price2]").toggle(!this.checked);
+	});
+
+	// Venue
+	var unlisted = false;
+	$("#field-ug").change(function() {
+		$("#field-venue, label[for=field-venue], a.venue-add").toggle(!this.checked && !unlisted);
+		$("#field-venue-name, label[for=field-venue-name]").toggle(!this.checked && unlisted);
+	});
+	$("a.venue-add").click(function() {
+		unlisted = true;
+		$("#field-ug, label[for=field-ug], a.venue-add, #field-venue, label[for=field-venue]").hide();
+		$("#field-venue-name, label[for=field-venue-name]").show();
+	});
+	$("#field-venue").change(function() {
+		$("#field-ug").attr("checked", false);
+		$("#field-city-name").val($("#field-venue option:selected").parent("optgroup").attr("label"));
 	});
 
 });

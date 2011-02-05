@@ -706,7 +706,11 @@ class Anqh_Controller_Events extends Controller_Template {
 		if ($_POST && Security::csrf_valid()) {
 
 			// Handle venue
-			if ($venue_id = (int)Arr::get_once($_POST, 'venue')) {
+			if ($venue_hidden = Arr::get($_POST, 'venue_hidden')) {
+
+				// Hidden events require only city
+
+			} else if ($venue_id = (int)Arr::get_once($_POST, 'venue')) {
 
 				// Old venue
 				$venue = Model_Venue::find($venue_id);
@@ -717,6 +721,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				if ($city_id = (int)Arr::get_once($_POST, 'city_id')) {
 					$city = Geo::find_city($city_id);
 				}
+
 				if ($foursquare_id = (int)Arr::get_once($_POST, 'foursquare_id')) {
 
 					// Foursquare venue
@@ -749,25 +754,27 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				}
 
-				// Fill rest of the venue info if not found
-				!isset($venue) and $venue = Model_Venue::factory();
-				if (!$venue->loaded()) {
-					$venue->name       = Arr::get($_POST, 'venue_name');
-					$venue->address    = Arr::get($_POST, 'address');
-					$venue->latitude   = Arr::get($_POST, 'latitude');
-					$venue->longitude  = Arr::get($_POST, 'longitude');
-					$venue->event_host = true;
-					$venue->author     = self::$user;
-					if (isset($city) && $city->loaded()) {
-						$venue->city = $city;
-						$venue->city_name = $city->name;
-						$venue->country = $city->country;
-					} else {
-						$venue->city_name = Arr::get($_POST, 'city_name');
+				// Fill rest of the venue info if not found and not hidden
+				if (!$venue_hidden) {
+					!isset($venue) and $venue = Model_Venue::factory();
+					if (!$venue->loaded()) {
+						$venue->name       = Arr::get($_POST, 'venue_name');
+						$venue->address    = Arr::get($_POST, 'address');
+						$venue->latitude   = Arr::get($_POST, 'latitude');
+						$venue->longitude  = Arr::get($_POST, 'longitude');
+						$venue->event_host = true;
+						$venue->author     = self::$user;
+						if (isset($city) && $city->loaded()) {
+							$venue->city = $city;
+							$venue->city_name = $city->name;
+							$venue->country = $city->country;
+						} else {
+							$venue->city_name = Arr::get($_POST, 'city_name');
+						}
+						try {
+							$venue->save();
+						} catch (Validate_Exception $venue_validation) {}
 					}
-					try {
-						$venue->save();
-					} catch (Validate_Exception $venue_validation) {}
 				}
 
 			}
@@ -778,9 +785,21 @@ class Anqh_Controller_Events extends Controller_Template {
 			}
 			$event->set($post);
 
-			// Set venue to event if venue is saved
-			if (isset($venue)) {
-				$event->venue = $venue;
+			if ($venue_hidden) {
+
+				// Hidden events don't have a venue
+				$event->venue = null;
+				$event->venue_name = null;
+				$event->venue_hidden = true;
+
+			} else {
+				$event->venue_hidden = false;
+
+				// Set venue to event if venue is saved
+				if (isset($venue)) {
+					$event->venue = $venue;
+				}
+
 			}
 			if (isset($city)) {
 				$event->city = $city;
@@ -856,7 +875,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			'venue'  => isset($venue) ? $venue : $event->venue,
 			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
-			// 'venues' => $hosts,
+			'venues' => Model_Venue::find_all(),
 
 			'city'   => $event->city->loaded() ? $event->city : (isset($venue) && $venue->city->loaded() ? $venue->city : null),
 			'cancel' => $cancel,

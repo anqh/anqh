@@ -79,6 +79,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 				'foreign' => 'geo_country',
 				'null'    => true,
 			)),
+			'venue_hidden' => new Field_Boolean,
 
 			'dj' => new Field_Text(array(
 				'label' => __('Performers'),
