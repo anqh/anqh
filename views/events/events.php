@@ -41,7 +41,9 @@
 					<?php if ($event->price !== null && $event->price != -1)
 						echo ($event->price == 0 ? __('Free entry') : '<var>' . Num::format($event->price, 2, true) . '&euro;</var>'); ?>
 
-					<?php if ($event->venue->loaded()): ?>
+					<?php if ($event->venue_hidden): ?>
+					@ <?php echo __('Underground') ?>
+					<?php elseif ($event->venue->loaded()): ?>
 					@ <?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>
 					<?php elseif ($event->venue_name): ?>
 					@ <?php echo HTML::chars($event->venue_name) ?>

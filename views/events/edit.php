@@ -115,7 +115,7 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 		<fieldset id="fields-venue">
 			<legend><?php echo __('Venue') ?></legend>
 			<ul>
-				<li class="choice"><?php echo Form::checkbox('venue_hidden', 'true', $event->venue_hidden, array('id' => 'field-ug')), Form::label('field-ug', __('Secret')) ?></li>
+				<li class="choice"><?php echo Form::checkbox('venue_hidden', 'true', $event->venue_hidden, array('id' => 'field-ug')), Form::label('field-ug', __('Underground')) ?></li>
 				<?php echo Form::select_wrap('venue', $list, $venue && $venue->loaded() ? $venue->id : '', null,	__('Venue')) ?>
 				<li class="choice"><?php echo HTML::anchor('#new-venue', __('Not in list?'), array('class' => 'venue-add')) ?></li>
 				<?php echo $event->input('venue_name', 'form/anqh', array('errors' => $event_errors)) ?>

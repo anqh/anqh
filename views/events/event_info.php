@@ -44,7 +44,7 @@ elseif ($event->venue_name):
 else:
 
 	// Venue not set
-	$venue = __('(Unknown)');
+	$venue = $event->venue_hidden ? __('Underground') : __('(Unknown)');
 	$address = HTML::chars($event->city_name);
 	$info = '';
 
