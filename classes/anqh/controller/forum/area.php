@@ -143,6 +143,10 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Set title
 		$this->page_title = HTML::chars($area->name);
 		$this->page_subtitle = $area->description;
+		$this->page_subtitle .= ' | ' . HTML::anchor(
+			Route::get('forum_group')->uri(array('action' => '')),
+			__('Back to forum groups')
+		);
 
 		// Set actions
 		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {

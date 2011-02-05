@@ -667,7 +667,7 @@ $(function() {
 		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts');
 		$this->page_subtitle .= ' | ' . HTML::anchor(
 			Route::model($topic->area),
-			__('Back to :area ', array(':area' => HTML::chars($topic->area->name))),
+			__('Back to :area', array(':area' => HTML::chars($topic->area->name))),
 			array('title' => strip_tags($topic->area->description))
 		);
 	}
