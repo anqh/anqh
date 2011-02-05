@@ -4,40 +4,48 @@
  * Copyright (c) 2009-2010 Anqh
  */
 
-/***** index *****/
+/***** Index *****/
 
-/* online */
+/* Online */
 #online-users .totals                  { background: url(/ui/icon/32/users.png) no-repeat 10px center; height: 40px; padding-left: 60px; }
 
-/* shout */
+/* Shout */
 .shout input[type=text]                { width: 70%; }
 
 /***** /index *****/
 
 
-/***** events *****/
+/***** Events *****/
 
-.calendar table                        { width: 100%; }
-.calendar table th,
-.calendar table td                     { text-align: right; }
-.calendar table .prev                  { text-align: left; }
-.calendar table .month                 { text-align: center; }
-.calendar table .inactive              { opacity: 0.50; }
-.calendar table .today                 { font-weight: bold; }
+/* Calendar */
+.calendar table {
+  &                                    { width: 100%; }
+  th,
+  td                                   { text-align: right; }
+  .prev                                { text-align: left; }
+  .month                               { text-align: center; }
+  .inactive                            { opacity: 0.50; }
+  .today                               { font-weight: bold; }
+}
 
-.events .days                          { list-style: none; margin-left: 0; }
-.events .days .date                    { margin-bottom: 10px; }
-.events .days .day                     { border-top: 1px solid @separator-color; }
-.events .days article                  { border-top: 0 none; }
-.events .days .city                    { padding-top: 10px; }
-
-#events .day > header                  { float: left; }
-#events .day .city                     { margin-left: 80px; margin-bottom: 0.8333em; }
-#events .day .city article header:after { clear: none; }
-#events .day .city h3                  { text-align: center; }
-#events .calendar .events              { margin-top: -1px; }
-#events .tab .events li                { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }
-
+/* Event list */
+.events {
+  .days {
+    &                                  { list-style: none; margin-left: 0; }
+    .date                              { margin-bottom: 10px; }
+    .day                               { border-top: 1px solid @separator-color; }
+    article                            { border-top: 0 none; }
+    .city                              { padding-top: 10px; }
+  }
+}
+#events {
+  .day > header                        { float: left; }
+  .day .city                           { margin-left: 80px; margin-bottom: 0.8333em; }
+  .day .city article header:after      { clear: none; }
+  .day .city h3                        { text-align: center; }
+  .calendar .events                    { margin-top: -1px; }
+  .tab .events li                      { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -o-text-overflow: ellipsis; }
+}
 .event article.dj p                    { font-size: 1.3333em; padding: 0; text-indent: 0; }
 
 #form-event-edit {
@@ -48,20 +56,24 @@
       li + li                          { margin-top: 1.665em; }
       li + li label                    { display: inline; margin: 0 1em; }
     }
-    #fields-venue                      { display: none; }
     #fields-tickets,
-	  #fields-where {
+	  #fields-venue {
       li                               { overflow: hidden; }
-      label                            { clear: left; float: left; width: 138px; }
+      label                            { clear: left; float: left; width: 110px; }
       select,
-      input                            { float: left; margin-left: 20px; width: 138px; }
-      a.action                         { margin-left: 158px; }
+      input                            { float: left; margin-left: 10px; width: 154px; }
+      .choice a                        { margin-left: 120px; }
+      .choice input                    { margin: 0 1em 0 0; width: auto; }
     }
     #fields-tickets {
-      input                            { width: 54px; }
-      #field-free                      { margin: 0 1em 0 0; width: auto; }
+      input                            { width: 67px; }
     }
-    #field-free + label                { clear: none; }
+    #fields-venue {
+      #field-venue-name,
+      label[for=field-venue-name]      { display: none; }
+    }
+    #field-free + label,
+    #field-ug + label                  { clear: none; }
   }
 }
 
