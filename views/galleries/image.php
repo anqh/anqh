@@ -70,10 +70,10 @@ endif; ?>
 
 			<?php $i = 0; if ($notes) foreach ($notes as $noted): $i++; $name = $noted->user->loaded() ? $noted->user->username : $noted->name; ?>
 			<li>
-				<?php if ($url = ($noted->user->loaded() ? URL::base() . URL::user($noted->user) : null)): ?>
-					<?php echo HTML::anchor($url, $name, array('data-note-id' => $noted->id)) ?>
+				<?php if ($noted->user->loaded()): ?>
+					<?php echo HTML::user($noted->user, null, array('data-note-id' => $noted->id)); ?>
 				<?php else: ?>
-					<span data-note-id="<?php echo $noted->id ?>"><?php echo HTML::chars($name) ?></span>
+					<span data-note-id="<?php echo $noted->id; ?>"><?php echo HTML::chars($name); ?></span>
 				<?php endif; ?>
 
 				<?php if (Permission::has($noted, Model_Image_Note::PERMISSION_DELETE, $user)): ?>
@@ -116,13 +116,6 @@ endif; ?>
 <?php endif; // Notes ?>
 
 </figure>
-
-<?php if ($image->description): ?>
-<footer>
-	<?php $names = array(); foreach (explode(',', $image->description) as $name) $names[] = HTML::user(trim($name)); ?>
-	<?php echo __('In picture: :users', array(':users' => implode(', ', $names))) ?>
-</footer>
-<?php endif ?>
 
 <?php
 echo HTML::script_source('

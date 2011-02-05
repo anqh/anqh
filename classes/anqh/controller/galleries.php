@@ -867,7 +867,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'next'      => $next,
 				'previous'  => $previous,
 				'approve'   => isset($approve) ? $approve : null,
-				'notes'     => $current->notes,
+				'notes'     => $current->find_notes(),
 				'note'      => Permission::has($current, Model_Image::PERMISSION_NOTE, self::$user),
 				'user'      => self::$user,
 			)));
@@ -968,6 +968,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				}
 
 				$note->save();
+				$image->update_description()->save();
 
 				// Newsfeed
 				if ($user_id) {
@@ -1014,6 +1015,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$gallery = Model_Gallery::find_by_image($image->id);
 
 		$note->delete();
+		$image->update_description()->save();
 
 		// Redirect back to image
 		// @todo: ajaxify for more graceful approach
