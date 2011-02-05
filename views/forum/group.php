@@ -46,12 +46,12 @@
 
 		<?php elseif ($area->status != Model_Forum_Area::STATUS_HIDDEN): ?>
 
-		<article class="area disabled">
-			<header>
-				<h4><?php echo HTML::chars($area->name) ?></h4>
-				<?php echo __('Members only') ?>
-			</header>
-		</article>
+<article class="area disabled">
+	<header>
+		<h4><?php echo HTML::chars($area->name) ?></h4>
+		<?php echo __('Members only') ?>
+	</header>
+</article>
 
 		<?php	endif; ?>
 
@@ -59,8 +59,8 @@
 
 <?php else: ?>
 
-	<article class="empty">
-		<?php echo __('No areas yet.') ?>
-	</article>
+<article class="empty">
+	<?php echo __('No areas yet.') ?>
+</article>
 
 <?php endif; ?>

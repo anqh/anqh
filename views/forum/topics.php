@@ -11,16 +11,25 @@
 
 <?php if (count($topics)): ?>
 
+<header>
+	<h3 class="grid5 first"><?php echo __('Topic') ?></h3>
+	<span class="grid1"><?php echo __('Replies') ?></span>
+	<span class="grid2"><?php echo __('Latest post') ?></span>
+</header>
+
 	<?php foreach ($topics as $topic): ?>
 
-	<article>
-		<header>
-			<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-			<h4><?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name)) ?></h4>
-		</header>
+<article>
+	<header class="grid6 first">
+		<?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('class' => 'grid5 first')) ?>
+		<span class="grid1"><?php echo Num::format($topic->post_count - 1, 0) ?></span>
+	</header>
+
+	<p class="grid2">
+		<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
 		<?php echo HTML::user($topic->last_post->original('author'), $topic->last_poster) ?>
-		<?php echo HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts' . ($topic->post_count > 49 ? ' hot' : '')) ?>
-	</article>
+	</p>
+</article>
 
 	<?php endforeach; ?>
 
