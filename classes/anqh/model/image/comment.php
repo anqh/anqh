@@ -15,11 +15,11 @@ class Anqh_Model_Image_Comment extends Model_Comment implements Permission_Inter
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta = parent::initialize($meta);
-
 		$meta->fields(array(
 			'image' => new Field_BelongsTo
 		));
+
+		parent::initialize($meta);
 	}
 
 }

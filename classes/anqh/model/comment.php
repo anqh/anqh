@@ -45,8 +45,6 @@ abstract class Anqh_Model_Comment extends Jelly_Model implements Permission_Inte
 					'auto_now_create' => true,
 				)),
 			));
-
-		return $meta;
 	}
 
 
