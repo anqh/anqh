@@ -35,7 +35,7 @@ foreach ($shouts as $shout)
 	echo HTML::script_source('
 head.ready("jquery", function() {
 
-	$("section.shout form").live("submit", function(e) {
+	$("section.shout form").submit(function(e) {
 		e.preventDefault();
 		var shouts = $(this).closest("section.shout");
 		$.post($(this).attr("action"), $(this).serialize(), function(data) {
