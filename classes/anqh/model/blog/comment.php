@@ -15,11 +15,11 @@ class Anqh_Model_Blog_Comment extends Model_Comment {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta = parent::initialize($meta);
-
 		$meta->fields(array(
 			'blog_entry' => new Field_BelongsTo
 		));
+
+		parent::initialize($meta);
 	}
 
 }
