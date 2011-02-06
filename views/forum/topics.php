@@ -12,22 +12,22 @@
 <?php if (count($topics)): ?>
 
 <header>
-	<h3 class="grid5 first"><?php echo __('Topic') ?></h3>
-	<span class="grid1"><?php echo __('Replies') ?></span>
-	<span class="grid2"><?php echo __('Latest post') ?></span>
+	<span class="grid5 first topic"><?php echo __('Topic') ?></span>
+	<span class="grid1 replies"><?php echo __('Replies') ?></span>
+	<span class="grid2 latest"><?php echo __('Latest post') ?></span>
 </header>
 
 	<?php foreach ($topics as $topic): ?>
 
 <article>
-	<header class="grid6 first">
+	<header class="grid6 first topic">
 		<?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('class' => 'grid5 first')) ?>
-		<span class="grid1"><?php echo Num::format($topic->post_count - 1, 0) ?></span>
+		<span class="grid1 replies"><?php echo Num::format($topic->post_count - 1, 0) ?></span>
 	</header>
 
-	<p class="grid2">
+	<p class="grid2 latest">
 		<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-		<?php echo HTML::user($topic->last_post->original('author'), $topic->last_poster) ?>
+		<?php echo HTML::user($topic->original('last_poster'), $topic->last_poster) ?>
 	</p>
 </article>
 

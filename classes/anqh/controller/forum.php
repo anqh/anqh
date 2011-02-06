@@ -11,6 +11,11 @@ class Anqh_Controller_Forum extends Controller_Template {
 
 	protected $_config;
 
+	/**
+	 * @var  boolean  Private topic/area hack
+	 */
+	protected $private = false;
+
 
 	/**
 	 * Construct controller
@@ -24,6 +29,10 @@ class Anqh_Controller_Forum extends Controller_Template {
 			'index' => array('url' => Route::get('forum')->uri(), 'text' => __('New posts')),
 			'areas' => array('url' => Route::get('forum_group')->uri(), 'text' => __('Areas'))
 		);
+
+		if (self::$user) {
+			$this->tabs['private'] = array('url' => Forum::private_messages_url(), 'text' => __('Private messages'));
+		}
 	}
 
 

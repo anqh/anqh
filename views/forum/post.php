@@ -15,19 +15,26 @@ $author = Model_User::find_user_light($post->original('author'));
 $my = ($user && $author && $author['id'] == $user->id);
 
 // Topic author's post
-$owners = ($post->original('author') == $topic->original('author'));
+$owners = ($author ? $post->original('author') == $topic->original('author') : $post->author_name == $topic->author_name);
 ?>
 
 	<article id="post-<?php echo $post->id ?>" class="post <?php echo ($owners ? 'owner ' : ''), ($my ? 'my ' : ''), Text::alternate('', 'alt') ?>">
 
 		<section class="author grid2 first">
-			<?php echo HTML::avatar($author['avatar'], $author['username']) ?>
+			<?php if ($author): ?>
+				<?php echo HTML::avatar($author['avatar'], $author['username']) ?>
 
-			<?php echo HTML::user($author, $author['username']) ?><br />
-			<small><?php echo HTML::chars($author['title']) ?></small>
-			<p>
-				<small><?php echo __('Posts: :posts', array(':posts' => '<var>' . Num::format($post->author->post_count, 0))) ?></small>
-			</p>
+				<?php echo HTML::user($author, $author['username']) ?><br />
+				<small><?php echo HTML::chars($author['title']) ?></small>
+				<p>
+					<small><?php echo __('Posts: :posts', array(':posts' => '<var>' . Num::format($post->author->post_count, 0))) ?></small>
+				</p>
+			<?php else: ?>
+				<?php echo HTML::avatar(false) ?>
+
+				<?php echo $post->author_name ?><br />
+				<small><?php echo __('Guest') ?></small>
+			<?php endif; ?>
 		</section>
 
 		<section class="post-content grid6">
@@ -38,7 +45,7 @@ $owners = ($post->original('author') == $topic->original('author'));
 
 				<nav class="actions">
 				<?php echo HTML::anchor(
-					Route::get('forum_post')->uri(array(
+					Route::get($private ? 'forum_private_post' : 'forum_post')->uri(array(
 						'id'       => Route::model_id($post),
 						'topic_id' => Route::model_id($topic)
 					)) . '#post-' . $post->id,
@@ -46,7 +53,7 @@ $owners = ($post->original('author') == $topic->original('author'));
 					array('title' => __('Permalink'))) ?>
 
 				<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_UPDATE, $user)) echo HTML::anchor(
-						Route::get('forum_post')->uri(array(
+						Route::get($private ? 'forum_private_post' : 'forum_post')->uri(array(
 							'id'       => Route::model_id($post),
 							'topic_id' => Route::model_id($topic),
 							'action'   => 'edit')),
@@ -54,7 +61,7 @@ $owners = ($post->original('author') == $topic->original('author'));
 						array('class' => 'action post-edit small')) ?>
 
 				<?php if (Permission::has($post, Model_Forum_Post::PERMISSION_DELETE, $user)) echo HTML::anchor(
-						Route::get('forum_post')->uri(array(
+						Route::get($private ? 'forum_private_post' : 'forum_post')->uri(array(
 							'id'       => Route::model_id($post),
 							'topic_id' => Route::model_id($topic),
 							'action'   => 'delete')) . '?token=' . Security::csrf(),
@@ -62,7 +69,7 @@ $owners = ($post->original('author') == $topic->original('author'));
 						array('class' => 'action post-delete small')) ?>
 
 				<?php if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, $user)) echo HTML::anchor(
-						Route::get('forum_post')->uri(array(
+						Route::get($private ? 'forum_private_post' : 'forum_post')->uri(array(
 							'id'       => Route::model_id($post),
 							'topic_id' => Route::model_id($topic),
 							'action'   => 'quote')),
@@ -73,7 +80,8 @@ $owners = ($post->original('author') == $topic->original('author'));
 
 			<?php if ($post->parent->id) echo __('Replying to :parent', array(
 				':parent' => HTML::anchor(
-					Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $post->parent->id)) . '#post-' . $post->parent->id,
+					Route::get($private ? 'forum_private_post' : 'forum_post')
+						->uri(array('topic_id' => Route::model_id($topic), 'id' => $post->parent->id)) . '#post-' . $post->parent->id,
 					HTML::chars($post->parent->topic->name)
 				))) ?>
 

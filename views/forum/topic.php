@@ -26,10 +26,12 @@
 	$previous = $current;
 
 	echo View::factory('forum/post', array(
-		'topic'  => $topic,
-		'post'   => $post,
-		'number' => $first++,
-		'user'   => $user));
+		'topic'   => $topic,
+		'post'    => $post,
+		'number'  => $first++,
+		'user'    => $user,
+		'private' => isset($private) && $private
+	));
 
 endforeach; ?>
 

@@ -9,59 +9,37 @@
  */
 class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface {
 
-	/**
-	 * Permission to post new topic
-	 */
+	/** Permission to post new topic */
 	const PERMISSION_POST = 'post';
 
-	/**
-	 * Everybody can read area
-	 */
+	/** Everybody can read area */
 	const READ_NORMAL = 0;
 
-	/**
-	 * Only memberes can read area
-	 */
+	/** Only memberes can read area */
 	const READ_MEMBERS = 1;
 
-	/**
-	 * Visible area
-	 */
+	/** Visible area */
 	const STATUS_NORMAL = 0;
 
-	/**
-	 * Hidden area
-	 */
+	/** Hidden area */
 	const STATUS_HIDDEN = 1;
 
-	/**
-	 * Normal area
-	 */
+	/** Normal area */
 	const TYPE_NORMAL = 0;
 
-	/**
-	 * Topics bound to foreign model
-	 */
+	/** Topics bound to foreign model */
 	const TYPE_BIND = 1;
 
-	/**
-	 * Private area
-	 */
+	/** Private area */
 	const TYPE_PRIVATE = 2;
 
-	/**
-	 * Members can start new topics
-	 */
+	/** Members can start new topics */
 	const WRITE_NORMAL = 0;
 
-	/**
-	 * Only admins can start new topics
-	 */
+	/** Only admins can start new topics */
 	const WRITE_ADMINS = 1;
 
-	/**
-	 * @var  array  User editable fields
-	 */
+	/** @var  array  User editable fields */
 	public static $editable_fields = array(
 		'group', 'name', 'description', 'sort', 'access_read', 'access_write', 'status', 'type', 'bind'
 	);
@@ -173,6 +151,23 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 					'foreign' => 'forum_topic'
 				))
 			));
+
+		return $meta;
+	}
+
+
+	/**
+	 * Find area's paginated active topics
+	 *
+	 * @param   Pagination $pagination
+	 * @return  Jelly_Collection
+	 */
+	public function find_active_topics(Pagination $pagination) {
+		return $this
+			->get('topics')
+			->order_by('last_post_id', 'DESC')
+			->pagination($pagination)
+			->execute();
 	}
 
 
@@ -215,33 +210,29 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 	 * @return  boolean
 	 */
 	public function has_permission($permission, $user) {
-		$status = false;
-
 		switch ($permission) {
+
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    $status = $user && $user->has_role('admin');
-		    break;
+		    return $user && $user->has_role('admin');
 
 			case self::PERMISSION_POST:
-		    $status = $user
+		    return $user
 			    && ($this->access_write != self::WRITE_ADMINS
 				    && $this->type != self::TYPE_BIND
 				    && $this->status != self::STATUS_HIDDEN
 				    || $user->has_role('admin')
 			    );
-		    break;
 
 			case self::PERMISSION_READ:
-				$status = $this->status == self::STATUS_NORMAL
+				return $this->status == self::STATUS_NORMAL
 					&& $this->type != self::TYPE_PRIVATE
 					&& ($this->access_read == self::READ_NORMAL || $user);
-		    break;
 
 		}
 
-		return $status;
+		return false;
 	}
 
 }

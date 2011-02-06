@@ -38,15 +38,15 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	public static function initialize(Jelly_Meta $meta) {
 		$meta
 			->fields(array(
-				'id'          => new Field_Primary,
-				'area'        => new Field_BelongsTo(array(
+				'id' => new Field_Primary,
+				'area' => new Field_BelongsTo(array(
 					'column'  => 'forum_area_id',
 					'foreign' => 'forum_area',
 					'rules'   => array(
 						'not_empty' => array(true),
 					)
 				)),
-				'name'        => new Field_String(array(
+				'name' => new Field_String(array(
 					'label' => __('Topic'),
 					'rules' => array(
 						'not_empty'  => array(true),
@@ -56,8 +56,8 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 						'trim' => null,
 					),
 				)),
-				'old_name'    => new Field_String,
-				'author'      => new Field_BelongsTo(array(
+				'old_name' => new Field_String,
+				'author' => new Field_BelongsTo(array(
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
@@ -65,9 +65,9 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				'created' => new Field_Timestamp(array(
 					'auto_now_create' => true,
 				)),
-				'type'        => new Field_Integer,
-				'status'      => new Field_Enum(array(
-					'label'   => __('Status'),
+				'type' => new Field_Integer,
+				'status' => new Field_Enum(array(
+					'label' => __('Status'),
 					'default' => self::STATUS_NORMAL,
 					'choices' => array(
 						self::STATUS_LOCKED => __('Locked'),
@@ -75,31 +75,31 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 						self::STATUS_NORMAL => __('Normal'),
 					)
 				)),
-				'sticky'      => new Field_Boolean(array(
-					'label'   => __('Sticky'),
+				'sticky' => new Field_Boolean(array(
+					'label' => __('Sticky'),
 					'default' => false
 				)),
-				'read_only'   => new Field_Boolean,
-				'first_post'  => new Field_BelongsTo(array(
+				'read_only' => new Field_Boolean,
+				'first_post' => new Field_BelongsTo(array(
 					'column'  => 'first_post_id',
 					'foreign' => 'forum_post',
 				)),
-				'last_post'   => new Field_BelongsTo(array(
+				'last_post' => new Field_BelongsTo(array(
 					'column'  => 'last_post_id',
 					'foreign' => 'forum_post',
 				)),
 				'last_posted' => new Field_Integer,
 				'last_poster' => new Field_String,
-				'read_count'   => new Field_Integer(array(
+				'read_count' => new Field_Integer(array(
 					'column' => 'reads'
 				)),
 				'post_count'   => new Field_Integer(array(
 					'column' => 'posts',
 				)),
-				'votes'       => new Field_Integer,
-				'points'      => new Field_Integer,
-				'bind_id'     => new Field_Integer,
-				'posts'       => new Field_HasMany(array(
+				'votes' => new Field_Integer,
+				'points' => new Field_Integer,
+				'bind_id' => new Field_Integer,
+				'posts' => new Field_HasMany(array(
 					'foreign' => 'forum_post',
 				))
 			));
@@ -114,7 +114,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public static function find_active($limit = 10) {
-		return Jelly::select('forum_topic')->active()->limit($limit)->execute();
+		return Jelly::select('forum_topic')->order_by('last_post_id', 'DESC')->limit($limit)->execute();
 	}
 
 
@@ -191,7 +191,18 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new($limit = 10) {
-		return Jelly::select('forum_topic')->latest()->limit($limit)->execute();
+		return Jelly::select('forum_topic')->order_by('id', 'DESC')->limit($limit)->execute();
+	}
+
+
+	/**
+	 * Find topic posts by page
+	 *
+	 * @param   Pagination  $pagination
+	 * @return  Jelly_Collection
+	 */
+	public function find_posts(Pagination $pagination) {
+		return $this->get('posts')->pagination($pagination)->execute();
 	}
 
 
@@ -202,14 +213,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  integer
 	 */
 	public function get_post_number($post_id) {
-		$query = DB::select(array('COUNT("id")', 'posts'))
-			->from('forum_posts')
-			->where('forum_topic_id', '=', $this->id)
-			->and_where('id', '<', (int)$post_id)
-			->execute()
-			->current();
-
-		return (int)Arr::get($query, 'posts', 0);
+		return $this->get('posts')->where('id', '<', (int)$post_id)->count();
 	}
 
 

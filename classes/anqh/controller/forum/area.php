@@ -133,7 +133,14 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	public function action_index() {
 
 		// Load area
-		$area_id = (int)$this->request->param('id');
+		$area_id = $this->request->param('id');
+
+		// Private area?
+		if ($area_id == 'private') {
+			return $this->action_messages();
+		}
+
+		/** @var  Model_Forum_Area  $area */
 		$area = Model_Forum_Area::find((int)$area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, (int)$area_id);
@@ -165,10 +172,52 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Posts
 		Widget::add('main', View_Module::factory('forum/topics', array(
 			'mod_class'  => 'topics articles',
-			'topics'     => $area->get('topics')->active()->pagination($pagination)->execute(),
+			'topics'     => $area->find_active_topics($pagination),
 			'pagination' => $pagination
 		)));
 
 		$this->side_views();
 	}
+
+
+	/**
+	 * Action: private
+	 */
+	public function action_messages() {
+		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, self::$user);
+
+		$this->tab_id = 'private';
+
+		// Set title
+		$this->page_title = HTML::chars(__('Private messages'));
+		$this->page_subtitle = __('Personal and group messages');
+		$this->page_subtitle .= ' | ' . HTML::anchor(
+			Route::get('forum_group')->uri(array('action' => '')),
+			__('Back to forum groups')
+		);
+
+		// Set actions
+		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST, self::$user)) {
+			$this->page_actions[] = array(
+				'link' => Route::get('forum_private_topic_add')->uri(array('action' => 'post')),
+				'text' => __('New message'), 'class' => 'topic-add'
+			);
+		}
+
+		// Pagination
+		$pagination = Pagination::factory(array(
+			'items_per_page' => Kohana::config('forum.topics_per_page'),
+			'total_items'    => Model_Forum_Private_Topic::get_count(self::$user),
+		));
+
+		// Posts
+		Widget::add('main', View_Module::factory('forum/private_topics', array(
+			'mod_class'  => 'topics messages',
+			'topics'     => Model_Forum_Private_Area::find_topics(self::$user, $pagination),
+			'pagination' => $pagination
+		)));
+
+		$this->side_views();
+	}
+
 }

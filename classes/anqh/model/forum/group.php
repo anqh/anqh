@@ -9,10 +9,14 @@
  */
 class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface {
 
-	/**
-	 * Permission to create new area
-	 */
+	/** Permission to create new area */
 	const PERMISSION_CREATE_AREA = 'create_area';
+
+	/** Visible group */
+	const STATUS_NORMAL = 0;
+
+	/** Hidden group */
+	const STATUS_HIDDEN = 1;
 
 
 	/**
@@ -21,7 +25,8 @@ class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta->sorting(array('sort' => 'ASC'))
+		$meta
+			->sorting(array('sort' => 'ASC'))
 			->fields(array(
 				'id' => new Field_Primary,
 				'name' => new Field_String(array(
@@ -54,10 +59,32 @@ class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface
 					'column'  => 'author_id',
 					'foreign' => 'user',
 				)),
+				'status' => new Field_Enum(array(
+					'label'   => __('Status'),
+					'default' => self::STATUS_NORMAL,
+					'choices' => array(
+						self::STATUS_HIDDEN => 'Hidden',
+						self::STATUS_NORMAL => 'Normal',
+					),
+					'rules'   => array(
+						'not_empty' => null,
+					)
+				)),
 				'areas' => new Field_HasMany(array(
 					'foreign' => 'forum_area',
 				))
 			));
+	}
+
+
+	/**
+	 * Find all groups
+	 *
+	 * @static
+	 * @return  Jelly_Collection
+	 */
+	public static function find_all() {
+		return Jelly::select('forum_group')->where('status', '=', self::STATUS_NORMAL)->execute();
 	}
 
 
