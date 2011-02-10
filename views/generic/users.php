@@ -15,9 +15,10 @@
 
 		// Build short (friends) and long (others) user list
 		$short = $long = array();
+		$total = count($users);
 		foreach ($users as $user):
 			$user = is_array($user) ? $user : Model_User::find_user_light($user);
-			if ($viewer && $viewer->is_friend($user)):
+			if ($total < 11 || $viewer && $viewer->is_friend($user)):
 				$short[mb_strtoupper($user['username'])] = HTML::user($user);
 			else:
 				$long[mb_strtoupper($user['username'])] = HTML::user($user);

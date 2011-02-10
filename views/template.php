@@ -100,10 +100,8 @@ head
 <?php echo Widget::get('subnavigation') ?>
 <?php //echo Widget::get('breadcrumb') ?>
 
-				<hgroup>
-					<h2><?php echo $page_title ?></h2>
-					<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
-				</hgroup>
+				<h2><?php echo $page_title ?></h2>
+				<?php echo !empty($page_subtitle) ? '<span class="subtitle">' . $page_subtitle . '</span>' : '' ?>
 
 <?php echo Widget::get('actions') ?>
 <?php echo Widget::get('share') ?>
