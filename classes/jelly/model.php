@@ -55,6 +55,16 @@ class Jelly_Model extends Jelly_Model_Core {
 
 
 	/**
+	 * Get model URL slug
+	 *
+	 * @return  string
+	 */
+	public function slug() {
+		return $this->name();
+	}
+
+
+	/**
 	 * Validates the current state of the model.
 	 *
 	 * Only changed data is validated, unless $data is passed.
