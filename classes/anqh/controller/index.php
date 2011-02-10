@@ -58,7 +58,7 @@ class Anqh_Controller_Index extends Controller_Template {
 			'can_shout' => Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE),
 			'errors'    => array(),
 			'values'    => array(),
-		)));
+		)), Widget::BOTTOM);
 
 		// Online
 		Widget::add('side', View_Module::factory('user/online', array(
