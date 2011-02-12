@@ -332,10 +332,15 @@ $.fn.autocompleteCity = function(options) {
 // User autocomplete
 $.fn.autocompleteUser = function(options) {
 	var field = $(this);
+	var cache = {};
+	var lastXhr;
+
 	var defaults = {
 		'userId':    'user_id',
-		'limit':     25,
-		'minLength': 3,
+		'limit':     15,
+		'minLength': 2,
+		'maxUsers':  1,
+		'tokenized': false,
 		'action':    'form',
 		'search':    'username',
 		'field':     'id:username:avatar:url',
@@ -343,23 +348,50 @@ $.fn.autocompleteUser = function(options) {
 	};
 	options = $.extend(defaults, options || {});
 
+	// Facebook style tokenized list
+	if (options.tokenized) {
+		var width = field.width();
+		field.wrap('<div class="tokenized" />');
+		field.parent()
+			.width(width)
+			.click(function() {
+				field.focus();
+			});
+	}
+
+	// Multiple users in one select
+	var multiple = (options.maxUsers > 1 && !options.tokenized);
+
+	function split(val) {
+		return val.split(/,\s*/);
+	}
+
+	function lastTerm(term) {
+		return split(term).pop();
+	}
+
 	$(this)
 		.autocomplete({
 			minLength: options.minLength,
 
 			source: function(request, response) {
-				$.ajax({
-					url: '/api/v1/user/search',
-					dataType: 'json',
-					'data': {
-						'q':     request.term,
+				var term = multiple ? lastTerm(request.term) : request.term;
+
+				if (term in cache) {
+					response(cache[term]);
+					return;
+				}
+
+				lastXhr = $.getJSON(
+					'/api/v1/user/search',
+					{
+						'q':     term,
 						'limit': options.limit,
 						'field': options.field,
 						'order': options.order
 					},
-
-					success: function(data) {
-						response($.map(data.users, function(item) {
+					function(data, status, xhr) {
+						cache[term] = $.map(data.users, function(item) {
 							return {
 								'label': item.username,
 								'value': item.username,
@@ -367,9 +399,29 @@ $.fn.autocompleteUser = function(options) {
 								'id':    item.id,
 								'url':   item.url
 							};
-						}));
+						});
+
+						if (xhr === lastXhr) {
+							response(cache[term]);
+						}
 					}
-				});
+				);
+			},
+
+			// Custom minLength check for multiple terms
+			search: function() {
+				if (multiple) {
+					var terms = split(this.value);
+
+					if (terms.length > options.maxUsers || terms.pop().length < this.minLength) {
+						return false;
+					}
+				}
+			},
+
+			// Don't insert value on focus
+			focus: function() {
+				if (multiple) return false;
 			},
 
 			select: function(event, ui) {
@@ -377,8 +429,43 @@ $.fn.autocompleteUser = function(options) {
 
 					// Fill form
 					case 'form':
-						$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
-						field.val(ui.item.value);
+						if (multiple) {
+
+							// Multiple users, one input
+							var terms = split(this.value);
+							terms.pop();
+							terms.push(ui.item.value);
+							terms.push('');
+							this.value = terms.join(', ');
+							return false;
+
+						} else if (options.maxUsers > 1) {
+
+							// Multiple users, tokenized
+							// @todo  Values to post
+							var span = $('<span>')
+								.attr({ 'user-id': ui.item.id })
+								.text(ui.item.value);
+							var link = $('<a>')
+								.attr({ 'href': '#remove' })
+								.text('x')
+								.click(function() {
+									$(this).parent().remove();
+									return false;
+								})
+								.appendTo(span);
+
+							span.insertBefore(field);
+							this.value = '';
+							return false;
+
+						} else {
+
+							// Single user
+							$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
+							field.val(ui.item.value);
+
+						}
 						break;
 
 					// Navigate URL

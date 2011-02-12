@@ -65,6 +65,7 @@ input[type="radio"] + label,
 .horizontal2 label,
 .horizontal label                      { display: inline; }
 
+.tokenized,
 input,
 textarea,
 select                                 { background: @input-background; border: 1px solid; border-color: @input-border-top @input-border-right @input-border-bottom @input-border-left; .border-radius(3px); color: @input-color; margin: 0 -3px; padding: 2px 3px 4px; .transition(border-color .15s ease-in-out); }
@@ -97,16 +98,24 @@ input.private                          { border-color: @private-color; }
 fieldset a                             { vertical-align: middle; }
 fieldset label a                       { vertical-align: inherit; }
 
-input.date                             { width: 8em; }
-input.time                             { width: 4em; }
-select.time                            { width: 6em; }
-
+/* Form messages */
 form .error .info                      { color: @error-color; }
 form .error select,
 form .error textarea,
 form .error input                      { border-color: @error-background; }
 form .notice .info                     { background: @info-background; color: @info-color; }
 form .notice input                     { border-color: @info-background; }
+
+/* Time inputs */
+input.date                             { width: 8em; }
+input.time                             { width: 4em; }
+select.time                            { width: 6em; }
+
+/* Tokenized input list */
+.tokenized                             { cursor: text; overflow: hidden; }
+.tokenized input                       { background: transparent none; border: 0 none; float: left; margin: 0; padding: 0 20px 0 0; position: relative; top: 2px; width: 134px; }
+.tokenized span                        { display: block; float: left; padding: 0 16px 0 2px; position: relative; }
+.tokenized span a                      { position: absolute; right: 4px; top: 0; }
 
 /***** /INPUTS *****/
 
@@ -173,7 +182,7 @@ a[class*=-delete]:hover                { color: @negative-color; text-shadow: 0 
 form .buttons                          { display: block; margin-bottom: 1em; margin-top: 1em; text-align: center; }
 
 .pills li                              { display: inline; }
-.pills li label                        { background: @input-background; .border-radius(5px); color: @input-color; cursor: pointer; display: inline; padding: 0 0.5em; }
+.pills li label                        { background: @input-background; .border-radius(5px); color: @input-color; cursor: pointer; display: inline-block; padding: 0 0.5em; }
 .pills li label:hover                  { background: @link-hover-color; color: @action-link-color; }
 .pills li input[type=checkbox]         { display: none; }
 .pills li input[type=checkbox]:checked + label { background: @positive-color; color: @pill-checked-color; }
@@ -321,6 +330,7 @@ var.icon.grid1                         { width: 47px; }
 .icon                                  { background: no-repeat left center; }
 .icon.approve                          { background-image: url(/ui/icon/16/checkmark.png); }
 .icon.blog                             { background-image: url(/ui/icon/16/doc_lines_stright.png); }
+.icon.customize                        { background: url(/ui/icon/16/page_layout.png) no-repeat 5px center; }
 .icon.delete,
 .icon.deny                             { background-image: url(/ui/icon/16/delete.png); }
 .icon.clock,
@@ -337,7 +347,7 @@ var.icon.grid1                         { width: 47px; }
 .icon.comments,
 .icon.posts                            { background-image: url(/ui/icon/16/spechbubble.png); }
 .icon.posts.hot                        { background-image: url(16/spechbubble.png); }
-.icon.customize                        { background: url(/ui/icon/16/page_layout.png) no-repeat 5px center; }
+.icon.private-message                  { background-image: url(/ui/icon/16/mail.png); }
 .icon.profiler                         { background-image: url(/ui/icon/16/bug.png); }
 .icon.rate                             { background-image: url(/ui/icon/16/star_fav.png); }
 .icon.rate-half                        { background-image: url(/ui/icon/16/star_fav_half.png); }
@@ -346,6 +356,7 @@ var.icon.grid1                         { width: 47px; }
 .icon.settings                         { background-image: url(/ui/icon/16/wrench.png); }
 .icon.tag                              { background-image: url(/ui/icon/16/tag.png); }
 .icon.time                             { background-image: url(/ui/icon/16/clock.png); }
+.icon.group-message,
 .icon.topics                           { background-image: url(/ui/icon/16/spechbubble_2.png); }
 .icon.venue                            { background-image: url(/ui/icon/16/pin_map.png); }
 .icon.views                            { background-image: url(/ui/icon/16/eye.png); }
