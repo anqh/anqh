@@ -111,10 +111,9 @@ class Anqh_Controller_User extends Controller_Template {
 			return $this->action_index();
 		}
 
-		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
-		if ($user)	{
+		if ($user = Model_User::find_user_light(urldecode((string)$this->request->param('username'))))	{
 			echo View_Module::factory('user/hovercard', array(
-				'mod_title' => HTML::chars($user->username),
+				'mod_title' => HTML::chars($user['username']) . ' <small>#' . $user['id'] . '</small>',
 				'user'      => $user
 			));
 		} else {
