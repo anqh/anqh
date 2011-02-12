@@ -54,8 +54,8 @@ class Anqh_Controller_User_API extends Controller_API {
 		// Result fields
 		$field  = explode(':', Arr::get($_REQUEST, 'field', 'id:username'));
 
-		// Term must be at least 3 characters
-		if (strlen($term) >= 3) {
+		// Term must be at least 2 characters
+		if (strlen($term) >= 2) {
 
 			// 500 events max
 			$limit = min($limit, 500);
@@ -74,6 +74,16 @@ class Anqh_Controller_User_API extends Controller_API {
 
 			// Build query
 			$users = Jelly::select('user')->limit($limit);
+
+			// Find friends first
+			if ($user_id = Arr::get($_REQUEST, 'user', 0)) {
+				$users
+					->join('friend', 'LEFT')
+					->on('user.:primary_key', '=', 'friend.friend:foreign_key')
+					->on('friend.user:foreign_key', '=', DB::expr((int)$user_id))
+					->order_by('friend.created', 'ASC');
+			}
+
 			foreach ($orders as $column => $direction) {
 				$users->order_by($column, $direction);
 			}
