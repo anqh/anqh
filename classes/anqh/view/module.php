@@ -9,8 +9,12 @@
  */
 class Anqh_View_Module extends View {
 
-	protected $_viewfile;
+	/**
+	 * @var  string  View name
+	 */
+	protected $_name;
 
+	
 	/**
 	 * Creates a new View Mod using the given parameters.
 	 *
@@ -19,7 +23,10 @@ class Anqh_View_Module extends View {
 	 * @return  ViewMod
 	 */
 	public static function factory($name = null, array $data = null) {
-		return new self($name, $data);
+		$view = new self($name, $data);
+		$view->_name = $name;
+
+		return $view;
 	}
 
 
@@ -29,7 +36,13 @@ class Anqh_View_Module extends View {
 	 * @return  string
 	 */
 	public function render($file = null) {
-		return (string)View::factory('generic/mod', array(
+
+		// Start benchmark
+		if (Kohana::$profiling === true and class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('View', __METHOD__ . '(' . $this->_name .')');
+		}
+
+		$module = (string)View::factory('generic/mod', array(
 			'class'      => 'mod ' . Arr::get_once($this->_data, 'mod_class', strtr(basename($this->_file, '.php'), '_', '-')),
 			'id'         => Arr::get_once($this->_data, 'mod_id'),
 			'actions'    => isset($this->_data['mod_actions'])  ? (string)View::factory('generic/actions', array('actions' => Arr::get_once($this->_data, 'mod_actions'))) : null,
@@ -39,6 +52,13 @@ class Anqh_View_Module extends View {
 			'pagination' => Arr::get_once($this->_data, 'pagination'),
 			'content'    => parent::render($file),
 		));
+
+		// Stop benchmark
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
+		}
+
+		return $module;
 	}
 
 }
