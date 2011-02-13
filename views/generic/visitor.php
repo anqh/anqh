@@ -32,9 +32,10 @@ if ($user):
 			)); ?>
 		<?php echo HTML::anchor('#', '&#9660;', array('class' => 'toggler', 'onclick' => '$("#visitor .submenu").toggleClass("toggled"); return false;')); ?>
 		<ul class="submenu">
-			<li class="menu-settings"><?php echo HTML::anchor(URL::user($user, 'settings'), __('Settings'), array('class' => 'icon settings')) ?></li>
+			<li class="menu-messages"><?php echo HTML::anchor(Forum::private_messages_url(), __('Private messages'), array('class' => 'icon private-message')) ?></li>
 			<li class="menu-friends"><?php echo HTML::anchor(URL::user($user, 'friends'), __('Friends'), array('class' => 'icon friends')) ?></li>
 			<li class="menu-ignores"><?php echo HTML::anchor(URL::user($user, 'ignores'), __('Ignores'), array('class' => 'icon ignores')) ?></li>
+			<li class="menu-settings"><?php echo HTML::anchor(URL::user($user, 'settings'), __('Settings'), array('class' => 'icon settings')) ?></li>
 			<?php if ($user->has_role('admin')): ?>
 			<li class="menu-roles admin"><?php echo HTML::anchor(Route::get('roles')->uri(), __('Roles'), array('class' => 'icon role')) ?></li>
 			<li class="menu-tags admin"><?php echo HTML::anchor(Route::get('tags')->uri(), __('Tags'), array('class' => 'icon tag')) ?></li>
