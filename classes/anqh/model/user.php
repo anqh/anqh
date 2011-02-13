@@ -400,6 +400,17 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			$new['new-comments'] = HTML::anchor(URL::user($this), $this->new_comment_count, array('title' => __('New comments')));
 		}
 
+		// Forum private messages
+		$private_messages = Forum::find_new_private_messages($this);
+		if (count($private_messages)) {
+			$new_messages = 0;
+			foreach ($private_messages as $private_message) {
+				$new_messages += $private_message->unread;
+			}
+			$new['new-private-messages'] = HTML::anchor(Route::model($private_message->topic) . '?page=last#last', $new_messages, array('title' => __('New private messages')));
+		}
+		unset($private_messages);
+
 		// Blog comments
 		$blog_comments = Model_Blog_Entry::find_new_comments($this);
 		if (count($blog_comments)) {
