@@ -232,7 +232,7 @@ footer:after,
 /***** /Matthew James Taylor *****/
 
 
-/***** Nick La & Darcy Clarke, 974px 30px gutter *****/
+/***** Nick La & Darcy Clarke, 974px 10px gutter *****/
 
 .grid1,
 .grid2,
@@ -272,14 +272,16 @@ footer:after,
 .first                                 { clear: left; margin-left: 0; }
 aside .container .grid2                { clear: none; margin-left: 0; }
 
-/***** /Nick La & Darcy Clarke, 978px 30px gutter *****/
+/***** /Nick La & Darcy Clarke, 974px 10px gutter *****/
 
 
 @grids:                                12;
 @gutter:                               10px;
 @page-width:                           974px;
 @spacing:                              @gutter;
-.grid (@col: 1)                        { float: left; margin-left: @gutter; position: relative; width: (@page-width - @gutter) / @grids * @col; }
+.grid (@col: 1)                        { float: left; margin-left: @gutter; position: relative; .grid-width(1); }
+.grid-width (@col: 1)                  { width: ((@page-width + @gutter) / @grids) * @col - @gutter; }
+.grid-width-mod (@col: 1)              { width: ((@page-width + @gutter) / @grids) * @col - @gutter - (5 * @col); }
 
 
 .label2 label,

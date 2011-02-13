@@ -88,9 +88,10 @@ body.right #main                       { float: right; }
   .avatar                              { padding: 0 5px 0 0; }
   li                                   { display: block; float: left; margin-right: 15px; position: relative; }
   li li                                { margin-right: 0; }
-  ul.submenu                           { background: @header-background; .box-shadow(@header-shadow); display: none; left: -5px; margin-top: 23px; padding: 0 10px 10px; position: absolute; right: -10px; top: 0; z-index: 2; }
+  ul.submenu                           { background: @header-background; .box-shadow(@header-shadow); display: none; left: -5px; margin-top: 23px; padding: 0 10px 10px; position: absolute; right: -10px; top: 0; width: 154px; z-index: 2; }
   ul.submenu.toggled,
   li.menu-profile:hover ul             { display: block; }
+  ul.submenu li                        { float: none; }
   ul.submenu li a                      { padding-left: 25px; }
 
   /* New message indicators */
@@ -154,7 +155,8 @@ section article .details               { color: @text-color-alt; }
 
 /* Title */
 #title                                 { .midget; background: @title-background; position: relative; }
-#title hgroup                          { float: none; padding: 0 5px; }
+#title .subtitle                       { padding: 0 5px; }
+/*#title hgroup                          { float: none; padding: 0 5px; }*/
 #title .subtitle .icon,
 #title h3 .icon                        { margin: 0 5px; }
 #title .actions                        { position: absolute; right: 5px; top: 5px; }

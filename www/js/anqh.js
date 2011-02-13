@@ -336,6 +336,7 @@ $.fn.autocompleteUser = function(options) {
 	var lastXhr;
 
 	var defaults = {
+		'user':      0,
 		'userId':    'user_id',
 		'limit':     15,
 		'minLength': 2,
@@ -386,6 +387,7 @@ $.fn.autocompleteUser = function(options) {
 					'/api/v1/user/search',
 					{
 						'q':     term,
+						'user':  options.user,
 						'limit': options.limit,
 						'field': options.field,
 						'order': options.order

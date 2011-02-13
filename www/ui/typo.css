@@ -35,7 +35,7 @@ h4                                     { font-weight: normal; font-family: Nobil
 h5,
 h6                                     { font-weight: normal; }
 h1                                     { font-size: 2em; line-height: 1.666em; /*margin-top: 0.833em;*/ }
-h2                                     { font-size: 1.75em; letter-spacing: -.05em; line-height: 1.25em; padding: .5em 0; }
+h2                                     { font-family: Georgia, 'Times New Roman', Times, serif; font-size: 1.75em; font-style: italic; line-height: 1.25em; padding: .5em 5px; }
 legend                                 { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
 /*h3                                     { font-size: 1.5em; line-height: 1.1111em; padding-top: 1.111em; }
 h4                                     { font-size: 1.3333em; letter-spacing: -1px; line-height: 1.25em; padding-top: 1.25em; }
