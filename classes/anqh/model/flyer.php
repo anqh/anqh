@@ -163,6 +163,22 @@ GROUP BY 1
 
 
 	/**
+	 * Get a random flyer
+	 *
+	 * @static
+	 * @param   boolean  $unknown  Limit to unknown fliers (not linked to an event)
+	 * @return  Model_Flyer
+	 */
+	public static function find_random($unknown = false) {
+		$flyer = Jelly::select('flyer');
+
+		$unknown and $flyer->where('event_id', 'IS', null);
+
+		return $flyer->order_by(DB::expr('RANDOM()'))->limit(1)->execute();
+	}
+
+
+	/**
 	 * Does the flyer has a proper date or 1.1.2000 00:00:00 style
 	 *
 	 * @return  boolean
