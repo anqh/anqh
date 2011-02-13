@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -25,9 +25,10 @@
 <?php echo Form::close() ?>
 
 <?php foreach ($comments as $comment):
+	$author = Model_User::find_user_light($comment->original('author'));
 
 	// Ignore
-	if ($user && $user->is_ignored($comment->author)) continue;
+	if ($user && $user->is_ignored($author)) continue;
 
 	$classes = array();
 
@@ -36,7 +37,7 @@
 	}
 
 	// Viewer's post
-	if ($user && $comment->author->id == $user->id) {
+	if ($user && $author['id'] == $user->id) {
 		$classes[] = 'my';
 		$mine = true;
 	} else {
@@ -44,14 +45,14 @@
 	}
 
 	// Topic author's post
-	if ($comment->author->id == $comment->user->id) {
+	if ($author['id'] == $comment->original('user')) {
 		$classes[] = 'owner';
 	}
  ?>
 
 <article id="comment-<?php echo $comment->id ?>" class="<?php echo implode(' ', $classes) ?>">
-	<?php echo HTML::avatar($comment->author->avatar, $comment->author->username, true) ?>
-	<?php echo HTML::user($comment->author, $comment->author->username) ?>
+	<?php echo HTML::avatar($author['avatar'], $author['username'], true) ?>
+	<?php echo HTML::user($author) ?>
 	<small class="ago"><?php echo HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?></small>
 
 	<?php if ($user && $comment->user->id == $user->id || $mine): ?>
