@@ -16,6 +16,18 @@ class Anqh_Forum {
 
 
 	/**
+	 * Find new private messages
+	 *
+	 * @static
+	 * @param   Model_User $user
+	 * @return  array
+	 */
+	public static function find_new_private_messages(Model_User $user) {
+		return Jelly::select('forum_private_recipient')->where('user_id', '=', $user->id)->and_where('unread', '>', 0)->execute();
+	}
+
+
+	/**
 	 * Get private messages URL
 	 *
 	 * @static

@@ -93,6 +93,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Load topic
+		/** @var  Model_Forum_Private_Topic|Model_Forum_Topic  $topic */
 		$topic = $this->private ? Model_Forum_Private_Topic::find($topic_id) : Model_Forum_Topic::find($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
@@ -122,6 +123,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Add new tab
 		if ($this->private) {
 			$this->tab_id = 'private';
+			$topic->mark_as_read(self::$user);
 		} else {
 			$this->tab_id = 'area';
 			$this->tabs['area'] = array('url' => Route::model($topic->area), 'text' => __('Area'));
@@ -745,7 +747,7 @@ $(function() {
 		}
 
 		$this->page_title = $prefix . HTML::chars($topic->name());
-		$this->page_subtitle  = HTML::icon_value(array(':views' => $topic->read_count), ':views view', ':views views', 'views');
+		$this->page_subtitle  = HTML::icon_value(array(':views' => (int)$topic->read_count), ':views view', ':views views', 'views');
 		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts');
 
 		if ($this->private) {

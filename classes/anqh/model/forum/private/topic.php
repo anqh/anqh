@@ -201,6 +201,22 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 
 
 	/**
+	 * Mark private message as read
+	 *
+	 * @param   Model_User  $user
+	 * @return  boolean
+	 */
+	public function mark_as_read(Model_User $user) {
+		return (int)DB::update('forum_private_recipients')
+			->set(array('unread' => 0))
+			->where('forum_topic_id', '=', $this->id)
+			->and_where('user_id', '=', $user->id)
+			->and_where('unread', '>', 0)
+			->execute();
+	}
+
+
+	/**
 	 * Notify message recipients about new post
 	 *
 	 * @param   Model_User  $user  New post author
