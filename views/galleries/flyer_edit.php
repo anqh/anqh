@@ -8,8 +8,26 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-echo Form::open(null, array('id' => 'form-flyer-edit'));
+echo Form::open(null, array('id' => 'form-flyer-edit-event'));
 ?>
+
+<div class="grid8 first">
+	<fieldset id="fields-event">
+		<ul>
+			<?php echo Form::input_wrap('event', null, null, __('Event')) ?>
+		</ul>
+	</fieldset>
+</div>
+
+<div class="grid1">
+	<fieldset class="grid1">
+		<?php echo Form::hidden('event_id', $flyer->original('event')) ?>
+		<?php echo Form::csrf() ?>
+		<?php echo Form::submit_wrap('save', __('Save')) ?>
+	</fieldset>
+</div>
+
+<?php echo Form::close(); echo Form::open(null, array('id' => 'form-flyer-edit')); ?>
 
 <div class="grid8 first">
 	<fieldset id="fields-info">
@@ -28,11 +46,12 @@ echo Form::open(null, array('id' => 'form-flyer-edit'));
 </div>
 
 <div class="grid1">
-	<fieldset>
+	<fieldset class="grid1">
 		<?php echo Form::csrf() ?>
 		<?php echo Form::submit_wrap('save', __('Save')) ?>
 	</fieldset>
 </div>
+
 <?php
 echo Form::close();
 
@@ -62,9 +81,23 @@ $options = array(
 	'weekHeader'      => __('Wk'),
 );
 
-// Date
+// Event search date range
+if ($flyer->stamp_begin) {
+	$year = Arr::get(getdate($flyer->stamp_begin), 'year');
+	$event_options = array('filter' => 'date:' . mktime(0, 0, 0, 1, 1, $year) . '-' . mktime(0, 0, 0, 1, 1, $year + 1));
+} else {
+	$event_options = null;;
+}
+
 echo HTML::script_source('
+
+// Date
 head.ready("jquery-ui", function() {
 	$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');
+});
+
+// Event
+head.ready("anqh", function() {
+	$("input[name=event]").autocompleteEvent(' . json_encode($event_options) . ');
 });
 ');

@@ -81,6 +81,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$month = min(12, max(1, $month));
 
 		$this->page_title .= ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
+		$this->_set_random_actions();
 
 		// Month browser
 		Widget::add('side', View_Module::factory('galleries/month_browser', array(
@@ -287,12 +288,27 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 * Action: flyer
 	 */
 	public function action_flyer() {
-		$flyer_id = (int)$this->request->param('id');
+		$flyer_id = $this->request->param('id');
 
-		/** @var  Model_Flyer  $flyer */
-		$flyer = Model_Flyer::find($flyer_id);
-		if (!$flyer->loaded()) {
-			throw new Model_Exception($flyer, $flyer_id);
+		switch ($flyer_id) {
+
+			// Random flyer
+			case 'random':
+
+			// Random unlinked flyer
+			case 'unknown':
+				$flyer = Model_Flyer::find_random($flyer_id == 'unknown');
+				$this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));
+				break;
+
+			// Known flyer
+			default:
+				/** @var  Model_Flyer  $flyer */
+				$flyer = Model_Flyer::find((int)$flyer_id);
+				if (!$flyer->loaded()) {
+					throw new Model_Exception($flyer, $flyer_id);
+				}
+
 		}
 
 		/** @var  Model_Image  $image */
@@ -308,11 +324,33 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			Permission::required($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user);
 
 			try {
-				$flyer->set(Arr::intersect($_POST, array('name', 'stamp_begin')));
-				$flyer->save();
 
-				// Newsfeed
-				NewsfeedItem_Galleries::flyer_edit(self::$user, $flyer);
+				if ($event_id = (int)Arr::get($_POST, 'event_id')) {
+
+					// Event given?
+					/** @var  Model_Event  $event */
+					$event = Model_Event::find($event_id);
+					if ($event->loaded()) {
+						$flyer->set(array(
+							'event' => $event,
+							'stamp_begin' => $event->stamp_begin
+						));
+					}
+				} else if (Arr::get($_POST, 'name')) {
+
+					// Name and stamp given
+					$flyer->set(Arr::intersect($_POST, array('name', 'stamp_begin')));
+
+				}
+
+				// Save only if we got full date
+				if ($flyer->has_full_date()) {
+					$flyer->save();
+
+					// Newsfeed
+					NewsfeedItem_Galleries::flyer_edit(self::$user, $flyer);
+
+				}
 
 			  $this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));
 			} catch (Validate_Exception $e) {
@@ -323,6 +361,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Set title
 		if ($event->loaded()) {
+
+			// Flyer is linked to an event
 			$this->page_title = HTML::chars($event->name);
 			$this->page_subtitle = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
 			$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($event),  __('Go to event'));
@@ -336,11 +376,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			}
 
 		} else {
+
+			// Flyer is not linked to an event
 			$this->page_title = HTML::chars($flyer->name);
 			$this->page_subtitle = $flyer->has_full_date()
 				? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true)
 				: __('Date unknown');
-			//$this->page_actions[] = array('link' => Route::model($event), 'text' => __('Add event'));
 
 			// Facebook
 			if (Kohana::config('site.facebook')) {
@@ -351,6 +392,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			}
 
 		}
+
+		$this->_set_random_actions();
+
 		if ($flyer->stamp_begin) {
 			if (!$flyer->has_full_date()) {
 				$this->page_subtitle .= ' | ' . HTML::anchor(
@@ -498,6 +542,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$month = min(12, max(0, $month));
 
 		$this->page_title = __('Flyers') . ' - ' . ($month ? HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) : (__('Date unknown') . ($year == 1970 ? '' : ' ' . $year)));
+		$this->_set_random_actions();
 
 		// Month browser
 		Widget::add('side', View_Module::factory('galleries/month_browser', array(
@@ -890,6 +935,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->tab_id = 'latest';
 
 		// Set actions
+		$this->_set_random_actions();
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('galleries')->uri(array('action' => 'upload')), 'text' => __('Upload images'), 'class' => 'images-add');
 		}
@@ -1358,6 +1404,15 @@ head.ready("jquery-ui", function() {
 			$this->page_actions[] = array('link' => Route::model($gallery, 'update'), 'text' => __('Update gallery'), 'class' => 'gallery-update');
 		}
 
+	}
+
+
+	/**
+	 * DRY helper for random flyer actions
+	 */
+	protected function _set_random_actions() {
+		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'unknown')), 'text' => __('Random unknown flyer'));
+		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'random')), 'text' => __('Random flyer'));
 	}
 
 }
