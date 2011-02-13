@@ -15,7 +15,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 	public static $_fields = array(
 		'id', 'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'city',
 		'country', 'dj', 'info', 'age', 'price', 'price2', 'created',
-		'modified', 'flyer_front', 'flyer_back', 'favorite_count'
+		'modified', 'flyer_front', 'flyer_back', 'favorite_count', 'url'
 	);
 
 	/**
@@ -83,7 +83,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$searches = empty($searches) ? array('name') : $searches;
 
 			// Validate filter
-			$filter = !empty($filter) && ($filter == 'upcoming' || $filter == 'past') ? $filter : null;
+			$filter = !empty($filter) && ($filter == 'upcoming' || $filter == 'past' || strpos($filter, 'date:') !== false) ? $filter : null;
 
 			// Build query
 			$events = Jelly::select('event')->limit($limit);
@@ -91,9 +91,31 @@ class Anqh_Controller_Events_API extends Controller_API {
 				$events->order_by($column, $direction);
 			}
 			if ($filter == 'upcoming') {
+
+				// Upcoming events
 				$events->where('stamp_begin', '>=', time());
+
 			} else if ($filter == 'past') {
+
+				// Past events
 				$events->where('stamp_begin', '<', time());
+
+			} else {
+
+				$filter = explode(':', $filter);
+				if (count($filter) == 2 && $filter[0] == 'date') {
+
+					// Search only between dates
+					list($from, $to) = explode('-', $filter[1]);
+					if ((int)$from && (int)$to) {
+						$events->where('stamp_begin', 'BETWEEN', array($from, $to));
+					} else if ((int)$from) {
+						$events->where('stamp_begin', '>=', $from);
+					} else if ((int)$to) {
+						$events->and_where('stamp_begin', '<=', $to);
+					}
+
+				}
 			}
 			$events->where_open();
 			foreach ($searches as $search) {
@@ -146,16 +168,23 @@ class Anqh_Controller_Events_API extends Controller_API {
 				case 'venue':
 					$data[$field] = $event->venue->id ? $event->venue->name : $event->venue_name;
 			    break;
+
 				case 'city':
 					$data[$field] = $event->city->id ? $event->city->name : $event->city_name;
 			    break;
+
 				case 'country':
 					$data[$field] = $event->country->id ? $event->country->name : '';
 			    break;
+
 				case 'flyer_front':
 				case 'flyer_back':
 			    $data[$field] = $event->$field->id ? $event->$field->get_url() : '';
 			    break;
+
+				case 'url':
+					$data[$field] = URL::site(Route::model($event), true);
+					break;
 
 			}
 		}
