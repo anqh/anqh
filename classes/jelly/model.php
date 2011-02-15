@@ -1,13 +1,13 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Jelly Model model validation fix
+ * Jelly Model fixes for Anqh
  *
  * @package    Anqh
  * @author     Antti Qvickström
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Jelly_Model extends Jelly_Model_Core {
+class Jelly_Model extends Jelly_Core_Model {
 
 	/**
 	 * Create a Jelly model
@@ -28,7 +28,7 @@ class Jelly_Model extends Jelly_Model_Core {
 	 * @return  Jelly_Model
 	 */
 	public static function find($id) {
-		return Jelly::select(get_called_class())->load($id);
+		return Jelly::query(get_called_class(), $id)->select();
 	}
 
 
@@ -73,12 +73,12 @@ class Jelly_Model extends Jelly_Model_Core {
 	 * @throws  Validate_Exception
 	 * @return  array
 	 */
-	public function validate($data = null) {
+	/*public function validate($data = null) {
 		if ($data === null) {
 			$data = $this->_loaded ? $this->_changed : $this->_changed + $this->_original;
 		}
 
 		return parent::validate($data);
-	}
+	}*/
 
 }
