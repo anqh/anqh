@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
@@ -32,17 +32,20 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'          => new Field_Primary,
-			'image'       => new Field_BelongsTo,
-			'event'       => new Field_BelongsTo,
-			'name'        => new Field_String(array(
+			'id' => new Jelly_Field_Primary,
+			'image' => new Jelly_Field_BelongsTo,
+			'event' => new Jelly_Field_BelongsTo(array(
+				'allow_null'  => true,
+				'empty_value' => null,
+			)),
+			'name' => new Jelly_Field_String(array(
 				'label' => __('Name'),
 			)),
-			'stamp_begin' => new Field_DateTime(array(
+			'stamp_begin' => new Jelly_Field_DateTime(array(
 				'label'      => __('From'),
 				'label_date' => __('Date'),
 				'label_time' => __('At'),
-				'rules' => array(
+				'rules'      => array(
 					'not_empty' => null,
 				),
 			)),
@@ -57,10 +60,10 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 * @return  Model_Flyer
 	 */
 	public static function find_by_image($image_id) {
-		return Jelly::select('flyer')
+		return Jelly::query('flyer')
 			->where('image_id', '=', (int)$image_id)
 			->limit(1)
-			->execute();
+			->select();
 	}
 
 
@@ -74,18 +77,18 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function find_by_month($year, $month) {
 		if ($year == 1970 && $month == 0) {
-			return Jelly::select('flyer')
+			return Jelly::query('flyer')
 				->where('stamp_begin', 'IS', null)
 				->order_by('id', 'DESC')
-				->execute();
+				->select();
 		} else {
 			$start = mktime(0, 0, 0, $month, 1, $year);
 			$end   = strtotime('+1 month', $start);
-			return Jelly::select('flyer')
+			return Jelly::query('flyer')
 				->where('stamp_begin', 'BETWEEN', array($start, $end))
 				->order_by('stamp_begin', 'DESC')
 				->order_by('event_id', 'DESC')
-				->execute();
+				->select();
 		}
 	}
 
@@ -98,10 +101,10 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_latest($limit = 4) {
-		return Jelly::select('flyer')
+		return Jelly::query('flyer')
 			->limit((int)$limit)
 			->order_by('image_id', 'DESC')
-			->execute();
+			->select();
 	}
 
 
@@ -153,12 +156,12 @@ GROUP BY 1
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new_comments(Model_User $user) {
-		return Jelly::select('flyer')
+		return Jelly::query('flyer')
 			->join('image', 'INNER')
 			->on('images.image:primary_key', '=', 'image:foreign_key')
 			->where('author_id', '=', $user->id)
 			->and_where('new_comment_count', '>', 0)
-			->execute();
+			->select();
 	}
 
 
@@ -170,11 +173,14 @@ GROUP BY 1
 	 * @return  Model_Flyer
 	 */
 	public static function find_random($unknown = false) {
-		$flyer = Jelly::select('flyer');
+		$flyer = Jelly::query('flyer');
 
 		$unknown and $flyer->where('event_id', 'IS', null);
 
-		return $flyer->order_by(DB::expr('RANDOM()'))->limit(1)->execute();
+		return $flyer
+			->order_by(DB::expr('RANDOM()'))
+			->limit(1)
+			->select();
 	}
 
 

@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
@@ -29,8 +29,8 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'   => new Field_Primary,
-			'name' => new Field_String(array(
+			'id' => new Jelly_Field_Primary,
+			'name' => new Jelly_Field_String(array(
 				'label' => __('Name'),
 				'rules' => array(
 					'not_empty'  => array(true),
@@ -38,124 +38,131 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 					'max_length' => array(64),
 				),
 			)),
-			'title'    => new Field_String,
-			'homepage' => new Field_URL(array(
+			'title' => new Jelly_Field_String,
+			'homepage' => new Jelly_Field_URL(array(
 				'label' => __('Homepage'),
 			)),
-			'stamp_begin' => new Field_DateTime(array(
+			'stamp_begin' => new Jelly_Field_DateTime(array(
 				'label'      => __('From'),
 				'label_date' => __('Date'),
 				'label_time' => '',
-				'rules' => array(
+				'rules'      => array(
 					'not_empty' => null,
 				),
 			)),
-			'stamp_end' => new Field_DateTime(array(
+			'stamp_end' => new Jelly_Field_DateTime(array(
 				'label'      => __('To'),
 				'label_time' => '-',
 				'show_date'  => false,
-				'rules' => array(
+				'rules'      => array(
 					'not_empty' => null,
 				),
 			)),
-			'venue' => new Field_BelongsTo(array(
-				'null' => true,
+			'venue' => new Jelly_Field_BelongsTo(array(
+				'allow_null' => true,
+				'empty_value' => null,
 			)),
-			'venue_name'  => new Field_String(array(
+			'venue_name' => new Jelly_Field_String(array(
 				'label' => __('Venue'),
 			)),
-			'venue_url' => new Field_URL,
-			'city'      => new Field_BelongsTo(array(
-				'foreign' => 'geo_city',
-				'null'    => true,
+			'venue_url' => new Jelly_Field_URL,
+			'city' => new Jelly_Field_BelongsTo(array(
+				'foreign'     => 'geo_city',
+				'allow_null'  => true,
+				'empty_value' => null,
 			)),
-			'city_name' => new Field_String(array(
+			'city_name' => new Jelly_Field_String(array(
 				'label' => __('City'),
 				'rules' => array(
 					'not_empty' => null,
 				),
 			)),
-			'country' => new Field_BelongsTo(array(
-				'foreign' => 'geo_country',
-				'null'    => true,
+			'country' => new Jelly_Field_BelongsTo(array(
+				'foreign'     => 'geo_country',
+				'allow_null'  => true,
+				'empty_value' => null,
 			)),
-			'venue_hidden' => new Field_Boolean,
+			'venue_hidden' => new Jelly_Field_Boolean,
 
-			'dj' => new Field_Text(array(
+			'dj' => new Jelly_Field_Text(array(
 				'label' => __('Performers'),
 			)),
-			'info' => new Field_Text(array(
+			'info' => new Jelly_Field_Text(array(
 				'label'  => __('Other information'),
 				'bbcode' => true,
 			)),
-			'age' => new Field_Integer(array(
+			'age' => new Jelly_Field_Integer(array(
 				'label' => __('Age limit'),
 				'null'  => true,
 				'rules' => array(
 					'range' => array(0, 99),
 				)
 			)),
-			'price' => new Field_Float(array(
+			'price' => new Jelly_Field_Float(array(
 				'label' => __('Tickets'),
 				'null'  => true,
 			)),
-			'price2' => new Field_Float(array(
-				'label' => __('Presale tickets'),
-				'null'  => true,
+			'price2' => new Jelly_Field_Float(array(
+				'label'      => __('Presale tickets'),
+				'allow_null' => true,
 			)),
-			'music' => new Field_Text,
+			'music' => new Jelly_Field_Text,
 
-			'created' => new Field_Timestamp(array(
+			'created' => new Jelly_Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
-			'modified' => new Field_Timestamp(array(
+			'modified' => new Jelly_Field_Timestamp(array(
 				'auto_now_update' => true,
 			)),
-			'author' => new Field_BelongsTo(array(
+			'author' => new Jelly_Field_BelongsTo(array(
 				'column'  => 'author_id',
 				'foreign' => 'user',
 			)),
 
-			'num_modifies' => new Field_Integer(array(
+			'num_modifies' => new Jelly_Field_Integer(array(
 				'column' => 'modifies',
 			)),
-			'num_views' => new Field_Integer(array(
+			'num_views' => new Jelly_Field_Integer(array(
 				'column' => 'views',
 			)),
 
-			'flyer_front_url' => new Field_Url(array(
+			'flyer_front_url' => new Jelly_Field_Url(array(
 				'label' => __('Flyer front')
 			)),
-			'flyer_back_url'  => new Field_Url(array(
+			'flyer_back_url' => new Jelly_Field_Url(array(
 				'label' => __('Flyer back')
 			)),
-			'flyer_front' => new Field_BelongsTo(array(
-				'column'  => 'flyer_front_image_id',
-				'foreign' => 'image',
+			'flyer_front' => new Jelly_Field_BelongsTo(array(
+				'column'      => 'flyer_front_image_id',
+				'foreign'     => 'image',
+				'allow_null'  => true,
+				'empty_value' => null,
 			)),
-			'flyer_back' => new Field_BelongsTo(array(
-				'column'  => 'flyer_back_image_id',
-				'foreign' => 'image',
+			'flyer_back' => new Jelly_Field_BelongsTo(array(
+				'column'      => 'flyer_back_image_id',
+				'foreign'     => 'image',
+				'allow_null'  => true,
+				'empty_value' => null,
 			)),
-			'tags'      => new Field_ManyToMany(array(
+			'tags' => new Jelly_Field_ManyToMany(array(
 				'label' => __('Music'),
 			)),
-			'flyers'    => new Field_ManyToMany(array(
+			'flyers' => new Jelly_Field_ManyToMany(array(
 				'foreign' => 'image',
 				'through' => array(
 					'model'   => 'flyer',
 					'columns' => array('event_id', 'image_id')
 				),
 			)),
-			'images'    => new Field_ManyToMany,
-			'favorites' => new Field_ManyToMany(array(
+			'images' => new Jelly_Field_ManyToMany,
+			'favorites' => new Jelly_Field_ManyToMany(array(
 				'foreign' => 'user',
 				'through' => array(
 					'model'   => 'favorite',
 					'columns' => array('event_id', 'user_id')
 				),
 			)),
-			'favorite_count' => new Field_Integer,
+			'favorite_count' => new Jelly_Field_Integer,
 		));
 	}
 
@@ -168,7 +175,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	public function add_favorite(Model_User $user) {
 		if ($this->loaded()
 			&& !$this->is_favorite($user)
-			&& (bool)Jelly::factory('favorite')->set(array(
+			&& (bool)Model_Favorite::factory()->set(array(
 				'user'  => $user,
 				'event' => $this
 			))->save()) {
@@ -189,7 +196,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  bool
 	 */
 	public function add_flyer(Model_Image $image) {
-		return $this->loaded() && Jelly::factory('flyer')
+		return $this->loaded() && Model_Flyer::factory()
 			->set(array(
 				'image' => $image,
 				'event' => $this
@@ -205,10 +212,11 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	public function delete_favorite(Model_User $user) {
 		if ($this->loaded()
 			&& $this->is_favorite($user)
-			&& (bool)Jelly::delete('favorite')
+			&& (bool)Jelly::query('favorite')
 				->where('user_id', '=', $user->id)
 				->where('event_id', '=', $this->id)
-				->execute()) {
+				->select()
+				->delete()) {
 			$this->favorite_count--;
 			$this->save();
 
@@ -230,7 +238,10 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 		if (!is_array($favorites)) {
 			$favorites = array();
 			if ($this->loaded()) {
-				$users = DB::select('user_id')->from('favorites')->where('event_id', '=', $this->id)->execute();
+				$users = DB::select('user_id')
+					->from('favorites')
+					->where('event_id', '=', $this->id)
+					->execute();
 				foreach ($users as $user) {
 					$favorites[(int)$user['user_id']] = (int)$user['user_id'];
 				}
@@ -250,7 +261,9 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public static function find_grouped_between($from, $to) {
-		return Jelly::select('event')->between($from, $to, 'ASC')->execute_grouped();
+		return Jelly::query('event')
+			->between($from, $to, 'ASC')
+			->execute_grouped();
 	}
 
 
@@ -262,7 +275,10 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public static function find_grouped_past($limit = 10) {
-		return Jelly::select('event')->past()->limit($limit)->execute_grouped();
+		return Jelly::query('event')
+			->past()
+			->limit($limit)
+			->execute_grouped();
 	}
 
 
@@ -274,7 +290,10 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public static function find_grouped_upcoming($limit = 10) {
-		return Jelly::select('event')->upcoming()->limit($limit)->execute_grouped();
+		return Jelly::query('event')
+			->upcoming()
+			->limit($limit)
+			->execute_grouped();
 	}
 
 
@@ -286,12 +305,12 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_hot($limit = 20) {
-		return Jelly::select('event')
+		return Jelly::query('event')
 			->where('stamp_begin', '>', time())
 			->and_where('favorite_count', '>', 0)
 			->order_by('favorite_count', 'DESC')
 			->limit($limit)
-			->execute();
+			->select();
 	}
 
 
@@ -303,11 +322,11 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_modified($limit = 20) {
-		return Jelly::select('event')
+		return Jelly::query('event')
 			->where('modified', 'IS NOT', null)
 			->order_by('modified', 'DESC')
 			->limit(20)
-			->execute();
+			->select();
 	}
 
 
@@ -319,10 +338,10 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new($limit = 20) {
-		return Jelly::select('event')
+		return Jelly::query('event')
 			->order_by('id', 'DESC')
 			->limit($limit)
-			->execute();
+			->select();
 	}
 
 
