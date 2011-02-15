@@ -7,4 +7,4 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Validate extends Anqh_Validate {}
+class Valid extends Anqh_Valid {}

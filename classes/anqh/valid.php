@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Validate extends Kohana_Validate {
+class Anqh_Valid extends Kohana_Valid {
 
 	/**
 	 * Tests if a string is a valid date string.
