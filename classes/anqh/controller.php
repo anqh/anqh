@@ -5,7 +5,7 @@
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Controller extends Kohana_Controller {
@@ -26,11 +26,6 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected $language = 'en';
 
 	/**
-	 * @var  Request  Request that created the controller
-	 */
-	public $request;
-
-	/**
 	 * @var  Model_User  Current user
 	 */
 	protected static $user = false;
@@ -45,10 +40,10 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		Cache::$default = 'default';
 
 		// Check if this was an interna request or direct
-		$this->internal = $this->request !== Request::instance();
+		$this->internal = !Request::current()->is_initial();
 
 		// Ajax request?
-		$this->ajax = Request::$is_ajax;
+		$this->ajax = Request::current()->is_ajax();
 
 		// Load current user, null if none
 		if (self::$user === false) {
