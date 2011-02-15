@@ -46,3 +46,9 @@
 [submodule "www/js/headjs"]
 	path = www/js/headjs
 	url = https://github.com/headjs/headjs.git
+[submodule "modules/asset"]
+	path = modules/asset
+	url = git://github.com/goyote/asset.git
+[submodule "modules/msg"]
+	path = modules/msg
+	url = git://github.com/goyote/msg.git

@@ -96,6 +96,8 @@ Kohana::modules(array(
 	'image'      => MODPATH . 'image',      // Image manipulation
 	'pagination' => MODPATH . 'pagination', // Paging of results
 	'email'      => MODPATH . 'email',      // Email module
+	'msg'        => MODPATH . 'msg',        // Messages
+	'asset'      => MODPATH . 'asset',      // Asset handling
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
