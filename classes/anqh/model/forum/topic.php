@@ -36,73 +36,72 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->fields(array(
-				'id' => new Field_Primary,
-				'area' => new Field_BelongsTo(array(
-					'column'  => 'forum_area_id',
-					'foreign' => 'forum_area',
-					'rules'   => array(
-						'not_empty' => array(true),
-					)
-				)),
-				'name' => new Field_String(array(
-					'label' => __('Topic'),
-					'rules' => array(
-						'not_empty'  => array(true),
-						'max_length' => array(128),
-					),
-					'filters' => array(
-						'trim' => null,
-					),
-				)),
-				'old_name' => new Field_String,
-				'author' => new Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
-				'author_name' => new Field_String,
-				'created' => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'type' => new Field_Integer,
-				'status' => new Field_Enum(array(
-					'label' => __('Status'),
-					'default' => self::STATUS_NORMAL,
-					'choices' => array(
-						self::STATUS_LOCKED => __('Locked'),
-						self::STATUS_SINK   => __('Sink'),
-						self::STATUS_NORMAL => __('Normal'),
-					)
-				)),
-				'sticky' => new Field_Boolean(array(
-					'label' => __('Sticky'),
-					'default' => false
-				)),
-				'read_only' => new Field_Boolean,
-				'first_post' => new Field_BelongsTo(array(
-					'column'  => 'first_post_id',
-					'foreign' => 'forum_post',
-				)),
-				'last_post' => new Field_BelongsTo(array(
-					'column'  => 'last_post_id',
-					'foreign' => 'forum_post',
-				)),
-				'last_posted' => new Field_Integer,
-				'last_poster' => new Field_String,
-				'read_count' => new Field_Integer(array(
-					'column' => 'reads'
-				)),
-				'post_count'   => new Field_Integer(array(
-					'column' => 'posts',
-				)),
-				'votes' => new Field_Integer,
-				'points' => new Field_Integer,
-				'bind_id' => new Field_Integer,
-				'posts' => new Field_HasMany(array(
-					'foreign' => 'forum_post',
-				))
-			));
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'area' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'forum_area_id',
+				'foreign' => 'forum_area',
+				'rules'   => array(
+					'not_empty' => array(true),
+				)
+			)),
+			'name' => new Jelly_Field_String(array(
+				'label' => __('Topic'),
+				'rules' => array(
+					'not_empty'  => array(true),
+					'max_length' => array(128),
+				),
+				'filters' => array(
+					'trim' => null,
+				),
+			)),
+			'old_name' => new Jelly_Field_String,
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'author_id',
+				'foreign' => 'user',
+			)),
+			'author_name' => new Jelly_Field_String,
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'type' => new Jelly_Field_Integer,
+			'status' => new Jelly_Field_Enum(array(
+				'label' => __('Status'),
+				'default' => self::STATUS_NORMAL,
+				'choices' => array(
+					self::STATUS_LOCKED => __('Locked'),
+					self::STATUS_SINK   => __('Sink'),
+					self::STATUS_NORMAL => __('Normal'),
+				)
+			)),
+			'sticky' => new Jelly_Field_Boolean(array(
+				'label' => __('Sticky'),
+				'default' => false
+			)),
+			'read_only' => new Jelly_Field_Boolean,
+			'first_post' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'first_post_id',
+				'foreign' => 'forum_post',
+			)),
+			'last_post' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'last_post_id',
+				'foreign' => 'forum_post',
+			)),
+			'last_posted' => new Jelly_Field_Integer,
+			'last_poster' => new Jelly_Field_String,
+			'read_count' => new Jelly_Field_Integer(array(
+				'column' => 'reads'
+			)),
+			'post_count'   => new Jelly_Field_Integer(array(
+				'column' => 'posts',
+			)),
+			'votes' => new Jelly_Field_Integer,
+			'points' => new Jelly_Field_Integer,
+			'bind_id' => new Jelly_Field_Integer,
+			'posts' => new Jelly_Field_HasMany(array(
+				'foreign' => 'forum_post',
+			))
+		));
 	}
 
 
@@ -114,7 +113,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public static function find_active($limit = 10) {
-		return Jelly::select('forum_topic')->order_by('last_post_id', 'DESC')->limit($limit)->execute();
+		return Jelly::query('forum_topic')->order_by('last_post_id', 'DESC')->limit($limit)->select();
 	}
 
 
@@ -144,20 +143,20 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		if ($config) {
 
 			// Get area
-			$area = Jelly::select('forum_area')
+			$area = Jelly::query('forum_area')
 				->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
 				->and_where('bind', '=', $bind_name)
 				->limit(1)
-				->execute();
+				->select();
 
 			if ($area->loaded()) {
 
 				// Get topic
-				$topic = Jelly::select('forum_topic')
+				$topic = Jelly::query('forum_topic')
 					->where('forum_area_id', '=', $area->id)
 					->and_where('bind_id', '=', $bind_model->id())
 					->limit(1)
-					->execute();
+					->select();
 
 				// If topic found, go there!
 				if ($topic->loaded()) {
@@ -179,7 +178,10 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_latest_post($limit = 10) {
-		return Jelly::select('forum_topic')->order_by('last_post_id', 'DESC')->limit($limit)->execute();
+		return Jelly::query('forum_topic')
+			->order_by('last_post_id', 'DESC')
+			->limit($limit)
+			->select();
 	}
 
 
@@ -191,7 +193,10 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new($limit = 10) {
-		return Jelly::select('forum_topic')->order_by('id', 'DESC')->limit($limit)->execute();
+		return Jelly::query('forum_topic')
+			->order_by('id', 'DESC')
+			->limit($limit)
+			->select();
 	}
 
 
@@ -202,7 +207,9 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public function find_posts(Pagination $pagination) {
-		return $this->get('posts')->pagination($pagination)->execute();
+		return $this->get('posts')
+			->pagination($pagination)
+			->select();
 	}
 
 
@@ -213,7 +220,9 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  integer
 	 */
 	public function get_post_number($post_id) {
-		return $this->get('posts')->where('id', '<', (int)$post_id)->count();
+		return $this->get('posts')
+			->where('id', '<', (int)$post_id)
+			->count();
 	}
 
 
@@ -256,11 +265,19 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		}
 
 		// First post
-		$first_post = Jelly::select('forum_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'ASC')->limit(1)->execute();
+		$first_post = Jelly::query('forum_post')
+			->where('forum_topic_id', '=', $this->id)
+			->order_by('id', 'ASC')
+			->limit(1)
+			->select();
 		$this->first_post = $first_post;
 
 		// Last post
-		$last_post = Jelly::select('forum_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'DESC')->limit(1)->execute();
+		$last_post = Jelly::query('forum_post')
+			->where('forum_topic_id', '=', $this->id)
+			->order_by('id', 'DESC')
+			->limit(1)
+			->select();
 		$this->last_post = $last_post;
 		$this->last_posted = $last_post->created;
 		$this->last_poster = $last_post->author_name;
