@@ -161,38 +161,6 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
-	 * Creates a style sheet link element.
-	 *
-	 *     echo HTML::style('media/css/screen.css');
-	 *
-	 * @param   string  file name
-	 * @param   array   default attributes
-	 * @param   boolean  include the index page
-	 * @return  string
-	 * @uses    URL::base
-	 * @uses    HTML::attributes
-	 */
-	public static function style($file, array $attributes = null, $index = false) {
-
-		// Add the base URL
-		if (strpos($file, '://') === FALSE) {
-			$file = URL::base($index).$file;
-		}
-
-		// Set the stylesheet link
-		$attributes['href'] = $file;
-
-		// Set the stylesheet rel
-		$attributes['rel'] = Arr::get($attributes, 'rel', 'stylesheet');
-
-		// Set the stylesheet type
-		$attributes['type'] = Arr::get($attributes, 'type', 'text/css');
-
-		return '<link'.HTML::attributes($attributes).' />';
-	}
-
-
-	/**
 	 * Return formatted <time> tag
 	 *
 	 * @param  string        $str
