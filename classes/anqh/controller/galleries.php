@@ -295,9 +295,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			// Random flyer
 			case 'random':
 
-			// Random unlinked flyer
-			case 'unknown':
-				$flyer = Model_Flyer::find_random($flyer_id == 'unknown');
+			// Random undated flyer
+			case 'undated':
+				$flyer = Model_Flyer::find_random($flyer_id == 'undated');
 				$this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));
 				break;
 
@@ -1411,7 +1411,7 @@ head.ready("jquery-ui", function() {
 	 * DRY helper for random flyer actions
 	 */
 	protected function _set_random_actions() {
-		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'unknown')), 'text' => __('Random unknown flyer'));
+		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'undated')), 'text' => __('Random undated flyer'));
 		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'random')), 'text' => __('Random flyer'));
 	}
 
