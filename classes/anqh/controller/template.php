@@ -112,7 +112,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$online->user = self::$user;
 			try {
 				$online->save();
-			} catch (Validate_Exception $e) {}
+			} catch (Validation_Exception $e) {}
 		}
 
 	}
