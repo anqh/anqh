@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
@@ -44,8 +44,8 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'       => new Field_Primary,
-			'status'   => new Field_Enum(array(
+			'id' => new Jelly_Field_Primary,
+			'status' => new Jelly_Field_Enum(array(
 				'default' => self::VISIBLE,
 				'choices' => array(
 					self::DELETED      => __('Deleted'),
@@ -54,56 +54,48 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 					self::VISIBLE      => __('Visible'),
 				)
 			)),
-			'description' => new Field_String,
-			'format'      => new Field_String,
-			'created'     => new Field_Timestamp(array(
+			'description' => new Jelly_Field_String,
+			'format' => new Jelly_Field_String,
+			'created' => new Jelly_Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
-			'view_count' => new Field_Integer(array(
-				'default' => 0,
+			'view_count' => new Jelly_Field_Integer(array(
 				'column' => 'views',
 			)),
-			'comment_count' => new Field_Integer(array(
-				'default' => 0,
+			'comment_count' => new Jelly_Field_Integer(array(
 				'column' => 'comments',
 			)),
-			'new_comment_count' => new Field_Integer(array(
-				'default' => 0,
-			)),
-			'rate_count' => new Field_Integer(array(
-				'default' => 0,
-			)),
-			'rate_total' => new Field_Integer(array(
-				'default' => 0,
-			)),
+			'new_comment_count' => new Jelly_Field_Integer,
+			'rate_count' => new Jelly_Field_Integer,
+			'rate_total' => new Jelly_Field_Integer,
 
-			'original_size'   => new Field_Integer,
-			'original_width'  => new Field_Integer,
-			'original_height' => new Field_Integer,
-			'width'           => new Field_Integer,
-			'height'          => new Field_Integer,
-			'thumb_width'     => new Field_Integer,
-			'thumb_height'    => new Field_Integer,
+			'original_size'   => new Jelly_Field_Integer,
+			'original_width'  => new Jelly_Field_Integer,
+			'original_height' => new Jelly_Field_Integer,
+			'width'           => new Jelly_Field_Integer,
+			'height'          => new Jelly_Field_Integer,
+			'thumb_width'     => new Jelly_Field_Integer,
+			'thumb_height'    => new Jelly_Field_Integer,
 
-			'postfix' => new Field_String,
-			'file'    => new Field_File(array(
+			'postfix' => new Jelly_Field_String,
+			'file' => new Jelly_Field_File(array(
 				'label' => __('Image'),
 				'path'  => Kohana::config('image.upload_path'),
 			)),
-			'remote' => new Field_URL,
-			'legacy_filename' => new Field_String,
+			'remote' => new Jelly_Field_URL,
+			'legacy_filename' => new Jelly_Field_String,
 
-			'author' => new Field_BelongsTo(array(
+			'author' => new Jelly_Field_BelongsTo(array(
 				'column'  => 'author_id',
 				'foreign' => 'user',
 			)),
-			'exif' => new Field_HasOne(array(
+			'exif' => new Jelly_Field_HasOne(array(
 				'foreign' => 'image_exif',
 			)),
-			'comments' => new Field_HasMany(array(
+			'comments' => new Jelly_Field_HasMany(array(
 				'foreign' => 'image_comment',
 			)),
-			'notes' => new Field_HasMany(array(
+			'notes' => new Jelly_Field_HasMany(array(
 				'foreign' => 'image_note',
 			)),
 		));
@@ -244,10 +236,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new_comments(Model_User $user) {
-		return Jelly::select('image')
+		return Jelly::query('image')
 			->where('author_id', '=', $user->id)
 			->and_where('new_comment_count', '>', 0)
-			->execute();
+			->select();
 	}
 
 
@@ -257,7 +249,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public function find_notes() {
-		return $this->get('notes')->order_by('x', 'ASC')->order_by('id', 'ASC')->execute();
+		return $this->get('notes')
+			->order_by('x', 'ASC')
+			->order_by('id', 'ASC')
+			->select();
 	}
 
 

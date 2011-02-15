@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_User_Online extends Jelly_Model implements Permission_Interface {
@@ -15,16 +15,19 @@ class Anqh_Model_User_Online extends Jelly_Model implements Permission_Interface
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->table('online_users')
-			->fields(array(
-				'id'            => new Field_Primary,
-				'user'          => new Field_BelongsTo,
-				'last_activity' => new Field_Timestamp(array(
-					'auto_now_create' => true,
-					'auto_now_update' => true,
-				)),
-			));
+		$meta->table('online_users');
+
+		$meta->fields(array(
+			'id'            => new Jelly_Field_Primary,
+			'user'          => new Jelly_Field_BelongsTo(array(
+				'allow_null'    => true,
+				'empty_value'   => null,
+			)),
+			'last_activity' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+				'auto_now_update' => true,
+			)),
+		));
 	}
 
 
@@ -58,7 +61,9 @@ class Anqh_Model_User_Online extends Jelly_Model implements Permission_Interface
 		// Remove users idle for over 15 minutes
 		if (!$collected) {
 			$collected = true;
-			DB::delete('online_users')->where('last_activity', '<', time() - 60 * 15)->execute();
+			DB::delete('online_users')
+				->where('last_activity', '<', time() - 60 * 15)
+				->execute();
 		}
 
 	}
@@ -73,7 +78,9 @@ class Anqh_Model_User_Online extends Jelly_Model implements Permission_Interface
 	public static function get_guest_count() {
 		self::gc();
 
-		return (int)Jelly::select('user_online')->where('user_id', 'IS', null)->count();
+		return (int)Jelly::query('user_online')
+			->where('user_id', 'IS', null)
+			->count();
 	}
 
 

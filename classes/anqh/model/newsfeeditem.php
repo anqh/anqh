@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_NewsfeedItem extends Jelly_Model {
@@ -15,18 +15,17 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('id' => 'DESC'))
-			->fields(array(
-				'id'    => new Field_Primary,
-				'user'  => new Field_BelongsTo,
-				'stamp' => new Field_Timestamp(array(
-					'auto_now_create' => true
-				)),
-				'class' => new Field_String,
-				'type'  => new Field_String,
-				'data'  => new Field_JSON,
-			));
+		$meta->sorting(array('id' => 'DESC'));
+		$meta->fields(array(
+			'id'    => new Jelly_Field_Primary,
+			'user'  => new Jelly_Field_BelongsTo,
+			'stamp' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true
+			)),
+			'class' => new Jelly_Field_String,
+			'type'  => new Jelly_Field_String,
+			'data'  => new Jelly_Field_JSON,
+		));
 	}
 
 
@@ -38,7 +37,7 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_items($limit = 20) {
-		return Jelly::select('newsfeeditem')->limit($limit)->execute();
+		return Jelly::query('newsfeeditem')->limit($limit)->select();
 	}
 
 
@@ -51,7 +50,10 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_items_personal(Model_User $user, $limit = 20) {
-		return Jelly::select('newsfeeditem')->where('user:foreign_key', '=', $user->id)->limit($limit)->execute();
+		return Jelly::query('newsfeeditem')
+			->where('user:foreign_key', '=', $user->id)
+			->limit($limit)
+			->select();
 	}
 
 
@@ -64,7 +66,10 @@ class Anqh_Model_NewsfeedItem extends Jelly_Model {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_items_users(array $users, $limit = 20) {
-		return Jelly::select('newsfeeditem')->where('user:foreign_key', 'IN', $users)->limit($limit)->execute();
+		return Jelly::query('newsfeeditem')
+			->where('user:foreign_key', 'IN', $users)
+			->limit($limit)
+			->select();
 	}
 
 

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Shout extends Jelly_Model implements Permission_Interface {
@@ -15,28 +15,27 @@ class Anqh_Model_Shout extends Jelly_Model implements Permission_Interface {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('id' => 'DESC'))
-			->fields(array(
-				'id' => new Field_Primary,
-				'created' => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'author' => new Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-					'rules' => array(
-						'not_empty' => array(true),
-					),
-				)),
-				'shout'  => new Field_String(array(
-					'rules' => array(
-						'not_empty' => array(true),
-						'min_length' => array(1),
-						'max_length' => array(250)
-					),
-				)),
-			));
+		$meta->sorting(array('id' => 'DESC'));
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'author_id',
+				'foreign' => 'user',
+				'rules' => array(
+					'not_empty' => array(true),
+				),
+			)),
+			'shout'  => new Jelly_Field_String(array(
+				'rules' => array(
+					'not_empty' => array(true),
+					'min_length' => array(1),
+					'max_length' => array(250)
+				),
+			)),
+		));
 	}
 
 
@@ -48,7 +47,7 @@ class Anqh_Model_Shout extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_latest($limit = 10) {
-		return Jelly::select('shout')->limit($limit)->execute();
+		return Jelly::query('shout')->limit($limit)->select();
 	}
 
 

@@ -52,161 +52,161 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	public static function initialize(Jelly_Meta $meta) {
 		$visitor = Visitor::instance();
 
-		$meta
-			->name_key('username')
-			->fields(array(
-				'id' => new Field_Primary,
-				'username' => new Field_String(array(
-					'label'  => __('Username'),
-					'unique' => true,
-					'rules'  => array(
-						'not_empty'  => null,
-						'min_length' => array(max((int)Kohana::config('visitor.username.length_min'), 1)),
-						'max_length' => array(min((int)Kohana::config('visitor.username.length_max'), 30)),
-						'regex'      => array('/^[' . Kohana::config('visitor.username.chars') . ']+$/ui'),
-					),
-				)),
-				'username_clean' => new Field_String(array(
-					'unique' => true,
-					'rules'  => array(
-						'not_empty' => null,
-					)
-				)),
-				'password' => new Field_Password(array(
-					'label'     => __('Password'),
-					'hash_with' => array($visitor, 'hash_password'),
-					'rules'     => array(
-						'not_empty'  => null,
-						'min_length' => array(6),
-					)
-				)),
-				'password_confirm' => new Field_Password(array(
-					'label'     => __('Password confirmation'),
-					'in_db'     => false,
-					'callbacks' => array(
-						'matches' => array('Model_User', '_check_password_matches')
-					),
-					'rules' => array(
-						'not_empty'  => null,
-						'min_length' => array(max((int)$visitor->get_config('password.length_min'), 1)),
-					)
-				)),
-				'email' => new Field_Email(array(
-					'label'  => __('Email'),
-					'unique' => true,
-					'filters' => array(
-						'mb_strtolower' => null,
-					),
-				)),
+		$meta->name_key('username');
 
-				'name' => new Field_String(array(
-					'label' => __('Name'),
-					'rules' => array(
-						'min_length' => array(1),
-						'max_length' => array(50),
-					),
-				)),
-				'dob' => new Field_Date(array(
-					'null'   => true,
-					'label'  => __('Date of Birth'),
-					'format' => 'Y-m-d',
-					'pretty_format' => 'j.n.Y',
-				)),
-				'gender' => new Field_Enum(array(
-					'label'   => __('Gender'),
-					'choices' => array(
-						'f' => __('Female'),
-						'm' => __('Male'),
-					)
-				)),
-				'avatar' => new Field_String(array(
-					'label' => __('Avatar'),
-				)),
-				'address_street' => new Field_String(array(
-					'label' => __('Street address'),
-					'rules' => array(
-						'max_length' => array(50),
-					),
-				)),
-				'address_zip' => new Field_String(array(
-					'label' => __('Zip code'),
-					'rules' => array(
-						'min_length' => array(4),
-						'max_length' => array(5),
-						'digit'      => null
-					),
-				)),
-				'address_city' => new Field_String(array(
-					'label'   => __('City'),
-					'rules'   => array(
-						'max_length' => array(50)
-					),
-				)),
-				'city'        => new Field_BelongsTo(array(
-					'column'  => 'city_id',
-					'foreign' => 'geo_city',
-				)),
-				'latitude'    => new Field_Float,
-				'longitude'   => new Field_Float,
-				'title'       => new Field_String(array(
-					'label' => __('Title'),
-				)),
-				'signature'   => new Field_Text(array(
-					'label' => __('Signature'),
-				)),
-				'description' => new Field_Text(array(
-					'label' => __('Description'),
-				)),
-				'homepage'    => new Field_URL(array(
-					'label' => __('Homepage'),
-				)),
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'username' => new Jelly_Field_String(array(
+				'label'  => __('Username'),
+				'unique' => true,
+				'rules'  => array(
+					'not_empty'  => null,
+					'min_length' => array(max((int)Kohana::config('visitor.username.length_min'), 1)),
+					'max_length' => array(min((int)Kohana::config('visitor.username.length_max'), 30)),
+					'regex'      => array('/^[' . Kohana::config('visitor.username.chars') . ']+$/ui'),
+				),
+			)),
+			'username_clean' => new Jelly_Field_String(array(
+				'unique' => true,
+				'rules'  => array(
+					'not_empty' => null,
+				)
+			)),
+			'password' => new Jelly_Field_Password(array(
+				'label'     => __('Password'),
+				'hash_with' => array($visitor, 'hash_password'),
+				'rules'     => array(
+					'not_empty'  => null,
+					'min_length' => array(6),
+				)
+			)),
+			'password_confirm' => new Jelly_Field_Password(array(
+				'label'     => __('Password confirmation'),
+				'in_db'     => false,
+				'callbacks' => array(
+					'matches' => array('Model_User', '_check_password_matches')
+				),
+				'rules' => array(
+					'not_empty'  => null,
+					'min_length' => array(max((int)$visitor->get_config('password.length_min'), 1)),
+				)
+			)),
+			'email' => new Jelly_Field_Email(array(
+				'label'  => __('Email'),
+				'unique' => true,
+				'filters' => array(
+					'mb_strtolower' => null,
+				),
+			)),
 
-				'login_count' => new Field_Integer(array(
-					'column'  => 'logins',
-					'default' => 0,
-				)),
-				'last_login' => new Field_Timestamp,
-				'created'    => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'modified' => new Field_Timestamp,
+			'name' => new Jelly_Field_String(array(
+				'label' => __('Name'),
+				'rules' => array(
+					'min_length' => array(1),
+					'max_length' => array(50),
+				),
+			)),
+			'dob' => new Jelly_Field_Date(array(
+				'null'   => true,
+				'label'  => __('Date of Birth'),
+				'format' => 'Y-m-d',
+				'pretty_format' => 'j.n.Y',
+			)),
+			'gender' => new Jelly_Field_Enum(array(
+				'label'   => __('Gender'),
+				'choices' => array(
+					'f' => __('Female'),
+					'm' => __('Male'),
+				)
+			)),
+			'avatar' => new Jelly_Field_String(array(
+				'label' => __('Avatar'),
+			)),
+			'address_street' => new Jelly_Field_String(array(
+				'label' => __('Street address'),
+				'rules' => array(
+					'max_length' => array(50),
+				),
+			)),
+			'address_zip' => new Jelly_Field_String(array(
+				'label' => __('Zip code'),
+				'rules' => array(
+					'min_length' => array(4),
+					'max_length' => array(5),
+					'digit'      => null
+				),
+			)),
+			'address_city' => new Jelly_Field_String(array(
+				'label'   => __('City'),
+				'rules'   => array(
+					'max_length' => array(50)
+				),
+			)),
+			'city' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'city_id',
+				'foreign' => 'geo_city',
+			)),
+			'latitude' => new Jelly_Field_Float,
+			'longitude' => new Jelly_Field_Float,
+			'title' => new Jelly_Field_String(array(
+				'label' => __('Title'),
+			)),
+			'signature' => new Jelly_Field_Text(array(
+				'label' => __('Signature'),
+			)),
+			'description' => new Jelly_Field_Text(array(
+				'label' => __('Description'),
+			)),
+			'homepage' => new Jelly_Field_URL(array(
+				'label' => __('Homepage'),
+			)),
 
-				// Foreign values, should make own models?
-				'post_count' => new Field_Integer(array(
-					'column'  => 'posts',
-					'default' => 0,
-				)),
-				'new_comment_count' => new Field_Integer(array(
-					'column'  => 'newcomments',
-					'default' => 0,
-				)),
-				'comment_count' => new Field_Integer(array(
-					'column'  => 'comments',
-					'default' => 0,
-				)),
-				'left_comment_count' => new Field_Integer(array(
-					'column'  => 'commentsleft',
-					'default' => 0,
-				)),
+			'login_count' => new Jelly_Field_Integer(array(
+				'column'  => 'logins',
+				'default' => 0,
+			)),
+			'last_login' => new Jelly_Field_Timestamp,
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'modified' => new Jelly_Field_Timestamp,
 
-				'tokens' => new Field_HasMany(array(
-					'foreign' => 'user_token'
-				)),
-				'roles' => new Field_ManyToMany,
+			// Foreign values, should make own models?
+			'post_count' => new Jelly_Field_Integer(array(
+				'column'  => 'posts',
+				'default' => 0,
+			)),
+			'new_comment_count' => new Jelly_Field_Integer(array(
+				'column'  => 'newcomments',
+				'default' => 0,
+			)),
+			'comment_count' => new Jelly_Field_Integer(array(
+				'column'  => 'comments',
+				'default' => 0,
+			)),
+			'left_comment_count' => new Jelly_Field_Integer(array(
+				'column'  => 'commentsleft',
+				'default' => 0,
+			)),
 
-				'picture' => new Field_String,
-				'default_image' => new Field_BelongsTo(array(
-					'foreign' => 'image',
-					'column'  => 'default_image_id',
-				)),
-				'images'  => new Field_ManyToMany,
-				'friends' => new Field_HasMany(array(
-					'foreign' => 'friend'
-				)),
-				'comments' => new Field_HasMany(array(
-					'foreign' => 'user_comment'
-				)),
-			));
+			'tokens' => new Jelly_Field_HasMany(array(
+				'foreign' => 'user_token'
+			)),
+			'roles' => new Jelly_Field_ManyToMany,
+
+			'picture' => new Jelly_Field_String,
+			'default_image' => new Jelly_Field_BelongsTo(array(
+				'foreign' => 'image',
+				'column'  => 'default_image_id',
+			)),
+			'images'  => new Jelly_Field_ManyToMany,
+			'friends' => new Jelly_Field_HasMany(array(
+				'foreign' => 'friend'
+			)),
+			'comments' => new Jelly_Field_HasMany(array(
+				'foreign' => 'user_comment'
+			)),
+		));
 	}
 
 
@@ -290,7 +290,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		$status = false;
 
 		// Log login attempt
-		$login = Jelly::factory('login')->set(array(
+		$login = Model_Login::factory()->set(array(
 			'username' => $array['username'],
 			'password' => !empty($array['password']),
 		));
@@ -309,7 +309,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 					// Redirect after a successful login
 					if (is_string($redirect))	{
 						$login->save();
-						url::redirect($redirect);
+						URL::redirect($redirect);
 					}
 
 					// Login is successful
@@ -366,12 +366,19 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			} else if ($user) {
 
 				// Public and my comments
-				$comments = $this->user_comments->and_open()->where('private', '=', 0)->or_where('author_id', '=', $user->id)->close()->find_all($page_size, $page_offset);
+				$comments = $this->user_comments
+					->and_open()
+					->where('private', '=', 0)
+					->or_where('author_id', '=', $user->id)
+					->close()
+					->find_all($page_size, $page_offset);
 
 			} else {
 
 				// Only public comments
-				$comments = $this->user_comments->where('private', '=', 0)->find_all($page_size, $page_offset);
+				$comments = $this->user_comments
+					->where('private', '=', 0)
+					->find_all($page_size, $page_offset);
 
 			}
 
@@ -526,7 +533,9 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  integer
 	 */
 	public function get_comment_count() {
-		return (int)Jelly::select('user_comment')->where('user_id', '=', $this->id)->count();
+		return (int)Jelly::query('user_comment')
+			->where('user_id', '=', $this->id)
+			->count();
 	}
 
 	/***** /COMMENTS *****/
@@ -539,9 +548,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param   string  $id
 	 * @return  User_External_Model
+	 * @deprecated
 	 */
 	public function find_external_by_id($id) {
-		return ORM::factory('user_external')->where(array('user_id' => $this->id, 'id' => $id))->find();
+		return ORM::factory('user_external')
+			->where(array('user_id' => $this->id, 'id' => $id))
+			->find();
 	}
 
 
@@ -550,9 +562,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param   string  $provider
 	 * @return  User_External_Model
+	 * @deprecated
 	 */
 	public function find_external_by_provider($provider) {
-		return ORM::factory('user_external')->where(array('user_id' => $this->id, 'provider' => $provider))->find();
+		return ORM::factory('user_external')
+			->where(array('user_id' => $this->id, 'provider' => $provider))
+			->find();
 	}
 
 
@@ -562,9 +577,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param   string  $id
 	 * @param   string  $provider
 	 * @return  User_Model
+	 * @deprecated
 	 */
 	public static function find_user_by_external($id, $provider) {
-		$external_user = ORM::factory('user_external')->where(array('id' => $id, 'provider' => $provider))->find();
+		$external_user = ORM::factory('user_external')
+			->where(array('id' => $id, 'provider' => $provider))
+			->find();
 
 		return ($external_user->loaded()) ? $external_user->user : new User_Model();
 	}
@@ -575,6 +593,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param  string  $id
 	 * @param  string  $provider
+	 * @deprecated
 	 */
 	public function map_external($id, $provider) {
 
@@ -610,7 +629,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($this->loaded()
 			&& $this->id != $friend->id
 			&& !$this->is_friend($friend)
-			&& (bool)Jelly::factory('friend')->set(array(
+			&& (bool)Model_Friend::factory()->set(array(
 				'user'   => $this,
 				'friend' => $friend
 			))->save()) {
@@ -634,7 +653,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($this->loaded()
 			&& $this->id != $ignore->id
 			&& !$this->is_ignored($ignore)
-			&& (bool)Jelly::factory('ignore')->set(array(
+			&& (bool)Model_Ignore::factory()->set(array(
 				'user'   => $this,
 				'ignore' => $ignore
 			))->save()) {
@@ -658,10 +677,11 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	public function delete_friend(Model_User $friend) {
 		if ($this->loaded()
 			&& $this->is_friend($friend)
-			&& (bool)Jelly::delete('friend')
+			&& (bool)Jelly::query('friend')
 				->where('user_id', '=', $this->id)
 				->where('friend_id', '=', $friend->id)
-				->execute()) {
+				->select()
+				->delete()) {
 
 			// Clear cache
 			Anqh::cache_delete('friends_' . $this->id);
@@ -681,10 +701,11 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	public function delete_ignore(Model_User $ignore) {
 		if ($this->loaded()
 			&& $this->is_ignored($ignore)
-			&& (bool)Jelly::delete('ignore')
+			&& (bool)Jelly::query('ignore')
 				->where('user_id', '=', $this->id)
 				->where('ignore_id', '=', $ignore->id)
-				->execute()) {
+				->select()
+				->delete()) {
 
 			// Clear caches
 			Anqh::cache_delete('ignores_' . $this->id);
@@ -711,7 +732,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			// Load from DB
 			$friends = array();
-			foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
+			foreach (Jelly::query('friend')->where('user_id', '=', $this->id)->select() as $friend) {
 				$friends[] = $friend->friend->id;
 			}
 
@@ -737,7 +758,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 			// Load from DB
 			$ignores = array();
-			foreach (Jelly::select('ignore')->where($ignorers ? 'ignore_id' : 'user_id', '=', $this->id)->execute() as $ignore) {
+			foreach (Jelly::query('ignore')->where($ignorers ? 'ignore_id' : 'user_id', '=', $this->id)->select() as $ignore) {
 				$ignores[] = $ignorers ? $ignore->user->id : $ignore->ignore->id;
 			}
 
@@ -754,7 +775,9 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  integer
 	 */
 	public function get_friend_count() {
-		return (int)Jelly::select('friend')->where('user_id', '=', $this->id)->count();
+		return (int)Jelly::query('friend')
+			->where('user_id', '=', $this->id)
+			->count();
 	}
 
 
@@ -856,7 +879,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				$id = (int)$id;
 			} else if (is_array($id)) {
 				$id = (int)$id['id'];
-			} else if (Validate::email($id)) {
+			} else if (Valid::email($id)) {
 				$id = mb_strtolower($id);
 			} else {
 				$id = Text::clean($id);
@@ -866,7 +889,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				// Found from static cache
 				return self::$_users[$id];
 
-			} else if ($user = Cache::instance()->get_('user_' . $id)) {
+			} else if ($user = Anqh::cache_get('user_' . $id)) {
 
 				// Found from cache
 				$user = unserialize($user);
@@ -875,9 +898,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 				// Not found from caches, try db
 				if (is_int($id)) {
-					$user = Jelly::select('user', $id);
+					$user = Model_User::find($id);
 				} else {
-					$user = Jelly::select('user')->where(Validate::email($id) ? 'email' : 'username_clean', '=', $id)->limit(1)->execute();
+					$user = Jelly::query('user')
+						->where(Valid::email($id) ? 'email' : 'username_clean', '=', $id)
+						->limit(1)
+						->select();
 				}
 				$cache = true;
 
@@ -888,7 +914,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($user && $user->loaded()) {
 			self::$_users[$user->id] = self::$_users[Text::clean($user->username)] = self::$_users[mb_strtolower($user->email)] = $user;
 			if ($cache) {
-				Cache::instance()->set_('user_' . $user->id, serialize($user), 3600);
+				Anqh::cache_set('user_' . $user->id, serialize($user), Date::DAY);
 			}
 		} else {
 			$user = null;
@@ -964,7 +990,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'title'      => $this->title,
 				'signature'  => $this->signature,
 				'avatar'     => $this->avatar,
-				'thumb'      => $this->default_image->loaded() ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
+				'thumb'      => $this->default_image ? $this->default_image->get_url('thumbnail') : (Valid::url($this->picture) ? $this->picture : null),
 				'last_login' => $this->last_login,
 			);
 		}
