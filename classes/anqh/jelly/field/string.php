@@ -7,7 +7,7 @@
  * @copyright  (c) 2010 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Field_String extends Jelly_Field_String {
+class Anqh_Field_String extends Jelly_Core_Field_String {
 
 	/**
 	 * @var  boolean  Empty should be null

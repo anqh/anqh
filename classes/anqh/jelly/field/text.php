@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Field_Text extends Jelly_Field_String {
+class Anqh_Jelly_Field_Text extends Jelly_Field_String {
 
 	/**
 	 * @var  boolean  Empty should be null
