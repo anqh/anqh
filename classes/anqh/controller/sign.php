@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Sign extends Controller_Template {
@@ -41,7 +41,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 			// Require valid user for login logging
 			$user = Model_User::find_user($_POST['username']);
 			if ($user && $user->loaded()) {
-				$login->user = $user;
+				$login->user     = $user;
 				$login->username = $user->username;
 
 				if ($visitor->login($user, $_POST['password'], isset($_POST['remember']))) {

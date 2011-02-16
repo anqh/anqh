@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface {
@@ -22,31 +22,30 @@ class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface 
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->table('exifs')
-			->fields(array(
-				'id'        => new Field_Primary,
-				'image'     => new Field_BelongsTo,
-				'make'      => new Field_String,
-				'model'     => new Field_String,
-				'exposure'  => new Field_String,
-				'aperture'  => new Field_String,
-				'focal'     => new Field_String,
-				'iso'       => new Field_Integer,
-				'taken'     => new Field_Timestamp(array(
-					'format' => 'Y-m-d H:i:s'
-				)),
-				'flash'     => new Field_String,
-				'program'   => new Field_String,
-				'metering'  => new Field_String,
-				'latitude'  => new Field_Float,
-				'latitude_ref'  => new Field_String,
-				'longitude' => new Field_Float,
-				'longitude_ref' => new Field_String,
-				'altitude'  => new Field_String,
-				'altitude_ref'  => new Field_String,
-				'lens'      => new Field_String,
-			));
+		$meta->table('exifs');
+		$meta->fields(array(
+			'id'        => new Jelly_Field_Primary,
+			'image'     => new Jelly_Field_BelongsTo,
+			'make'      => new Jelly_Field_String,
+			'model'     => new Jelly_Field_String,
+			'exposure'  => new Jelly_Field_String,
+			'aperture'  => new Jelly_Field_String,
+			'focal'     => new Jelly_Field_String,
+			'iso'       => new Jelly_Field_Integer,
+			'taken'     => new Jelly_Field_Timestamp(array(
+				'format' => 'Y-m-d H:i:s'
+			)),
+			'flash'     => new Jelly_Field_String,
+			'program'   => new Jelly_Field_String,
+			'metering'  => new Jelly_Field_String,
+			'latitude'  => new Jelly_Field_Float,
+			'latitude_ref'  => new Jelly_Field_String,
+			'longitude' => new Jelly_Field_Float,
+			'longitude_ref' => new Jelly_Field_String,
+			'altitude'  => new Jelly_Field_String,
+			'altitude_ref'  => new Jelly_Field_String,
+			'lens'      => new Jelly_Field_String,
+		));
 	}
 
 

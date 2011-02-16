@@ -125,7 +125,7 @@ abstract class Anqh_Controller_Template extends Controller {
 		if ($this->ajax || $this->internal) {
 
 			// AJAX and HMVC requests
-			$this->request->response .= '';
+			$this->response->body($this->response->body . '');
 
 		} else if ($this->auto_render) {
 
@@ -134,8 +134,8 @@ abstract class Anqh_Controller_Template extends Controller {
 			$session = Session::instance();
 
 			// Save current URI
-			if ($this->history && $this->request->status < 400) {
-				$uri = $this->request->uri;
+			if ($this->history && $this->response->status < 400) {
+				$uri = $this->request->current_uri();
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
 				$this->breadcrumb[$uri] = $this->page_title;
@@ -145,7 +145,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// Controller name as the default page id if none set
-			empty($this->page_id) && $this->page_id = $this->request->controller;
+			empty($this->page_id) and $this->page_id = $this->request->controller();
 
 
 			// Stylesheets
@@ -171,7 +171,10 @@ abstract class Anqh_Controller_Template extends Controller {
 					'selected' => $this->tab_id,
 				)));
 			}
-			Widget::add('tabs', View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
+			Widget::add('tabs', View::factory('generic/tabs_top', array(
+				'tabs'     => $this->tabs,
+				'selected' => $this->tab_id
+			)));
 
 			// Footer
 			Widget::add('footer', View_Module::factory('events/event_list', array(
@@ -317,7 +320,7 @@ head.js(
 				$this->language . ' ' .                      // Language
 				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
 				$session->get('page_main', 'left') . ' ' .   // Left/right aligned layout
-				$this->request->action . ' ' .               // Controller method
+				$this->request->action() . ' ' .               // Controller method
 				$this->page_class);                          // Controller set classes
 			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
 
@@ -334,7 +337,7 @@ head.js(
 				->set('page_subtitle', $this->page_subtitle);
 
 			if ($this->auto_render === true) {
-				$this->request->response = $this->template;
+				$this->response->body($this->template);
 			}
 
 		}

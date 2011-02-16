@@ -5,7 +5,7 @@
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Geo {
@@ -78,7 +78,7 @@ abstract class Anqh_Geo {
 		if (!isset(self::$_cities[$id])) {
 
 			// Not found from cache, load from db if preferred
-			$city = Jelly::select('geo_city')->load($id);
+			$city = Model_Geo_City::find($id);
 			if (!$city->loaded()) {
 
 				// Still not loaded, load from GeoNames
@@ -91,7 +91,7 @@ abstract class Anqh_Geo {
 						$city->longitude  = (float)$page->lng;
 						$city->population = (int)$page->population;
 						$city->country    = $country;
-						$city->timezone   = Jelly::select('geo_timezone')->load((string)$page->timezone);
+						$city->timezone   = Model_Geo_Timezone::find((string)$page->timezone);
 						try {
 							$city->save();
 						} catch (Validate_Exception $e) {
@@ -141,7 +141,7 @@ abstract class Anqh_Geo {
 		if (!isset(self::$_countries[$id])) {
 
 			// Not found from cache, load from db if preferred
-			$country = Jelly::select('geo_country')->load($id);
+			$country = Model_Geo_Country::find($id);
 			if (!$country->loaded()) {
 
 				// Still not loaded, load from GeoNames

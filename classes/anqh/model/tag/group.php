@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Tag_Group extends Jelly_Model {
@@ -15,35 +15,34 @@ class Anqh_Model_Tag_Group extends Jelly_Model {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('name' => 'ASC'))
-			->fields(array(
-				'id' => new Field_Primary,
-				'name' => new Field_String(array(
-					'label'  => __('Group name'),
-					'unique' => true,
-					'rules'  => array(
-						'not_empty' => array(true),
-					),
-					'filters' => array(
-						'trim' => null,
-					)
-				)),
-				'description' => new Field_String(array(
-					'label'   => __('Description'),
-					'filters' => array(
-						'trim' => null,
-					))
+		$meta->sorting(array('name' => 'ASC'));
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'name' => new Jelly_Field_String(array(
+				'label'  => __('Group name'),
+				'unique' => true,
+				'rules'  => array(
+					'not_empty' => array(true),
 				),
-				'author' => new Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
-				'created' => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'tags' => new Field_HasMany
-			));
+				'filters' => array(
+					'trim' => null,
+				)
+			)),
+			'description' => new Jelly_Field_String(array(
+				'label'   => __('Description'),
+				'filters' => array(
+					'trim' => null,
+				))
+			),
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'author_id',
+				'foreign' => 'user',
+			)),
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'tags' => new Jelly_Field_HasMany
+		));
 	}
 
 
@@ -55,7 +54,10 @@ class Anqh_Model_Tag_Group extends Jelly_Model {
 	 * @return  Model_Tag_Group
 	 */
 	public static function find_by_name($name) {
-		return Jelly::select('tag_group')->where('name', '=', $name)->limit(1)->execute();
+		return Jelly::query('tag_group')
+			->where('name', '=', $name)
+			->limit(1)
+			->select();
 	}
 
 }

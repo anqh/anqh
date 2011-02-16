@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Invitation extends Jelly_Model implements Permission_Interface {
@@ -16,15 +16,15 @@ class Anqh_Model_Invitation extends Jelly_Model implements Permission_Interface 
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id' => new Field_Primary,
-			'code' => new Field_String(array(
+			'id' => new Jelly_Field_Primary,
+			'code' => new Jelly_Field_String(array(
 				'unique' => true,
 				'rules' => array(
 					'not_empty'    => null,
 					'exact_length' => array(16),
 				),
 			)),
-			'email' => new Field_Email(array(
+			'email' => new Jelly_Field_Email(array(
 				'rules' => array(
 					'not_empty'  => null,
 					'min_length' => array(6),
@@ -34,7 +34,7 @@ class Anqh_Model_Invitation extends Jelly_Model implements Permission_Interface 
 					'unique' => array('Model_Invitation', '_unique')
 				),
 			)),
-			'created' => new Field_Timestamp(array(
+			'created' => new Jelly_Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
 		));
@@ -59,7 +59,10 @@ class Anqh_Model_Invitation extends Jelly_Model implements Permission_Interface 
 	 * @return  Model_Invitation
 	 */
 	public static function find_by_code($code) {
-		return Jelly::select('invitation')->where('code', '=', $code)->limit(1)->execute();
+		return Jelly::query('invitation')
+			->where('code', '=', $code)
+			->limit(1)
+			->select();
 	}
 
 

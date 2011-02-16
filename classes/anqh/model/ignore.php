@@ -16,13 +16,13 @@ class Anqh_Model_Ignore extends Jelly_Model {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'     => new Field_Primary,
-			'user'   => new Field_BelongsTo,
-			'ignore' => new Field_BelongsTo(array(
+			'id'     => new Jelly_Field_Primary,
+			'user'   => new Jelly_Field_BelongsTo,
+			'ignore' => new Jelly_Field_BelongsTo(array(
 				'column'  => 'ignore_id',
 				'foreign' => 'user'
 			)),
-			'created' => new Field_Timestamp(array(
+			'created' => new Jelly_Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
 		));

@@ -22,7 +22,7 @@ class Anqh_View extends Kohana_View {
 
 			// Display the exception message only if not in production
 			ob_start();
-			Kohana::exception_handler($e);
+			Kohana_Exception::handler($e);
 
 			if (Kohana::$environment == Kohana::PRODUCTION) {
 				ob_end_clean();

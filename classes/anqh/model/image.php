@@ -249,7 +249,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public function find_notes() {
-		return $this->get('notes')
+		return Jelly::query('image_note')
+			->with('author')
+			->with('user')
+			->where('image_id', '=', $this->id)
 			->order_by('x', 'ASC')
 			->order_by('id', 'ASC')
 			->select();

@@ -7,7 +7,7 @@ require_once(Kohana::find_file('vendor', 'nbbc/nbbc'));
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @copyright  (c) 2008-9, the Phantom Inker
  * @copyright  (c) 2004-2008 AddedBytes
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
@@ -85,7 +85,7 @@ class Anqh_BB extends BBCode {
 
 				// Parent post id
 				case 'post':
-					$post = Jelly::select('forum_post', (int)$param['value']);
+					$post = Model_Forum_Post::find((int)$param['value']);
 					break;
 
 				// Parent post author

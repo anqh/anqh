@@ -5,7 +5,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Visitor {
@@ -47,7 +47,9 @@ class Anqh_Visitor {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
 
 			// Load the token and user
-			$token = Jelly::select('user_token')->where('token', '=', $token)->load();
+			$token = Jelly::query('user_token')
+				->where('token', '=', $token)
+				->select();
 
 			if ($token->loaded() AND $token->user->loaded()) {
 				if ($token->user_agent === sha1(Request::$user_agent)) {
@@ -290,11 +292,11 @@ class Anqh_Visitor {
 	 * @return  Visitor
 	 */
 	public static function instance() {
-		if (!Visitor::$_instance) {
-			Visitor::$_instance = new Visitor(Kohana::config('visitor'));
+		if (!self::$_instance) {
+			self::$_instance = new Visitor(Kohana::config('visitor'));
 		}
 
-		return Visitor::$_instance;
+		return self::$_instance;
 	}
 
 
@@ -385,7 +387,10 @@ class Anqh_Visitor {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
 			Cookie::delete($this->_config['cookie_name']);
 
-			$token = Jelly::select('user_token')->where('token', '=', $token)->limit(1)->load();
+			$token = Jelly::query('user_token')
+				->where('token', '=', $token)
+				->limit(1)
+				->select();
 			if ($token->loaded() && $logout_all) {
 				Jelly::delete('user_token')->where('user_id', '=', $token->user->id)->execute();
 			} else if ($token->loaded()) {

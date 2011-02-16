@@ -73,7 +73,7 @@ class Anqh_Controller_User_API extends Controller_API {
 			$searches = empty($searches) ? array('username') : $searches;
 
 			// Build query
-			$users = Jelly::select('user')->limit($limit);
+			$users = Jelly::query('user')->limit($limit);
 
 			// Find friends first
 			if ($user_id = Arr::get($_REQUEST, 'user', 0)) {
@@ -99,7 +99,7 @@ class Anqh_Controller_User_API extends Controller_API {
 			$users->where_close();
 
 			// Build data
-			foreach ($users->execute() as $user) {
+			foreach ($users->select() as $user) {
 				$this->data['users'][] = $this->_prepare_user($user, $fields);
 			}
 

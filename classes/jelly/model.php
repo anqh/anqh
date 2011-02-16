@@ -39,7 +39,7 @@ class Jelly_Model extends Jelly_Core_Model {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_all() {
-		return Jelly::select(get_called_class())->execute();
+		return Jelly::query(get_called_class())->select();
 	}
 
 

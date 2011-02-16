@@ -242,7 +242,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Validate  $array
 	 * @param  string    $field
 	 */
-	public static function _check_password_matches(Validate $array, $field) {
+	public static function _check_password_matches(Validation $array, $field) {
 		if (empty($array['password']) || $array['password'] !== $array[$field]) {
 			$array->error($field, 'matches', array('param1' => 'password'));
 		}
@@ -782,6 +782,25 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get user's default image url
+	 *
+	 * @param   string  $size
+	 * @return  string
+	 */
+	public function get_image_url($size = null) {
+		if ($this->default_image) {
+			$image = Model_Image::find($this->default_image)->get_url($size);
+		} else if (Valid::url($this->picture)) {
+			$image = $this->picture;
+		} else {
+			$image = null;
+		}
+
+		return $image;
+	}
+
+
+	/**
 	 * Check for friendship
 	 *
 	 * @param  mixed  $friend  Model_User, array, $id
@@ -966,7 +985,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if (!$user = Anqh::cache_get($ckey . $id)) {
 
 			// Load from DB
-			$model = Jelly::select('user')->where(is_int($id) ? 'id' : 'username_clean', '=', $id)->limit(1)->execute();
+			$model = Jelly::query('user')
+				->where(is_int($id) ? 'id' : 'username_clean', '=', $id)
+				->limit(1)
+				->select();
 			$user = $model->light_array();
 
 			Anqh::cache_set($ckey . $id, $user, Date::DAY);
@@ -990,7 +1012,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'title'      => $this->title,
 				'signature'  => $this->signature,
 				'avatar'     => $this->avatar,
-				'thumb'      => $this->default_image ? $this->default_image->get_url('thumbnail') : (Valid::url($this->picture) ? $this->picture : null),
+				'thumb'      => $this->get_image_url('thumbnail'),
 				'last_login' => $this->last_login,
 			);
 		}
@@ -1080,10 +1102,11 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  array|string  $roles
 	 */
 	public function has_role($roles) {
-		foreach ($this->get('roles')->execute() as $role) {
-			if (is_array($roles) && in_array($role->name, $roles)
-				|| is_numeric($roles) && $role->id == $roles
-				|| is_string($roles) && $role->name == $roles) {
+		foreach ($this->roles() as $role) {
+			if ((is_array($roles) && in_array($role->name, $roles))
+				|| (is_numeric($roles) && $role->id == $roles)
+				|| (is_string($roles) && $role->name == $roles)
+			) {
 				return true;
 			}
 		}
@@ -1091,4 +1114,19 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		return false;
 	}
 
+
+	/**
+	 * Get user's roles
+	 *
+	 * @return  Jelly_Collection
+	 */
+	public function roles() {
+		return $this->roles instanceof Jelly_Model ?
+			$this->roles :
+			Jelly::query('role')
+				->join('roles_users')
+				->on('roles.id', '=', 'roles_users.role_id')
+				->where('user_id', '=', $this->id)
+				->select();
+	}
 }

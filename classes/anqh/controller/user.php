@@ -250,7 +250,7 @@ class Anqh_Controller_User extends Controller_Template {
 
 				$this->request->redirect(URL::user($user));
 
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			} catch (Kohana_Exception $e) {
 				$errors = array('file' => __('Failed with image'));
@@ -327,7 +327,7 @@ class Anqh_Controller_User extends Controller_Template {
 					if (!$this->ajax) {
 						$this->request->redirect(Route::get('user')->uri(array('username' => urlencode($user->username))));
 					}
-				} catch (Validate_Exception $e) {
+				} catch (Validation_Exception $e) {
 					$errors = $e->array->errors('validation');
 					$values = $comment;
 				}
@@ -415,7 +415,7 @@ class Anqh_Controller_User extends Controller_Template {
 			try {
 				$user->save();
 				$this->request->redirect(URL::user($user));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			}
 		}
@@ -589,13 +589,7 @@ head.ready("anqh", function() {
 	 * @return  View_Module
 	 */
 	protected function _get_mod_image(Model_User $user) {
-		if ($user->default_image->id) {
-			$image = $user->default_image;
-		} else if (Validate::url($user->picture)) {
-			$image = $user->picture;
-		} else {
-			$image = null;
-		}
+		$image = $user->get_image_url();
 
 		return View_Module::factory('generic/side_image', array(
 			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)

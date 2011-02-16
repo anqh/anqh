@@ -25,7 +25,18 @@ abstract class Anqh_Request extends Kohana_Request {
 			return $url;
 		}
 
-		Request::instance()->redirect($url);
+		Request::current()->redirect($url);
+	}
+
+
+	/**
+	 * Return current unrouted URI, otherwise default action would be added
+	 *
+	 * @static
+	 * @return  string
+	 */
+	public static function current_uri() {
+		return $_REQUEST['URI'];
 	}
 
 

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
@@ -15,21 +15,20 @@ class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->fields(array(
-				'id'          => new Field_Primary,
-				'name'        => new Field_String(array(
-					'label'  => __('Name'),
-					'unique' => true,
-					'rules'  => array(
-						'max_length' => array(32),
-						'not_empty'  => null,
-					),
-				)),
-				'description' => new Field_Text(array(
-					'label' => __('Description'),
-				)),
-				'users'       => new Field_ManyToMany,
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'name' => new Jelly_Field_String(array(
+				'label'  => __('Name'),
+				'unique' => true,
+				'rules'  => array(
+					'max_length' => array(32),
+					'not_empty'  => null,
+				),
+			)),
+			'description' => new Jelly_Field_Text(array(
+				'label' => __('Description'),
+			)),
+			'users' => new Jelly_Field_ManyToMany,
 		));
 	}
 
@@ -43,8 +42,11 @@ class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function find($role) {
 		$model = is_numeric($role)
-			? Jelly::select('role', $role)
-			: Jelly::select('role')->where('name', '=', $role)->limit(1)->execute();
+			? Model_Role::find($role)
+			: Jelly::query('role')
+				->where('name', '=', $role)
+				->limit(1)
+				->select();
 
 		return $model->loaded() ? $model : null;
 	}
