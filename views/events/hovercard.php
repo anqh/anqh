@@ -11,21 +11,21 @@
 
 <?php echo HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true) ?> @
 
-<?php if ($event->venue->id): ?>
-<?php echo HTML::anchor(Route::model($event->venue), HTML::chars($event->venue->name)) ?>, <?php echo HTML::chars($event->venue->city_name) ?>
+<?php if ($event->venue): ?>
+	<?php echo HTML::anchor(Route::model($event->venue), HTML::chars($event->venue->name)) ?>, <?php echo HTML::chars($event->venue->city_name) ?>
 <?php elseif ($event->venue_name): ?>
-<?php echo ($event->venue_url
-	?	HTML::anchor($event->venue_url, $event->venue_name)
-	:	HTML::chars($event->venue_name))
-	. ($event->city_name ? ', ' . HTML::chars($event->city_name) : '') ?>
+	<?php echo ($event->venue_url
+		?	HTML::anchor($event->venue_url, $event->venue_name)
+		:	HTML::chars($event->venue_name))
+		. ($event->city_name ? ', ' . HTML::chars($event->city_name) : '') ?>
 <?php elseif ($event->city_name): ?>
-<?php echo HTML::chars($event->city_name) ?>
+	<?php echo HTML::chars($event->city_name) ?>
 <?php endif; ?>
 
-<?php if ($event->flyer_front->id): ?>
+<?php if ($event->flyer_front): ?>
 	<?php echo HTML::image($event->flyer_front->get_url('thumbnail')) ?>
-<?php elseif ($event->flyer_back->id): ?>
+<?php elseif ($event->flyer_back): ?>
 	<?php echo HTML::image($event->flyer_back->get_url('thumbnail')) ?>
-<?php elseif (Validate::url($event->flyer_front_url)): ?>
+<?php elseif (Valid::url($event->flyer_front_url)): ?>
 	<?php echo HTML::image($event->flyer_front_url, array('width' => 160)) ?>
 <?php endif; ?>

@@ -54,6 +54,23 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Find flyer by flyer id
+	 *
+	 * @static
+	 * @param   integer  $flyer_id
+	 * @return  Model_Flyer
+	 */
+	public static function find($flyer_id) {
+		return Jelly::query('flyer')
+			->with('event')
+			->with('image')
+			->where('id', '=', $flyer_id)
+			->limit(1)
+			->select();
+	}
+
+
+	/**
 	 * Find flyer by image id
 	 *
 	 * @param   integer  $image_id
@@ -78,6 +95,7 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	public static function find_by_month($year, $month) {
 		if ($year == 1970 && $month == 0) {
 			return Jelly::query('flyer')
+				->with('image')
 				->where('stamp_begin', 'IS', null)
 				->order_by('id', 'DESC')
 				->select();
@@ -85,6 +103,8 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 			$start = mktime(0, 0, 0, $month, 1, $year);
 			$end   = strtotime('+1 month', $start);
 			return Jelly::query('flyer')
+				->with('image')
+				->with('event')
 				->where('stamp_begin', 'BETWEEN', array($start, $end))
 				->order_by('stamp_begin', 'DESC')
 				->order_by('event_id', 'DESC')
@@ -102,6 +122,8 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function find_latest($limit = 4) {
 		return Jelly::query('flyer')
+			->with('event')
+			->with('image')
 			->limit((int)$limit)
 			->order_by('image_id', 'DESC')
 			->select();

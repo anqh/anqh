@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Events_API extends Controller_API {
@@ -86,7 +86,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$filter = !empty($filter) && ($filter == 'upcoming' || $filter == 'past' || strpos($filter, 'date:') !== false) ? $filter : null;
 
 			// Build query
-			$events = Jelly::select('event')->limit($limit);
+			$events = Jelly::query('event')->limit($limit);
 			foreach ($orders as $column => $direction) {
 				$events->order_by($column, $direction);
 			}
@@ -125,7 +125,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$events->where_close();
 
 			// Build data
-			foreach ($events->execute() as $event) {
+			foreach ($events->select() as $event) {
 				$this->data['events'][] = $this->_prepare_event($event, $fields);
 			}
 

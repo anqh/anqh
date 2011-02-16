@@ -215,7 +215,6 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 			&& (bool)Jelly::query('favorite')
 				->where('user_id', '=', $user->id)
 				->where('event_id', '=', $this->id)
-				->select()
 				->delete()) {
 			$this->favorite_count--;
 			$this->save();
@@ -224,6 +223,22 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Load event with venue and flyers
+	 *
+	 * @static
+	 * @param   integer  $event_id
+	 * @return  Model_Event
+	 */
+	public static function find($event_id) {
+		return Jelly::query('event', $event_id)
+			->with('venue')
+			->with('flyer_front')
+			->with('flyer_back')
+			->select();
 	}
 
 
@@ -276,6 +291,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function find_grouped_past($limit = 10) {
 		return Jelly::query('event')
+			->with('venue')
 			->past()
 			->limit($limit)
 			->execute_grouped();

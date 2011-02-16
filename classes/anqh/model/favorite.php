@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Favorite extends Jelly_Model implements Permission_Interface {
@@ -16,10 +16,10 @@ class Anqh_Model_Favorite extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id'      => new Field_Primary,
-			'user'    => new Field_BelongsTo,
-			'event'   => new Field_BelongsTo,
-			'created' => new Field_Timestamp(array(
+			'id'      => new Jelly_Field_Primary,
+			'user'    => new Jelly_Field_BelongsTo,
+			'event'   => new Jelly_Field_BelongsTo,
+			'created' => new Jelly_Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
 		));

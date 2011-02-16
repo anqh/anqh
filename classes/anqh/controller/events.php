@@ -163,7 +163,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			Anqh::open_graph('title', $this->page_title);
 			Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
 			Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
-			$event->flyer_front->loaded() and Anqh::open_graph('image', URL::site($event->flyer_front->get_url('thumbnail'), true));
+			$event->flyer_front and Anqh::open_graph('image', URL::site($event->flyer_front->get_url('thumbnail'), true));
 		}
 		Anqh::share(true);
 
@@ -265,7 +265,7 @@ class Anqh_Controller_Events extends Controller_Template {
 						$image = Model_Image::factory()->set(array(
 							'remote' => $url
 						));
-						$event->author->loaded() and $image->author = $event->author;
+						$event->author and $image->author = $event->author;
 						try {
 							$image->save();
 
@@ -320,7 +320,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 		// Load importable flyers
-		$events = Jelly::select('event')
+		$events = Jelly::query('event')
 			->where_open()
 				->where(DB::expr('CHAR_LENGTH(flyer_front_url)'), '>', 4)
 				->and_where(DB::expr('COALESCE(flyer_front_image_id, 0)'), '=', 0)
@@ -331,12 +331,12 @@ class Anqh_Controller_Events extends Controller_Template {
 			->where_close()
 			->order_by('id', 'ASC')
 			->limit(100)
-			->execute();
+			->select();
 
 		if (count($events)) {
 			Widget::add('main', Form::open(null, array('method' => 'get')));
 			foreach ($events as $event) {
-				if ($event->flyer_front_url && !$event->flyer_front->loaded()) {
+				if ($event->flyer_front_url && !$event->flyer_front) {
 					$front  = '<p style="overflow: hidden">';
 					$front .= HTML::anchor($event->flyer_front_url, HTML::image($event->flyer_front_url, array('width' => '100')), array('target' => '_blank')) . ' ';
 					$front .= HTML::anchor(Route::get('events')->uri(array('action' => 'flyers')) . '?event_id=' . $event->id . '&import=front', __('Import front')) . ': ' . $event->flyer_front_url . '<br />';
@@ -345,7 +345,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				} else {
 					$front = '';
 				}
-				if ($event->flyer_back_url && !$event->flyer_back->loaded()) {
+				if ($event->flyer_back_url && !$event->flyer_back) {
 					$back  = '<p style="overflow: hidden">';
 					$back .= HTML::anchor($event->flyer_back_url, HTML::image($event->flyer_back_url, array('width' => '100')), array('target' => '_blank')) . ' ';
 					$back .= HTML::anchor(Route::get('events')->uri(array('action' => 'flyers')) . '?event_id=' . $event->id . '&import=back', __('Import back')) . ': ' . $event->flyer_back_url . '<br />';
@@ -848,7 +848,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Venue
 		/*
-		$venues = Jelly::select('venue')->with('city')->event_hosts()->order_by('name', 'ASC')->execute();
+		$venues = Jelly::query('venue')->with('city')->event_hosts()->order_by('name', 'ASC')->select();
 		$hosts = array();
 		if (count($venues)) {
 			foreach ($venues as $v) {
@@ -870,14 +870,14 @@ class Anqh_Controller_Events extends Controller_Template {
 			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
 			'tags'   => $tags,
 
-			'flyer_front' => $event->flyer_front->loaded() ? $event->flyer_front : null,
-			'flyer_back'  => $event->flyer_back->loaded() ? $event->flyer_back : null,
+			'flyer_front' => $event->flyer_front ? $event->flyer_front : null,
+			'flyer_back'  => $event->flyer_back ? $event->flyer_back : null,
 
 			'venue'  => isset($venue) ? $venue : $event->venue,
 			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
 			'venues' => Model_Venue::find_all(),
 
-			'city'   => $event->city->loaded() ? $event->city : (isset($venue) && $venue->city->loaded() ? $venue->city : null),
+			'city'   => $event->city ? $event->city : (isset($venue) && $venue->city ? $venue->city : null),
 			'cancel' => $cancel,
 		)));
 	}

@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Builder_Event extends Jelly_Builder {
@@ -26,10 +26,12 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 		if ($stamp_begin > $stamp_end) {
 			$stamp_temp  = $stamp_begin;
 			$stamp_begin = $stamp_end;
-			$stamp_end   = $stamp_begin;
+			$stamp_end   = $stamp_temp;
 		}
 
-		return $this->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))->order_by('stamp_begin', $order == 'ASC' ? 'ASC' : 'DESC')->order_by('city_name', 'ASC');
+		return $this->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))
+			->order_by('stamp_begin', $order == 'ASC' ? 'ASC' : 'DESC')
+			->order_by('city_name', 'ASC');
 	}
 
 
@@ -39,7 +41,7 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 	 * @return  array
 	 */
 	public function execute_grouped() {
-		$events = $this->execute();
+		$events = $this->select();
 
 		$grouped = array();
 		if (count($events)) {
@@ -54,7 +56,7 @@ class Anqh_Model_Builder_Event extends Jelly_Builder {
 				}
 
 				// City
-				$city = UTF8::ucfirst(mb_strtolower($event->city->loaded() ? $event->city->name : $event->city_name));
+				$city = UTF8::ucfirst(mb_strtolower($event->city ? $event->city->name : $event->city_name));
 				if (!isset($grouped[$date][$city])) {
 					$grouped[$date][$city] = array();
 				}
