@@ -28,105 +28,114 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('city_name' => 'ASC', 'name' => 'ASC'))
-			->fields(array(
-				'id' => new Jelly_Field_Primary,
-				'category' => new Jelly_Field_BelongsTo(array(
-					'label'   => 'Category',
-					'foreign' => 'venue_category',
-				)),
-				'name' => new Field_String(array(
-					'label' => __('Venue'),
-					'rules' => array(
-						'not_empty'  => null,
-						'max_length' => array(32),
-					),
-				)),
-				'description' => new Field_String(array(
-					'label' => __('Short description'),
-					'rules' => array(
-						'max_length' => array(250),
-					),
-				)),
-				'homepage' => new Field_URL(array(
-					'label' => 'Homepage',
-				)),
-				'hours' => new Field_Text(array(
-					'label' => __('Opening hours'),
-					'rules' => array(
-						'max_length' => array(250),
-					),
-				)),
-				'info' => new Field_Text(array(
-					'label' => __('Other information'),
-					'rules' => array(
-						'max_length' => array(512),
-					),
-				)),
+		$meta->sorting(array(
+			'city_name' => 'ASC',
+			'name'      => 'ASC')
+		);
 
-				'address' => new Field_String(array(
-					'label' => __('Street address'),
-					'rules' => array(
-						'max_length' => array(50),
-					),
-				)),
-				'zip' => new Field_String(array(
-					'label' => __('Zip code'),
-					'rules' => array(
-						'min_length' => array(4),
-						'max_length' => array(5),
-						'digit'      => null,
-					),
-				)),
-				'city_name'  => new Field_String(array(
-					'label' => __('City'),
-					'rules' => array(
-						'not_empty'  => null,
-					),
-				)),
-				'city'       => new Jelly_Field_BelongsTo(array(
-					'foreign' => 'geo_city',
-				)),
-				'country' => new Jelly_Field_BelongsTo(array(
-					'foreign' => 'geo_country',
-					'null'    => true,
-				)),
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'category' => new Jelly_Field_BelongsTo(array(
+				'label'   => 'Category',
+				'column'  => 'venue_category_id',
+				'foreign' => 'venue_category',
+			)),
+			'name' => new Jelly_Field_String(array(
+				'label' => __('Venue'),
+				'rules' => array(
+					'not_empty'  => null,
+					'max_length' => array(32),
+				),
+			)),
+			'description' => new Jelly_Field_String(array(
+				'label' => __('Short description'),
+				'rules' => array(
+					'max_length' => array(250),
+				),
+			)),
+			'homepage' => new Jelly_Field_URL(array(
+				'label' => 'Homepage',
+			)),
+			'hours' => new Jelly_Field_Text(array(
+				'label' => __('Opening hours'),
+				'rules' => array(
+					'max_length' => array(250),
+				),
+			)),
+			'info' => new Jelly_Field_Text(array(
+				'label' => __('Other information'),
+				'rules' => array(
+					'max_length' => array(512),
+				),
+			)),
 
-				'latitude'   => new Jelly_Field_Float,
-				'longitude'  => new Jelly_Field_Float,
-				'event_host' => new Jelly_Field_Boolean(array(
-					'label' => __('Event host'),
-				)),
-				'created'    => new Jelly_Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'modified'   => new Jelly_Field_Timestamp(array(
-					'auto_now_update' => true,
-				)),
+			'address' => new Jelly_Field_String(array(
+				'label' => __('Street address'),
+				'rules' => array(
+					'max_length' => array(50),
+				),
+			)),
+			'zip' => new Jelly_Field_String(array(
+				'label' => __('Zip code'),
+				'rules' => array(
+					'min_length' => array(4),
+					'max_length' => array(5),
+					'digit'      => null,
+				),
+			)),
+			'city_name' => new Jelly_Field_String(array(
+				'label' => __('City'),
+				'rules' => array(
+					'not_empty'  => null,
+				),
+			)),
+			'city' => new Jelly_Field_BelongsTo(array(
+				'column'      => 'geo_city_id',
+				'foreign'     => 'geo_city',
+				'allow_null'  => true,
+				'empty_value' => null,
+			)),
+			'country' => new Jelly_Field_BelongsTo(array(
+				'column'      => 'geo_country_id',
+				'foreign'     => 'geo_country',
+				'allow_null'  => true,
+				'empty_value' => null,
+			)),
 
-				'foursquare_id'          => new Jelly_Field_Integer(array(
-					'label' => __('Foursquare ID')
-				)),
-				'foursquare_category_id' => new Jelly_Field_Integer(array(
-					'label' => __('Foursquare Category ID')
-				)),
+			'latitude' => new Jelly_Field_Float,
+			'longitude' => new Jelly_Field_Float,
+			'event_host' => new Jelly_Field_Boolean(array(
+				'label' => __('Event host'),
+			)),
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'modified' => new Jelly_Field_Timestamp(array(
+				'auto_now_update' => true,
+			)),
 
-				'author' => new Jelly_Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
-				'default_image' => new Jelly_Field_BelongsTo(array(
-					'column'  => 'default_image_id',
-					'foreign' => 'image',
-				)),
-				'images' => new Field_ManyToMany,
-				'tags'   => new Field_ManyToMany(array(
-					'label' => __('Tags'),
-					'null'  => true,
-				)),
-				'events' => new Jelly_Field_HasMany,
-		));
+			'foursquare_id' => new Jelly_Field_Integer(array(
+				'label' => __('Foursquare ID')
+			)),
+			'foursquare_category_id' => new Jelly_Field_Integer(array(
+				'label' => __('Foursquare Category ID')
+			)),
+
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'author_id',
+				'foreign' => 'user',
+			)),
+			'default_image' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'default_image_id',
+				'foreign' => 'image',
+			)),
+			'images' => new Jelly_Field_ManyToMany,
+			'tags'   => new Jelly_Field_ManyToMany(array(
+				'label' => __('Tags'),
+				'null'  => true,
+			)),
+			'events' => new Jelly_Field_HasMany,
+	));
 	}
 
 
@@ -137,11 +146,11 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_all() {
-		return Jelly::query('venue')
+		return Jelly::select('venue')
 			->with('venue_category')
 			->order_by('city_name', 'ASC')
 			->order_by('name', 'ASC')
-			->execute();
+			->query();
 	}
 
 
@@ -190,7 +199,9 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Model_Venue
 	 */
 	public static function find_by_foursquare($foursquare_id) {
-		return Jelly::factory('venue')->where('foursquare_id', '=', (int)$foursquare_id)->limit(1)->execute();
+		return Jelly::query('venue')
+			->where('foursquare_id', '=', (int)$foursquare_id)->limit(1)
+			->select();
 	}
 
 
@@ -202,7 +213,9 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_name($name) {
-		return Jelly::query('venue')->where(new Database_Expression('LOWER(name)'), '=', strtolower(trim($name)))->execute();
+		return Jelly::query('venue')
+			->where(new Database_Expression('LOWER(name)'), '=', strtolower(trim($name)))
+			->select();
 	}
 
 
@@ -214,7 +227,10 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new($limit = 20) {
-		return Jelly::query('venue')->order_by('id', 'DESC')->limit((int)$limit)->execute();
+		return Jelly::query('venue')
+			->order_by('id', 'DESC')
+			->limit((int)$limit)
+			->select();
 	}
 
 
@@ -226,7 +242,11 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_updated($limit = 20) {
-		return Jelly::query('venue')->where('modified', 'IS NOT', null)->order_by('modified', 'DESC')->limit((int)$limit)->execute();
+		return Jelly::query('venue')
+			->where('modified', 'IS NOT', null)
+			->order_by('modified', 'DESC')
+			->limit((int)$limit)
+			->select();
 	}
 
 
