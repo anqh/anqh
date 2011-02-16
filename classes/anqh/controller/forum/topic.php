@@ -126,7 +126,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$topic->mark_as_read(self::$user);
 		} else {
 			$this->tab_id = 'area';
-			$this->tabs['area'] = array('url' => Route::model($topic->area), 'text' => __('Area'));
+			$this->tabs['area'] = array('url' => Route::model($topic->area()), 'text' => __('Area'));
 		}
 
 		// Set title
@@ -164,7 +164,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			// Model binding
 			if ($topic->area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
 				if ($bind = Model_Forum_Area::get_binds($topic->area->bind)) {
-					$model = Jelly::select($bind['model'])->load($topic->bind_id);
+					$model = Jelly::query($bind['model'], $topic->bind_id)->select();
 					if ($model->loaded()) {
 
 						// Set actions
@@ -758,7 +758,7 @@ $(function() {
 			);
 		} else {
 			$this->page_subtitle .= ' | ' . HTML::anchor(
-				Route::model($topic->area),
+				Route::model($topic->area()),
 				__('Back to :area', array(':area' => HTML::chars($topic->area->name))),
 				array('title' => strip_tags($topic->area->description))
 			);

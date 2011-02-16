@@ -23,20 +23,20 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'first_post' => new Field_BelongsTo(array(
+			'first_post' => new Jelly_Field_BelongsTo(array(
 				'column'  => 'first_post_id',
 				'foreign' => 'forum_private_post',
 			)),
-			'last_post' => new Field_BelongsTo(array(
+			'last_post' => new Jelly_Field_BelongsTo(array(
 				'column'  => 'last_post_id',
 				'foreign' => 'forum_private_post',
 			)),
-			'posts' => new Field_HasMany(array(
+			'posts' => new Jelly_Field_HasMany(array(
 				'foreign' => 'forum_private_post.forum_topic_id',
 			)),
 
-			'recipient_count' => new Field_Integer,
-			'recipients' => new Field_HasMany(array(
+			'recipient_count' => new Jelly_Field_Integer,
+			'recipients' => new Jelly_Field_HasMany(array(
 				'foreign' => 'forum_private_recipient.forum_topic_id'
 			)),
 		));
@@ -75,14 +75,14 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 			throw new InvalidArgumentException('User required.');
 		}
 
-		$topics = Jelly::select('forum_private_topic')
+		$topics = Jelly::query('forum_private_topic')
 			->join('forum_private_recipients', 'INNER')
 			->on('forum_private_topic.:primary_key', '=', 'forum_private_recipients.topic:foreign_key')
 			->where('user_id', '=', $user->id)
 			->order_by('last_post_id', 'DESC')
 			->limit($limit);
 
-		return $topics->execute();
+		return $topics->select();
 	}
 
 
@@ -165,7 +165,7 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 	 * @return  integer
 	 */
 	public static function get_count(Model_User $user, $type = null) {
-		$topics = Jelly::select('forum_private_recipient')
+		$topics = Jelly::query('forum_private_recipient')
 			->where('user_id', '=', $user->id);
 
 		return $topics->count();
@@ -243,11 +243,18 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 		}
 
 		// First post
-		$first_post = Jelly::select('forum_private_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'ASC')->limit(1)->execute();
+		$first_post = Jelly::query('forum_private_post')
+			->where('forum_topic_id', '=', $this->id)->order_by('id', 'ASC')
+			->limit(1)
+			->select();
 		$this->first_post = $first_post;
 
 		// Last post
-		$last_post = Jelly::select('forum_private_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'DESC')->limit(1)->execute();
+		$last_post = Jelly::query('forum_private_post')
+			->where('forum_topic_id', '=', $this->id)
+			->order_by('id', 'DESC')
+			->limit(1)
+			->select();
 		$this->last_post = $last_post;
 		$this->last_posted = $last_post->created;
 		$this->last_poster = $last_post->author_name;

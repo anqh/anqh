@@ -15,17 +15,16 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->table('forum_areas')
-			->fields(array(
-				'last_topic' => new Field_BelongsTo(array(
-					'column'  => 'last_topic_id',
-					'foreign' => 'forum_private_topic',
-				)),
-				'topics' => new Field_HasMany(array(
-					'foreign' => 'forum_private_topic'
-				))
-			));
+		$meta->table('forum_areas');
+		$meta->fields(array(
+			'last_topic' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'last_topic_id',
+				'foreign' => 'forum_private_topic',
+			)),
+			'topics' => new Jelly_Field_HasMany(array(
+				'foreign' => 'forum_private_topic'
+			))
+		));
 
 		parent::initialize($meta);
 	}
@@ -52,7 +51,9 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_areas() {
-		return Jelly::select('forum_area')->where('type', '=', self::TYPE_PRIVATE)->execute();
+		return Jelly::query('forum_area')
+			->where('type', '=', self::TYPE_PRIVATE)
+			->select();
 	}
 
 
@@ -66,14 +67,13 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_topics(Model_User $user, Pagination $paginatinon, $type = null) {
-		$topics = Jelly::select('forum_private_topic')
+		return Jelly::query('forum_private_topic')
 			->join('forum_private_recipient')
 			->on('forum_private_topic.:primary_key', '=', 'forum_private_recipient.forum_topic:foreign_key')
 			->where('user_id', '=', $user->id)
 			->order_by('last_post_id', 'DESC')
-			->pagination($paginatinon);
-
-		return $topics->execute();
+			->pagination($paginatinon)
+			->select();
 	}
 
 

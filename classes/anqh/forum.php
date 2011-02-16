@@ -23,7 +23,10 @@ class Anqh_Forum {
 	 * @return  array
 	 */
 	public static function find_new_private_messages(Model_User $user) {
-		return Jelly::select('forum_private_recipient')->where('user_id', '=', $user->id)->and_where('unread', '>', 0)->execute();
+		return Jelly::query('forum_private_recipient')
+			->where('user_id', '=', $user->id)
+			->and_where('unread', '>', 0)
+			->select();
 	}
 
 

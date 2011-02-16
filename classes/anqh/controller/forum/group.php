@@ -106,7 +106,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		} else {
 
 			// One group
-			$group = Model_Forum_Topic::find($group_id);
+			$group = Model_Forum_Group::find($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}

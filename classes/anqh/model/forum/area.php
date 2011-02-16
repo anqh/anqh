@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface {
@@ -51,106 +51,105 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('sort' => 'ASC'))
-			->fields(array(
-				'id' => new Field_Primary,
-				'group' => new Field_BelongsTo(array(
-					'label'   => __('Forum group'),
-					'column'  => 'forum_group_id',
-					'foreign' => 'forum_group',
-				)),
-				'name' => new Field_String(array(
-					'label' => __('Area name'),
-					'rules' => array(
-						'not_empty' => array(true),
-						'max_length' => array(64),
-					),
-				)),
-				'description' => new Field_String(array(
-					'label' => __('Description'),
-					'rules' => array(
-						'max_length' => array(250),
-					),
-				)),
-				'sort' => new Field_Integer(array(
-					'label'   => __('Sort'),
-					'default' => 0,
-				)),
-				'created' => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'author' => new Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
+		$meta->sorting(array('sort' => 'ASC'));
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'group' => new Jelly_Field_BelongsTo(array(
+				'label'   => __('Forum group'),
+				'column'  => 'forum_group_id',
+				'foreign' => 'forum_group',
+			)),
+			'name' => new Jelly_Field_String(array(
+				'label' => __('Area name'),
+				'rules' => array(
+					'not_empty' => array(true),
+					'max_length' => array(64),
+				),
+			)),
+			'description' => new Jelly_Field_String(array(
+				'label' => __('Description'),
+				'rules' => array(
+					'max_length' => array(250),
+				),
+			)),
+			'sort' => new Jelly_Field_Integer(array(
+				'label'   => __('Sort'),
+				'default' => 0,
+			)),
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'author_id',
+				'foreign' => 'user',
+			)),
 
-				'access_read' => new Field_Enum(array(
-					'label'   => __('Read access'),
-					'default' => self::READ_NORMAL,
-					'choices' => array(
-						self::READ_MEMBERS => 'Members only',
-						self::READ_NORMAL  => 'Everybody',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'access_write' => new Field_Enum(array(
-					'null'    => true,
-					'label'   => __('Write access'),
-					'default' => self::WRITE_NORMAL,
-					'choices' => array(
-						self::WRITE_ADMINS => 'Admins only',
-						self::WRITE_NORMAL => 'Members',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'status' => new Field_Enum(array(
-					'label'   => __('Status'),
-					'default' => self::STATUS_NORMAL,
-					'choices' => array(
-						self::STATUS_HIDDEN => 'Hidden',
-						self::STATUS_NORMAL => 'Normal',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'type' => new Field_Enum(array(
-					'label'   => __('Type'),
-					'column'  => 'area_type',
-					'default' => self::TYPE_NORMAL,
-					'choices' => array(
-						self::TYPE_PRIVATE => 'Private',
-						self::TYPE_BIND    => 'Bind, topics bound to foreign model',
-						self::TYPE_NORMAL  => 'Normal',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'bind' => new Field_Enum(array(
-					'label'   => __('Bind config'),
-					'choices' => array('' => __('None')) + self::get_binds(),
-				)),
+			'access_read' => new Jelly_Field_Enum(array(
+				'label'   => __('Read access'),
+				'default' => self::READ_NORMAL,
+				'choices' => array(
+					self::READ_MEMBERS => 'Members only',
+					self::READ_NORMAL  => 'Everybody',
+				),
+				'rules'   => array(
+					'not_empty' => null,
+				)
+			)),
+			'access_write' => new Jelly_Field_Enum(array(
+				'null'    => true,
+				'label'   => __('Write access'),
+				'default' => self::WRITE_NORMAL,
+				'choices' => array(
+					self::WRITE_ADMINS => 'Admins only',
+					self::WRITE_NORMAL => 'Members',
+				),
+				'rules'   => array(
+					'not_empty' => null,
+				)
+			)),
+			'status' => new Jelly_Field_Enum(array(
+				'label'   => __('Status'),
+				'default' => self::STATUS_NORMAL,
+				'choices' => array(
+					self::STATUS_HIDDEN => 'Hidden',
+					self::STATUS_NORMAL => 'Normal',
+				),
+				'rules'   => array(
+					'not_empty' => null,
+				)
+			)),
+			'type' => new Jelly_Field_Enum(array(
+				'label'   => __('Type'),
+				'column'  => 'area_type',
+				'default' => self::TYPE_NORMAL,
+				'choices' => array(
+					self::TYPE_PRIVATE => 'Private',
+					self::TYPE_BIND    => 'Bind, topics bound to foreign model',
+					self::TYPE_NORMAL  => 'Normal',
+				),
+				'rules'   => array(
+					'not_empty' => null,
+				)
+			)),
+			'bind' => new Jelly_Field_Enum(array(
+				'label'   => __('Bind config'),
+				'choices' => array('' => __('None')) + self::get_binds(),
+			)),
 
-				'post_count' => new Field_Integer(array(
-					'column' => 'posts',
-				)),
-				'topic_count' => new Field_Integer(array(
-					'column' => 'topics',
-				)),
-				'last_topic' => new Field_BelongsTo(array(
-					'column'  => 'last_topic_id',
-					'foreign' => 'forum_topic',
-				)),
-				'topics' => new Field_HasMany(array(
-					'foreign' => 'forum_topic'
-				))
-			));
+			'post_count' => new Jelly_Field_Integer(array(
+				'column' => 'posts',
+			)),
+			'topic_count' => new Jelly_Field_Integer(array(
+				'column' => 'topics',
+			)),
+			'last_topic' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'last_topic_id',
+				'foreign' => 'forum_topic',
+			)),
+			'topics' => new Jelly_Field_HasMany(array(
+				'foreign' => 'forum_topic'
+			))
+		));
 
 		return $meta;
 	}
@@ -163,11 +162,12 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 	 * @return  Jelly_Collection
 	 */
 	public function find_active_topics(Pagination $pagination) {
-		return $this
-			->get('topics')
+		return Jelly::query('forum_topic')
+			->with('last_post')
+			->where('forum_area_id', '=', $this->id)
 			->order_by('last_post_id', 'DESC')
 			->pagination($pagination)
-			->execute();
+			->query();
 	}
 
 
@@ -233,6 +233,22 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get area last topic
+	 *
+	 * @return  Model_Forum_Topic
+	 */
+	public function last_topic() {
+		return $this->last_topic instanceof Model_Forum_Topic ?
+			$this->last_topic :
+			Jelly::query('forum_topic')
+				->with('author')
+				->where('id', '=', $this->last_topic)
+				->limit(1)
+				->select();
 	}
 
 }

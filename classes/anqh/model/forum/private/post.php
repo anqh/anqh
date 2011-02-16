@@ -15,17 +15,16 @@ class Anqh_Model_Forum_Private_Post extends Model_Forum_Post {
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->fields(array(
-				'topic' => new Field_BelongsTo(array(
-					'column'  => 'forum_topic_id',
-					'foreign' => 'forum_private_topic'
-				)),
-				'parent' => new Field_BelongsTo(array(
-					'column'  => 'parent_id',
-					'foreign' => 'forum_private_post',
-				)),
-			));
+		$meta->fields(array(
+			'topic' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'forum_topic_id',
+				'foreign' => 'forum_private_topic'
+			)),
+			'parent' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'parent_id',
+				'foreign' => 'forum_private_post',
+			)),
+		));
 
 		parent::initialize($meta);
 	}

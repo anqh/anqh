@@ -106,6 +106,16 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 
 
 	/**
+	 * Get topic area
+	 *
+	 * @return  Model_Forum_Area
+	 */
+	public function area() {
+		return $this->area instanceof Model_Forum_Area ? $this->area : Model_Forum_Area::find($this->area);
+	}
+
+
+	/**
 	 * Find active topics
 	 *
 	 * @static
@@ -207,7 +217,9 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Jelly_Collection
 	 */
 	public function find_posts(Pagination $pagination) {
-		return $this->get('posts')
+		return Jelly::query('forum_post')
+			->with('topic')
+			->where('forum_topic_id', '=', $this->id)
 			->pagination($pagination)
 			->select();
 	}
@@ -243,7 +255,7 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 		    return $user && ($this->status != self::STATUS_LOCKED || $user->has_role('admin'));
 
 			case self::PERMISSION_READ:
-				return Permission::has($this->area, Model_Forum_Area::PERMISSION_READ, $user);
+				return Permission::has($this->area(), Model_Forum_Area::PERMISSION_READ, $user);
 
 			case self::PERMISSION_UPDATE:
 				return $user && (($this->status != self::STATUS_LOCKED && $user->id == $this->original('author')) || $user->has_role('admin'));
