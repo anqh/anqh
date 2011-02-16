@@ -135,7 +135,7 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 				'null'  => true,
 			)),
 			'events' => new Jelly_Field_HasMany,
-	));
+		));
 	}
 
 
@@ -146,11 +146,43 @@ class Anqh_Model_Venue extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_all() {
-		return Jelly::select('venue')
-			->with('venue_category')
+		return Jelly::query('venue')
+			->with('category')
 			->order_by('city_name', 'ASC')
 			->order_by('name', 'ASC')
-			->query();
+			->select();
+	}
+
+
+	/**
+	 * Find past events at venue
+	 *
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public function find_events_past($limit = 25) {
+		return Jelly::query('event')
+			->with('venue')
+			->where('event:venue.id', '=', $this->id)
+			->and_where('stamp_begin', '<=', time())
+			->limit($limit)
+			->select();
+	}
+
+
+	/**
+	 * Find upcoming events at venue
+	 *
+	 * @param   integer  $limit
+	 * @return  Jelly_Collection
+	 */
+	public function find_events_upcoming($limit = 25) {
+		return Jelly::query('event')
+			->with('venue')
+			->where('event:venue.id', '=', $this->id)
+			->and_where('stamp_begin', '>=', time())
+			->limit($limit)
+			->select();
 	}
 
 

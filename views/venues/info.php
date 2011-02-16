@@ -128,9 +128,9 @@ head.ready("anqh", function() {
 			</ul>
 		</fieldset>
 		<fieldset>
-			<?php echo Form::hidden('city_id', $venue->city->loaded() ? $venue->city->id : 0) ?>
-			<?php echo Form::hidden('latitude', Arr::pick($venue->latitude, $venue->city->loaded() ? $venue->city->latitude : 0)) ?>
-			<?php echo Form::hidden('longitude', Arr::pick($venue->longitude, $venue->city->loaded() ? $venue->city->longitude : 0)) ?>
+			<?php echo Form::hidden('city_id', $venue->city ? $venue->city->id : 0) ?>
+			<?php echo Form::hidden('latitude', Arr::pick($venue->latitude, $venue->city ? $venue->city->latitude : 0)) ?>
+			<?php echo Form::hidden('longitude', Arr::pick($venue->longitude, $venue->city ? $venue->city->longitude : 0)) ?>
 
 			<?php echo Form::csrf() ?>
 			<?php echo Form::submit_wrap('save', __('Link'), null, false) ?>
@@ -141,7 +141,7 @@ head.ready("anqh", function() {
 
 		echo HTML::script_source('
 head.ready("anqh", function() {
-
+ace
 	$("#link-foursquare").click(function() {
 		$(this).hide();
 		$("#form-foursquare-link").show("fast");

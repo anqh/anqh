@@ -355,7 +355,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		$this->page_title    = HTML::chars($venue->name);
+		$this->page_title = HTML::chars($venue->name);
 
 		// Set actions
 		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
@@ -363,7 +363,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		// Events
-		$events = $venue->get('events')->upcoming()->limit(10)->execute();
+		$events = $venue->find_events_upcoming(10);
 		if (count($events)) {
 			Widget::add('main', View_Module::factory('events/event_list', array(
 				'mod_id'    => 'venue-upcoming-events',
@@ -372,7 +372,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 			)));
 		}
 
-		$events = $venue->get('events')->past()->limit(10)->execute();
+		$events = $venue->find_events_past(10);
 		if (count($events)) {
 			Widget::add('main', View_Module::factory('events/event_list', array(
 				'mod_id'    => 'venue-past-events',

@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interface {
@@ -21,37 +21,38 @@ class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interf
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('name' => 'DESC'))
-			->fields(array(
-				'id' => new Jelly_Field_Primary,
-				'name' => new Field_String(array(
-					'label'  => __('Category'),
-					'unique' => true,
-					'rules'  => array(
-						'not_empty'  => null,
-						'max_length' => array(32),
-					),
-				)),
-				'description' => new Field_String(array(
-					'label' => __('Description'),
-					'rules' => array(
-						'max_length' => array(250),
-					),
-				)),
-				'author' => new Jelly_Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
-				'created' => new Jelly_Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
+		$meta->sorting(array('name' => 'DESC'));
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'name' => new Jelly_Field_String(array(
+				'label'  => __('Category'),
+				'unique' => true,
+				'rules'  => array(
+					'not_empty'  => null,
+					'max_length' => array(32),
+				),
+			)),
+			'description' => new Jelly_Field_String(array(
+				'label' => __('Description'),
+				'rules' => array(
+					'max_length' => array(250),
+				),
+			)),
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'      => 'author_id',
+				'foreign'     => 'user',
+				'allow_null'  => true,
+				'empty_value' => null,
+			)),
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
 
-				'tag_group' => new Jelly_Field_BelongsTo(array(
-					'label' => __('Tag group'),
-					'null'  => true,
-				)),
-				'venues'    => new Jelly_Field_HasMany,
+			'tag_group' => new Jelly_Field_BelongsTo(array(
+				'label' => __('Tag group'),
+				'null'  => true,
+			)),
+			'venues' => new Jelly_Field_HasMany,
 		));
 	}
 
@@ -84,26 +85,24 @@ class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interf
 	 * @return  boolean
 	 */
 	public function has_permission($permission, $user) {
-		$status = false;
-
 		switch ($permission) {
 
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    $status = $user && $user->has_role('admin');
+		    return $user && $user->has_role('admin');
 		    break;
 
 			case self::PERMISSION_VENUE:
-		    $status = $user && $user->loaded();
+		    return $user && $user->loaded();
 		    break;
 
 			case self::PERMISSION_READ:
-		    $status = true;
+		    return true;
 
 		}
 
-		return $status;
+		return false;
 	}
 
 }
