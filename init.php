@@ -8,6 +8,20 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+/**
+ * Plural translation function
+ *
+ * @param   string   $string
+ * @param   string   $string_plural
+ * @param   integer  $count
+ * @param   array    $args
+ * @return  string
+ */
+function __2($string, $string_plural, $count, array $args = null) {
+	return (int)$count == 1 ? __($string, $args) : __($string_plural, $args);
+}
+
+
 Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sql|js|css'))
 	->defaults(array(
 		'controller' => 'static',
