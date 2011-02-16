@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
@@ -49,8 +49,8 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 */
 	public static function initialize(Jelly_Meta $meta) {
 		$meta->fields(array(
-			'id' => new Field_Primary,
-			'name' => new Field_String(array(
+			'id' => new Jelly_Field_Primary,
+			'name' => new Jelly_Field_String(array(
 				'label' => __('Name'),
 				'rules' => array(
 					'not_empty'  => null,
@@ -58,38 +58,51 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 					'max_length' => array(250),
 				),
 			)),
-			'links' => new Field_Text,
-			'created' => new Field_Timestamp(array(
+			'links' => new Jelly_Field_Text,
+			'created' => new Jelly_Field_Timestamp(array(
 				'auto_now_create' => true,
 			)),
-			'modified' => new Field_Timestamp(array(
+			'modified' => new Jelly_Field_Timestamp(array(
 				'column' => 'updated',
 			)),
-			'image_count' => new Field_Integer,
-			'comment_count' => new Field_Integer,
-			'rate_count' => new Field_Integer,
-			'rate_total' => new Field_Integer,
+			'image_count' => new Jelly_Field_Integer,
+			'comment_count' => new Jelly_Field_Integer,
+			'rate_count' => new Jelly_Field_Integer,
+			'rate_total' => new Jelly_Field_Integer,
 
-			'date' => new Field_Timestamp(array(
+			'date' => new Jelly_Field_Timestamp(array(
 				'rules' => array(
 					'not_empty' => null,
 				),
 			)),
-			'event' => new Field_BelongsTo,
-
-			'default_image' => new Field_BelongsTo(array(
-				'column'  => 'default_image_id',
-				'foreign' => 'image',
+			'event' => new Jelly_Field_BelongsTo(array(
+				'allow_null'  => true,
+				'empty_value' => null,
 			)),
-			'images' => new Field_ManyToMany,
 
-			'copyright' => new Field_String,
-			'dir' => new Field_String,
-			'mainfile' => new Field_String,
+			'default_image' => new Jelly_Field_BelongsTo(array(
+				'column'      => 'default_image_id',
+				'foreign'     => 'image',
+				'allow_null'  => true,
+				'empty_value' => null,
+			)),
+			'images' => new Jelly_Field_ManyToMany,
+
+			'copyright' => new Jelly_Field_String,
+			'dir' => new Jelly_Field_String,
+			'mainfile' => new Jelly_Field_String,
 		));
 	}
 
 
+	public static function find($gallery_id) {
+		return Jelly::query('gallery')
+			->with('event')
+			->with('default_image')
+			->where('id', '=', $gallery_id)
+			->limit(1)
+			->select();
+	}
 	/**
 	 * Find gallery by event id
 	 *
@@ -97,10 +110,10 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Model_Gallery
 	 */
 	public static function find_by_event($event_id) {
-		return Jelly::select('gallery')
+		return Jelly::query('gallery')
 			->where('event_id', '=', (int)$event_id)
 			->limit(1)
-			->execute();
+			->select();
 	}
 
 
@@ -111,12 +124,12 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Model_Gallery
 	 */
 	public static function find_by_image($image_id) {
-		return Jelly::select('gallery')
+		return Jelly::query('gallery')
 			->join('galleries_images')
 			->on('gallery.:primary_key', '=', 'galleries_images.gallery:foreign_key')
 			->where('image_id', '=', (int)$image_id)
 			->limit(1)
-			->execute();
+			->select();
 	}
 
 
@@ -127,11 +140,11 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_images($image_ids) {
-		return Jelly::select('gallery')
+		return Jelly::query('gallery')
 			->join('galleries_images')
 			->on('gallery.:primary_key', '=', 'galleries_images.gallery:foreign_key')
 			->where('image_id', 'IN', $image_ids)
-			->execute();
+			->select();
 	}
 
 
@@ -144,9 +157,9 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_by_month($year, $month) {
-		return Jelly::select('gallery')
+		return Jelly::query('gallery')
 			->year_month($year, $month)
-			->execute();
+			->select();
 	}
 
 
@@ -156,13 +169,23 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public function find_images() {
+		return Jelly::query('image')
+			->with('exif')
+			->with('author')
+			->join('galleries_images')
+			->on('galleries_images.image_id', '=', 'image.id')
+			->where('galleries_images.gallery_id', '=', $this->id)
+			->and_where('image.status', '=', Model_Image::VISIBLE)
+			->order_by('image:author.username', 'ASC')
+			->order_by('images.id', 'ASC')
+			->select();
 		return $this
 			->get('images')
 			->with('author')
 			->where('status', '=', Model_Image::VISIBLE)
 			->order_by('username', 'ASC')
 			->order_by('images.id', 'ASC')
-			->execute();
+			->select();
 	}
 
 
@@ -181,7 +204,7 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			$images->and_where('author_id', '=', $user->id);
 		}
 
-		return $images->execute();
+		return $images->select();
 	}
 
 
@@ -193,10 +216,11 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @return  Jelly_Collection
 	 */
 	public static function find_latest($limit = 15) {
-		return Jelly::select('gallery')
+		return Jelly::query('gallery')
+			->with('default_image')
 			->latest()
 			->limit((int)$limit)
-			->execute();
+			->select();
 	}
 
 
@@ -211,7 +235,9 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 		$months = array();
 
 		// Build counts
-		$galleries = Jelly::select('gallery')->where('image_count', '>', 0)->execute();
+		$galleries = Jelly::query('gallery')
+			->where('image_count', '>', 0)
+			->select();
 		foreach ($galleries as $gallery) {
 			list($year, $month) = explode(' ', date('Y n', $gallery->date));
 
@@ -256,7 +282,9 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			$galleries->where('author_id', '=', $user->id);
 		}
 
-		return Jelly::select('gallery')->where('id', 'IN', $galleries)->execute();
+		return Jelly::query('gallery')
+			->where('id', 'IN', $galleries)
+			->select();
 	}
 
 
@@ -301,7 +329,9 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	public function update_copyright() {
 		$copyrights = array();
 		$authors    = $this->get('images')->select('author_id');
-		$copyright  = Jelly::select('user')->where('id', 'IN', $authors)->execute();
+		$copyright  = Jelly::query('user')
+			->where('id', 'IN', $authors)
+			->select();
 		foreach ($copyright as $author) $copyrights[$author->username_clean] = $author->username;
 		ksort($copyrights);
 		$this->copyright = implode(', ', $copyrights);

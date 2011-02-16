@@ -662,7 +662,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
 			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
 			Anqh::open_graph('description', __2(':images image', ':images images', count($gallery->images), array(':images' => count($gallery->images))) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($gallery->event->loaded() ? ' @ ' . $gallery->event->venue_name : ''));
-			if ($gallery->event->loaded() && $gallery->event->flyer_front->loaded()) {
+			if ($gallery->event->loaded() && $gallery->event->flyer_front) {
 				Anqh::open_graph('image', URL::site($gallery->event->flyer_front->get_url('thumbnail'), true));
 			} else {
 				Anqh::open_graph('image', URL::site($gallery->default_image->get_url('thumbnail'), true));

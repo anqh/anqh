@@ -4,13 +4,13 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
 
 <ul>
-	<?php foreach ($flyers as $flyer): $name = $flyer->event->loaded() ? $flyer->event->name : $flyer->name ?>
+	<?php foreach ($flyers as $flyer): $name = $flyer->event ? $flyer->event->name : $flyer->name ?>
 
 	<li class="grid2">
 		<article>

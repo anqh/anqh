@@ -4,12 +4,11 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
 /** @var  Model_Gallery $gallery */
-$gallery = null;
 ?>
 
 <ul>
