@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
@@ -36,7 +36,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_COMMENT:
-				$entry = Jelly::select('blog_entry')->load($item->data['entry_id']);
+				$entry = Model_Blog_Entry::find($item->data['entry_id']);
 				if ($entry->loaded()) {
 					$text = __('commented to blog<br />:blog', array(
 						':blog' => HTML::anchor(
@@ -49,7 +49,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 				break;
 
 			case self::TYPE_ENTRY:
-				$entry = Jelly::select('blog_entry')->load($item->data['entry_id']);
+				$entry = Model_Blog_Entry::find($item->data['entry_id']);
 				if ($entry->loaded()) {
 					$text = __('wrote a new blog entry<br />:blog', array(
 						':blog' => HTML::anchor(

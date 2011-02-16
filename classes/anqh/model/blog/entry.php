@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface {
@@ -33,44 +33,43 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 	 * @param  Jelly_Meta  $meta
 	 */
 	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('id' => 'DESC'))
-			->fields(array(
-				'id' => new Jelly_Field_Primary,
-				'name' => new Field_String(array(
-					'label' => __('Title'),
-					'rules' => array(
-						'not_empty'  => null,
-						'max_length' => array(200)
-					),
-				)),
-				'content' => new Field_Text(array(
-					'label'  => __('Content'),
-					'bbcode' => true,
-					'rules'  => array(
-						'max_length' => array(8192),
-					)
-				)),
+		$meta->sorting(array('id' => 'DESC'));
+		$meta->fields(array(
+			'id' => new Jelly_Field_Primary,
+			'name' => new Jelly_Field_String(array(
+				'label' => __('Title'),
+				'rules' => array(
+					'not_empty'  => null,
+					'max_length' => array(200)
+				),
+			)),
+			'content' => new Jelly_Field_Text(array(
+				'label'  => __('Content'),
+				'bbcode' => true,
+				'rules'  => array(
+					'max_length' => array(8192),
+				)
+			)),
 
-				'created' => new Jelly_Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'modified' => new Jelly_Field_Timestamp(array(
-					'auto_now_update' => true,
-				)),
-				'modify_count' => new Jelly_Field_Integer,
-				'comment_count' => new Jelly_Field_Integer,
-				'new_comment_count' => new Jelly_Field_Integer,
-				'view_count' => new Jelly_Field_Integer,
+			'created' => new Jelly_Field_Timestamp(array(
+				'auto_now_create' => true,
+			)),
+			'modified' => new Jelly_Field_Timestamp(array(
+				'auto_now_update' => true,
+			)),
+			'modify_count' => new Jelly_Field_Integer,
+			'comment_count' => new Jelly_Field_Integer,
+			'new_comment_count' => new Jelly_Field_Integer,
+			'view_count' => new Jelly_Field_Integer,
 
-				'author' => new Jelly_Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
-				'comments' => new Jelly_Field_HasMany(array(
-					'foreign' => 'blog_comment'
-				))
-			));
+			'author' => new Jelly_Field_BelongsTo(array(
+				'column'  => 'author_id',
+				'foreign' => 'user',
+			)),
+			'comments' => new Jelly_Field_HasMany(array(
+				'foreign' => 'blog_comment'
+			))
+		));
 	}
 
 
@@ -82,7 +81,9 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 	 * @return  Jelly_Collection
 	 */
 	public static function find_new($limit = 10) {
-		return Jelly::select('blog_entry')->limit($limit)->execute();
+		return Jelly::query('blog_entry')
+			->limit($limit)
+			->select();
 	}
 
 
@@ -95,7 +96,10 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 	 * @return  array
 	 */
 	public static function find_new_comments(Model_User $user) {
-		return Jelly::select('blog_entry')->where('author_id', '=', $user->id)->and_where('new_comment_count', '>', 0)->execute();
+		return Jelly::query('blog_entry')
+			->where('author_id', '=', $user->id)
+			->and_where('new_comment_count', '>', 0)
+			->select();
 	}
 
 
