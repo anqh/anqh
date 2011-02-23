@@ -10,8 +10,9 @@
 class Anqh_Valid extends Kohana_Valid {
 
 	/**
-	 * Tests if a string is a valid date string.
+	 * Checks if a string is a valid date string.
 	 *
+	 * @static
 	 * @param   string|integer  $date
 	 * @return  boolean
 	 */
@@ -19,8 +20,25 @@ class Anqh_Valid extends Kohana_Valid {
 		return is_numeric($date) || (strtotime($date) !== FALSE);
 	}
 
+
 	/**
-	 * Validate time
+	 * Checks if a string lenght is in range.
+	 *
+	 * @static
+	 * @param   string   $value
+	 * @param   integer  $min
+	 * @param   intger   $max
+	 * @return  boolean
+	 */
+	public static function length($value, $min, $max) {
+		$length = UTF8::strlen($value);
+
+		return $length >= $min && $length <= $max;
+	}
+
+
+	/**
+	 * Checks for valid time.
 	 *
 	 * @static
 	 * @param   string  $time
