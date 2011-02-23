@@ -38,7 +38,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 
 		$role_id = (int)$this->request->param('id');
 		$role = Model_Role::factory($role_id);
-		if (!$role->loaded()) {
+		if (!$role->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($role, $role_id);
 		}
 		Permission::required($role, Model_Role::PERMISSION_DELETE, self::$user);
@@ -86,7 +86,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 
 		// Set actions
 		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($role, 'delete', false), 'text' => __('Delete role'), 'class' => 'role-delete');
+			$this->page_actions[] = array('link' => Route::model($role, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete role'), 'class' => 'role-delete');
 		}
 
 		Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));

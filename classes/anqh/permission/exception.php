@@ -15,14 +15,14 @@ class Anqh_Permission_Exception extends Kohana_Exception {
 	/**
 	 * Permission denied
 	 *
-	 * @param  Jelly_Model $model
-	 * @param  integer     $id
-	 * @param  string      $permission
+	 * @param  Permission_Interface  $model
+	 * @param  integer               $id
+	 * @param  string                $permission
 	 */
 	public function __construct(Permission_Interface $model, $id = 0, $permission = null) {
 		parent::__construct("Permission ':permission' denied: :model #:id", array(
 			':id'         => $id,
-			':model'      => $model::model_name(),
+			':model'      => Model::model_name($model),
 			':permission' => $permission,
 		));
 	}

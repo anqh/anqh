@@ -68,7 +68,7 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	/**
 	 * Get primary key value.
 	 *
-	 * @return  string|integer
+	 * @return  integer
 	 */
 	public function id() {
 		return $this->_data[$this->_primary_key];
@@ -84,7 +84,7 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	 * @throws  Validation_Exception
 	 */
 	public function is_valid(Validation $validation = null) {
-		$data = $validation ? $validation->copy($validation->as_array()+$this->_data) : Validation::factory($this->_data);
+		$data = $validation ? $validation->copy($validation->as_array() + $this->_data) : Validation::factory($this->_data);
 		$data->bind(':model', $this);
 
 		foreach ($this->_rules as $field => $rule) {
@@ -138,6 +138,23 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	 */
 	public function name() {
 		return $this->_data[$this->_name_key];
+	}
+
+
+	/**
+	 * Override save() to fix primary keys.
+	 *
+	 * @param   Validation  $validation a manual validation object to combine the model properties with
+	 * @return  integer
+	 */
+	public function save(Validation $validation = null) {
+
+		// Don't try to insert null primary keys
+		if (!$this->loaded()) {
+			unset($this->_data[$this->_primary_key]);
+		}
+
+		return parent::save($validation);
 	}
 
 
