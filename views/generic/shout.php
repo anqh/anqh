@@ -10,7 +10,7 @@
 
 $ordered = array();
 foreach ($shouts as $shout)
-	$ordered[] = '<li>' . HTML::time(Date::format('HHMM', $shout->created), $shout->created) . ' ' . HTML::user($shout->author) . ': ' . Text::smileys(HTML::chars($shout->shout)) . '</li>';
+	$ordered[] = '<li>' . HTML::time(Date::format('HHMM', $shout->created), $shout->created) . ' ' . HTML::user($shout->author_id) . ': ' . Text::smileys(HTML::chars($shout->shout)) . '</li>';
 ?>
 
 <ul>
