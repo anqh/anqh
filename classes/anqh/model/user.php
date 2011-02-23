@@ -29,6 +29,89 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	const PERMISSION_IGNORE = 'ignore';
 
+	protected $_table_name = 'users';
+
+	protected $_data = array(
+		'id'             => null,
+		'username'       => null,
+		'username_clean' => null,
+		'password'       => null,
+		'email'          => null,
+
+		// Personal information
+		'name'             => null,
+		'dob'              => null,
+		'gender'           => null,
+		'title'            => null,
+		'signature'        => null,
+		'description'      => null,
+		'homepage'         => null,
+		'avatar'           => null,
+		'picture'          => null,
+		'default_image_id' => null,
+
+		// Location
+		'address_street' => null,
+		'address_zip'    => null,
+		'address_city'   => null,
+		'city_id'        => null,
+		'latitude'       => null,
+		'longitude'      => null,
+
+		// Stats
+		'login_count'        => null,
+		'last_login'         => null,
+		'post_count'         => 0,
+		'new_comment_count'  => 0,
+		'comment_count'      => 0,
+		'left_comment_count' => 0,
+		'created'            => null,
+		'modified'           => null,
+
+	);
+
+	protected $_rules = array(
+		'username'       => array('not_empty', 'length' => array(':value', 1, 30), 'AutoModeler::unique' => array(':model', ':value', ':field')),
+		'username_clean' => array('not_empty', 'AutoModeler::unique' => array(':model', ':value', ':field')),
+		'password'       => array('not_empty'),
+		'email'          => array('not_empty', 'email', 'AutoModeler::unique' => array(':model', ':value', ':field')),
+
+		'name'             => array('max_length' => array(':value', 50)),
+		'dob'              => array('date'),
+		'gender'           => array('in_array' => array(':validate', array('f', 'm'))),
+		'homepage'         => array('url'),
+		'default_image_id' => array('digit'),
+
+		'address_street' => array('max_length' => array(':value', 50)),
+		'address_zip'    => array('digit', 'length' => array(':value', 4, 5)),
+		'address_city'   => array('max_length' => array(':value', 50)),
+		'city_id'        => array('digit'),
+		'latitude'       => array('numeric'),
+		'longitude'      => array('numeric'),
+
+		'login_count'        => array('digit'),
+		'last_login'         => array('digit'),
+		'post_count'         => array('digit'),
+		'new_comment_count'  => array('digit'),
+		'comment_count'      => array('digit'),
+		'left_comment_count' => array('digit'),
+		'created'            => array('digit'),
+		'modified'           => array('digit'),
+	);
+
+	protected $_has_many = array(
+		'roles',
+		'tokens',
+		'images',
+		'friends',
+		'comments',
+	);
+
+	/**
+	 * @var  array  User's roles
+	 */
+	protected $_roles = array();
+
 	/**
 	 * @var  array  Static cache of Model_Users loaded
 	 */
@@ -801,6 +884,25 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get enterprise Validation for checking password
+	 *
+	 * @static
+	 * @param   array  $user_post
+	 * @return  Validation
+	 */
+	public static function get_password_validation($user_post) {
+		return Validation::factory(
+			array(
+				'password'         => Arr::get($user_post, 'password'),
+				'password_confirm' => Arr::get($user_post, 'password_confirm'),
+			))
+			->rule('password_confirm', 'not_empty')
+			->rule('password', 'matches', array(':validation', 'password', 'password_confirm')
+		);
+	}
+
+
+	/**
 	 * Check for friendship
 	 *
 	 * @param  mixed  $friend  Model_User, array, $id
@@ -1102,10 +1204,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  array|string  $roles
 	 */
 	public function has_role($roles) {
-		foreach ($this->roles() as $role) {
-			if ((is_array($roles) && in_array($role->name, $roles))
-				|| (is_numeric($roles) && $role->id == $roles)
-				|| (is_string($roles) && $role->name == $roles)
+		foreach ($this->roles() as $id => $role) {
+			if ((is_array($roles) && in_array($role, $roles))
+				|| (is_numeric($roles) && $id == $roles)
+				|| (is_string($roles) && $role == $roles)
 			) {
 				return true;
 			}
@@ -1118,15 +1220,14 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Get user's roles
 	 *
-	 * @return  Jelly_Collection
+	 * @return  array
 	 */
 	public function roles() {
-		return $this->roles instanceof Jelly_Model ?
-			$this->roles :
-			Jelly::query('role')
-				->join('roles_users')
-				->on('roles.id', '=', 'roles_users.role_id')
-				->where('user_id', '=', $this->id)
-				->select();
+		if (!$this->_roles) {
+			$this->_roles = Model_Role::find_by_user($this);
+		}
+
+		return $this->_roles;
 	}
+
 }

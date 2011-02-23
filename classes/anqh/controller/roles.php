@@ -15,10 +15,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 	public function before() {
 		parent::before();
 
-		if (!Visitor::instance()->logged_in('admin')) {
-			throw new Permission_Exception(new Model_Role);
-		}
-
+		Permission::required(new Model_Role, Model_Role::PERMISSION_UPDATE, self::$user);
 	}
 
 
@@ -40,7 +37,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		$this->history = false;
 
 		$role_id = (int)$this->request->param('id');
-		$role = Model_Role::find($role_id);
+		$role = Model_Role::factory($role_id);
 		if (!$role->loaded()) {
 			throw new Model_Exception($role, $role_id);
 		}
@@ -61,7 +58,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		// Load role
 		$role_id = (int)$this->request->param('id', 0);
 		if ($role_id) {
-			$role = Model_Role::find($role_id);
+			$role = Model_Role::factory($role_id);
 			if (!$role->loaded()) {
 				throw new Model_Exception($role, $role_id);
 			}
@@ -74,11 +71,12 @@ class Anqh_Controller_Roles extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST) {
-			$role->set($_POST);
+			$role->name        = Arr::get($_POST, 'name');
+			$role->description = Arr::get($_POST, 'description');
 			try {
 				$role->save();
 				$this->request->redirect(Route::get('roles')->uri());
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
@@ -91,22 +89,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 			$this->page_actions[] = array('link' => Route::model($role, 'delete', false), 'text' => __('Delete role'), 'class' => 'role-delete');
 		}
 
-		// Build form
-		$form = array(
-			'values' => $role,
-			'errors' => $errors,
-			'cancel' => Request::back(Route::get('roles')->uri(), true),
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'        => array(),
-						'description' => array(),
-					)
-				)
-			)
-		);
-		//Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));
 	}
 
 }

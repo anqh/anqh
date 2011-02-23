@@ -7,29 +7,40 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Role extends AutoModeler_ORM implements Permission_Interface {
+
+	// Default roles for easier access
+	const LOGIN = 1;
+	const ADMIN = 2;
+
+	protected $_table_name = 'roles';
+
+	protected $_data = array(
+		'id'          => null,
+		'name'        => null,
+		'description' => null,
+	);
+
+	protected $_rules = array(
+		'name' => array('not_empty', 'max_length' => array(':value', 32), 'AutoModeler::unique' => array(':model', ':value', ':field')),
+	);
+
+	protected $_belongs_to = array(
+		'users'
+	);
+
 
 	/**
-	 * Create new model
+	 * Load role
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param  integer|string  $id
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'name' => new Jelly_Field_String(array(
-				'label'  => __('Name'),
-				'unique' => true,
-				'rules'  => array(
-					'max_length' => array(32),
-					'not_empty'  => null,
-				),
-			)),
-			'description' => new Jelly_Field_Text(array(
-				'label' => __('Description'),
-			)),
-			'users' => new Jelly_Field_ManyToMany,
-		));
+	public function __construct($id = null) {
+		parent::__construct();
+
+		if ($id !== null) {
+			$this->load(DB::select_array(array_keys($this->_data))->where(is_int($id) ? 'id' : 'name', '=', $id));
+		}
 	}
 
 
@@ -37,18 +48,33 @@ class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
 	 * Find a role by id or name
 	 *
 	 * @static
-	 * @param   string|integer  $role
+	 * @param   integer|string  $role
 	 * @return  Model_Role
 	 */
 	public static function find($role) {
-		$model = is_numeric($role)
-			? Model_Role::find($role)
-			: Jelly::query('role')
-				->where('name', '=', $role)
-				->limit(1)
-				->select();
+
+		/** @var  Model_Role  $model */
+		$model = Model::factory('role', $role);
 
 		return $model->loaded() ? $model : null;
+	}
+
+
+	/**
+	 * Find roles by user.
+	 *
+	 * @static
+	 * @param   Model_User  $user
+	 * @return  array
+	 */
+	public static function find_by_user(Model_User $user) {
+		return (array)DB::select('roles.id', 'roles.name')
+			->from('roles')
+			->join('roles_users')
+			->on('roles.id', '=', 'roles_users.role_id')
+			->where('roles_users.user_id', '=', $user->id)
+			->execute()
+			->as_array('id', 'name');
 	}
 
 
@@ -60,11 +86,22 @@ class Anqh_Model_Role extends Jelly_Model implements Permission_Interface {
 	 * @return  boolean
 	 */
 	public function has_permission($permission, $user) {
+		switch ($permission) {
 
-		// Don't allow to delete critical roles
-		$status = ($permission !== self::PERMISSION_DELETE || !in_array($this->name, array('login', 'admin')));
+			// Everybody can read roles
+			case self::PERMISSION_READ:
+				return true;
 
-		return $status;
+			// Don't allow to delete nor rename of critical roles
+			case self::PERMISSION_DELETE:
+				if (in_array($this->id, array(self::LOGIN, self::ADMIN))) {
+					return false;
+				}
+
+			default:
+				return $user && $user->has_role('admin');
+
+		}
 	}
 
 }
