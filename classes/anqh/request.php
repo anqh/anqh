@@ -5,7 +5,7 @@
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Request extends Kohana_Request {
@@ -36,7 +36,7 @@ abstract class Anqh_Request extends Kohana_Request {
 	 * @return  string
 	 */
 	public static function current_uri() {
-		return $_REQUEST['URI'];
+		return $_SERVER['REQUEST_URI'];
 	}
 
 
