@@ -79,8 +79,9 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	 * Overwrite AutoModeler is_valid() to fix Validation.
 	 *
 	 * @param   Validation  $validation  a manual validation object to combine the model properties with
-	 * @return  true if valid
-	 * @return  array with keys 'string' containing an html list of errors and 'errors', the raw errors validation object
+	 * @return  boolean
+	 *
+	 * @throws  Validation_Exception
 	 */
 	public function is_valid(Validation $validation = null) {
 		$data = $validation ? $validation->copy($validation->as_array()+$this->_data) : Validation::factory($this->_data);
@@ -97,19 +98,11 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 		}
 
 		if ($data->check()) {
-
-			// Valid
 			$this->_validation = null;
-
 			return $this->_validated = true;
-
 		}	else {
-
-			// Not valid
 			$this->_validation = $data;
-			$errors = View::factory('form_errors')->set(array('errors' => $data->errors($this->_lang)));
-			return array('string' => $errors->render(), 'errors' => $data->errors($this->_lang));
-
+			throw new Validation_Exception($data, 'Could not validate data.');
 		}
 	}
 
