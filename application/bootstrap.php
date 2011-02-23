@@ -107,20 +107,21 @@ Cookie::$salt = 'anqh';
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	'core'       => MODPATH . 'anqh',       // Anqh core
-	'events'     => MODPATH . 'events',     // Anqh event calendar
-	'forum'      => MODPATH . 'forum',      // Anqh forums
-	'venues'     => MODPATH . 'venues',     // Anqh venues
-	'blog'       => MODPATH . 'blog',       // Anqh blogs
-	'galleries'  => MODPATH . 'galleries',  // Anqh galleries
+	'core'      => MODPATH . 'anqh',       // Anqh core
+	'events'    => MODPATH . 'events',     // Anqh event calendar
+	'forum'     => MODPATH . 'forum',      // Anqh forums
+	'venues'    => MODPATH . 'venues',     // Anqh venues
+	'blog'      => MODPATH . 'blog',       // Anqh blogs
+	'galleries' => MODPATH . 'galleries',  // Anqh galleries
 
-	'database'   => MODPATH . 'database',   // Database access
-	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
-	'postgresql' => MODPATH . 'postgresql', // PostgreSQL
-	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
-	'image'      => MODPATH . 'image',      // Image manipulation
-	'pagination' => MODPATH . 'pagination', // Paging of results
-	'email'      => MODPATH . 'email',      // Email module
+	'database'     => MODPATH . 'database',     // Database access
+	'jelly'        => MODPATH . 'jelly',        // Jelly ORM
+	'auto-modeler' => MODPATH . 'auto-modeler', // Auto Modeler
+	'postgresql'   => MODPATH . 'postgresql',   // PostgreSQL
+	'cache'        => MODPATH . 'cache',        // Caching with multiple backends
+	'image'        => MODPATH . 'image',        // Image manipulation
+	'pagination'   => MODPATH . 'pagination',   // Paging of results
+	'email'        => MODPATH . 'email',        // Email module
 
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
