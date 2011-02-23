@@ -76,6 +76,45 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 
 
 	/**
+	 * Overwrite AutoModeler is_valid() to fix Validation.
+	 *
+	 * @param   Validation  $validation  a manual validation object to combine the model properties with
+	 * @return  true if valid
+	 * @return  array with keys 'string' containing an html list of errors and 'errors', the raw errors validation object
+	 */
+	public function is_valid(Validation $validation = null) {
+		$data = $validation ? $validation->copy($validation->as_array()+$this->_data) : Validation::factory($this->_data);
+		$data->bind(':model', $this);
+
+		foreach ($this->_rules as $field => $rule) {
+			foreach ($rule as $key => $value) {
+				if (is_int($key)) {
+					$data->rule($field, $value);
+				} else {
+					$data->rule($field, $key, $value);
+				}
+			}
+		}
+
+		if ($data->check()) {
+
+			// Valid
+			$this->_validation = null;
+
+			return $this->_validated = true;
+
+		}	else {
+
+			// Not valid
+			$this->_validation = $data;
+			$errors = View::factory('form_errors')->set(array('errors' => $data->errors($this->_lang)));
+			return array('string' => $errors->render(), 'errors' => $data->errors($this->_lang));
+
+		}
+	}
+
+
+	/**
 	 * Check if the model is loaded.
 	 *
 	 * @return  boolean
@@ -176,7 +215,7 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 		}
 
 		if (array_key_exists($field, $this->_data)) {
-			return (bool)DB::select(array('COUNT(*)', 'total_count'))
+			return (bool)DB::select(array(DB::expr('COUNT(*)'), 'total_count'))
 				->from($this->_table_name)
 				->where($field, '=', $value)
 				->where($this->_primary_key, '!=', $this->id())
