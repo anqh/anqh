@@ -29,7 +29,7 @@ class Anqh_Model_Shout extends AutoModeler implements Permission_Interface {
 	 *
 	 * @static
 	 * @param   integer  $limit
-	 * @return  array
+	 * @return  Database_Result
 	 */
 	public static function find_latest($limit = 10) {
 		return AutoModeler::factory('shout')->load(DB::select()->order_by('id', 'DESC'), $limit);

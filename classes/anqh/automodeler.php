@@ -58,7 +58,7 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	 * Find all objectcs
 	 *
 	 * @static
-	 * @return  array
+	 * @return  Database_Result
 	 */
 	public static function find_all() {
 		return AutoModeler::factory(Model::model_name(get_called_class()))->load(null, null);
