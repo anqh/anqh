@@ -55,6 +55,18 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 
 
 	/**
+	 * Find one object.
+	 *
+	 * @static
+	 * @param   integer  $id
+	 * @return  AutoModeler
+	 */
+	public static function find($id) {
+		return AutoModeler::factory(Model::model_name(get_called_class()), $id);
+	}
+
+
+	/**
 	 * Find all objectcs
 	 *
 	 * @static
