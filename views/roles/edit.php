@@ -8,7 +8,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-echo Form::open(Request::current());
+echo Form::open();
 ?>
 
 	<fieldset>
