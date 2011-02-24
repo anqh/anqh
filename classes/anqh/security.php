@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Security extends Kohana_Security {
@@ -16,7 +16,7 @@ class Anqh_Security extends Kohana_Security {
 
 
 	/**
-	 * Get CSRF token
+	 * Get CSRF token.
 	 *
 	 * @param   string   $id      Custom token id, e.g. uid
 	 * @param   string   $action  Optional action
@@ -36,7 +36,33 @@ class Anqh_Security extends Kohana_Security {
 
 
 	/**
-	 * Validate CSRF token
+	 * Get CSRF token as a form input.
+	 *
+	 * @param   string   $id      Custom token id, e.g. uid
+	 * @param   string   $action  Optional action
+	 * @param   integer  $time    Used only internally
+	 * @return  string
+	 */
+	public static function csrf_input($id = '', $action = '', $time = 0) {
+		return Form::hidden('token', Security::csrf($id, $action, $time));
+	}
+
+
+	/**
+	 * Get CSRF token as a query string.
+	 *
+	 * @param   string   $id      Custom token id, e.g. uid
+	 * @param   string   $action  Optional action
+	 * @param   integer  $time    Used only internally
+	 * @return  string
+	 */
+	public static function csrf_query($id = '', $action = '', $time = 0) {
+		return 'token=' . Security::csrf($id, $action, $time);
+	}
+
+
+	/**
+	 * Validate CSRF token.
 	 *
 	 * @param   string   $token
 	 * @param   string   $id      Custom token id, e.g. uid
