@@ -7,57 +7,48 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Tag_Group extends Jelly_Model {
+class Anqh_Model_Tag_Group extends AutoModeler_ORM {
+
+	protected $_table_name = 'tag_groups';
+
+	protected $_data = array(
+		'id'          => null,
+		'name'        => null,
+		'description' => null,
+		'author_id'   => null,
+		'created'     => null,
+	);
+
+	protected $_rules = array(
+		'name' => array('not_empty', 'AutoModeler::unique' => array(':model', ':value', ':field')),
+	);
 
 	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
+	 * @var  Database_Result  Tags of current group
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->sorting(array('name' => 'ASC'));
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'name' => new Jelly_Field_String(array(
-				'label'  => __('Group name'),
-				'unique' => true,
-				'rules'  => array(
-					'not_empty' => array(true),
-				),
-				'filters' => array(
-					'trim' => null,
-				)
-			)),
-			'description' => new Jelly_Field_String(array(
-				'label'   => __('Description'),
-				'filters' => array(
-					'trim' => null,
-				))
-			),
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'tags' => new Jelly_Field_HasMany
-		));
+	protected $_tags;
+
+	/**
+	 * Load tag group
+	 *
+	 * @param  integer|string  $id
+	 */
+	public function __construct($id = null) {
+		parent::__construct();
+
+		if ($id !== null) {
+			$this->load(DB::select()->where(is_numeric($id) ? 'id' : 'name', '=', $id));
+		}
 	}
 
 
 	/**
-	 * Find tag group by name
+	 * Get current group's tags.
 	 *
-	 * @static
-	 * @param   string  $name
-	 * @return  Model_Tag_Group
+	 * @return  Database_Result
 	 */
-	public static function find_by_name($name) {
-		return Jelly::query('tag_group')
-			->where('name', '=', $name)
-			->limit(1)
-			->select();
+	public function tags() {
+		return $this->find_related('tags');
 	}
 
 }

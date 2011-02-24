@@ -22,7 +22,7 @@
 			<li>
 				<h3><?php echo HTML::anchor(Route::model($group), $group->name) ?></h3>
 				<sup><?php echo $group->description ?></sup><br />
-				<?php foreach ($group->tags as $tag): ?>
+				<?php foreach ($group->tags() as $tag): ?>
 				<?php echo HTML::anchor(Route::model($tag), $tag->name) ?>
 				<?php endforeach; ?>
 
@@ -31,6 +31,6 @@
 
 	</li>
 	<?php endforeach; ?>
-	
+
 </ul>
 <?php	endif; ?>
