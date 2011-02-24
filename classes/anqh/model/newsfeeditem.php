@@ -7,70 +7,73 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_NewsfeedItem extends Jelly_Model {
+class Anqh_Model_NewsfeedItem extends AutoModeler {
+
+	protected $_table_name = 'newsfeeditems';
+
+	protected $_data = array(
+		'id'      => null,
+		'user_id' => null,
+		'stamp'   => null,
+		'class'   => null,
+		'type'    => null,
+		'data'    => null,
+	);
+
+	protected $_rules = array(
+		'user_id' => array('not_empty', 'digit'),
+		'stamp'   => array('not_empty', 'digit'),
+		'class'   => array('max_length' => array(':value', 64)),
+		'type'    => array('max_length' => array(':value', 64)),
+	);
+
 
 	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->sorting(array('id' => 'DESC'));
-		$meta->fields(array(
-			'id'    => new Jelly_Field_Primary,
-			'user'  => new Jelly_Field_BelongsTo,
-			'stamp' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true
-			)),
-			'class' => new Jelly_Field_String,
-			'type'  => new Jelly_Field_String,
-			'data'  => new Jelly_Field_JSON,
-		));
-	}
-
-
-	/**
-	 * Find public Newsfeed items
+	 * Find Newsfeed items.
 	 *
 	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @param   array    $users  User ids
+	 * @return  Database_Result
 	 */
-	public static function find_items($limit = 20) {
-		return Jelly::query('newsfeeditem')->limit($limit)->select();
+	public static function find_items($limit = 20, array $users = null) {
+		$query = DB::select()->order_by('id', 'DESC');
+		if (is_array($users)) {
+			$query = $query->where('user_id', 'IN', $users);
+		}
+
+		return AutoModeler::factory('newsfeeditem')
+			->load($query, $limit);
 	}
 
 
 	/**
-	 * Find public Newsfeed items
+	 * Override __get() to handle JSON in data, returned as array.
 	 *
-	 * @static
-	 * @param   Model_User  $user
-	 * @param   integer     $limit
-	 * @return  Jelly_Collection
+	 * @param   string  $key
+	 * @return  mixed
 	 */
-	public static function find_items_personal(Model_User $user, $limit = 20) {
-		return Jelly::query('newsfeeditem')
-			->where('user:foreign_key', '=', $user->id)
-			->limit($limit)
-			->select();
+	public function __get($key) {
+		if ($key == 'data' && $this->_data['data']) {
+			return json_decode($this->_data['data'], true);
+		}
+
+		return parent::__get($key);
 	}
 
 
 	/**
-	 * Find public Newsfeed items from user list
+	 * Override __set() to handle JSON.
 	 *
-	 * @static
-	 * @param   array    $users
-	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @param   string  $key
+	 * @param   mixed   $value
 	 */
-	public static function find_items_users(array $users, $limit = 20) {
-		return Jelly::query('newsfeeditem')
-			->where('user:foreign_key', 'IN', $users)
-			->limit($limit)
-			->select();
-	}
+	public function __set($key, $value) {
+		if ($key == 'data' && is_array($value)) {
+			$value = @json_encode($value);
+		}
 
+		parent::__set($key, $value);
+	}
 
 }
