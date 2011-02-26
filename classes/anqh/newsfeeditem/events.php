@@ -44,7 +44,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_EVENT:
-				$event = Model_Event::find($item->data['event_id']);
+				$event = Model_Event::factory($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('added new event<br />:event', array(
 						':event' => HTML::anchor(
@@ -57,7 +57,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				break;
 
 			case self::TYPE_EVENT_EDIT:
-				$event = Model_Event::find($item->data['event_id']);
+				$event = Model_Event::factory($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('updated event<br />:event', array(
 						':event' => HTML::anchor(
@@ -70,7 +70,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				break;
 
 			case self::TYPE_FAVORITE:
-				$event = Model_Event::find($item->data['event_id']);
+				$event = Model_Event::factory($item->data['event_id']);
 				if ($event->loaded()) {
 					$text = __('added event to favorites<br />:event', array(
 						':event' => HTML::anchor(
