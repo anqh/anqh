@@ -161,6 +161,38 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
+	 * Override style() to allow overriding attributes.
+	 *
+	 *  echo HTML::style('media/css/screen.css');
+	 *
+	 * @param   string   file name
+	 * @param   array    default attributes
+	 * @param   mixed    protocol to pass to URL::base()
+	 * @param   boolean  include the index page
+	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
+	 */
+	public static function style($file, array $attributes = null, $protocol = null, $index = false) {
+		if (strpos($file, '://') === false) {
+			// Add the base URL
+			$file = URL::base($protocol, $index).$file;
+		}
+
+		// Set the stylesheet link
+		$attributes['href'] = $file;
+
+		// Set the stylesheet rel and type if not set
+		$attributes = (array)$attributes + array(
+			'rel'  => 'stylesheet',
+			'type' => 'text/css'
+		);
+
+		return '<link' . HTML::attributes($attributes) . ' />';
+	}
+
+
+	/**
 	 * Return formatted <time> tag
 	 *
 	 * @param  string        $str
