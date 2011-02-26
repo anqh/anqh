@@ -7,23 +7,16 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_API_Request extends Jelly_Model {
+class Anqh_Model_API_Request extends AutoModeler {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'ip' => new Jelly_Field_String,
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'request' => new Jelly_Field_Text,
-		));
-	}
+	protected $_table_name = 'api_requests';
+
+	protected $_data = array(
+		'id'      => null,
+		'ip'      => null,
+		'created' => null,
+		'request' => null,
+	);
 
 
 	/**
@@ -35,9 +28,13 @@ class Anqh_Model_API_Request extends Jelly_Model {
 	 * @return  integer
 	 */
 	public static function request_count($since, $ip = null) {
+		$count = DB::select(array(DB::expr('COUNT(*)'), 'request_count'))
+			->from('api_requests')
+			->where('created', '>', $since);
+
 		return $ip
-			? Jelly::query('api_request')->where('ip', '=', $ip)->and_where('created', '>', $since)->count()
-			: Jelly::query('api_request')->where('created', '>', $since)->count();
+			? $count->and_where('ip', '=', $ip)->execute()->get('request_count')
+			: $count->execute()->get('request_count');
 	}
 
 }
