@@ -7,12 +7,35 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Venue_Category extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Venue_Category extends AutoModeler implements Permission_Interface {
 
 	/**
 	 * Permission to add new venue
 	 */
 	const PERMISSION_VENUE = 'venue';
+
+	protected $_table_name = 'venue_categories';
+
+	protected $_data = array(
+		'id'          => null,
+		'name'        => null,
+		'description' => null,
+		'author_id'   => null,
+		'created'     => null,
+	);
+
+	protected $_belongs_to = array(
+		'tag_groups'
+	);
+
+	protected $_has_many = array(
+		'venues',
+	);
+
+	protected $_rules = array(
+		'author_id' => array('not_empty'),
+		'shout'     => array('not_empty', 'max_length' => array(':value', 250)),
+	);
 
 
 	/**

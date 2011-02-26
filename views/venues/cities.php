@@ -4,12 +4,13 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 if (count($venues)):
+	$city = false;
 
-	$category = $city = false;
+	/** @var  Model_Venue  $venue */
 	foreach ($venues as $venue):
 
 		// City header
@@ -29,7 +30,6 @@ if (count($venues)):
 ?>
 		<li class="grid4 <?php echo Text::alternate('first', '') ?>">
 			<?php echo HTML::anchor(Route::model($venue), $venue->name) ?>
-			<?php if ($venue->category->loaded()) echo ' (' . HTML::chars($venue->category->name) . ')' ?>
 		</li>
 <?php
 	endforeach;

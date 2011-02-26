@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Venues_API extends Controller_API {
@@ -42,8 +42,32 @@ class Anqh_Controller_Venues_API extends Controller_API {
 		if (!empty($params)) {
 			$params += array_filter(Arr::intersect($_REQUEST, $optional));
 			try {
-				$data = ($method == 'GET') ? Remote::get($url, $params) : Remote::post($url, $params);
-				$this->data[$foursquare] = json_decode($data);
+				if ($method == 'GET') {
+
+					// Send GET request
+					if (!empty($params)) {
+						$url .= (strpos($url, '?') === false ? '?' : '&') . http_build_query($params, '', '&');
+					}
+					$options = array();
+
+				} else {
+
+					// Send POST request
+					$options = array(
+						CURLOPT_POST           => true,
+						CURLOPT_FOLLOWLOCATION => true,
+					);
+					if (!empty($params)) {
+						$options[CURLOPT_POSTFIELDS] = http_build_query($params);
+					}
+
+				}
+				$request = Request::factory($url);
+				$request->get_client()->options($options);
+				$response = $request->execute();
+				if ($response->status() == 200) {
+					$this->data[$foursquare] = json_decode($response->body());
+				}
 			} catch (Kohana_Exception $e) {
 			}
 		}
