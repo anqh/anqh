@@ -125,7 +125,7 @@ abstract class Anqh_Controller_Template extends Controller {
 		if ($this->ajax || $this->internal) {
 
 			// AJAX and HMVC requests
-			$this->response->body($this->response->body . '');
+			$this->response->body($this->response->body() . '');
 
 		} else if ($this->auto_render) {
 
@@ -134,7 +134,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$session = Session::instance();
 
 			// Save current URI
-			if ($this->history && $this->response->status < 400) {
+			if ($this->history && $this->response->status() < 400) {
 				$uri = $this->request->current_uri();
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
