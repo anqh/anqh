@@ -21,15 +21,15 @@ abstract class Anqh_NewsfeedItem implements NewsfeedItem_Interface {
 	 * @return  boolean
 	 */
 	protected static function add(Model_User $user, $class, $type, array $data = null) {
-		$item = AutoModeler::factory('newsfeeditem')
-			->set_fields(array(
-				'user_id' => $user,
-				'class'   => $class,
-				'type'    => $type,
-				'data'    => $data,
-				'stamp'   => time(),
-			))
-			->save();
+		$item = AutoModeler::factory('newsfeeditem');
+		$item->set_fields(array(
+			'user_id' => $user->id,
+			'class'   => $class,
+			'type'    => $type,
+			'data'    => $data,
+			'stamp'   => time(),
+		));
+		$item->save();
 
 		return $item->loaded();
 	}
