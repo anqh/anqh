@@ -36,7 +36,7 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_VENUE:
-		    $venue = Model_Venue::find($item->data['venue_id']);
+		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
 			    $text = __('added new venue<br />:venue', array(
 				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
@@ -45,7 +45,7 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 		    break;
 
 			case self::TYPE_VENUE_EDIT:
-		    $venue = Model_Venue::find($item->data['venue_id']);
+		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
 			    $text = __('updated venue<br />:venue', array(
 				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
