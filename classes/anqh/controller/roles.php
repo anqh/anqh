@@ -26,7 +26,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 		$this->page_title = __('Roles');
 		$this->page_actions[] = array('link' => Route::get('role')->uri(), 'text' => __('New role'), 'class' => 'role-add');
 
-		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Model_Role::find_all())));
+		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Model_Role::factory()->find_all())));
 	}
 
 

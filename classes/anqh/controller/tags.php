@@ -46,7 +46,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::find($tag_id);
+		$tag = Model_Tag::factory($tag_id);
 		if (!$tag->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
@@ -65,7 +65,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::find($group_id);
+		$group = Model_Tag_Group::factory($group_id);
 		if (!$group->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -99,7 +99,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->page_actions[] = array('link' => Route::get('tag_group_add')->uri(), 'text' => __('Add group'), 'class' => 'group-add');
 
 		Widget::add('main', View_Module::factory('tags/groups', array(
-			'groups' => Model_Tag_Group::find_all(),
+			'groups' => Model_Tag_Group::factory()->find_all(),
 		)));
 	}
 
@@ -109,7 +109,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_group() {
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::find($group_id);
+		$group = Model_Tag_Group::factory($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -131,13 +131,13 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_tag() {
 		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::find($tag_id);
+		$tag = Model_Tag::factory($tag_id);
 		if (!$tag->loaded()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
-		$this->page_title = HTML::chars($tag->name);
-		$this->page_subtitle = HTML::chars($tag->description);
 
+		$this->page_title     = HTML::chars($tag->name);
+		$this->page_subtitle  = HTML::chars($tag->description);
 		$this->page_actions[] = array('link' => Route::model($tag, 'edit'),   'text' => __('Edit tag'),  'class' => 'tag-edit');
 		$this->page_actions[] = array('link' => Route::model($tag, 'delete') . '?' . Security::csrf_query(), 'text' => __('Delete tag'),'class' => 'tag-delete');
 	}
@@ -154,7 +154,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Edit group
-			$group = Model_Tag_Group::find($group_id);
+			$group = Model_Tag_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -202,7 +202,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Add new tag
-			$group = Model_Tag_Group::find($group_id);
+			$group = Model_Tag_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -217,7 +217,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		} else if ($tag_id) {
 
 			// Edit old tag
-			$tag = Model_Tag::find($tag_id);
+			$tag = Model_Tag::factory($tag_id);
 			if (!$tag->loaded()) {
 				throw new Model_Exception($tag, $tag_id);
 			}

@@ -32,7 +32,11 @@ class Anqh_Model_Tag extends AutoModeler_ORM {
 	 * @return  Model_Tag_Group
 	 */
 	public function group() {
-		return $this->find_parent('tag_group');
+		try {
+			return $this->find_parent('tag_group');
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 }

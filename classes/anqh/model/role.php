@@ -22,7 +22,7 @@ class Anqh_Model_Role extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_rules = array(
-		'name' => array('not_empty', 'max_length' => array(':value', 32), 'AutoModeler::unique' => array(':model', ':value', ':field')),
+		'name'        => array('not_empty', 'max_length' => array(':value', 32), 'AutoModeler::unique' => array(':model', ':value', ':field')),
 	);
 
 	protected $_belongs_to = array(
@@ -41,22 +41,6 @@ class Anqh_Model_Role extends AutoModeler_ORM implements Permission_Interface {
 		if ($id !== null) {
 			$this->load(DB::select()->where(is_numeric($id) ? 'id' : 'name', '=', $id));
 		}
-	}
-
-
-	/**
-	 * Find a role by id or name
-	 *
-	 * @static
-	 * @param   integer|string  $role
-	 * @return  Model_Role
-	 */
-	public static function find($role) {
-
-		/** @var  Model_Role  $model */
-		$model = Model::factory('role', $role);
-
-		return $model->loaded() ? $model : null;
 	}
 
 
