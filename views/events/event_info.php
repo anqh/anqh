@@ -8,19 +8,19 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-if ($event->venue && $event->venue->id):
+if ($venue = $event->venue()):
 
 	// Venue found from db
-	$venue = HTML::anchor(Route::model($event->venue), HTML::chars($event->venue->name));
-	$address = HTML::chars($event->venue->address) . ', ' . HTML::chars($event->venue->city_name);
-	$info = HTML::anchor(Route::model($event->venue), __('Venue info'));
+	$venue = HTML::anchor(Route::model($venue), HTML::chars($venue->name));
+	$address = HTML::chars($venue->address) . ', ' . HTML::chars($venue->city_name);
+	$info = HTML::anchor(Route::model($venue), __('Venue info'));
 
-	if ($event->venue->latitude):
+	if ($venue->latitude):
 		$map = array(
-			'marker'     => HTML::chars($event->venue->name),
-			'infowindow' => HTML::chars($event->venue->address) . '<br />' . HTML::chars($event->venue->city_name),
-			'lat'        => $event->venue->latitude,
-			'long'       => $event->venue->longitude
+			'marker'     => HTML::chars($venue->name),
+			'infowindow' => HTML::chars($venue->address) . '<br />' . HTML::chars($venue->city_name),
+			'lat'        => $venue->latitude,
+			'long'       => $venue->longitude
 		);
 		Widget::add('foot', HTML::script_source('
 head.ready("anqh", function() {

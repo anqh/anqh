@@ -68,7 +68,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Load events
-		$events = Model_Event::find_grouped_between($first, $last);
+		$events = Model_Event::factory()->find_grouped_between($first, $last);
 		if (count($events)) {
 			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
@@ -101,7 +101,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load venue
 		$event_id = (int)$this->request->param('id');
-		$event = Model_Event::find($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -134,7 +134,8 @@ class Anqh_Controller_Events extends Controller_Template {
 		$event_id = (int)$this->request->param('id');
 
 		// Load event
-		$event = Model_Event::find($event_id);
+		/** @var  Model_Event  $event */
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -211,7 +212,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load event
 		$event_id = (int)$this->request->param('id');
-		$event = Model_Event::find($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -243,7 +244,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			foreach ($event_ids as $event_id) {
 
 				/** @var  Model_Event  $event */
-				$event = Model_Event::find($event_id);
+				$event = Model_Event::factory($event_id);
 				if (!$event->loaded()) {
 					throw new Model_Exception($event, $event_id);
 				}
@@ -376,7 +377,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			return $this->action_event();
 		}
 
-		$event = Model_Event::find((int)$this->request->param('id'));
+		$event = Model_Event::factory((int)$this->request->param('id'));
 		if ($event->loaded())	{
 			echo View_Module::factory('events/hovercard', array(
 				'mod_title' => HTML::chars($event->name),
@@ -395,7 +396,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Load event
 		$event_id = (int)$this->request->param('id');
 		/** @var  Model_Event  $event */
-		$event = Model_Event::find($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -575,7 +576,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Load events
-		$events = Model_Event::find_grouped_past(25);
+		$events = Model_Event::factory()->find_grouped_past(25);
 		if (count($events)) {
 			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
 
@@ -607,7 +608,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Load event
 		$event_id = (int)$this->request->param('id');
-		$event = Model_Event::find($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -634,10 +635,8 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 
 		// Load events
-		$events = Model_Event::find_grouped_upcoming(25);
+		$events = Model_Event::factory()->find_grouped_upcoming(25);
 		if (count($events)) {
-			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
-
 			Widget::add('main', View_Module::factory('generic/filters', array(
 				'filters' => $this->_filters($events),
 			)));
@@ -672,7 +671,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		if ($event_id) {
 
 			// Editing old
-			$event = Model_Event::find($event_id);
+			$event = Model_Event::factory($event_id);
 			if (!$event->loaded()) {
 				throw new Model_Exception($event, $event_id);
 			}
@@ -713,7 +712,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			} else if ($venue_id = (int)Arr::get_once($_POST, 'venue')) {
 
 				// Old venue
-				$venue = Model_Venue::find($venue_id);
+				$venue = Model_Venue::factory($venue_id);
 
 			} else if ($venue_name = Arr::get($_POST, 'venue_name')) {
 
@@ -726,7 +725,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 					// Foursquare venue
 					// @todo: Refetch data using id?
-					$venue = Model_Venue::find_by_foursquare($foursquare_id);
+					$venue = Model_Venue::factory()->find_by_foursquare($foursquare_id);
 					if (!$venue->loaded()) {
 						$venue = Model_Venue::factory()->set(array(
 							'foursquare_id'          => $foursquare_id,
@@ -737,7 +736,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				} else {
 
 					// Check for duplicate venue
-					$venues = Model_Venue::find_by_name($venue_name);
+					$venues = Model_Venue::factory()->find_by_name($venue_name);
 					if ($venues->count()) {
 						$address   = strtolower(trim(Arr::get($_POST, 'address')));
 						$city_name = strtolower(isset($city) ? $city->name : Arr::get($_POST, 'city_name'));
@@ -839,7 +838,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Tags
 		$tags = array();
-		$tag_group = Model_Tag_Group::find_by_name('Music');
+		$tag_group = Model_Tag_Group::factory()->find_by_name('Music');
 		if ($tag_group->loaded() && count($tag_group->tags)) {
 			foreach ($tag_group->tags as $tag) {
 				$tags[$tag->id()] = $tag->name();
@@ -875,7 +874,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			'venue'  => isset($venue) ? $venue : $event->venue,
 			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
-			'venues' => Model_Venue::find_all(),
+			'venues' => Model_Venue::factory()->find_all(),
 
 			'city'   => $event->city ? $event->city : (isset($venue) && $venue->city ? $venue->city : null),
 			'cancel' => $cancel,
@@ -984,19 +983,19 @@ class Anqh_Controller_Events extends Controller_Template {
 				'mod_id'    => 'events-hot',
 				'mod_class' => 'cut tab events',
 				'title'     => __('Hot Events'),
-				'events'    =>  Model_Event::find_hot(20),
+				'events'    =>  Model_Event::factory()->find_hot(20),
 			))),
 			'active' => array('href' => '#events-new', 'title' => __('New events'), 'tab' => View_Module::factory('events/event_list', array(
 				'mod_id'    => 'events-new',
 				'mod_class' => 'cut tab events',
 				'title'     => __('New Events'),
-				'events'    =>  Model_Event::find_new(20),
+				'events'    =>  Model_Event::factory()->find_new(20),
 			))),
 			'latest' => array('href' => '#events-updated', 'title' => __('Updated events'), 'tab' => View_Module::factory('events/event_list', array(
 				'mod_id'    => 'events-updated',
 				'mod_class' => 'cut tab events',
 				'title'     => __('Updated Events'),
-				'events'    => Model_Event::find_modified(20),
+				'events'    => Model_Event::factory()->find_modified(20),
 			))),
 		);
 

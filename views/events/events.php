@@ -28,7 +28,7 @@
 			</header>
 			<?php endif; ?>
 
-			<?php	foreach ($city_events as $event): ?>
+			<?php	foreach ($city_events as $event): $venue = $event->venue(); ?>
 
 			<article>
 
@@ -43,8 +43,8 @@
 
 					<?php if ($event->venue_hidden): ?>
 					@ <?php echo __('Underground') ?>
-					<?php elseif ($event->venue): ?>
-					@ <?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>
+					<?php elseif ($venue): ?>
+					@ <?php echo HTML::anchor(Route::model($venue), $venue->name) ?>
 					<?php elseif ($event->venue_name): ?>
 					@ <?php echo HTML::chars($event->venue_name) ?>
 					<?php endif; ?>
