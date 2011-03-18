@@ -26,6 +26,16 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 
 
 	/**
+	 * Get model author light array
+	 *
+	 * @return  array
+	 */
+	public function author() {
+		return !empty($this->_data['author_id']) ? Model_User::find_user_light($this->_data['author_id']) : null;
+	}
+
+
+	/**
 	 * The factory method returns a model instance of the model name provided.
 	 * You can also specify an id to create a specific object.
 	 *
@@ -149,7 +159,7 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	public function save(Validation $validation = null) {
 
 		// Don't try to insert null primary keys
-		if (!$this->loaded()) {
+		if (!$this->loaded() && !$this->id()) {
 			unset($this->_data[$this->_primary_key]);
 		}
 
