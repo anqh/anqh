@@ -30,26 +30,12 @@ class Anqh_Controller_Sign extends Controller_Template {
 		if ($_POST) {
 			$visitor = Visitor::instance();
 
-			// Log login attempt
-			$login = Model_Login::factory()->set(array(
-				'password' => !empty($_POST['password']),
-				'username' => $_POST['username'],
-				'ip'       => Request::$client_ip,
-				'hostname' => Request::host_name()
-			));
-
 			// Require valid user for login logging
-			$user = Model_User::find_user($_POST['username']);
-			if ($user && $user->loaded()) {
-				$login->user     = $user;
-				$login->username = $user->username;
+			$user    = Model_User::find_user($_POST['username']);
+			$success = ($user && $visitor->login($user, $_POST['password'], isset($_POST['remember'])));
 
-				if ($visitor->login($user, $_POST['password'], isset($_POST['remember']))) {
-					$login->success = true;
-				}
-			}
-
-			$login->save();
+			// Log login attempt
+			Model_Login::log($success, $user ? $user : $_POST['username'], isset($_POST['password']) && $_POST['password'] != '');
 
 		} else {
 
@@ -75,7 +61,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 	public function action_out() {
 
 		// Remove from online list
-		Model_User_Online::find(Session::instance()->id())->delete();
+		Model_User_Online::factory(Session::instance()->id())->delete();
 
 		// Logout visitor
 		Visitor::instance()->logout();
