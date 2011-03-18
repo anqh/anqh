@@ -105,14 +105,23 @@ abstract class Anqh_Controller_Template extends Controller {
 
 		// Online users
 		if (!$this->internal) {
-			$online = Model_User_Online::find(Session::instance()->id());
+			$session_id = Session::instance()->id();
+			$online = new Model_User_Online($session_id);
+			$online->user_id       = self::$user->id;
+			$online->last_activity = time();
 			if (!$online->loaded()) {
-				$online->id = Session::instance()->id();
+				//$online->id = $session_id;
 			}
-			$online->user = self::$user;
 			try {
 				$online->save();
-			} catch (Validation_Exception $e) {}
+			} catch (Validation_Exception $e) {
+
+			} catch (Database_Exception $e) {
+
+				// Might happen if no session id set
+
+			}
+
 		}
 
 	}
@@ -181,7 +190,7 @@ abstract class Anqh_Controller_Template extends Controller {
 				'mod_id'    => 'footer-events-new',
 				'mod_class' => 'article grid4 first cut events',
 				'mod_title' => __('New events'),
-				'events'    => Model_Event::find_new(10)
+				'events'    => Model_Event::factory()->find_new(10)
 			)));
 			Widget::add('footer', View_Module::factory('forum/topiclist', array(
 				'mod_id'    => 'footer-topics-active',
@@ -193,7 +202,7 @@ abstract class Anqh_Controller_Template extends Controller {
 				'mod_id'    => 'footer-blog-entries',
 				'mod_class' => 'article grid4 cut blogentries',
 				'mod_title' => __('New blogs'),
-				'entries'   => Model_Blog_Entry::find_new(10),
+				'entries'   => Model_Blog_Entry::factory()->find_new(10),
 			)));
 
 
@@ -320,7 +329,7 @@ head.js(
 				$this->language . ' ' .                      // Language
 				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
 				$session->get('page_main', 'left') . ' ' .   // Left/right aligned layout
-				$this->request->action() . ' ' .               // Controller method
+				$this->request->action() . ' ' .             // Controller method
 				$this->page_class);                          // Controller set classes
 			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
 
