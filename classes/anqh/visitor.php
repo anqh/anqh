@@ -33,7 +33,7 @@ class Anqh_Visitor {
 	 */
 	public function __construct($config = array()) {
 		$config['salt_pattern'] = preg_split('/,\s*/', Kohana::config('visitor')->get('salt_pattern'));
-		$this->_config = $config;
+		$this->_config  = $config;
 		$this->_session = Session::instance();
 	}
 
@@ -47,12 +47,10 @@ class Anqh_Visitor {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
 
 			// Load the token and user
-			$token = Jelly::query('user_token')
-				->where('token', '=', $token)
-				->select();
-
-			if ($token->loaded() AND $token->user->loaded()) {
-				if ($token->user_agent === sha1(Request::$user_agent)) {
+			$token = new Model_User_Token($token);
+			if ($token->loaded() && $token->user_id) {
+				$user = Model_User::find_user($token->user_id);
+				if ($user && $token->user_agent === sha1(Request::$user_agent)) {
 
 					// Save the token to create a new unique token
 					$token->update();
@@ -61,7 +59,7 @@ class Anqh_Visitor {
 					Cookie::set($this->_config['cookie_name'], $token->token, $token->expires - time());
 
 					// Complete the login with the found data
-					$this->complete_login($token->user);
+					$this->complete_login($user);
 
 					// Automatic login was successful
 					return true;
@@ -318,7 +316,7 @@ class Anqh_Visitor {
 		}
 
 		// Check if potential user has optional roles
-		if (is_object($user) && $user instanceof Model_User && $user->loaded()) {
+		if ($user instanceof Model_User && $user->loaded()) {
 			$status = (empty($roles)) ? true : $user->has_role($roles);
 		}
 
@@ -352,10 +350,8 @@ class Anqh_Visitor {
 			if ($remember === true) {
 
 				// Create a new autologin token
-				$token = Model::factory('user_token');
-
-				// Set token data
-				$token->user = $user->id;
+				$token = new Model_User_Token();
+				$token->user_id = $user->id;
 				$token->expires = time() + $this->_config['lifetime'];
 				$token->create();
 
@@ -387,12 +383,9 @@ class Anqh_Visitor {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
 			Cookie::delete($this->_config['cookie_name']);
 
-			$token = Jelly::query('user_token')
-				->where('token', '=', $token)
-				->limit(1)
-				->select();
-			if ($token->loaded() && $logout_all) {
-				Jelly::delete('user_token')->where('user_id', '=', $token->user->id)->execute();
+			$token = new Model_User_Token($token);
+			if ($logout_all && $token->loaded()) {
+				Model_User_Token::delete_all($token->user_id);
 			} else if ($token->loaded()) {
 				$token->delete();
 			}

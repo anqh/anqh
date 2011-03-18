@@ -1,42 +1,60 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * User_Token model
+ * User Token model
  *
  * @package    Anqh
  * @author     Antti Qvickström
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_User_Token extends Jelly_Model {
+class Anqh_Model_User_Token extends AutoModeler {
+
+	protected $_table_name = 'user_tokens';
+
+	protected $_data = array(
+		'id'         => null,
+		'token'      => null,
+		'user_id'    => null,
+		'user_agent' => null,
+		'created'    => null,
+		'expires'    => null,
+	);
+
 
 	/**
-	 * Create new model
+	 * Load token
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param  integer|string  $id
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'token' => new Jelly_Field_String(array(
-				'unique' => true,
-				'rules'  => array(
-					'max_length' => array(32)
-				)
-			)),
-			'user' => new Jelly_Field_BelongsTo,
-			'user_agent' => new Jelly_Field_String,
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'expires' => new Jelly_Field_Timestamp,
-		));
+	public function __construct($id = null) {
+		parent::__construct();
+
+		if ($id !== null) {
+			$this->load(DB::select()->where(is_numeric($id) ? 'id' : 'token', '=', $id));
+		}
 
 		// Garbace collection
 		if (mt_rand(1, 100) === 1) {
-			Jelly::query('user_token')
-				->where('expires', '<', time())
-				->delete();
+			self::gc();
 		}
+	}
+
+
+	/**
+	 * Garbage collect
+	 *
+	 * @static
+	 */
+	public static function gc() {
+		static $collected = false;
+
+		if (!$collected) {
+			$collected = true;
+			DB::delete('user_tokens')
+				->where('expires', '<', time())
+				->execute();
+		}
+
 	}
 
 
@@ -46,8 +64,9 @@ class Anqh_Model_User_Token extends Jelly_Model {
 	 * @return  boolean
 	 */
 	public function create() {
+		$this->created    = time();
 		$this->user_agent = sha1(Request::$user_agent);
-		$this->token = $this->create_token();
+		$this->token      = $this->create_token();
 
 		return parent::save();
 	}
@@ -65,14 +84,24 @@ class Anqh_Model_User_Token extends Jelly_Model {
 			$token = Text::random('alnum', 32);
 
 			// Make sure it's unique
-			if (!Jelly::query('user_token')
-				->where('token', '=', $token)
-				->count()
-			) {
+			if (!$this->unique_key_exists($token, 'token')) {
 				return $token;
 			}
 
 		}
+	}
+
+
+	/**
+	 * Delete all user tokens from user
+	 *
+	 * @static
+	 * @param   integer $user_id
+	 */
+	public static function delete_all($user_id) {
+		DB::delete('user_tokens')
+			->where('user_id', '=', $user_id)
+			->execute();
 	}
 
 
