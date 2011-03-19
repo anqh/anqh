@@ -192,35 +192,43 @@ class Anqh_Controller_Blog extends Controller_Template {
 		if ($entry_id) {
 
 			// Editing old
-			$entry = Model_Blog_Entry::factory($entry_id);
+			$entry = new Model_Blog_Entry($entry_id);
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
 			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user);
+
 			$cancel = Route::model($entry);
+
 			$this->page_title = HTML::chars($entry->name);
+			$entry->modified  = time();
+			$entry->modify_count++;
 
 		} else {
 
 			// Creating new
-			$entry = Model_Blog_Entry::factory();
+			$entry = new Model_Blog_Entry();
 			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user);
-			$cancel = Request::back(Route::get('blogs')->uri(), true);
+
+			$cancel   = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;
+
 			$this->page_title = __('New blog entry');
-			$entry->author = self::$user;
+			$entry->author_id = self::$user->id;
+			$entry->created   = time();
 
 		}
 
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
-			$entry->set_fields(Arr::intersect($_POST, Model_Blog_Entry::$editable_fields));
 			try {
+				$entry->name    = Arr::get($_POST, 'name');
+				$entry->content = Arr::get($_POST, 'content');
 				$entry->save();
 
 				// Newsfeed
-				if (isset($newsfeed)) {
+				if (isset($newsfeed) && $newsfeed) {
 					NewsfeedItem_Blog::entry(self::$user, $entry);
 				}
 
@@ -230,24 +238,9 @@ class Anqh_Controller_Blog extends Controller_Template {
 			}
 		}
 
-		// Build form
-		$form = array(
-			'values' => $entry,
-			'errors' => $errors,
-			'cancel' => $cancel,
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'    => array(),
-						'content' => array(),
-					),
-				),
-			)
-		);
-
 		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
 		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('blog/edit', array('entry' => $entry, 'errors' => $errors, 'cancel' => $cancel)));
 	}
 
 }
