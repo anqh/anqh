@@ -7,73 +7,65 @@
  * @copyright  (c) 2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Image_Note extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interface {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'image' => new Jelly_Field_BelongsTo,
+	protected $_table_name = 'image_notes';
 
-			'name' => new Jelly_Field_String(array(
-				'rules' => array(
-					'max_length' => array(30),
-					'not_empty'  => null,
-				),
-			)),
-			'user' => new Jelly_Field_BelongsTo(array(
-				'allow_null'  => true,
-				'empty_value' => null,
-			)),
-			'x' => new Jelly_Field_Integer,
-			'y' => new Jelly_Field_Integer,
-			'width' => new Jelly_Field_Integer,
-			'height' => new Jelly_Field_Integer,
+	protected $_data = array(
+		'id'                => null,
+		'author_id'         => null,
+		'image_id'          => null,
 
-			'new_comment_count' => new Jelly_Field_Integer,
-			'new_note' => new Jelly_Field_Boolean,
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-		));
-	}
+		'name'              => null,
+		'user_id'           => null,
+		'x'                 => null,
+		'y'                 => null,
+		'width'             => null,
+		'height'            => null,
+
+		'new_comment_count' => null,
+		'new_note'          => null,
+		'created'           => null,
+	);
+
+	protected $_rules = array(
+		'name'              => array('not_empty', 'max_length' => array(':value', 30)),
+		'x'                 => array('digit'),
+		'y'                 => array('digit'),
+		'width'             => array('digit'),
+		'height'            => array('digit'),
+	);
 
 
 	/**
 	 * Get notes with new comments
 	 *
-	 * @static
-	 * @param   Model_User $user
-	 * @return  Jelly_Collection
+	 * @param   Model_User  $user
+	 * @return  Database_Result
 	 */
-	public static function find_new_comments(Model_User $user) {
-		return Jelly::query('image_note')
-			->where('user_id', '=', $user->id)
-			->and_where('new_comment_count', '>', 0)
-			->select();
+	public function find_new_comments(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('user_id', '=', $user->id)
+				->and_where('new_comment_count', '>', 0),
+			null
+		);
 	}
 
 
 	/**
 	 * Get new notes
 	 *
-	 * @static
-	 * @param   Model_User $user
-	 * @return  Jelly_Collection
+	 * @param   Model_User  $user
+	 * @return  Database_Result
 	 */
-	public static function find_new_notes(Model_User $user) {
-		return Jelly::query('image_note')
-			->where('user_id', '=', $user->id)
-			->and_where('new_note', '=', 1)
-			->select();
+	public function find_new_notes(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('user_id', '=', $user->id)
+				->and_where('new_note', '>', 0),
+			null
+		);
 	}
 
 
@@ -90,16 +82,44 @@ class Anqh_Model_Image_Note extends Jelly_Model implements Permission_Interface 
 				return (bool)$user;
 
 			case self::PERMISSION_UPDATE:
-				return $user && ($user->id == $this->author->id || $user->has_role('admin', 'photo admin'));
+				return $user && ($user->id == $this->author_id || $user->has_role('admin', 'photo admin'));
 
 			case self::PERMISSION_DELETE:
-				return $user && (in_array($user->id, array($this->user->id, $this->author->id)) || $user->has_role('admin', 'photo admin'));
+				return $user && (in_array($user->id, array($this->user_id, $this->author_id)) || $user->has_role('admin', 'photo admin'));
 
 			case self::PERMISSION_READ:
 				return true;
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get note image
+	 *
+	 * @return  Model_Image
+	 */
+	public function image() {
+		try {
+			return $this->image_id ? Model_Image::factory($this->image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * Get note target user light array
+	 *
+	 * @return  array
+	 */
+	public function user() {
+		try {
+			return $this->user_id ? Model_User::find_user_light($this->user_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 }
