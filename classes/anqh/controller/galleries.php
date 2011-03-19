@@ -331,7 +331,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					$event = new Model_Event($event_id);
 					if ($event->loaded()) {
 						$flyer->set_fields(array(
-							'event'       => $event,
+							'event_id'    => $event->id,
 							'stamp_begin' => $event->stamp_begin
 						));
 					}
@@ -359,7 +359,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 
 		// Set title
-		if ($event->loaded()) {
+		if ($event) {
 
 			// Flyer is linked to an event
 			$this->page_title = HTML::chars($event->name);
