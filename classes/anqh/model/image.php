@@ -6,8 +6,10 @@
  * @author     Antti Qvickström
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ *
+ * @todo  Refactor to use uniqid instead of id_postfix for filename
  */
-class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 	const DELETED      = 'd';
 	const HIDDEN       = 'h';
@@ -26,6 +28,45 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	/** @deprecated */
 	const THUMB    = 'thumb';
 
+	protected $_table_name = 'images';
+
+	protected $_data = array(
+		'id'                => null,
+		'status'            => self::VISIBLE,
+		'description'       => null,
+		'format'            => null,
+		'created'           => null,
+		'view_count'        => null,
+		'comment_count'     => null,
+		'new_comment_count' => null,
+		'rate_count'        => null,
+		'rate_total'        => null,
+
+		'original_size'     => null,
+		'original_width'    => null,
+		'original_height'   => null,
+		'width'             => null,
+		'height'            => null,
+		'thumb_width'       => null,
+		'thumb_height'      => null,
+
+		'postfix'           => null,
+		'file'              => null,
+		'remote'            => null,
+		'legacy_filename'   => null,
+
+		'author_id'         => null,
+	);
+
+	protected $_rules = array(
+		'status'            => array('not_empty', 'in_array' => array(':value', array(self::DELETED, self::HIDDEN, self::NOT_ACCEPTED, self::VISIBLE))),
+		'remote'            => array('url'),
+	);
+
+	protected $_belongs_to = array(
+		'galleries'
+	);
+
 	/**
 	 * @var  string  Normal size image config
 	 */
@@ -38,67 +79,15 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Create new model
+	 * Get image comments
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param   Model_User  $viewer
+	 * @return  Database_Result
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'status' => new Jelly_Field_Enum(array(
-				'default' => self::VISIBLE,
-				'choices' => array(
-					self::DELETED      => __('Deleted'),
-					self::HIDDEN       => __('Hidden'),
-					self::NOT_ACCEPTED => __('Not accepted'),
-					self::VISIBLE      => __('Visible'),
-				)
-			)),
-			'description' => new Jelly_Field_String,
-			'format' => new Jelly_Field_String,
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'view_count' => new Jelly_Field_Integer(array(
-				'column' => 'views',
-			)),
-			'comment_count' => new Jelly_Field_Integer(array(
-				'column' => 'comments',
-			)),
-			'new_comment_count' => new Jelly_Field_Integer,
-			'rate_count' => new Jelly_Field_Integer,
-			'rate_total' => new Jelly_Field_Integer,
+	public function comments(Model_User $viewer = null) {
+		$query = Model_Comment::query_viewer(DB::select_array(Model_Image_Comment::factory()->fields()), $viewer);
 
-			'original_size'   => new Jelly_Field_Integer,
-			'original_width'  => new Jelly_Field_Integer,
-			'original_height' => new Jelly_Field_Integer,
-			'width'           => new Jelly_Field_Integer,
-			'height'          => new Jelly_Field_Integer,
-			'thumb_width'     => new Jelly_Field_Integer,
-			'thumb_height'    => new Jelly_Field_Integer,
-
-			'postfix' => new Jelly_Field_String,
-			'file' => new Jelly_Field_File(array(
-				'label' => __('Image'),
-				'path'  => Kohana::config('image.upload_path'),
-			)),
-			'remote' => new Jelly_Field_URL,
-			'legacy_filename' => new Jelly_Field_String,
-
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'exif' => new Jelly_Field_HasOne(array(
-				'foreign' => 'image_exif',
-			)),
-			'comments' => new Jelly_Field_HasMany(array(
-				'foreign' => 'image_comment',
-			)),
-			'notes' => new Jelly_Field_HasMany(array(
-				'foreign' => 'image_note',
-			)),
-		));
+		return $this->find_related('image_comments', $query);
 	}
 
 
@@ -134,11 +123,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Deletes a single image and files
 	 *
-	 * @param   $key  A key to use for non-loaded records
 	 * @return  boolean
 	 **/
-	public function delete($key = null) {
-		if (!$key && $this->loaded()) {
+	public function delete() {
+		if ($this->loaded()) {
 
 			// Delete default
 			if (is_file($this->get_filename())) {
@@ -159,11 +147,58 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			}
 
 			// Delete exif
-			$this->exif->delete();
+			$this->exif()->delete();
 
 		}
 
-		return parent::delete($key);
+		return parent::delete();
+	}
+
+
+	/**
+	 * Get EXIF data for image.
+	 *
+	 * @return  Model_Exif
+	 */
+	public function exif() {
+		if ($exif = $this->find_related('image_exifs')) {
+			return $exif->current();
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * Get images with new comments.
+	 *
+	 * @param   Model_User  $user
+	 * @return  Database_Result
+	 */
+	public function find_new_comments(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('author_id', '=', $user->id)
+				->and_where('new_comment_count', '>', 0),
+			null
+		);
+	}
+
+
+	/**
+	 * Get image gallery
+	 *
+	 * @return  Model_Gallery
+	 */
+	public function gallery() {
+		if ($gallery = $this->find_parent('galleries')) {
+			$gallery = $gallery->current();
+			$gallery->state(AutoModeler::STATE_LOADED);
+
+			return $gallery;
+		}
+
+		return null;
 	}
 
 
@@ -229,37 +264,6 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Get images with new comments
-	 *
-	 * @static
-	 * @param   Model_User $user
-	 * @return  Jelly_Collection
-	 */
-	public static function find_new_comments(Model_User $user) {
-		return Jelly::query('image')
-			->where('author_id', '=', $user->id)
-			->and_where('new_comment_count', '>', 0)
-			->select();
-	}
-
-
-	/**
-	 * Get image notes
-	 *
-	 * @return  Jelly_Collection
-	 */
-	public function find_notes() {
-		return Jelly::query('image_note')
-			->with('author')
-			->with('user')
-			->where('image_id', '=', $this->id)
-			->order_by('x', 'ASC')
-			->order_by('id', 'ASC')
-			->select();
-	}
-
-
-	/**
 	 * Get full path and filename of specific image size or empty for default
 	 *
 	 * @param   string   $size
@@ -287,7 +291,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * @return  string
 	 */
 	public function get_url($size = null, $legacy_dir = null) {
-		if (!$this->loaded()) {
+		if (!$this->id) {
 			return null;
 		}
 
@@ -328,7 +332,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    return $user && ($user->id == $this->author->id || $user->has_role('admin', 'photo moderator'));
+		    return $user && ($user->id == $this->author_id || $user->has_role('admin', 'photo moderator'));
 
 			case self::PERMISSION_READ:
 		    return true;
@@ -340,18 +344,30 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Creates or updates the current image
+	 * Get image notes
 	 *
-	 * If $key is passed, the record will be assumed to exist
-	 * and an update will be executed, even if the model isn't loaded().
+	 * @return  Database_Result
+	 */
+	public function notes() {
+		return $this->find_related(
+			'image_notes',
+			DB::select_array(Model_Image_Note::factory()->fields())
+				->order_by('x', 'ASC')
+				->order_by('id', 'ASC')
+		);
+	}
+
+
+	/**
+	 * Creates or updates the current image.
 	 *
-	 * @param   mixed  $key
-	 * @return  $this
+	 * @param   Validation  $validation a manual validation object to combine the model properties with
+	 * @return  integer
 	 *
 	 * @throws  Kohana_Exception
 	 */
-	public function save($key = null) {
-		$new = !$this->loaded() && !$key;
+	public function save(Validation $validation = null) {
+		$new = !(bool)$this->id;
 
 		// Validate new image
 		if ($new) {
@@ -374,7 +390,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 		}
 
-		parent::save($key);
+		parent::save();
 
 		// Some magic on created images only
 		if ($new) {
@@ -420,8 +436,14 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 */
 	public function update_description() {
 		$description = array();
-		foreach ($this->find_notes() as $note) {
-			$description[] = ($note->user->loaded() ? $note->user->username : $note->name);
+
+		/** @var  Model_Image_Note  $note */
+		foreach ($this->notes() as $note) {
+			if ($user = $note->user()) {
+				$description[] = $user['username'];
+			} else {
+				$description[] = $note->name;
+			}
 		}
 		$this->description = implode(', ', $description);
 
