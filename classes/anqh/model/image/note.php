@@ -38,6 +38,44 @@ class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interf
 
 
 	/**
+	 * Add new note.
+	 *
+	 * @param   integer  $author_id
+	 * @param   integer  $image_id
+	 * @param   array    $position    x, y, width, height
+	 * @param   mixed    $user        Model_User or username
+	 * @return  Model_Image_Note
+	 */
+	public function add($author_id, $image_id, array $position = null, $user = null) {
+		$this->author_id = $author_id;
+		$this->image_id  = $image_id;
+
+		// Note position
+		if ($position) {
+			$this->x      = $position['x'];
+			$this->y      = $position['y'];
+			$this->width  = $position['width'];
+			$this->height = $position['height'];
+		}
+
+		// Note target
+		if ($user instanceof Model_User) {
+			$this->user_id = $user->id;
+			$this->name    = $user->username;
+		} else if (is_string($user)) {
+			$this->name    = $user;
+		}
+
+		$this->created   = time();
+		$this->new_note  = true;
+
+		$this->save();
+
+		return $this;
+	}
+
+
+	/**
 	 * Get notes with new comments
 	 *
 	 * @param   Model_User  $user

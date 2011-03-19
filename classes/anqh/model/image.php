@@ -77,6 +77,20 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public $thumbnails = array('thumbnail', 'icon');
 
+	/**
+	 * Add new note.
+	 *
+	 * @param   integer  $author_id
+	 * @param   array    $position    x, y, width, height
+	 * @param   mixed    $user        Model_User or username
+	 * @return  Model_Image_Note
+	 */
+	public function add_note($author_id, array $position = null, $user = null) {
+		Model_Image_Note::factory()->add($author_id, $this->id, $position, $user);
+
+		$this->update_description()->save();
+	}
+
 
 	/**
 	 * Get image comments
