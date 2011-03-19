@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Blog_Entry extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to post comments
@@ -19,6 +19,27 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 	 */
 	const PERMISSION_COMMENTS = 'comments';
 
+	protected $_table_name = 'blog_entries';
+
+	protected $_data = array(
+		'id'                => null,
+		'name'              => null,
+		'content'           => null,
+		'created'           => null,
+		'modified'          => null,
+		'modify_count'      => null,
+		'comment_count'     => null,
+		'new_comment_count' => null,
+		'view_count'        => null,
+		'author_id'         => null,
+	);
+
+	protected $_rules = array(
+		'name'    => array('not_empty', 'max_length' => array(':value', 200)),
+		'content' => array('not_empty', 'max_length' => array(':value', 8192)),
+	);
+
+
 	/**
 	 * @var  array  User editable fields
 	 */
@@ -28,78 +49,46 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 
 
 	/**
-	 * Create new model
+	 * Get blog comments
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param   Model_User  $viewer
+	 * @return  Database_Result
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->sorting(array('id' => 'DESC'));
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'name' => new Jelly_Field_String(array(
-				'label' => __('Title'),
-				'rules' => array(
-					'not_empty'  => null,
-					'max_length' => array(200)
-				),
-			)),
-			'content' => new Jelly_Field_Text(array(
-				'label'  => __('Content'),
-				'bbcode' => true,
-				'rules'  => array(
-					'max_length' => array(8192),
-				)
-			)),
+	public function comments(Model_User $viewer = null) {
+		$query = Model_Comment::query_viewer(DB::select_array(Model_Blog_Comment::factory()->fields()), $viewer);
 
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'modified' => new Jelly_Field_Timestamp(array(
-				'auto_now_update' => true,
-			)),
-			'modify_count' => new Jelly_Field_Integer,
-			'comment_count' => new Jelly_Field_Integer,
-			'new_comment_count' => new Jelly_Field_Integer,
-			'view_count' => new Jelly_Field_Integer,
-
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'comments' => new Jelly_Field_HasMany(array(
-				'foreign' => 'blog_comment'
-			))
-		));
+		return $this->find_related('blog_comments', $query);
 	}
 
 
 	/**
-	 * Find latest blog entries
+	 * Find latest blog entries.
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_new($limit = 10) {
-		return Jelly::query('blog_entry')
-			->limit($limit)
-			->select();
+	public function find_new($limit = 10) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('id', 'DESC'),
+			$limit
+		);
 	}
 
 
 	/**
 	 * Get new blog comments count for user.
-	 * Return array of ids and counts
 	 *
-	 * @static
-	 * @param   Model_User $user
-	 * @return  array
+	 * @param   Model_User  $user
+	 * @return  Database_Result
 	 */
-	public static function find_new_comments(Model_User $user) {
-		return Jelly::query('blog_entry')
-			->where('author_id', '=', $user->id)
-			->and_where('new_comment_count', '>', 0)
-			->select();
+	public function find_new_comments(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('author_id', '=', $user->id)
+				->and_where('new_comment_count', '>', 0),
+			null
+		);
 	}
 
 
@@ -123,7 +112,7 @@ class Anqh_Model_Blog_Entry extends Jelly_Model implements Permission_Interface 
 
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-				return $user && ($this->author->id == $user->id || $user->has_role('admin'));
+				return $user && ($this->author_id == $user->id || $user->has_role('admin'));
 
 		}
 

@@ -25,9 +25,9 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$action     = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Model_Blog_Comment::find($comment_id);
+		$comment = Model_Blog_Comment::factory($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
-			$entry = $comment->blog_entry;
+			$entry = $comment->blog_entry();
 			switch ($action) {
 
 				// Delete comment
@@ -74,7 +74,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		$entry_id = (int)$this->request->param('id');
 
 		// Load blog entry
-		$entry = Model_Blog_Entry::find($entry_id);
+		$entry = Model_Blog_Entry::factory($entry_id);
 		if (!$entry->loaded()) {
 			throw new Model_Exception($entry, $entry_id);
 		}
@@ -83,7 +83,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		// Set title
 		$this->page_title    = HTML::chars($entry->name);
 		$this->page_subtitle = __('By :user :ago', array(
-			':user'  => HTML::user($entry->author),
+			':user'  => HTML::user($entry->author()),
 			':ago'   => HTML::time(Date::fuzzy_span($entry->created), $entry->created)
 		));
 
@@ -105,14 +105,10 @@ class Anqh_Controller_Blog extends Controller_Template {
 			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, self::$user)) {
 
 				// Handle comment
-				$comment = Model_Blog_Comment::factory()->set(array(
-					'blog_entry' => $entry,
-					'user'       => $entry->author,
-					'author'     => self::$user,
-				));
-				$comment->set(Arr::intersect($_POST, Model_Blog_Comment::$editable_fields));
 				try {
-					$comment->save();
+					$comment = Model_Blog_Comment::factory()->
+						add(self::$user->id, $entry, Arr::get($_POST, 'comment') ,Arr::get($_POST, 'private'));
+
 					$entry->comment_count++;
 					$entry->new_comment_count++;
 					$entry->save();
@@ -125,7 +121,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 					if (!$this->ajax) {
 						$this->request->redirect(Route::model($entry));
 					}
-				} catch (Validate_Exception $e) {
+				} catch (Validation_Exception $e) {
 					$errors = $e->array->errors('validation');
 					$values = $comment;
 				}
@@ -134,9 +130,9 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 			$view = View_Module::factory('generic/comments', array(
 				'mod_title'  => __('Comments'),
-				'delete'     => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
-				'private'    => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
-				'comments'   => $entry->get('comments')->viewer(self::$user)->execute(),
+				'delete'     => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?' . Security::csrf_query(),
+				'private'    => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?' . Security::csrf_query(),
+				'comments'   => $entry->comments(self::$user),
 				'errors'     => $errors,
 				'values'     => $values,
 				'pagination' => null,
@@ -151,7 +147,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		}
 
 		// Update counts
-		if (self::$user && self::$user->id == $entry->author->id) {
+		if (self::$user && self::$user->id == $entry->author_id) {
 
 			// Clear new comment counts for owner
 			if ($entry->new_comment_count) {
@@ -180,7 +176,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('blog/entries', array(
 			'mod_class' => 'blog_entries',
-			'entries'   => Model_Blog_Entry::find_new(20),
+			'entries'   => Model_Blog_Entry::factory()->find_new(20),
 		)));
 	}
 
@@ -196,7 +192,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		if ($entry_id) {
 
 			// Editing old
-			$entry = Model_Blog_Entry::find($entry_id);
+			$entry = Model_Blog_Entry::factory($entry_id);
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
@@ -219,7 +215,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
-			$entry->set(Arr::intersect($_POST, Model_Blog_Entry::$editable_fields));
+			$entry->set_fields(Arr::intersect($_POST, Model_Blog_Entry::$editable_fields));
 			try {
 				$entry->save();
 
@@ -229,7 +225,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 				}
 
 				$this->request->redirect(Route::model($entry));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			}
 		}

@@ -36,7 +36,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_COMMENT:
-				$entry = Model_Blog_Entry::find($item->data['entry_id']);
+				$entry = Model_Blog_Entry::factory($item->data['entry_id']);
 				if ($entry->loaded()) {
 					$text = __('commented to blog<br />:blog', array(
 						':blog' => HTML::anchor(
@@ -49,7 +49,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 				break;
 
 			case self::TYPE_ENTRY:
-				$entry = Model_Blog_Entry::find($item->data['entry_id']);
+				$entry = Model_Blog_Entry::factory($item->data['entry_id']);
 				if ($entry->loaded()) {
 					$text = __('wrote a new blog entry<br />:blog', array(
 						':blog' => HTML::anchor(
