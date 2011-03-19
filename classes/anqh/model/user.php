@@ -103,7 +103,6 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		'roles',
 		'tokens',
 		'images',
-		'friends',
 		'comments',
 	);
 
@@ -283,9 +282,6 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				'column'  => 'default_image_id',
 			)),
 			'images'  => new Jelly_Field_ManyToMany,
-			'friends' => new Jelly_Field_HasMany(array(
-				'foreign' => 'friend'
-			)),
 			'comments' => new Jelly_Field_HasMany(array(
 				'foreign' => 'user_comment'
 			)),
@@ -484,7 +480,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	public function find_new_comments() {
 		$new = array();
-
+/*
 		// Profile comments
 		if ($this->new_comment_count) {
 			$new['new-comments'] = HTML::anchor(URL::user($this), $this->new_comment_count, array('title' => __('New comments')));
@@ -526,7 +522,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 		// Images waiting for approval
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, $this)) {
-			$gallery_approvals = Model_Gallery::find_pending(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, $this) ? null : $this);
+			$gallery_approvals = Model_Gallery::factory()->find_pending(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, $this) ? null : $this);
 			if (count($gallery_approvals)) {
 				$new_approvals = count($gallery_approvals);
 				$new['new-gallery-approvals'] = HTML::anchor(
@@ -538,13 +534,13 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		}
 
 		// Flyer comments
-		$flyer_comments = Model_Flyer::find_new_comments($this);
+		$flyer_comments = Model_Flyer::factory()->find_new_comments($this);
 		$flyers = array();
 		if (count($flyer_comments)) {
 			$new_comments = 0;
 			foreach ($flyer_comments as $flyer) {
-				$flyers[$flyer->image->id] = true;
-				$new_comments += $flyer->image->new_comment_count;
+				$flyers[$flyer->image_id] = true;
+				$new_comments += $flyer->image()->new_comment_count;
 			}
 			$new['new-flyer-comments'] = HTML::anchor(
 				Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')),
@@ -555,8 +551,8 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		unset($flyer_comments);
 
 		// Image comments
-		$image_comments = Model_Image::find_new_comments($this);
-		$note_comments  = Model_Image_Note::find_new_comments($this);
+		$image_comments = Model_Image::factory()->find_new_comments($this);
+		$note_comments  = Model_Image_Note::factory()->find_new_comments($this);
 		if (count($image_comments) || count($note_comments)) {
 			$new_comments = 0;
 			$new_image = null;
@@ -565,46 +561,46 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				// @TODO: Until flyer comments are fixed..
 				if (!isset($flyers[$image->id])) {
 					$new_comments += $image->new_comment_count;
-				  $new_image = $image;
+				  $new_image_id = $image->id;
 				}
 
 			}
 			foreach ($note_comments as $note) {
 				$new_comments += $note->new_comment_count;
-			  $new_image = $note->image;
+			  $new_image_id = $note->image_id;
 			}
 
 			if ($new_comments) {
 				$new['new-image-comments'] = HTML::anchor(
-					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_image->id)), 'id' => $new_image->id, 'action' => '')),
+					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_image_id)), 'id' => $new_image_id, 'action' => '')),
 					$new_comments,
 					array('title' => __('New image comments')
 				));
 			}
 		}
 		unset($image_comments, $note_comments, $new_image);
-
+*/
 		// Image tags
-		$notes  = Model_Image_Note::find_new_notes($this);
+		$notes  = Model_Image_Note::factory()->find_new_notes($this);
 		if (count($notes)) {
 			$new_notes = 0;
-			$new_note = null;
+			$new_note_image_id = null;
+
+			/** @var  Model_Image_Note  $note */
 			foreach ($notes as $note) {
 				$new_notes++;
-			  $new_note_image = $note->image;
+			  $new_note_image_id = $note->image_id;
 			}
 
 			if ($new_notes) {
 				$new['new-image-notes'] = HTML::anchor(
-					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_note_image->id)), 'id' => $new_note_image->id, 'action' => '')),
+					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_note_image_id)), 'id' => $new_note_image_id, 'action' => '')),
 					$new_notes,
 					array('title' => __('New image tags')
 				));
 			}
 		}
-		unset($note_comments, $new_note_image);
-
-		// Private messages
+		unset($note_comments, $new_note_image_id);
 
 		return $new;
 	}
@@ -704,23 +700,11 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Create friendship
 	 *
-	 * @param  Model_User  $friend
+	 * @param  Model_User  $user
 	 */
-	public function add_friend(Model_User $friend) {
-
-		// Don't add duplicate friends or oneself
-		if ($this->loaded()
-			&& $this->id != $friend->id
-			&& !$this->is_friend($friend)
-			&& (bool)Model_Friend::factory()->set(array(
-				'user'   => $this,
-				'friend' => $friend
-			))->save()) {
-
-			// Clear cache
-			Anqh::cache_delete('friends_' . $this->id);
-
-			return true;
+	public function add_friend(Model_User $user) {
+		if ($this->loaded() && $this->id != $user->id && !$this->is_friend($user)) {
+			return Model_Friend::add($this->id, $user->id);
 		}
 
 		return false;
@@ -733,19 +717,8 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $ignore
 	 */
 	public function add_ignore(Model_User $ignore) {
-		if ($this->loaded()
-			&& $this->id != $ignore->id
-			&& !$this->is_ignored($ignore)
-			&& (bool)Model_Ignore::factory()->set(array(
-				'user'   => $this,
-				'ignore' => $ignore
-			))->save()) {
-
-			// Clear caches
-			Anqh::cache_delete('ignores_' . $this->id);
-			Anqh::cache_delete('ignorers_' . $ignore->id);
-
-			return true;
+		if ($this->loaded() && $this->id != $ignore->id	&& !$this->is_ignored($ignore)) {
+			return Model_Ignore::add($this->id, $ignore->id);
 		}
 
 		return false;
@@ -758,21 +731,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $friend
 	 */
 	public function delete_friend(Model_User $friend) {
-		if ($this->loaded()
-			&& $this->is_friend($friend)
-			&& (bool)Jelly::query('friend')
-				->where('user_id', '=', $this->id)
-				->where('friend_id', '=', $friend->id)
-				->select()
-				->delete()) {
-
-			// Clear cache
-			Anqh::cache_delete('friends_' . $this->id);
-
-		  return true;
-		}
-
-	  return false;
+		return $this->loaded() && Model_Friend::unfriend($this->id, $friend->id);
 	}
 
 
@@ -782,22 +741,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $ignore
 	 */
 	public function delete_ignore(Model_User $ignore) {
-		if ($this->loaded()
-			&& $this->is_ignored($ignore)
-			&& (bool)Jelly::query('ignore')
-				->where('user_id', '=', $this->id)
-				->where('ignore_id', '=', $ignore->id)
-				->select()
-				->delete()) {
-
-			// Clear caches
-			Anqh::cache_delete('ignores_' . $this->id);
-			Anqh::cache_delete('ignorers_' . $ignore->id);
-
-		  return true;
-		}
-
-	  return false;
+		return $this->loaded() && Model_Ignore::unignore($this->id, $ignore->id);
 	}
 
 
@@ -807,22 +751,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_friends() {
-		$ckey = 'friends_';
-
-		// Try static cache
-		$friends = Anqh::cache_get($ckey . $this->id);
-		if (is_null($friends)) {
-
-			// Load from DB
-			$friends = array();
-			foreach (Jelly::query('friend')->where('user_id', '=', $this->id)->select() as $friend) {
-				$friends[] = $friend->friend->id;
-			}
-
-			Anqh::cache_set($ckey . $this->id, $friends, Date::HOUR);
-		}
-
-		return $friends;
+		return Model_Friend::find_by_user($this->id);
 	}
 
 
@@ -833,22 +762,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_ignores($ignorers = false) {
-		$ckey = $ignorers ? 'ignorers_' : 'ignores_';
-
-		// Try static cache
-		$ignores = Anqh::cache_get($ckey . $this->id);
-		if (is_null($ignores)) {
-
-			// Load from DB
-			$ignores = array();
-			foreach (Jelly::query('ignore')->where($ignorers ? 'ignore_id' : 'user_id', '=', $this->id)->select() as $ignore) {
-				$ignores[] = $ignorers ? $ignore->user->id : $ignore->ignore->id;
-			}
-
-			Anqh::cache_set($ckey . $this->id, $ignores, Date::HOUR);
-		}
-
-		return $ignores;
+		return $ignorers ? Model_Ignore::find_by_ignorer($this->id) : Model_Ignore::find_by_user($this->id);
 	}
 
 
@@ -858,9 +772,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  integer
 	 */
 	public function get_friend_count() {
-		return (int)Jelly::query('friend')
-			->where('user_id', '=', $this->id)
-			->count();
+		return count($this->find_friends());
 	}
 
 
@@ -872,7 +784,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	public function get_image_url($size = null) {
 		if ($this->default_image) {
-			$image = Model_Image::find($this->default_image)->get_url($size);
+			$image = Model_Image::factory($this->default_image)->get_url($size);
 		} else if (Valid::url($this->picture)) {
 			$image = $this->picture;
 		} else {
@@ -922,7 +834,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		$is_friend = in_array($friend, $this->find_friends());
+		$is_friend = in_array($friend, (array)$this->find_friends());
 
 		if (isset($benchmark)) {
 			Profiler::stop($benchmark);
@@ -953,7 +865,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		$is_ignored = in_array($ignore, $this->find_ignores($ignored_by));
+		$is_ignored = in_array($ignore, (array)$this->find_ignores($ignored_by));
 
 		if (isset($benchmark)) {
 			Profiler::stop($benchmark);
