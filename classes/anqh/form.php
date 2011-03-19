@@ -265,7 +265,7 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function open($action = null, array $attributes = null) {
-		return parent::open($action ? $action : Request::current(), $attributes);
+		return parent::open($action ? $action : Request::current()->current_uri(), $attributes);
 	}
 
 
