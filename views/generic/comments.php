@@ -7,9 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-?>
-
-<?php echo Form::open() ?>
+echo Form::open() ?>
 <fieldset class="horizontal">
 	<ul>
 		<?php if (isset($private) && $private): ?>
@@ -22,10 +20,11 @@
 	</ul>
 	<?php echo Form::csrf() ?>
 </fieldset>
-<?php echo Form::close() ?>
+<?php
+echo Form::close();
 
-<?php foreach ($comments as $comment):
-	$author = Model_User::find_user_light($comment->original('author'));
+foreach ($comments as $comment):
+	$author = $comment->author();
 
 	// Ignore
 	if ($user && $user->is_ignored($author)) continue;
@@ -45,7 +44,7 @@
 	}
 
 	// Topic author's post
-	if ($author['id'] == $comment->original('user')) {
+	if ($author['id'] == $comment->user_id) {
 		$classes[] = 'owner';
 	}
  ?>
