@@ -73,7 +73,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_has_many = array(
-		'tags', 'flyers', 'images', 'favorites'
+		'tags', 'images', 'favorites'
 	);
 
 
@@ -81,8 +81,24 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name', 'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags'
+		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
+		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags',
 	);
+
+
+	/**
+	 * Override __set() to handle datetime.
+	 *
+	 * @param   string  $key
+	 * @param   mixed   $value
+	 */
+	public function __set($key, $value) {
+		if (($key == 'stamp_begin' || $key == 'stamp_end') && !is_numeric($value)) {
+			$value = strtotime(is_array($value) ? $value['date'] . ' ' . $value['time'] : $value);
+		}
+
+		parent::__set($key, $value);
+	}
 
 
 	/**
@@ -115,14 +131,20 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 * Add flyer to event
 	 *
 	 * @param   Model_Image  $image
-	 * @return  bool
+	 * @return  boolean
 	 */
 	public function add_flyer(Model_Image $image) {
-		return $this->loaded() && Model_Flyer::factory()
-			->set(array(
-				'image' => $image,
-				'event' => $this
-			))->save();
+		if ($this->loaded()) {
+			$flyer = new Model_Flyer();
+			$flyer->image_id    = $image->id;
+			$flyer->event_id    = $this->id;
+			$flyer->name        = $this->name;
+			$flyer->stamp_begin = $this->stamp_begin;
+
+			return $flyer->save();
+		}
+
+		return false;
 	}
 
 
@@ -132,7 +154,17 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  Model_Geo_City
 	 */
 	public function city() {
-		return $this->city_id ? Model_Geo_City::find($this->city_id) : null;
+		return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
+	}
+
+
+	/**
+	 * Get event country.
+	 *
+	 * @return  Model_Geo_Country
+	 */
+	public function country() {
+		return $this->geo_country_id ? new Model_Geo_Country($this->geo_country_id) : null;
 	}
 
 
@@ -307,6 +339,16 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Get event flyers.
+	 *
+	 * @return  Database_Result
+	 */
+	public function flyers() {
+		return Model_Flyer::factory()->find_by_event($this->id);
+	}
+
+
+	/**
 	 * Get forum topic like string
 	 * [name] [date] @ [city]
 	 *
@@ -439,7 +481,11 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  Model_Venue
 	 */
 	public function venue() {
-		return $this->venue_id ? Model_Venue::factory($this->venue_id) : null;
+		try {
+			return $this->venue_id ? Model_Venue::factory($this->venue_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 }

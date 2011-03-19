@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to post comments
@@ -24,91 +24,105 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	 */
 	const PERMISSION_IMPORT = 'import';
 
+	protected $_table_name = 'flyers';
+
+	protected $_data = array(
+		'id'          => null,
+		'image_id'    => null,
+		'event_id'    => null,
+		'name'        => null,
+		'stamp_begin' => null,
+	);
+
+	protected $_rules = array(
+		'image_id'    => array('not_empty'),
+		'stamp_begin' => array('not_empty', 'digit'),
+	);
+
 
 	/**
-	 * Create new model
+	 * Override __set() to handle datetime.
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param   string  $key
+	 * @param   mixed   $value
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'image' => new Jelly_Field_BelongsTo,
-			'event' => new Jelly_Field_BelongsTo(array(
-				'allow_null'  => true,
-				'empty_value' => null,
-			)),
-			'name' => new Jelly_Field_String(array(
-				'label' => __('Name'),
-			)),
-			'stamp_begin' => new Jelly_Field_DateTime(array(
-				'label'      => __('From'),
-				'label_date' => __('Date'),
-				'label_time' => __('At'),
-				'rules'      => array(
-					'not_empty' => null,
-				),
-			)),
-		));
+	public function __set($key, $value) {
+		if ($key == 'stamp_begin' && !is_numeric($value)) {
+			$value = strtotime(is_array($value) ? $value['date'] . ' ' . $value['time'] : $value);
+		}
+
+		parent::__set($key, $value);
 	}
 
 
 	/**
-	 * Find flyer by flyer id
+	 * Get flyer event.
 	 *
-	 * @static
-	 * @param   integer  $flyer_id
-	 * @return  Model_Flyer
+	 * @return  Model_Event
 	 */
-	public static function find($flyer_id) {
-		return Jelly::query('flyer')
-			->with('event')
-			->with('image')
-			->where('id', '=', $flyer_id)
-			->limit(1)
-			->select();
+	public function event() {
+		try {
+			return $this->event_id ? new Model_Event($this->event_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 
 	/**
-	 * Find flyer by image id
+	 * Find flyers by event id.
+	 *
+	 * @param   integer  $event_id
+	 * @return  Database_Result
+	 */
+	public function find_by_event($event_id) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('event_id', '=', (int)$event_id),
+			null
+		);
+	}
+
+
+	/**
+	 * Find flyer by image id.
 	 *
 	 * @param   integer  $image_id
 	 * @return  Model_Flyer
 	 */
-	public static function find_by_image($image_id) {
-		return Jelly::query('flyer')
-			->where('image_id', '=', (int)$image_id)
-			->limit(1)
-			->select();
+	public function find_by_image($image_id) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('image_id', '=', (int)$image_id)
+		);
 	}
 
 
 	/**
 	 * Find flyers by year and month
 	 *
-	 * @static
 	 * @param   integer  $year
 	 * @param   integer  $month
-	 * @return  Jelly_Collection
+	 * @return  Dabase_Result
 	 */
-	public static function find_by_month($year, $month) {
+	public function find_by_month($year, $month) {
 		if ($year == 1970 && $month == 0) {
-			return Jelly::query('flyer')
-				->with('image')
-				->where('stamp_begin', 'IS', null)
-				->order_by('id', 'DESC')
-				->select();
+			return $this->load(
+				DB::select_array($this->fields())
+					->where('stamp_begin', 'IS', null)
+					->order_by('id', 'DESC'),
+				null
+			);
 		} else {
 			$start = mktime(0, 0, 0, $month, 1, $year);
 			$end   = strtotime('+1 month', $start);
-			return Jelly::query('flyer')
-				->with('image')
-				->with('event')
-				->where('stamp_begin', 'BETWEEN', array($start, $end))
-				->order_by('stamp_begin', 'DESC')
-				->order_by('event_id', 'DESC')
-				->select();
+			return $this->load(
+				DB::select_array($this->fields())
+					->where('stamp_begin', 'BETWEEN', array($start, $end))
+					->order_by('stamp_begin', 'DESC')
+					->order_by('event_id', 'DESC'),
+				null
+			);
 		}
 	}
 
@@ -116,17 +130,15 @@ class Anqh_Model_Flyer extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Find latest flyers
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_latest($limit = 4) {
-		return Jelly::query('flyer')
-			->with('event')
-			->with('image')
-			->limit((int)$limit)
-			->order_by('image_id', 'DESC')
-			->select();
+	public function find_latest($limit = 4) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('image_id', 'DESC'),
+			$limit
+		);
 	}
 
 
@@ -173,36 +185,36 @@ GROUP BY 1
 	/**
 	 * Get flyers with new comments
 	 *
-	 * @static
-	 * @param   Model_User $user
-	 * @return  Jelly_Collection
+	 * @param   Model_User  $user
+	 * @return  Database_Result
 	 */
-	public static function find_new_comments(Model_User $user) {
-		return Jelly::query('flyer')
-			->join('image', 'INNER')
-			->on('images.image:primary_key', '=', 'image:foreign_key')
-			->where('author_id', '=', $user->id)
-			->and_where('new_comment_count', '>', 0)
-			->select();
+	public function find_new_comments(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->join('images', 'INNER')
+				->on('images.id', '=', 'flyers.image_id')
+				->where('author_id', '=', $user->id)
+				->and_where('new_comment_count', '>', 0),
+			null
+		);
 	}
 
 
 	/**
 	 * Get a random flyer
 	 *
-	 * @static
 	 * @param   boolean  $unknown  Limit to unknown fliers (not linked to an event)
 	 * @return  Model_Flyer
 	 */
-	public static function find_random($unknown = false) {
-		$flyer = Jelly::query('flyer');
+	public function find_random($unknown = false) {
+		$query = DB::select_array($this->fields())
+			->order_by(DB::expr('RANDOM()'));
 
-		$unknown and $flyer->where('event_id', 'IS', null);
+		if ($unknown) {
+			$query = $query->where('event_id', 'IS', null);
+		}
 
-		return $flyer
-			->order_by(DB::expr('RANDOM()'))
-			->limit(1)
-			->select();
+		return $this->load($query);
 	}
 
 
@@ -240,6 +252,20 @@ GROUP BY 1
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get flyer image.
+	 *
+	 * @return  Model_Image
+	 */
+	public function image() {
+		try {
+			return $this->image_id ? Model_Image::factory($this->image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 }

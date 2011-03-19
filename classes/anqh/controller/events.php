@@ -172,12 +172,15 @@ class Anqh_Controller_Events extends Controller_Template {
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
 
 		// Event flyers
-		if (count($event->flyers) > 1) {
+		if (count($flyers = $event->flyers()) > 1) {
 			$images = array();
-			foreach ($event->flyers as $image) $images[] = $image;
+			foreach ($flyers as $image) {
+				$images[] = $image;
+			}
+
 			$classes = array();
-			$event->flyer_front and $classes[$event->flyer_front->id] = 'front default active ';
-			$event->flyer_back and $classes[$event->flyer_back->id] = 'back ';
+			$event->flyer_front_image_id and $classes[$event->flyer_front_image_id] = 'front default active ';
+			$event->flyer_back_image_id and $classes[$event->flyer_back_image_id] = 'back ';
 			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
 				'images'  => array_reverse($images),
 				'classes' => $classes,
@@ -727,7 +730,8 @@ class Anqh_Controller_Events extends Controller_Template {
 					// @todo: Refetch data using id?
 					$venue = Model_Venue::factory()->find_by_foursquare($foursquare_id);
 					if (!$venue->loaded()) {
-						$venue = Model_Venue::factory()->set(array(
+						$venue = Model_Venue::factory();
+						$venue->set_fields(array(
 							'foursquare_id'          => $foursquare_id,
 							'foursquare_category_id' => Arr::get_once($_POST, 'foursquare_category_id')
 						));
@@ -762,17 +766,17 @@ class Anqh_Controller_Events extends Controller_Template {
 						$venue->latitude   = Arr::get($_POST, 'latitude');
 						$venue->longitude  = Arr::get($_POST, 'longitude');
 						$venue->event_host = true;
-						$venue->author     = self::$user;
+						$venue->author_id  = self::$user->id;
 						if (isset($city) && $city->loaded()) {
-							$venue->city = $city;
-							$venue->city_name = $city->name;
-							$venue->country = $city->country;
+							$venue->geo_city_id    = $city->id;
+							$venue->city_name      = $city->name;
+							$venue->geo_country_id = $city->geo_country_id;
 						} else {
 							$venue->city_name = Arr::get($_POST, 'city_name');
 						}
 						try {
 							$venue->save();
-						} catch (Validate_Exception $venue_validation) {}
+						} catch (Validation_Exception $venue_validation) {}
 					}
 				}
 
@@ -782,13 +786,13 @@ class Anqh_Controller_Events extends Controller_Template {
 			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time'])) {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
-			$event->set($post);
+			$event->set_fields($post);
 
 			if ($venue_hidden) {
 
 				// Hidden events don't have a venue
-				$event->venue = null;
-				$event->venue_name = null;
+				$event->venue_id     = null;
+				$event->venue_name   = null;
 				$event->venue_hidden = true;
 
 			} else {
@@ -796,14 +800,14 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				// Set venue to event if venue is saved
 				if (isset($venue)) {
-					$event->venue = $venue;
+					$event->venue_id = $venue->id;
 				}
 
 			}
 			if (isset($city)) {
-				$event->city = $city;
-				$event->city_name = $city->name;
-				$event->country = $city->country;
+				$event->geo_city_id    = $city->id;
+				$event->city_name      = $city->name;
+				$event->geo_country_id = $city->geo_country_id;
 			}
 
 			// Old version
@@ -817,15 +821,15 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			// Validate event
 			try {
-				$event->validate();
-			} catch (Validate_Exception $event_validation) {}
+				$event->is_valid();
+			} catch (Validation_Exception $event_validation) {}
 
 			// If no errors found, save
 			if (!isset($venue_validation) && !isset($event_validation)) {
 
 				// Make sure end time is after start time, i.e. the next day
 				if ($event->stamp_end < $event->stamp_begin) {
-					$event->stamp_end += 60 * 60 * 24;
+					$event->stamp_end += Date::DAY;
 				}
 
 				$event->save();
@@ -838,7 +842,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Tags
 		$tags = array();
-		$tag_group = Model_Tag_Group::factory()->find_by_name('Music');
+		$tag_group = new Model_Tag_Group('Music');
 		if ($tag_group->loaded() && count($tag_group->tags)) {
 			foreach ($tag_group->tags as $tag) {
 				$tags[$tag->id()] = $tag->name();
@@ -865,19 +869,19 @@ class Anqh_Controller_Events extends Controller_Template {
 		 */
 
 		Widget::add('wide', View_Module::factory('events/edit', array(
-			'event'  => $event,
+			'event'        => $event,
 			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
-			'tags'   => $tags,
+			'tags'         => $tags,
 
-			'flyer_front' => $event->flyer_front ? $event->flyer_front : null,
-			'flyer_back'  => $event->flyer_back ? $event->flyer_back : null,
+			'flyer_front'  => $event->flyer_front ? $event->flyer_front : null,
+			'flyer_back'   => $event->flyer_back ? $event->flyer_back : null,
 
-			'venue'  => isset($venue) ? $venue : $event->venue,
+			'venue'        => isset($venue) ? $venue : $event->venue,
 			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
-			'venues' => Model_Venue::factory()->find_all(),
+			'venues'       => Model_Venue::factory()->find_all(),
+			'city'         => $event->city() ? $event->city() : (isset($venue) && $venue->city() ? $venue->city() : null),
 
-			'city'   => $event->city ? $event->city : (isset($venue) && $venue->city ? $venue->city : null),
-			'cancel' => $cancel,
+			'cancel'       => $cancel,
 		)));
 	}
 
@@ -938,17 +942,17 @@ class Anqh_Controller_Events extends Controller_Template {
 	protected function _get_mod_image(Model_Event $event) {
 
 		// Display front flyer by default
-		if ($event->flyer_front->id) {
-			$image = $event->flyer_front;
-			$flyer = Model_Flyer::find_by_image($image->id);
+		if ($event->flyer_front_image_id) {
+			$image = new Model_Image($event->flyer_front_image_id);
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			$link  = Route::model($flyer);
-		} else if ($event->flyer_back->id) {
-			$image = $event->flyer_back;
-			$flyer = Model_Flyer::find_by_image($image->id);
+		} else if ($event->flyer_back_image_id) {
+			$image = new Model_Image($event->flyer_back_image_id);
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			$link  = Route::model($flyer);
-		} else if (count($event->flyers)) {
-			$image = $event->flyers[0];
-			$flyer = Model_Flyer::find_by_image($image->id);
+		} else if (count($flyers = $event->flyers())) {
+			$image = $flyers[0];
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			$link  = Route::model($flyer);
 		} else {
 			$image = null;

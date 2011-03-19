@@ -8,19 +8,19 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-if ($venue = $event->venue()):
+if ($_venue = $event->venue()):
 
 	// Venue found from db
-	$venue = HTML::anchor(Route::model($venue), HTML::chars($venue->name));
-	$address = HTML::chars($venue->address) . ', ' . HTML::chars($venue->city_name);
-	$info = HTML::anchor(Route::model($venue), __('Venue info'));
+	$venue   = HTML::anchor(Route::model($_venue), HTML::chars($_venue->name));
+	$address = HTML::chars($_venue->address) . ', ' . HTML::chars($_venue->city_name);
+	$info    = HTML::anchor(Route::model($_venue), __('Venue info'));
 
-	if ($venue->latitude):
+	if ($_venue->latitude):
 		$map = array(
-			'marker'     => HTML::chars($venue->name),
-			'infowindow' => HTML::chars($venue->address) . '<br />' . HTML::chars($venue->city_name),
-			'lat'        => $venue->latitude,
-			'long'       => $venue->longitude
+			'marker'     => HTML::chars($_venue->name),
+			'infowindow' => HTML::chars($_venue->address) . '<br />' . HTML::chars($_venue->city_name),
+			'lat'        => $_venue->latitude,
+			'long'       => $_venue->longitude
 		);
 		Widget::add('foot', HTML::script_source('
 head.ready("anqh", function() {
@@ -37,16 +37,16 @@ head.ready("anqh", function() {
 elseif ($event->venue_name):
 
 	// No venue in db
-	$venue = HTML::chars($event->venue_name);
+	$venue   = HTML::chars($event->venue_name);
 	$address = HTML::chars($event->city_name);
-	$info = $event->venue_url ? HTML::anchor($event->venue_url, HTML::chars($event->venue_url)) : '';
+	$info    = $event->venue_url ? HTML::anchor($event->venue_url, HTML::chars($event->venue_url)) : '';
 
 else:
 
 	// Venue not set
-	$venue = $event->venue_hidden ? __('Underground') : __('(Unknown)');
+	$venue   = $event->venue_hidden ? __('Underground') : __('(Unknown)');
 	$address = HTML::chars($event->city_name);
-	$info = '';
+	$info    = '';
 
 endif;
 ?>

@@ -41,7 +41,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 		$event_id = Arr::get($_REQUEST, 'id');
 
 		// Load event
-		$event = Model_Event::find($event_id);
+		$event = new Model_Event($event_id);
 		if ($event->loaded()) {
 			$this->data['events'] = array($this->_prepare_event($event));
 		} else {
@@ -86,7 +86,8 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$filter = !empty($filter) && ($filter == 'upcoming' || $filter == 'past' || strpos($filter, 'date:') !== false) ? $filter : null;
 
 			// Build query
-			$events = Jelly::query('event')->limit($limit);
+			$event  = new Model_Event();
+			$events = DB::select_array($event->fields());
 			foreach ($orders as $column => $direction) {
 				$events->order_by($column, $direction);
 			}
@@ -125,7 +126,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$events->where_close();
 
 			// Build data
-			foreach ($events->select() as $event) {
+			foreach ($event->load($events, $limit) as $event) {
 				$this->data['events'][] = $this->_prepare_event($event, $fields);
 			}
 
@@ -166,20 +167,22 @@ class Anqh_Controller_Events_API extends Controller_API {
 
 				// Custom value
 				case 'venue':
-					$data[$field] = $event->venue->id ? $event->venue->name : $event->venue_name;
+					$data[$field] = ($venue = $event->venue()) ? $venue->name : $event->venue_name;
 			    break;
 
 				case 'city':
-					$data[$field] = $event->city->id ? $event->city->name : $event->city_name;
+					$data[$field] = ($city = $event->city()) ? $city->name : $event->city_name;
 			    break;
 
 				case 'country':
-					$data[$field] = $event->country->id ? $event->country->name : '';
+					$data[$field] = ($country = $event->country()) ? $country->name : '';
 			    break;
 
 				case 'flyer_front':
 				case 'flyer_back':
-			    $data[$field] = $event->$field->id ? $event->$field->get_url() : '';
+					$column = $field . '_image_id';
+					$image  = new Model_Image($event->$column);
+			    $data[$field] = $image->loaded() ? $image->get_url() : '';
 			    break;
 
 				case 'url':
