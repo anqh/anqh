@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
@@ -50,8 +50,8 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_COMMENT:
-				$gallery = Model_Gallery::find($item->data['gallery_id']);
-				$image   = Model_Image::find($item->data['image_id']);
+				$gallery = Model_Gallery::factory($item->data['gallery_id']);
+				$image   = Model_Image::factory($item->data['image_id']);
 				if ($gallery->loaded() && $image->loaded()) {
 					$text = __('commented to an image<br />:gallery', array(
 						':gallery' => HTML::anchor(
@@ -64,7 +64,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				break;
 
 			case self::TYPE_COMMENT_FLYER:
-				$flyer = Model_Flyer::find($item->data['flyer_id']);
+				$flyer = Model_Flyer::factory($item->data['flyer_id']);
 				if ($flyer->loaded()) {
 					$text = __('commented to a flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
@@ -77,7 +77,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				break;
 
 			case self::TYPE_FLYER_EDIT:
-				$flyer = Model_Flyer::find($item->data['flyer_id']);
+				$flyer = Model_Flyer::factory($item->data['flyer_id']);
 				if ($flyer->loaded()) {
 					$text = __('updated flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
@@ -90,8 +90,8 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				break;
 
 			case self::TYPE_NOTE:
-				$gallery = Model_Gallery::find($item->data['gallery_id']);
-				$image   = Model_Image::find($item->data['image_id']);
+				$gallery = Model_Gallery::factory($item->data['gallery_id']);
+				$image   = Model_Image::factory($item->data['image_id']);
 				$user    = Model_User::find_user($item->data['user_id']);
 				if ($gallery->loaded() && $image->loaded() && $user->loaded()) {
 					$text = __('tagged :user to an image<br />:gallery', array(

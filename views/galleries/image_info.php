@@ -4,36 +4,36 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
 $info = array(
-	__('Copyright')  => $image->author->id ? HTML::user($image->author) : null,
+	__('Copyright')  => $image->author_id ? HTML::user($image->author_id) : null,
 	__('Added')      => HTML::time(Date::format('DMYYYY_HM', $image->created), $image->created),
 	__('Statistics') =>
 		HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') . '<br />' .
 		HTML::icon_value(array(':views' => $image->view_count), ':views view', ':views views', 'views')
 );
 
-if ($image->exif):
-	if ($image->exif->make || $image->exif->model):
+if ($exif = $image->exif()):
+	if ($exif->make || $exif->model):
 		$info[__('Camera')] =
-			($image->exif->make ? HTML::chars($image->exif->make) : '') .
-			($image->exif->model ? ($image->exif->make ? '<br />' : '') . HTML::chars($image->exif->model) : '');
+			($exif->make ? HTML::chars($exif->make) : '') .
+			($exif->model ? ($exif->make ? '<br />' : '') . HTML::chars($exif->model) : '');
 	endif;
-	if ($image->exif->exposure)  $info[__('Exposure')] = HTML::chars($image->exif->exposure);
-	if ($image->exif->aperture)  $info[__('Aperture')] = HTML::chars($image->exif->aperture);
-	if ($image->exif->focal)     $info[__('Focal length')] = HTML::chars($image->exif->focal);
-	if ($image->exif->iso)       $info[__('ISO speed')] = HTML::chars($image->exif->iso);
-	if ($image->exif->taken)     $info[__('Taken')] = Date::format('DMYYYY_HM', $image->exif->taken);
-	if ($image->exif->flash)     $info[__('Flash')] = HTML::chars($image->exif->flash);
-	if ($image->exif->program)   $info[__('Program')] = HTML::chars($image->exif->program);
-	if ($image->exif->metering)  $info[__('Metering')] = HTML::chars($image->exif->metering);
-	if ($image->exif->latitude)  $info[__('Latitude')] = HTML::chars($image->exif->latitude);
-	if ($image->exif->longitude) $info[__('Longitude')] = HTML::chars($image->exif->longitude);
-	if ($image->exif->altitude)  $info[__('Altitude')] = HTML::chars($image->exif->altitude) . 'm';
-	if ($image->exif->lens)      $info[__('Lens')] = HTML::chars($image->exif->lens);
+	if ($exif->exposure)  $info[__('Exposure')] = HTML::chars($exif->exposure);
+	if ($exif->aperture)  $info[__('Aperture')] = HTML::chars($exif->aperture);
+	if ($exif->focal)     $info[__('Focal length')] = HTML::chars($exif->focal);
+	if ($exif->iso)       $info[__('ISO speed')] = HTML::chars($exif->iso);
+	if ($exif->taken)     $info[__('Taken')] = Date::format('DMYYYY_HM', $exif->taken);
+	if ($exif->flash)     $info[__('Flash')] = HTML::chars($exif->flash);
+	if ($exif->program)   $info[__('Program')] = HTML::chars($exif->program);
+	if ($exif->metering)  $info[__('Metering')] = HTML::chars($exif->metering);
+	if ($exif->latitude)  $info[__('Latitude')] = HTML::chars($exif->latitude);
+	if ($exif->longitude) $info[__('Longitude')] = HTML::chars($exif->longitude);
+	if ($exif->altitude)  $info[__('Altitude')] = HTML::chars($exif->altitude) . 'm';
+	if ($exif->lens)      $info[__('Lens')] = HTML::chars($exif->lens);
 endif;
 
 if (!empty($info)): ?>

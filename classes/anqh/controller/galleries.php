@@ -47,7 +47,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$approve = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
 
 		// Load galleries we have access to
-		$galleries = Model_Gallery::find_pending($approve ? null : self::$user);
+		$galleries = Model_Gallery::factory()->find_pending($approve ? null : self::$user);
 
 		if (count($galleries)) {
 			Widget::add('wide', View_Module::factory('galleries/galleries', array(
@@ -65,7 +65,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	public function action_browse() {
 		$this->tab_id = 'browse';
 
-		$months = Model_Gallery::find_months();
+		$months = Model_Gallery::factory()->find_months();
 
 		// Default to last month
 		$year  = (int)$this->request->param('year');
@@ -93,7 +93,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		)));
 
 		// Galleries
-		$galleries = Model_Gallery::find_by_month($year, $month);
+		$galleries = Model_Gallery::factory()->find_by_month($year, $month);
 		if (count($galleries)) {
 			Widget::add('main', View_Module::factory('galleries/galleries', array(
 				'galleries' => $galleries
@@ -108,14 +108,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 */
 	public function action_comment() {
 		$this->history = false;
-		$comment_id = (int)$this->request->param('id');
-		$action     = $this->request->param('commentaction');
+		$comment_id    = (int)$this->request->param('id');
+		$action        = $this->request->param('commentaction');
 
 		// Load blog_comment
-		$comment = Model_Image_Comment::find($comment_id);
+		$comment = new Model_Image_Comment($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
-			$image = $comment->image;
-			$gallery = Model_Gallery::find_by_image($image->id);
+			$image   = $comment->image();
+			$gallery = $image->gallery();
 			switch ($action) {
 
 				// Delete comment
@@ -161,7 +161,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$comment = Model_Image_Comment::find($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$image = $comment->image;
-			$flyer = Model_Flyer::find_by_image($image->id);
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			switch ($action) {
 
 				// Delete comment
@@ -203,7 +203,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::find($gallery_id);
+		$gallery = Model_Gallery::factory()->find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -234,7 +234,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::find($gallery_id);
+		$gallery = Model_Gallery::factory()->find($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -269,13 +269,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	public function action_event() {
 		$event_id = (int)$this->request->param('id');
 
-		$event = Model_Event::find($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
 
 		// Redirect
-		$gallery = Model_Gallery::find_by_event($event->id);
+		$gallery = Model_Gallery::factory()->find_by_event($event->id);
 		if ($gallery->loaded()) {
 			$this->request->redirect(Route::model($gallery));
 		} else {
@@ -297,14 +297,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			// Random undated flyer
 			case 'undated':
-				$flyer = Model_Flyer::find_random($flyer_id == 'undated');
+				$flyer = Model_Flyer::factory()->find_random($flyer_id == 'undated');
 				$this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));
 				break;
 
 			// Known flyer
 			default:
 				/** @var  Model_Flyer  $flyer */
-				$flyer = Model_Flyer::find((int)$flyer_id);
+				$flyer = Model_Flyer::factory((int)$flyer_id);
 				if (!$flyer->loaded()) {
 					throw new Model_Exception($flyer, $flyer_id);
 				}
@@ -320,7 +320,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Handle post
 		$errors = array();
-		if ($_POST && Security::csrf_valid()) {
+		if ((isset($_POST['event_id']) || isset($_POST['name'])) && Security::csrf_valid()) {
 			Permission::required($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user);
 
 			try {
@@ -329,7 +329,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 					// Event given?
 					/** @var  Model_Event  $event */
-					$event = Model_Event::find($event_id);
+					$event = Model_Event::factory($event_id);
 					if ($event->loaded()) {
 						$flyer->set(array(
 							'event' => $event,
@@ -554,7 +554,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		)));
 
 		// Latest flyers
-		$flyers = Model_Flyer::find_by_month($year, $month);
+		$flyers = Model_Flyer::factory()->find_by_month($year, $month);
 		if (count($flyers)) {
 			Widget::add('main', View_Module::factory('galleries/flyers', array(
 				'flyers' => $flyers,
@@ -571,13 +571,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		/** @var  Model_Gallery  $gallery */
 		$gallery_id = (int)$this->request->param('id');
-		$gallery = Model_Gallery::find($gallery_id);
+		$gallery = Model_Gallery::factory($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
 		// Are we approving pending images?
-		if ($this->request->action == 'pending') {
+		if ($this->request->action() == 'pending') {
 
 			// Can we see galleries with un-approved images?
 			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
@@ -597,8 +597,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 							case 'approve':
 								if ($approve) {
+									$author = $image->author();
 									$gallery->image_count++;
-									$authors[$image->author->id] = $image->author->username;
+									$authors[$author['id']] = $author['username'];
 									$image->status = Model_Image::VISIBLE;
 									$image->save();
 								}
@@ -616,8 +617,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					if ($approve) {
 
 						// Set default image if none set
-						if (!$gallery->default_image->id) {
-							$gallery->default_image = $gallery->find_images()->current();
+						if (!$gallery->default_image_id) {
+							$gallery->default_image_id = $gallery->find_images()->current()->id;
 						}
 
 						$gallery->update_copyright();
@@ -642,17 +643,17 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 
 		// Event info
-		if ($gallery->event->loaded()) {
+		if ($event = $gallery->event()) {
 
 			// Event flyers
-			if ($gallery->event->flyer_front->id || $gallery->event->flyer_back->id || $gallery->event->flyer_front_url || $gallery->event->flyer_back_url) {
+			if ($event->flyer_front_id || $event->flyer_back_id || $event->flyer_front_url || $event->flyer_back_url) {
 				Widget::add('side', View_Module::factory('events/flyers', array(
-					'event' => $gallery->event,
+					'event' => $event,
 				)), Widget::TOP);
 			}
 
 			Widget::add('side', View_Module::factory('events/event_info', array(
-				'event' => $gallery->event,
+				'event' => $event,
 				'user'  => self::$user,
 			)), Widget::TOP);
 		}
@@ -661,11 +662,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if (Kohana::config('site.facebook')) {
 			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
 			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
-			Anqh::open_graph('description', __2(':images image', ':images images', count($gallery->images), array(':images' => count($gallery->images))) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($gallery->event->loaded() ? ' @ ' . $gallery->event->venue_name : ''));
-			if ($gallery->event->loaded() && $gallery->event->flyer_front) {
-				Anqh::open_graph('image', URL::site($gallery->event->flyer_front->get_url('thumbnail'), true));
+			Anqh::open_graph('description', __2(':images image', ':images images', count($gallery->images), array(':images' => count($gallery->images))) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
+			if ($event && $event->flyer_front_id) {
+				Anqh::open_graph('image', URL::site($event->flyer_front()->get_url('thumbnail'), true));
 			} else {
-				Anqh::open_graph('image', URL::site($gallery->default_image->get_url('thumbnail'), true));
+				Anqh::open_graph('image', URL::site($gallery->default_image()->get_url('thumbnail'), true));
 			}
 		}
 		Anqh::share(true);
@@ -676,7 +677,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Pictures
 		Widget::add('main', View_Module::factory('galleries/gallery', array(
 			'gallery' => $gallery,
-			'pending' => $this->request->action == 'pending',
+			'pending' => $this->request->action() == 'pending',
 			'approve' => isset($approve) ? $approve : null,
 			'user'    => self::$user,
 		)));
@@ -699,7 +700,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = (int)$this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::find($gallery_id);
+		$gallery = Model_Gallery::factory($gallery_id);
 		if ($gallery->loaded()) {
 			/** @var  Model_Image  $image */
 			$image = Model_Image::find($image_id);
@@ -722,13 +723,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::find($gallery_id);
+		$gallery = Model_Gallery::factory($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
 		// Are we approving pending images?
-		if ($this->request->action == 'approve') {
+		if ($this->request->action() == 'approve') {
 
 			// Can we see galleries with un-approved images?
 			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
@@ -746,6 +747,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Find current, previous and next images
 		$i = 0;
+
+		/** @var  Model_Image $next */
+		/** @var  Model_Image $previous */
+		/** @var  Model_Image $current */
 		$previous = $next = $current = null;
 		foreach ($images as $image) {
 			$i++;
@@ -760,6 +765,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				// Current found now
 				$current = $image;
+
+				// Fix state to loaded to perform update instead of insert when saving
+				$current->state(AutoModeler::STATE_LOADED);
 
 			} else {
 
@@ -792,41 +800,36 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				// Handle comment
 				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, self::$user) && $_POST) {
-					$comment = Model_Image_Comment::factory()->set(array(
-						'image'  => $current,
-						'author' => self::$user
-					));
-					if ($current->author) {
-						$comment->user = $current->author;
-					}
-					$comment->set(Arr::intersect($_POST, Model_Image_Comment::$editable_fields));
 					try {
-						$comment->save();
+						$comment = Model_Image_Comment::factory()
+							->add(self::$user->id, $current, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
+
 						$current->comment_count++;
-						if ($current->author->id != self::$user->id) {
+						if ($current->author_id != self::$user->id) {
 							$current->new_comment_count++;
 						}
 						$current->save();
 						$gallery->comment_count++;
 						$gallery->save();
 
-						// Noted users
 						if (!$comment->private) {
-							foreach ($current->notes as $note) {
+
+							// Noted users
+							foreach ($current->notes() as $note) {
+								$note->state(AutoModeler::STATE_LOADED);
 								$note->new_comment_count++;
 								$note->save();
 							}
-						}
 
-						// Newsfeed
-						if (!$comment->private) {
+							// Newsfeed
 							NewsfeedItem_Galleries::comment(self::$user, $gallery, $current);
+
 						}
 
 						if (!$this->ajax) {
 							$this->request->redirect(Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')));
 						}
-					} catch (Validate_Exception $e) {
+					} catch (Validation_Exception $e) {
 						$errors = $e->array->errors('validation');
 						$values = $comment;
 					}
@@ -834,19 +837,23 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				} else if (self::$user) {
 
 					// Clear new comment count?
-					if ($current->author->id == self::$user->id && $current->new_comment_count > 0) {
+					if ($current->author_id == self::$user->id && $current->new_comment_count > 0) {
 						$current->new_comment_count = 0;
 						$current->save();
 					}
-					foreach ($current->notes as $note) {
-						if ($note->user->id == self::$user->id) {
+					foreach ($current->notes() as $note) {
+						if ($note->user_id == self::$user->id) {
+							$note->state(AutoModeler::STATE_LOADED);
+							$save = false;
 							if ($note->new_comment_count > 0) {
 								$note->new_comment_count = 0;
+								$save = true;
 							}
 							if ($note->new_note > 0) {
 								$note->new_note = null;
+								$save = true;
 							}
-							if ($note->changed()) {
+							if ($save) {
 								$note->save();
 							}
 						}
@@ -854,12 +861,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				}
 
-				$comments = $current->comments;
 				$view = View_Module::factory('generic/comments', array(
 					'mod_title'  => __('Comments'),
 					'delete'     => Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
 					'private'    => false, //Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
-					'comments'   => $comments,
+					'comments'   => $current->comments(self::$user),
 					'errors'     => $errors,
 					'values'     => $values,
 					'pagination' => null,
@@ -867,7 +873,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				));
 
 				if ($this->ajax) {
-					echo $view;
+					$this->response->body($view);
 					return;
 				}
 				Widget::add('main', $view);
@@ -912,7 +918,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'next'      => $next,
 				'previous'  => $previous,
 				'approve'   => isset($approve) ? $approve : null,
-				'notes'     => $current->find_notes(),
+				'notes'     => $current->notes(),
 				'note'      => Permission::has($current, Model_Image::PERMISSION_NOTE, self::$user),
 				'user'      => self::$user,
 			)));
@@ -941,7 +947,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 
 		// Galleries with latest images
-		$galleries = Model_Gallery::find_latest(16);
+		$galleries = Model_Gallery::factory()->find_latest(16);
 		if (count($galleries)) {
 			Widget::add('main', View_Module::factory('galleries/galleries', array(
 				'galleries' => $galleries,
@@ -949,7 +955,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 
 		// Latest flyers
-		$flyers = Model_Flyer::find_latest(6);
+		$flyers = Model_Flyer::factory()->find_latest(6);
 		if (count($flyers)) {
 			Widget::add('side', View_Module::factory('galleries/flyers', array(
 				'mod_title' => __('Latest flyers'),
@@ -968,14 +974,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		/** @var  Model_Gallery  $gallery */
 		$gallery_id = (int)$this->request->param('gallery_id');
-		$gallery    = Model_Gallery::find($gallery_id);
+		$gallery    = new Model_Gallery($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
 		/** @var  Model_Image $image */
 		$image_id = $this->request->param('id');
-		$image    = Model_Image::find($image_id);
+		$image    = new Model_Image($image_id);
 		if (!$image->loaded()) {
 			throw new Model_Exception($image, $image_id);
 		}
@@ -986,43 +992,23 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Create note
 		if (isset($_POST['name']) && trim($_POST['name'] != '')) {
 
-			// Try to load user even if no user id was given, ie. not using autocomplete
-			$user_id = Arr::get($_POST, 'user_id');
-			if (!$user_id) {
-				if ($user = Model_User::find_user(trim($_POST['name']))) {
-					$user_id = $user->id;
-				}
+			// Get note user
+			$username = trim($_POST['name']);
+			$user     = Model_User::find_user($username);
+			if (!$user && $user_id = Arr::get($_POST, 'user_id')) {
+				$user = Model_User::find_user($user_id);
 			}
 
 			try {
-				$note = Model_Image_Note::factory()->set(array(
-					'image'    => $image,
-					'author'   => self::$user,
-					'name'     => Arr::get($_POST, 'name'),
-					'new_note' => true,
-				));
-
-				// Set user only if set
-				if ($user_id) {
-					$note->user = $user_id;
-				}
-
-				// Set position only if all fields are set
 				$position = Arr::intersect($_POST, array('x', 'y', 'width', 'height'), true);
-				if (count($position) == 4) {
-					$note->set($position);
-				}
-
-				$note->save();
-				$image->update_description()->save();
+				$image->add_note(self::$user->id, count($position) == 4 ? $position : null, $user ? $user : $username);
 
 				// Newsfeed
-				if ($user_id) {
-					!isset($user) && $user = Model_User::find_user($user_id);
+				if ($user) {
 					NewsfeedItem_Galleries::note(self::$user, $gallery, $image, $user);
 				}
 
-			} catch (Validate_Exception $e) {}
+			} catch (Validation_Exception $e) {}
 		}
 
 		// Redirect back to image
@@ -1049,7 +1035,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		/** @var  Model_Image_Note  $note */
 		$note_id = (int)$this->request->param('id');
-		$note    = Model_Image_Note::find($note_id);
+		$note    = new Model_Image_Note($note_id);
 		if (!$note->loaded()) {
 			throw new Model_Exception($note, $note_id);
 		}
@@ -1057,8 +1043,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Permission check
 		Permission::required($note, Model_Image_Note::PERMISSION_DELETE, self::$user);
 
-		$image   = $note->image;
-		$gallery = Model_Gallery::find_by_image($image->id);
+		$image   = $note->image();
+		$gallery = $image->gallery();
 
 		$note->delete();
 		$image->update_description()->save();
@@ -1077,7 +1063,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		/** @var  Model_Gallery  $gallery */
 		$gallery_id = (int)$this->request->param('id');
-		$gallery = Model_Gallery::find($gallery_id);
+		$gallery = Model_Gallery::factory($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -1108,7 +1094,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$gallery_id = (int)$this->request->param('id');
 		}
 		if ($gallery_id) {
-			$gallery = Model_Gallery::find($gallery_id);
+			$gallery = Model_Gallery::factory($gallery_id);
 			if (!$gallery->loaded()) {
 				throw new Model_Exception($gallery, $gallery_id);
 			}
@@ -1174,7 +1160,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					// Make sure the user has photo role to be able to see uploaded pictures
 					if (!self::$user->has_role('photo')) {
 						self::$user
-							->add('roles', Model_Role::find('photo'))
+							->add('roles', Model_Role::factory('photo'))
 							->save();
 					}
 
@@ -1243,7 +1229,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if ($gallery_id) {
 
 			// Editing old
-			$gallery = Model_Gallery::find($gallery_id);
+			$gallery = Model_Gallery::factory($gallery_id);
 			if (!$gallery->loaded()) {
 				throw new Model_Exception($gallery, $gallery_id);
 			}
@@ -1263,7 +1249,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			if ($event_id) {
 				/** @var  Model_Event  $event */
-				$event = Model_Event::find($event_id);
+				$event = Model_Event::factory($event_id);
 			}
 		}
 
@@ -1271,12 +1257,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$errors = array();
 		if ($_POST || isset($_GET['from'])) {
 			$event_id = $_POST ? (int)Arr::get($_POST, 'event') : (int)Arr::get($_GET, 'from');
-			$event = Model_Event::find($event_id);
+			$event = Model_Event::factory($event_id);
 
 			if (!$gallery->loaded() && $event->loaded()) {
 
 				// Redirect to existing gallery if trying to create duplicate
-				$old = Model_Gallery::find_by_event($event_id);
+				$old = Model_Gallery::factory()->find_by_event($event_id);
 				if ($old->loaded()) {
 					$this->request->redirect(Route::model($old, 'upload'));
 				}

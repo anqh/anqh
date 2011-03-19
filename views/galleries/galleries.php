@@ -17,7 +17,7 @@
 	<li class="grid2<?php echo Text::alternate(' first', '', '', '') ?>">
 		<article>
 			<div class="thumb">
-				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::image($gallery->default_image->get_url('thumbnail', $gallery->dir))) ?>
+				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::image($gallery->default_image()->get_url('thumbnail', $gallery->dir))) ?>
 			</div>
 			<h4><?= HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::chars($gallery->name)) ?></h4>
 			<div class="info">

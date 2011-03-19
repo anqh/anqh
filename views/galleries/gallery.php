@@ -9,6 +9,7 @@
  */
 
 /** @var  Model_Gallery  $gallery */
+/** @var  Model_Image    $image */
 
 $images = $pending
 	? $gallery->find_images_pending($approve ? null : $user)
@@ -21,7 +22,7 @@ $copyright = $multiple = null;
 
 	<?php foreach ($images as $image): ?>
 
-		<?php if ($image->author->id != $copyright): $copyright = $image->author->id; ?>
+		<?php if ($image->author_id != $copyright): $copyright = $image->author_id; ?>
 			<?php if ($multiple): ?>
 
 </ul>
