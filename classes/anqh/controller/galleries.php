@@ -289,7 +289,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 */
 	public function action_flyer() {
 		$flyer_id = $this->request->param('id');
-
 		switch ($flyer_id) {
 
 			// Random flyer
@@ -304,7 +303,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			// Known flyer
 			default:
 				/** @var  Model_Flyer  $flyer */
-				$flyer = Model_Flyer::factory((int)$flyer_id);
+				$flyer = new Model_Flyer((int)$flyer_id);
 				if (!$flyer->loaded()) {
 					throw new Model_Exception($flyer, $flyer_id);
 				}
@@ -312,10 +311,10 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 
 		/** @var  Model_Image  $image */
-		$image = $flyer->image;
+		$image = $flyer->image();
 
 		/** @var  Model_Event  $event */
-		$event = $flyer->event;
+		$event = $flyer->event();
 
 
 		// Handle post
@@ -329,17 +328,17 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 					// Event given?
 					/** @var  Model_Event  $event */
-					$event = Model_Event::factory($event_id);
+					$event = new Model_Event($event_id);
 					if ($event->loaded()) {
-						$flyer->set(array(
-							'event' => $event,
+						$flyer->set_fields(array(
+							'event'       => $event,
 							'stamp_begin' => $event->stamp_begin
 						));
 					}
 				} else if (Arr::get($_POST, 'name')) {
 
 					// Name and stamp given
-					$flyer->set(Arr::intersect($_POST, array('name', 'stamp_begin')));
+					$flyer->set_fields(Arr::intersect($_POST, array('name', 'stamp_begin')));
 
 				}
 
@@ -353,7 +352,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				}
 
 			  $this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			}
 		}
@@ -419,18 +418,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			// Handle comment
 			if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENT, self::$user) && $_POST) {
-				$comment = Model_Image_Comment::factory()->set(array(
-					'image'  => $image,
-					'author' => self::$user,
-				));
-				if ($image->author) {
-					$comment->user = $image->author;
-				}
-				$comment->set(Arr::intersect($_POST, Model_Image_Comment::$editable_fields));
 				try {
-					$comment->save();
+					$comment = Model_Image_Comment::factory()
+						->add(self::$user->id, $image, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
+
 					$image->comment_count++;
-					if ($image->author->id != self::$user->id) {
+					if ($image->author_id != self::$user->id) {
 						$image->new_comment_count++;
 					}
 					$image->save();
@@ -443,12 +436,12 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					if (!$this->ajax) {
 						$this->request->redirect(Route::get('flyer')->uri(array('id' => $image->id, 'action' => '')));
 					}
-				} catch (Validate_Exception $e) {
+				} catch (Validation_Exception $e) {
 					$errors = $e->array->errors('validation');
 					$values = $comment;
 				}
 
-			} else if (self::$user && $image->author->id == self::$user->id && $image->new_comment_count > 0) {
+			} else if (self::$user && $image->author_id == self::$user->id && $image->new_comment_count > 0) {
 
 				// Clear new comment count?
 				$image->new_comment_count = 0;
@@ -456,12 +449,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			}
 
-			$comments = $image->comments;
 			$view = View_Module::factory('generic/comments', array(
 				'mod_title'  => __('Comments'),
 				'delete'     => Route::get('flyer_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
 				'private'    => false,
-				'comments'   => $comments,
+				'comments'   => $image->comments(),
 				'errors'     => $errors,
 				'values'     => $values,
 				'pagination' => null,
@@ -469,7 +461,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			));
 
 			if ($this->ajax) {
-				echo $view;
+				$this->response->body($view);
 				return;
 			}
 			Widget::add('main', $view);
@@ -482,7 +474,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				'comments'   => $image->comment_count,
 			));
 			if ($this->ajax) {
-				echo $view;
+				$this->response->body($view);
 				return;
 			}
 			Widget::add('main', $view);
