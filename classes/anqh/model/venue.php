@@ -78,13 +78,27 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get venue category
+	 * Get venue category.
 	 *
 	 * @return  Model_Venue_Category
 	 */
 	public function category() {
 		try {
 			return $this->find_parent('venue_category');
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * Get venue city.
+	 *
+	 * @return  Model_Geo_City
+	 */
+	public function city() {
+		try {
+			return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
 		} catch (AutoModeler_Exception $e) {
 			return null;
 		}
@@ -107,43 +121,48 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Find past events at venue
+	 * Find past events at venue.
 	 *
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
 	public function find_events_past($limit = 25) {
-		return Jelly::query('event')
-			->where('venue_id', '=', $this->id)
-			->and_where('stamp_begin', '<=', time())
-			->limit($limit)
-			->select();
+		return $this->find_related(
+			'event',
+			DB::select_array(Model_Event::factory()->fields())
+				->where('stamp_begin', '<=', strtotime('today'))
+				->limit($limit)
+		);
 	}
 
 
 	/**
-	 * Find upcoming events at venue
+	 * Find upcoming events at venue.
 	 *
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
 	public function find_events_upcoming($limit = 25) {
-		return Jelly::query('event')
-			->where('venue_id', '=', $this->id)
-			->and_where('stamp_begin', '>=', time())
-			->limit($limit)
-			->select();
+		return $this->find_related(
+			'event',
+			DB::select_array(Model_Event::factory()->fields())
+				->where('stamp_begin', '>=', strtotime('today'))
+				->limit($limit)
+		);
 	}
 
 
 	/**
-	 * Find single venue by Foursquare id
+	 * Find single venue by Foursquare id.
 	 *
 	 * @param   integer  $foursquare_id
 	 * @return  Model_Venue
 	 */
 	public function find_by_foursquare($foursquare_id) {
-		return $this->load(DB::select_array($this->fields())->where('foursquare_id', '=', (int)$foursquare_id));
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('foursquare_id', '=', (int)$foursquare_id)
+		);
 	}
 
 
@@ -154,7 +173,11 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  Database_Result
 	 */
 	public function find_by_name($name) {
-		return $this->load(DB::select_array($this->fields())->where(DB::expr('LOWER(name)'), '=', strtolower(trim($name))), null);
+		return $this->load(
+			DB::select_array($this->fields())
+				->where(DB::expr('LOWER(name)'), '=', strtolower(trim($name))),
+			null
+		);
 	}
 
 
@@ -165,7 +188,11 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  Database_Result
 	 */
 	public function find_new($limit = 20) {
-		return $this->load(DB::select_array($this->fields())->order_by('id', 'DESC'), $limit);
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('id', 'DESC'),
+			$limit
+		);
 	}
 
 
