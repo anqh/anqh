@@ -386,7 +386,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		// Validate new image
 		if ($new) {
 			if ($this->remote && !$this->file) {
-				$this->file = Remote::download($this->remote, null, Kohana::config('image.upload_path'));
+				$this->file = Request::factory($this->remote)->download(null, Kohana::config('image.upload_path'));
 			}
 
 			if (!$this->file || (!$this->remote && !Upload::not_empty($this->file))) {

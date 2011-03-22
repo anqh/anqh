@@ -41,6 +41,77 @@ abstract class Anqh_Request extends Kohana_Request {
 
 
 	/**
+	 * Download a file to a new location. If no filename is provided,
+	 * the original filename will be used, with a unique prefix added.
+	 *
+	 * @param   string   $filename   new filename
+	 * @param   string   $directory  new directory
+	 * @param   integer  $chmod      chmod mask
+	 * @return  array    on success, upload style file array
+	 * @return  false    on failure
+	 */
+	public function download($filename = null, $directory = null, $chmod = 0644) {
+
+		// If no filename given, use remote filename with uniqid
+		$original_filename = basename(parse_url($this->_uri, PHP_URL_PATH));
+		if ($filename === null) {
+			$filename = uniqid() . $original_filename;
+		}
+
+		// Remove spaces from the filename
+		if (Upload::$remove_spaces === true) {
+			$filename = preg_replace('/\s+/', '_', $filename);
+		}
+
+		// Use the pre-configured upload directory if not given
+		if ($directory === null) {
+			$directory = Upload::$default_directory;
+		}
+		if (!is_dir($directory) || !is_writable(realpath($directory))) {
+			throw new Kohana_Exception('Directory :dir must be writable', array(':dir' => Debug::path($directory)));
+		}
+
+		// Make the filename into a complete path
+		$filename = realpath($directory) . DIRECTORY_SEPARATOR . $filename;
+
+		// Download file
+		try {
+			$response = $this->execute();
+
+			if ($response->status() == 200) {
+				$fh = fopen($filename, 'w');
+				fwrite($fh, $response->body());
+				$size = Arr::get(fstat($fh), 'size', 0);
+				fclose($fh);
+			} else {
+				return false;
+			}
+
+			// Set permissions
+			if ($chmod !== false) {
+				chmod($filename, $chmod);
+			}
+
+			// Build file array
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mime  = finfo_file($finfo, $filename);
+			finfo_close($finfo);
+
+			return array(
+				'error'    => UPLOAD_ERR_OK,
+				'name'     => $original_filename,
+				'type'     => $mime,
+				'tmp_name' => $filename,
+				'size'     => $size,
+			);
+
+		} catch (Kohana_Exception $e) {
+			return false;
+		}
+	}
+
+
+	/**
 	 * Get client host name
 	 *
 	 * @static
