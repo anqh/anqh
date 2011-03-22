@@ -341,7 +341,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	/**
 	 * Get event flyers.
 	 *
-	 * @return  Database_Result
+	 * @return  Model_Flyer[]
 	 */
 	public function flyers() {
 		return Model_Flyer::factory()->find_by_event($this->id);

@@ -174,8 +174,8 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Event flyers
 		if (count($flyers = $event->flyers()) > 1) {
 			$images = array();
-			foreach ($flyers as $image) {
-				$images[] = $image;
+			foreach ($flyers as $flyer) {
+				$images[] = $flyer->image();
 			}
 
 			$classes = array();
@@ -266,38 +266,40 @@ class Anqh_Controller_Events extends Controller_Template {
 					foreach ($urls as $side => $url) {
 						if (!$url) continue;
 
-						$image = Model_Image::factory()->set(array(
-							'remote' => $url
-						));
-						$event->author and $image->author = $event->author;
+						$image = new Model_Image();
+						$image->remote = $url;
+						$image->created = time();
+						$event->author_id and $image->author_id = $event->author_id;
 						try {
 							$image->save();
 
 							// Set the image as flyer
 							try {
-								Model_Flyer::factory()->set(array(
-									'image'       => $image,
-									'event'       => $event,
+								$flyer = new Model_Flyer();
+								$flyer->set_fields(array(
+									'image_id'    => $image->id,
+									'event_id'    => $event->id,
 									'name'        => $event->name,
 									'stamp_begin' => $event->stamp_begin,
-								))->save();
+								));
+								$flyer->save();
 							} catch (Kohana_Exception $e) {
-								$event->add('flyers', $image);
+								//$event->relate('flyers', array($image->id));
 							}
 
 							if ($side == 'front') {
-								$event->flyer_front = $image;
+								$event->flyer_front_image_id = $image->id;
 								$event->flyer_front_url = $image->get_url();
 							} else if ($side == 'back') {
-								$event->flyer_back = $image;
+								$event->flyer_back_image_id = $image->id;
 								$event->flyer_back_url = $image->get_url();
 							}
 							$event->save();
 
 							Widget::add('main', HTML::anchor(Route::model($event), HTML::image($image->get_url('thumbnail'))));
 
-						} catch (Validate_Exception $e) {
-							Widget::add('main', Kohana::debug($e->array->errors('validation')));
+						} catch (Validation_Exception $e) {
+							Widget::add('main', Debug::dump($e->array->errors('validation')));
 						} catch (Kohana_Exception $e) {
 							Widget::add('main', $e->getMessage() . '<br />');
 						}
@@ -324,23 +326,24 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 		// Load importable flyers
-		$events = Jelly::query('event')
-			->where_open()
-				->where(DB::expr('CHAR_LENGTH(flyer_front_url)'), '>', 4)
-				->and_where(DB::expr('COALESCE(flyer_front_image_id, 0)'), '=', 0)
-			->where_close()
-			->or_where_open()
-				->where(DB::expr('CHAR_LENGTH(flyer_back_url)'), '>', 4)
-				->and_where(DB::expr('COALESCE(flyer_back_image_id, 0)'), '=', 0)
-			->where_close()
-			->order_by('id', 'ASC')
-			->limit(100)
-			->select();
+		$events = Model_Event::factory()->load(
+			DB::select_array(Model_Event::factory()->fields())
+				->where_open()
+					->where(DB::expr('CHAR_LENGTH(flyer_front_url)'), '>', 4)
+					->and_where(DB::expr('COALESCE(flyer_front_image_id, 0)'), '=', 0)
+				->where_close()
+				->or_where_open()
+					->where(DB::expr('CHAR_LENGTH(flyer_back_url)'), '>', 4)
+					->and_where(DB::expr('COALESCE(flyer_back_image_id, 0)'), '=', 0)
+				->where_close()
+				->order_by('id', 'ASC'),
+			100
+		);
 
 		if (count($events)) {
 			Widget::add('main', Form::open(null, array('method' => 'get')));
 			foreach ($events as $event) {
-				if ($event->flyer_front_url && !$event->flyer_front) {
+				if ($event->flyer_front_url && !$event->flyer_front_image_id) {
 					$front  = '<p style="overflow: hidden">';
 					$front .= HTML::anchor($event->flyer_front_url, HTML::image($event->flyer_front_url, array('width' => '100')), array('target' => '_blank')) . ' ';
 					$front .= HTML::anchor(Route::get('events')->uri(array('action' => 'flyers')) . '?event_id=' . $event->id . '&import=front', __('Import front')) . ': ' . $event->flyer_front_url . '<br />';
@@ -349,7 +352,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				} else {
 					$front = '';
 				}
-				if ($event->flyer_back_url && !$event->flyer_back) {
+				if ($event->flyer_back_url && !$event->flyer_back_image_id) {
 					$back  = '<p style="overflow: hidden">';
 					$back .= HTML::anchor($event->flyer_back_url, HTML::image($event->flyer_back_url, array('width' => '100')), array('target' => '_blank')) . ' ';
 					$back .= HTML::anchor(Route::get('events')->uri(array('action' => 'flyers')) . '?event_id=' . $event->id . '&import=back', __('Import back')) . ': ' . $event->flyer_back_url . '<br />';
@@ -848,25 +851,6 @@ class Anqh_Controller_Events extends Controller_Template {
 				$tags[$tag->id()] = $tag->name();
 			}
 		}
-
-		// Venue
-		/*
-		$venues = Jelly::query('venue')->with('city')->event_hosts()->order_by('name', 'ASC')->select();
-		$hosts = array();
-		if (count($venues)) {
-			foreach ($venues as $v) {
-				$hosts[] = array(
-					'value'     => $v->id,
-					'label'     => HTML::chars($v->name),
-					'address'   => HTML::chars($v->address),
-					'city'      => HTML::chars($v->city->name),
-					'city_id'   => $v->city->id,
-					'latitude'  => $v->latitude,
-					'longitude' => $v->longitude,
-				);
-			}
-		}
-		 */
 
 		Widget::add('wide', View_Module::factory('events/edit', array(
 			'event'        => $event,
