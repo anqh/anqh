@@ -417,10 +417,10 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			// Change front flyer
 			/** @var  Model_Image  $image */
-			$image = Model_Image::find((int)$_REQUEST['front']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
-				$event->flyer_front = $image;
-				$event->flyer_front_url = $image->get_url();
+			$image = Model_Image::factory((int)$_REQUEST['front']);
+			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image->id)) {
+				$event->flyer_front_image_id = $image->id;
+				$event->flyer_front_url      = $image->get_url();
 				$event->save();
 			}
 			$cancel = true;
@@ -429,10 +429,10 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			// Change back flyer
 			/** @var  Model_Image  $image */
-			$image = Model_Image::find((int)$_REQUEST['back']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
-				$event->flyer_back = $image;
-				$event->flyer_back_url = $image->get_url();
+			$image = Model_Image::factory((int)$_REQUEST['back']);
+			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image->id)) {
+				$event->flyer_back_image_id = $image->id;
+				$event->flyer_back_url      = $image->get_url();
 				$event->save();
 			}
 			$cancel = true;
@@ -440,16 +440,16 @@ class Anqh_Controller_Events extends Controller_Template {
 		} else if (isset($_REQUEST['delete'])) {
 
 			// Delete existing
-			$image = Model_Image::find((int)$_REQUEST['delete']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('flyers', $image)) {
-				$event->remove('flyers', $image);
-				if ($image->id == $event->flyer_front->id) {
-					$event->flyer_front = null;
-					$event->flyer_front_url = null;
-				} else if ($image->id == $event->flyer_back->id) {
-					$event->flyer_back = null;
-					$event->flyer_back_url = null;
+			$image = Model_Image::factory((int)$_REQUEST['delete']);
+			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image->id)) {
+				if ($image->id == $event->flyer_front_image_id) {
+					$event->flyer_front_image_id = null;
+					$event->flyer_front_url      = null;
+				} else if ($image->id == $event->flyer_back_image_id->id) {
+					$event->flyer_back_image_id = null;
+					$event->flyer_back_url      = null;
 				}
+				$event->remove('images', $image->id);
 				$event->save();
 				$image->delete();
 			}
@@ -460,16 +460,15 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
 			if ($this->ajax) {
-				echo $this->_get_mod_image($event);
+				$this->response->body($this->_get_mod_image($event));
 				return;
 			}
 
 			$this->request->redirect(Route::model($event));
 		}
 
-		$image = Model_Image::factory()->set(array(
-			'author' => self::$user,
-		));
+		$image = Model_Image::factory();
+		$image->author_id = self::$user->id;
 
 		// Handle post
 		$errors = array();
@@ -481,36 +480,38 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				// Add exif, silently continue if failed - not critical
 				try {
-					Model_Image_Exif::factory()
-						->set(array('image' => $image))
-						->save();
+					$exif = Model_Image_Exif::factory();
+					$exif->image_id = $image->id;
+					$exif->save();
 				} catch (Kohana_Exception $e) { }
 
 				// Add flyer
 				try {
-					Model_Flyer::factory()->set(array(
-						'image'       => $image,
-						'event'       => $event,
+					$flyer = Model_Flyer::factory();
+					$flyer->set_fields(array(
+						'image_id'    => $image->id,
+						'event_id'    => $event->id,
 						'name'        => $event->name,
 						'stamp_begin' => $event->stamp_begin,
-					))->save();
+					));
+					$flyer->save();
 				} catch (Kohana_Exception $e) {
-					$event->add('flyers', $image);
+//					$event->add('flyers', $image);
 				}
 
-				if ($event->flyer_front->id) {
-					if (!$event->flyer_back->id) {
+				if ($event->flyer_front_image_id) {
+					if (!$event->flyer_back_image_id) {
 
 						// Back flyer not set, set it
-						$event->flyer_back = $image;
-						$event->flyer_back_url = $image->get_url();
+						$event->flyer_back_image_id = $image->id;
+						$event->flyer_back_url      = $image->get_url();
 
 					}
 				} else {
 
 					// Front flyer not set, set it
-					$event->flyer_front = $image;
-					$event->flyer_front_url = $image->get_url();
+					$event->flyer_front_image_id = $image->id;
+					$event->flyer_front_url      = $image->get_url();
 
 				}
 				$event->save();
@@ -518,42 +519,28 @@ class Anqh_Controller_Events extends Controller_Template {
 				NewsfeedItem_Events::event_edit(self::$user, $event);
 
 				if ($this->ajax) {
-					echo $this->_get_mod_image($event);
+					$this->response->body($this->_get_mod_image($event));
 					return;
 				}
 
 				$this->request->redirect(Route::model($event));
 
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			} catch (Kohana_Exception $e) {
 				$errors = array('file' => __('Failed with image'));
 			}
 		}
 
-		// Build form
-		$form = array(
-			'ajaxify'    => $this->ajax,
-			'values'     => $image,
-			'errors'     => $errors,
-			'attributes' => array('enctype' => 'multipart/form-data'),
-			'cancel'     => $this->ajax ? Route::model($event, 'image') . '?cancel' : Route::model($event),
-			'groups'     => array(
-				array(
-					'fields' => array(
-						'file' => array(),
-					),
-				),
-			)
-		);
-
-		$view = View_Module::factory('form/anqh', array(
-			'mod_title' => __('Add image'),
-			'form'      => $form
+		$view = View_Module::factory('events/flyer_upload', array(
+			'mod_title' => __('Add flyer'),
+			'ajaxify'   => $this->ajax,
+			'errors'    => $errors,
+			'cancel'    => $this->ajax ? Route::model($event, 'image') . '?cancel' : Route::model($event),
 		));
 
 		if ($this->ajax) {
-			echo $view;
+			$this->response->body($view);
 			return;
 		}
 
