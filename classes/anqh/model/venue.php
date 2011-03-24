@@ -18,7 +18,6 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 
 	protected $_data = array(
 		'id'                     => null,
-		'venue_category_id'      => null,
 		'name'                   => null,
 		'description'            => null,
 		'homepage'               => null,
@@ -44,7 +43,6 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_rules = array(
-		'venue_category_id'      => array('digit'),
 		'name'                   => array('not_empty', 'max_length' => array(':value', 32)),
 		'description'            => array('max_length' => array(':value', 250)),
 		'homepage'               => array('url'),
@@ -71,24 +69,10 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'venue_category_id', 'name', 'description', 'homepage', 'hours', 'info', 'event_host',
+		'name', 'description', 'homepage', 'hours', 'info', 'event_host',
 		'address', 'zip', 'city_name', 'geo_city_id', 'geo_country_id', 'latitude', 'longitude',
 		'foursquare_id', 'foursquare_category_id',
 	);
-
-
-	/**
-	 * Get venue category.
-	 *
-	 * @return  Model_Venue_Category
-	 */
-	public function category() {
-		try {
-			return $this->find_parent('venue_category');
-		} catch (AutoModeler_Exception $e) {
-			return null;
-		}
-	}
 
 
 	/**
@@ -106,7 +90,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Find all venues sorted by city and category
+	 * Find all venues sorted by city.
 	 *
 	 * @return  Database_Result
 	 */

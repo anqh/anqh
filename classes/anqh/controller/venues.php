@@ -26,48 +26,8 @@ class Anqh_Controller_Venues extends Controller_Template {
 		if (!$this->request->param('id') && $this->ajax) {
 			return $this->_edit_venue_dialog();
 		} else {
-			return $this->_edit_venue((int)$this->request->param('id'));
+			return $this->_edit_venue();
 		}
-	}
-
-
-	/**
-	 * Action: add category
-	 */
-	public function action_addcategory() {
-		return $this->_edit_category();
-	}
-
-
-	/**
-	 * Action: category
-	 */
-	public function action_category() {
-		$category_id = (int)$this->request->param('id');
-
-		$category = Model_Venue_Category::factory($category_id);
-		if (!$category->loaded()) {
-			throw new Model_Exception($category, $category_id);
-		}
-
-		// Set actions
-		if (Permission::has($category, Model_Venue_Category::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($category, 'editcategory'), 'text' => __('Edit category'), 'class' => 'category-edit');
-		}
-		if (Permission::has($category, Model_Venue_Category::PERMISSION_VENUE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($category, 'add'), 'text' => __('Add venue'), 'class' => 'venue-add');
-		}
-
-		// Set title
-		$this->page_title   .= ': ' . HTML::chars($category->name);
-		$this->page_subtitle = HTML::chars($category->description);
-
-		Widget::add('main', View_Module::factory('venues/venues', array(
-			'mod_class' => 'venues articles',
-			'venues'    => $category->find_venues_by_city(),
-		)));
-
-		$this->_tabs();
 	}
 
 
@@ -133,43 +93,10 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 
 	/**
-	 * Action: delete category
-	 */
-	public function action_deletecategory() {
-		$this->history = false;
-
-		// Load category
-		$category_id = (int)$this->request->param('id');
-		$category = Model_Venue_Category::factory($category_id);
-		if (!$category->loaded()) {
-			throw new Model_Exception($category, $category_id);
-		}
-
-		Permission::required($category, Model_Venue_Category::PERMISSION_DELETE, self::$user);
-
-		if (!Security::csrf_valid()) {
-			$this->request->redirect(Route::model($category));
-		}
-
-		$category->delete();
-
-		$this->request->redirect(Route::get('venues')->uri());
-	}
-
-
-	/**
 	 * Action: edit venue
 	 */
 	public function action_edit() {
-		$this->_edit_venue(null, (int)$this->request->param('id'));
-	}
-
-
-	/**
-	 * Action: edit category
-	 */
-	public function action_editcategory() {
-		$this->_edit_category((int)$this->request->param('id'));
+		$this->_edit_venue((int)$this->request->param('id'));
 	}
 
 
@@ -190,12 +117,13 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		if (Security::csrf_valid() && isset($_POST['foursquare_id'])) {
 			try {
-				$venue
-					->set(Arr::intersect($_POST, array('foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address')))
-					->save();
+				$venue->set_fields(Arr::intersect($_POST, array(
+					'foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address'
+				)));
+				$venue->save();
 
 				NewsfeedItem_Venues::venue_edit(self::$user, $venue);
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 
 			}
 		}
@@ -220,9 +148,6 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		if (!$this->ajax) {
 			$this->page_title    = HTML::chars($venue->name);
-			$this->page_subtitle = __('Category :category', array(
-				':category' => HTML::anchor(Route::model($venue->category), $venue->category->name, array('title' => $venue->category->description))
-			));
 		}
 
 		// Change existing
@@ -249,16 +174,15 @@ class Anqh_Controller_Venues extends Controller_Template {
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
 			if ($this->ajax) {
-				echo $this->_get_mod_image($venue);
+				$this->response->body($this->_get_mod_image($venue));
 				return;
 			}
 
 			$this->request->redirect(Route::model($venue));
 		}
 
-		$image = Model_Image::factory()->set(array(
-			'author' => self::$user,
-		));
+		$image = Model_Image::factory();
+		$image->author_id = self::$user->id;
 
 		// Handle post
 		$errors = array();
@@ -269,18 +193,18 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 				// Add exif, silently continue if failed - not critical
 				try {
-					Model_Image_Exif::factory()
-						->set_fields(array('image_id' => $image->id))
-						->save();
+					$exif = Model_Image_Exif::factory();
+					$exif->image_id = $image->id;
+					$exif->save();
 				} catch (Kohana_Exception $e) { }
 
 				// Set the image as venue image
-				$venue->add('images', $image);
-				$venue->default_image = $image;
+				$venue->relate('images', $image->id);
+				$venue->default_image_id = $image->id;
 				$venue->save();
 
 				if ($this->ajax) {
-					echo $this->_get_mod_image($venue);
+					$this->response->body($this->_get_mod_image($venue));
 					return;
 				}
 
@@ -294,6 +218,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		// Build form
+		// @todo Fix to use custom view!
 		$form = array(
 			'ajaxify'    => $this->ajax,
 			'values'     => $image,
@@ -315,7 +240,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 		));
 
 		if ($this->ajax) {
-			echo $view;
+			$this->response->body($view);
 			return;
 		}
 
@@ -329,9 +254,6 @@ class Anqh_Controller_Venues extends Controller_Template {
 	public function action_index() {
 
 		// Set actions
-//		if (Permission::has(new Model_Venue_Category, Model_Venue_Category::PERMISSION_CREATE, self::$user)) {
-//			$this->page_actions[] = array('link' => Route::get('venue_category_add')->uri(), 'text' => __('Add category'), 'class' => 'category-add');
-//		}
 		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('venue_add')->uri(), 'text' => __('Add venue'), 'class' => 'venue-add');
 		}
@@ -418,76 +340,11 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 
 	/**
-	 * Edit category
-	 *
-	 * @param  integer  $category_id
-	 */
-	protected function _edit_category($category_id = null) {
-		$this->history = false;
-
-		if ($category_id) {
-
-			// Editing old
-			$category = Model_Venue_Category::factory($category_id);
-			if (!$category->loaded()) {
-				throw new Model_Exception($category, $category_id);
-			}
-			Permission::required($category, Model_Venue_Category::PERMISSION_UPDATE, self::$user);
-			$cancel = Route::model($category);
-
-			// Set actions
-			if (Permission::has($category, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($category, 'deletecategory'), 'text' => __('Delete category'), 'class' => 'category-delete');
-			}
-
-		} else {
-
-			// Creating new
-			$category = Model_Venue_Category::factory();
-			Permission::required($category, Model_Venue_Category::PERMISSION_CREATE, self::$user);
-			$cancel = Route::get('venues')->uri();
-
-		}
-
-		// Handle post
-		$errors = array();
-		if ($_POST && Security::csrf_valid()) {
-			$category->set($_POST);
-			try {
-				$category->save();
-				$this->request->redirect(Route::model($category));
-			} catch (Validate_Exception $e) {
-				$errors = $e->array->errors('validation');
-			}
-		}
-
-		// Build form
-		$form = array(
-			'values' => $category,
-			'errors' => $errors,
-			'cancel' => $cancel,
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'        => array(),
-						'description' => array(),
-						'tag_group'   => array(),
-					),
-				),
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
-	}
-
-
-	/**
 	 * Edit venue
 	 *
-	 * @param  integer  $category_id
 	 * @param  integer  $venue_id
 	 */
-	protected function _edit_venue($category_id = null, $venue_id = null) {
+	protected function _edit_venue($venue_id = null) {
 		$this->history = false;
 		$edit = true;
 
@@ -500,7 +357,6 @@ class Anqh_Controller_Venues extends Controller_Template {
 			}
 			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
 			$cancel = Route::model($venue);
-			$category = $venue->category;
 
 			$this->page_title = HTML::chars($venue->name);
 
@@ -538,18 +394,6 @@ class Anqh_Controller_Venues extends Controller_Template {
 			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			}
-		}
-
-		// Build form
-		if ($category->tag_group && count($category->tag_group->tags)) {
-			$tags = array();
-			foreach ($category->tag_group->tags as $tag) {
-				$tags[$tag->id()] = $tag->name();
-			}
-			$form['groups']['details']['fields']['tags'] = array(
-				'class'  => 'pills',
-				'values' => $tags,
-			);
 		}
 
 		Widget::add('wide', View_Module::factory('venues/edit', array('venue' => $venue, 'errors' => $errors, 'cancel' => $cancel)));
