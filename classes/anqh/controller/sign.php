@@ -85,7 +85,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 		// Check invitation code
 		$code = trim(Arr::get($_REQUEST, 'code'));
 		if ($code) {
-			$invitation = Model_Invitation::find_by_code($code);
+			$invitation = Model_Invitation::factory($code);
 
 			return $invitation->loaded() ? $this->_join($invitation) : $this->_invite($code);
 		}
@@ -124,13 +124,13 @@ class Anqh_Controller_Sign extends Controller_Template {
 
 	 		// Handle post
 			$invitation->email = Arr::get($_POST, 'email');
-			$invitation->code = $invitation->code();
+			$invitation->code  = $invitation->code();
 			try {
-				$invitation->validate();
+				$invitation->is_valid();
 
 				// Send invitation
 				$subject = __(':site invite', array(':site' => Kohana::config('site.site_name')));
-				$mail = __(
+				$mail    = __(
 					"Your invitation code is: :code\n\nOr click directly to sign up: :url",
 					array(
 						':code' => $invitation->code,
@@ -147,7 +147,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 					$message = '<p>' . __('Could not send invite to :email', array(':email' => $invitation->email)) . '<p>';
 				}
 
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			}
 		}
@@ -181,6 +181,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 
 		// Enter invitation
+		// @todo Use custom view
 		$form = array(
 			'values' => Model_Invitation::factory(),
 			'errors' => $errors,
@@ -223,9 +224,9 @@ class Anqh_Controller_Sign extends Controller_Template {
 		// Handle post
 		$errors = array();
 		if ($_POST && !Arr::get($_POST, 'signup')) {
-			$user->set($_POST, array('username', 'password', 'password_confirm'));
+			$user->set_fields(Arr::extract($_POST, array('username', 'password', 'password_confirm')));
 			$user->username_clean = Text::clean(Arr::get($_POST, 'username'));
-			$user->add('roles', 1);
+			$user->relate('roles', 1);
 			try {
 				$user->save();
 				$invitation->delete();
@@ -233,13 +234,14 @@ class Anqh_Controller_Sign extends Controller_Template {
 				Visitor::instance()->login($user, $_POST['password']);
 
 				$this->request->redirect(Route::model($user));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$user->password = $user->password_confirm = null;
 				$errors = $e->array->errors('validation');
 			}
 		}
 
 		// Build form
+		// @todo Use custom form
 		$form = array(
 			'values' => $user,
 			'errors' => $errors,
