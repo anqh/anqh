@@ -26,6 +26,33 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 
 
 	/**
+	 * Set the items in the $data array.
+	 *
+	 * 	$blog_entry = new Model_Blog;
+	 * 	$blog_entry->title = 'Demo';
+	 * 	$blog_entry->content = 'My awesome content';
+	 *
+	 * @param   string  $key    the field name to set
+	 * @param   string  $value  the value to set to
+	 * @throws  AutoModeler_Exception
+	 */
+	public function __set($key, $value) {
+
+		// Trim strings?
+		if ($this->_trim && is_string($value)) {
+			$value = trim($value);
+		}
+
+		// Convert to null?
+		if ($this->_null && $value === '') {
+			$value = null;
+		}
+
+		parent::__set($key, $value);
+	}
+
+
+	/**
 	 * Get model author light array
 	 *
 	 * @return  array
@@ -164,33 +191,6 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 		}
 
 		return parent::save($validation);
-	}
-
-
-	/**
-	 * Set the items in the $data array.
-	 *
-	 * 	$blog_entry = new Model_Blog;
-	 * 	$blog_entry->title = 'Demo';
-	 * 	$blog_entry->content = 'My awesome content';
-	 *
-	 * @param   string  $key    the field name to set
-	 * @param   string  $value  the value to set to
-	 * @throws  AutoModeler_Exception
-	 */
-	public function __set($key, $value) {
-
-		// Trim strings?
-		if ($this->_trim && is_string($value)) {
-			$value = trim($value);
-		}
-
-		// Convert to null?
-		if ($this->_null && $value === '') {
-			$value = null;
-		}
-
-		parent::__set($key, $value);
 	}
 
 
