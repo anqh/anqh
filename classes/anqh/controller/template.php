@@ -196,7 +196,7 @@ abstract class Anqh_Controller_Template extends Controller {
 				'mod_id'    => 'footer-topics-active',
 				'mod_class' => 'article grid4 cut topics',
 				'mod_title' => __('New posts'),
-				'topics'    => Model_Forum_Topic::find_by_latest_post(10)
+				'topics'    => Model_Forum_Topic::factory()->find_by_latest_post(10)
 			)));
 			Widget::add('footer', View_Module::factory('blog/entry_list', array(
 				'mod_id'    => 'footer-blog-entries',

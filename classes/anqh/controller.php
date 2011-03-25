@@ -39,11 +39,11 @@ abstract class Anqh_Controller extends Kohana_Controller {
 
 		Cache::$default = 'default';
 
-		// Check if this was an interna request or direct
-		$this->internal = !Request::current()->is_initial();
+		// Check if this was an internal request or direct
+		$this->internal = !$this->request->is_initial();
 
 		// Ajax request?
-		$this->ajax = Request::current()->is_ajax();
+		$this->ajax = $this->request->is_ajax();
 
 		// Load current user, null if none
 		if (self::$user === false) {
