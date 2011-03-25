@@ -156,7 +156,6 @@ if ($response->send_headers()->body()) {
 		'{execution_time}'   => number_format(microtime(true) - KOHANA_START_TIME, 5),
 		'{database_queries}' => $queries,
 		'{included_files}'   => count(get_included_files()),
-		'{kohana_version}'   => Kohana::VERSION,
 	);
 	$response->body(strtr($response->body(), $total));
 }
