@@ -31,6 +31,12 @@ class Anqh_Model_User_Token extends AutoModeler {
 
 		if ($id !== null) {
 			$this->load(DB::select()->where(is_numeric($id) ? 'id' : 'token', '=', $id));
+
+			// Expired token?
+			if ($this->loaded() && $this->expires < time()) {
+				$this->delete();
+			}
+
 		}
 
 		// Garbace collection
