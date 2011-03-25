@@ -27,7 +27,7 @@
 
 	<p class="grid2 latest">
 		<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-		<?php echo HTML::user($topic->original('last_poster'), $topic->last_poster) ?>
+		<?php echo HTML::user($topic->last_poster, $topic->last_poster) ?>
 	</p>
 </article>
 

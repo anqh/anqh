@@ -49,7 +49,7 @@ class Anqh_Model_Forum_Post extends AutoModeler_ORM implements Permission_Interf
 
 			case self::PERMISSION_READ:
 		    return
-			    Permission::has($this->topic, Model_Forum_Topic::PERMISSION_READ, $user) // Need read permission for topic
+			    Permission::has($this->topic(), Model_Forum_Topic::PERMISSION_READ, $user) // Need read permission for topic
 			      && (!$user || !$user->is_ignored($this->author_id));                   // No permission if the author is ignored
 		    break;
 
@@ -61,6 +61,26 @@ class Anqh_Model_Forum_Post extends AutoModeler_ORM implements Permission_Interf
 		}
 
 	  return false;
+	}
+
+
+	/**
+	 * Get current post's parent post.
+	 *
+	 * @return  Model_Forum_Post|null
+	 */
+	public function parent() {
+		return $this->parent_id ? new Model_Forum_Post($this->parent_id) : null;
+	}
+
+
+	/**
+	 * Get current post's topic.
+	 *
+	 * @return  Model_Forum_Topic
+	 */
+	public function topic() {
+		return new Model_Forum_Topic($this->forum_topic_id);
 	}
 
 }

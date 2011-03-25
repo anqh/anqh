@@ -101,7 +101,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ, self::$user);
 
 		// Did we request single post with ajax?
-		if ($this->ajax && isset($post_id)) {
+		if (($this->ajax || $this->internal) && isset($post_id)) {
 			$this->history = false;
 			$post = $this->private ? Model_Forum_Private_Post::factory($post_id) : Model_Forum_Post::factory($post_id);
 			if (!$post->loaded()) {
@@ -110,13 +110,14 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			// Permission is already checked by the topic, no need to check for post
 
-			echo View::factory('forum/post', array(
+			$this->response->body(View::factory('forum/post', array(
 				'topic'   => $topic,
 				'post'    => $post,
 				'number'  => $topic->get_post_number($post->id) + 1,
 				'user'    => self::$user,
 				'private' => $this->private
-			));
+			)));
+
 			return;
 		}
 
@@ -133,7 +134,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$this->_set_title($topic);
 
 		// Update counts
-		if (!self::$user || $topic->author->id != self::$user->id) {
+		if (!self::$user || $topic->author_id != self::$user->id) {
 			$topic->read_count++;
 			$topic->save();
 		}
@@ -146,7 +147,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				$quotes = Model_Forum_Quote::factory()->find_by_user(self::$user);
 				if (count($quotes)) {
 					foreach ($quotes as $quote) {
-						if ($topic->id == $quote->topic->id) {
+						if ($topic->id == $quote->forum_topic_id) {
 							$quote->delete();
 							break;
 						}
@@ -162,9 +163,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			Anqh::share(true);
 
 			// Model binding
-			if ($topic->area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
-				if ($bind = Model_Forum_Area::get_binds($topic->area->bind)) {
-					$model = Jelly::query($bind['model'], $topic->bind_id)->select();
+			$area = $topic->area();
+			if ($area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
+				if ($bind = Model_Forum_Area::get_binds($area->bind)) {
+					$model = AutoModeler::factory($bind['model'], $topic->bind_id);
 					if ($model->loaded()) {
 
 						// Set actions
@@ -224,42 +226,29 @@ $(function() {
 		if ($this->private) {
 			Widget::add('main', View_Module::factory('generic/users', array(
 				'mod_title' => __('Recipients'),
-				'users'     => $topic->find_recipients(),
+				'users'     => $topic->recipients(),
 				'viewer'    => self::$user
 			)));
 		}
-
 
 		// Posts
 		Widget::add('main', View_Module::factory('forum/topic', array(
 			'mod_class'  => 'topic articles topic-' . $topic->id,
 			'user'       => self::$user,
 			'topic'      => $topic,
-			'posts'      => $topic->find_posts($pagination),
-			'first'      => $pagination->current_first_item(),
+			'posts'      => $topic->posts($pagination),
+			'first'      => $pagination->current_first_item,
 			'pagination' => $pagination,
 			'private'    => $this->private,
 		)));
 
 		// Reply
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
-			$form = array(
-				'action' => Route::model($topic, 'reply'),
-				'values' => $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory(),
-				'save'   => array('label' => __('Reply')),
-				'groups' => array(
-					array(
-						'fields' => array(
-							'post' => array('label' => null),
-						),
-					),
-				)
-			);
-
 			Widget::add('main', View_Module::factory('forum/reply', array(
 				'mod_id'  => 'reply',
 				'user'    => self::$user,
-				'form'    => $form,
+				'topic'   => $topic,
+				'post'    => $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory(),
 				'private' => $this->private
 			)));
 		}
@@ -309,7 +298,7 @@ $(function() {
 
 		// Editing a post
 		$post = $this->private ? Model_Forum_Private_Post::factory($post_id) : Model_Forum_Post::factory($post_id);
-		if (!$post->loaded() || $post->topic->id != $topic->id || !Security::csrf_valid()) {
+		if (!$post->loaded() || $post->forum_topic_id != $topic->id || !Security::csrf_valid()) {
 			throw new Model_Exception($post, $post_id);
 		}
 		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, self::$user);
@@ -317,8 +306,9 @@ $(function() {
 		$post->delete();
 		$topic->refresh();
 		if (!$this->private) {
-			$topic->area->post_count--;
-			$topic->area->save();
+			$area = $topic->area();
+			$area->post_count--;
+			$area->save();
 		}
 
 		if ($this->ajax) {
@@ -345,12 +335,11 @@ $(function() {
 
 		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user);
 
-		$posts = $topic->post_count;
-		$area  = $topic->area;
+		$area  = $topic->area();
 
 		// Update area only for public forum
 		if (!$this->private) {
-			$area->post_count -= $posts;
+			$area->post_count -= $topic->post_count;
 			$area->topic_count--;
 			$area->save();
 		}
@@ -382,7 +371,7 @@ $(function() {
 
 			// Editing a post
 			$post = $this->private ? Model_Forum_Private_Post::factory($post_id) : Model_Forum_Post::factory($post_id);
-			if (!$post->loaded() || $post->topic->id != $topic->id) {
+			if (!$post->loaded() || $post->forum_topic_id != $topic->id) {
 				throw new Model_Exception($post, $post_id);
 			}
 			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, self::$user);
@@ -397,7 +386,7 @@ $(function() {
 		// Quoting a post
 		if ($quote_id) {
 			$quote = $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory($quote_id);
-			if (!$quote->loaded() || $quote->topic->id != $topic->id) {
+			if (!$quote->loaded() || $quote->forum_topic_id != $topic->id) {
 				throw new Model_Exception($quote, $quote_id);
 			}
 			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, self::$user);
@@ -419,12 +408,13 @@ $(function() {
 			if (!$post->loaded()) {
 
 				// New post
-				$post->topic       = $topic;
-				$post->area        = $topic->area;
-				$post->author      = self::$user;
-				$post->author_name = self::$user->username;
+				$post->forum_topic_id = $topic->id;
+				$post->forum_area_id  = $topic->forum_area_id;
+				$post->author_id      = self::$user->id;
+				$post->author_name    = self::$user->username;
+				$post->created        = time();
 				if ($quote_id) {
-					$post->parent = $quote;
+					$post->parent_id = $quote_id;
 				}
 				$increase = true;
 
@@ -436,7 +426,7 @@ $(function() {
 			} else {
 
 				// Old post
-				$post->modifies++;
+				$post->modify_count++;
 				$post->modified = time();
 				$increase = false;
 
@@ -448,27 +438,27 @@ $(function() {
 
 					// Quote, only for public topics
 					if (!$this->private && $quote_id && $quote->author->id) {
-						Model_Forum_Quote::factory()
-							->set(array(
-								'user'   => $quote->author,
-								'author' => self::$user,
-								'topic'  => $topic,
-								'post'   => $post))
-							->save();
+						$quote = Model_Forum_Quote::factory();
+						$quote->set_fields(array(
+							'user_id'        => $quote->author_id,
+							'author_id'      => self::$user->id,
+							'forum_topic_id' => $topic->id,
+							'forum_post_id'  => $post->id));
+						$quote->save();
 					}
 
 					// Topic
 					$topic->post_count++;
-					$topic->last_post   = $post;
-					$topic->last_posted = $post->created;
-					$topic->last_poster = $post->author_name;
+					$topic->last_post_id = $post->id;
+					$topic->last_posted  = $post->created;
+					$topic->last_poster  = $post->author_name;
 					$topic->save();
 
 					// Area, only for public topics
 					if (!$this->private) {
-						$area = $topic->area;
+						$area = $topic->area();
 						$area->post_count++;
-						$area->last_topic = $topic;
+						$area->last_topic_id = $topic->id;
 						$area->save();
 					}
 
@@ -484,67 +474,61 @@ $(function() {
 				}
 
 				if ($this->ajax) {
-					return Request::factory(
-						Route::get($this->private ? 'forum_private_post' : 'forum_post')
-							->uri(array('topic_id' => Route::model_id($topic), 'id' => $post->id))
-					)->execute();
+					$post_route = Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+						'topic_id' => Route::model_id($topic),
+						'id'       => $post->id,
+					));
+					$post_response = Request::factory($post_route)->execute();
+					$this->response->body($post_response->body());
+
+					return;
 				}
 
 				$this->request->redirect(Route::model($topic, '?page=last#last'));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
 
-		// Build form
+		// Common attributes
 		$form = array(
-			'values' => $post,
-			'errors' => $errors,
-			'save'   => array('label' => $quote_id ? __('Reply') : __('Save')),
-			'cancel' => $this->ajax
+			'errors'    => $errors,
+			'ajax'      => $this->ajax ? true : null,
+			'topic'     => $topic,
+			'post'      => $post,
+			'user'      => self::$user,
+			'private'   => $this->private,
+			'cancel'  => $this->ajax
 				? Route::get($this->private ? 'forum_private_post' : 'forum_post')
-						->uri(array('topic_id' => Route::model_id($topic), 'id' => $quote_id ? $quote->id : $post->id))
+						->uri(array(
+							'topic_id' => Route::model_id($topic),
+							'id'       => $quote_id ? $quote_id : $post->id,
+						))
 				: Request::back(Route::model($topic), true),
-			'groups' => array(
-				array(
-					'fields' => array(
-						'post' => array('label' => null),
-					),
-				),
-			)
 		);
 
 		if ($this->ajax) {
 			if ($quote_id) {
 
 				// Quote
-				$form['attributes'] = array('id' => 'quote');
-
-				echo View_Module::factory('forum/reply', array(
+				$this->response->body(View_Module::factory('forum/reply', array(
 					'mod_id'    => 'quote',
 					'mod_class' => 'quote first',
-					'form'      => $form,
-					'user'      => self::$user,
-					'private'   => $this->private,
-				));
+					'form_id'   => 'quote',
+				) + $form));
 
 			} else {
 
 				// Edit post
-				echo View::factory('form/anqh', array('form' => $form));
+				$this->response->body(View_Module::factory('forum/post_edit', $form));
 
 			}
 			return;
 		}
 
 		Widget::add('main', View_Module::factory('forum/reply', array(
-			'mod_id'    => 'reply',
-			'form'      => $form,
-			'user'      => self::$user,
-			'private'   => $this->private,
-		)));
-
-		//Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+			'mod_id'  => 'reply',
+		) + $form));
 	}
 
 
@@ -575,7 +559,7 @@ $(function() {
 				/** @var  Model_Forum_Private_Post  $post */
 				$post   = Model_Forum_Private_Post::factory();
 				$recipients = array();
-				$cancel = Route::get('forum_area')->uri(array('id' => 'private', 'action' => ''));
+				$cancel = Route::url('forum_area', array('id' => 'private', 'action' => ''));
 
 			} else {
 
@@ -607,7 +591,7 @@ $(function() {
 
 			// Set actions
 			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($topic, 'delete') . '?token=' .Security::csrf(), 'text' => __('Delete topic'), 'class' => 'topic-delete');
+				$this->page_actions[] = array('link' => Route::model($topic, 'delete') . '?' . Security::csrf_query(), 'text' => __('Delete topic'), 'class' => 'topic-delete');
 			}
 
 		} else {
@@ -635,25 +619,26 @@ $(function() {
 			if (isset($post)) {
 
 				// New topic
-				$post->post        = $_POST['post'];
-				$post->area        = $area;
-				$post->author      = self::$user;
-				$post->author_name = self::$user->username;
-				$post->author_ip   = Request::$client_ip;
-				$post->author_host = Request::host_name();
+				$post->post          = $_POST['post'];
+				$post->forum_area_id = $area->id;
+				$post->author_id     = self::$user->id;
+				$post->author_name   = self::$user->username;
+				$post->author_ip     = Request::$client_ip;
+				$post->author_host   = Request::host_name();
+				$post->created       = time();
 				try {
-					$post->validate();
-				} catch (Validate_Exception $e) {
+					$post->is_valid();
+				} catch (Validation_Exception $e) {
 					$errors += $e->array->errors('validate');
 				}
 
-				$topic->author      = self::$user;
-				$topic->author_name = self::$user->username;
-				$topic->name        = $_POST['name'];
-				$topic->area        = $area;
+				$topic->author_id     = self::$user->id;
+				$topic->author_name   = self::$user->username;
+				$topic->name          = $_POST['name'];
+				$topic->forum_area_id = $area->id;
 				try {
-					$topic->validate();
-				} catch (Validate_Exception $e) {
+					$topic->is_valid();
+				} catch (Validation_Exception $e) {
 					$errors += $e->array->errors('validate');
 				}
 
@@ -667,19 +652,19 @@ $(function() {
 					}
 
 					// Post
-					$post->topic = $topic;
+					$post->forum_topic_id = $topic->id;
 					$post->save();
 
 					// Topic
-					$topic->first_post  = $topic->last_post   = $post;
-					$topic->last_poster = self::$user->username;
-					$topic->last_posted = time();
-					$topic->post_count   = 1;
+					$topic->first_post_id = $topic->last_post_id = $post->id;
+					$topic->last_poster   = self::$user->username;
+					$topic->last_posted   = time();
+					$topic->post_count    = 1;
 					$topic->save();
 
 					// Area, only public forums
 					if (!$this->private) {
-						$area->last_topic = $topic;
+						$area->last_topic_id = $topic->id;
 						$area->post_count++;
 						$area->topic_count++;
 						$area->save();
@@ -702,7 +687,7 @@ $(function() {
 			} else {
 
 				// Old topic
-				$topic->set(Arr::intersect($_POST, array('name', 'status')));
+				$topic->set_fields(Arr::intersect($_POST, array('name', 'status')));
 				try {
 					$topic->save();
 
@@ -712,7 +697,7 @@ $(function() {
 					}
 
 					$this->request->redirect(Route::model($topic));
-				} catch (Validate_Exception $e) {
+				} catch (Validation_Exception $e) {
 					$errors = $e->array->errors('validate');
 				}
 

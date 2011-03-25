@@ -25,12 +25,14 @@ class Anqh_Model_Forum_Quote extends AutoModeler implements Permission_Interface
 	 * Find quotes by quoted user
 	 *
 	 * @param   Model_User  $user
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Quote[]
 	 */
-	public static function find_by_user(Model_User $user) {
-		return Jelly::query('forum_quote')
-			->where('user_id', '=', $user->id)
-			->select();
+	public function find_by_user(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('user_id', '=', $user->id),
+			null
+		);
 	}
 
 

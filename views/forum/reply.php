@@ -16,5 +16,12 @@
 </section>
 
 <section class="post-edit grid6">
-	<?php echo View::factory('form/anqh', array('form' => $form)) ?>
+	<?php echo View::factory('forum/post_edit', array(
+		'form_id' => isset($form_id) ? $form_id : null,
+		'ajax'    => isset($ajax) ? $ajax : null,
+		'errors'  => isset($errors) ? $errors : null,
+		'cancel'  => isset($cancel) ? $cancel : null,
+		'post'    => $post,
+		'action'  => Route::model($topic, 'reply'),
+	)) ?>
 </section>

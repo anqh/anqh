@@ -16,7 +16,7 @@ class Anqh_Model_Forum_Private_Recipient extends AutoModeler_ORM implements Perm
 		'forum_topic_id' => null,
 		'forum_area_id'  => null,
 		'user_id'        => null,
-		'unread'         => null,
+		'unread'         => 0,
 	);
 
 

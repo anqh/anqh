@@ -69,17 +69,11 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		'forum_group_id' => array('digit'),
 		'name'           => array('not_empty', 'max_length' => array(':value', 64)),
 		'description'    => array('max_length' => array(':value', 250)),
-		'sort'           => 0,
 
 		'access_read'    => array('not_empty', 'in_array' => array(':value', array(self::READ_MEMBERS, self::READ_NORMAL))),
 		'access_write'   => array('not_empty', 'in_array' => array(':value', array(self::WRITE_ADMINS, self::WRITE_NORMAL))),
 		'status'         => array('not_empty', 'in_array' => array(':value', array(self::STATUS_HIDDEN, self::STATUS_NORMAL))),
 		'type'           => array('not_empty', 'in_array' => array(':value', array(self::TYPE_PRIVATE, self::TYPE_BIND, self::TYPE_NORMAL))),
-		'bind'           => null,
-
-		'post_count'     => null,
-		'topic_count'    => null,
-		'last_topic_id'  => null,
 	);
 
 	/** @var  array  User editable fields */
@@ -92,15 +86,18 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 	 * Find area's paginated active topics
 	 *
 	 * @param   Pagination $pagination
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Topic[]
 	 */
 	public function find_active_topics(Pagination $pagination) {
-		return Jelly::query('forum_topic')
-			->with('last_post')
-			->where('forum_area_id', '=', $this->id)
-			->order_by('last_post_id', 'DESC')
-			->pagination($pagination)
-			->query();
+		$topic = Model_Forum_Topic::factory();
+
+		return $topic->load(
+			DB::select_array($topic->fields())
+				->where('forum_area_id', '=', $this->id)
+				->order_by('last_post_id', 'DESC')
+				->offset($pagination->offset),
+			$pagination->items_per_page
+		);
 	}
 
 

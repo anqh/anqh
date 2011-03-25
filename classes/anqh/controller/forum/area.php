@@ -189,25 +189,27 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->tab_id = 'private';
 
 		// Set title
-		$this->page_title = HTML::chars(__('Private messages'));
-		$this->page_subtitle = __('Personal and group messages');
+		$this->page_title     = HTML::chars(__('Private messages'));
+		$this->page_subtitle  = __('Personal and group messages');
 		$this->page_subtitle .= ' | ' . HTML::anchor(
-			Route::get('forum_group')->uri(array('action' => '')),
+			Route::url('forum_group', array('action' => '')),
 			__('Back to forum groups')
 		);
 
 		// Set actions
 		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST, self::$user)) {
 			$this->page_actions[] = array(
-				'link' => Route::get('forum_private_topic_add')->uri(array('action' => 'post')),
-				'text' => __('New message'), 'class' => 'topic-add'
+				'link'  => Route::url('forum_private_topic_add', array('action' => 'post')),
+				'text'  => __('New message'),
+				'class' => 'topic-add'
 			);
 		}
 
 		// Pagination
 		$pagination = Pagination::factory(array(
+			'url'            => Route::url('forum_private_area'),
 			'items_per_page' => Kohana::config('forum.topics_per_page'),
-			'total_items'    => Model_Forum_Private_Topic::get_count(self::$user),
+			'total_items'    => Model_Forum_Private_Topic::factory()->get_count(self::$user),
 		));
 
 		// Posts

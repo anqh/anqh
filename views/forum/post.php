@@ -9,13 +9,17 @@
  */
 
 // Post author
-$author = Model_User::find_user_light($post->original('author'));
+// @todo Fix this idiocracy
+if ($author = Model_User::find_user_light($post->author_id)) {
+	$author_full = Model_User::find_user($author['id']);
+}
+
 
 // Viewer's post
 $my = ($user && $author && $author['id'] == $user->id);
 
 // Topic author's post
-$owners = ($author ? $post->original('author') == $topic->original('author') : $post->author_name == $topic->author_name);
+$owners = ($author ? $author['id'] == $topic->author_id : $post->author_name == $topic->author_name);
 ?>
 
 	<article id="post-<?php echo $post->id ?>" class="post <?php echo ($owners ? 'owner ' : ''), ($my ? 'my ' : ''), Text::alternate('', 'alt') ?>">
@@ -27,7 +31,7 @@ $owners = ($author ? $post->original('author') == $topic->original('author') : $
 				<?php echo HTML::user($author, $author['username']) ?><br />
 				<small><?php echo HTML::chars($author['title']) ?></small>
 				<p>
-					<small><?php echo __('Posts: :posts', array(':posts' => '<var>' . Num::format($post->author->post_count, 0))) ?></small>
+					<small><?php echo __('Posts: :posts', array(':posts' => '<var>' . Num::format($author_full->post_count, 0))) ?></small>
 				</p>
 			<?php else: ?>
 				<?php echo HTML::avatar(false) ?>
@@ -38,7 +42,7 @@ $owners = ($author ? $post->original('author') == $topic->original('author') : $
 		</section>
 
 		<section class="post-content grid6">
-			<header<?php echo $post->id == $topic->last_post->id ? ' id="last"' : '' ?>>
+			<header<?php echo $post->id == $topic->last_post_id ? ' id="last"' : '' ?>>
 				<small class="ago">
 					<?php echo HTML::time(Date::short_span($post->created, true, true), $post->created) ?>
 				</small>
@@ -78,17 +82,17 @@ $owners = ($author ? $post->original('author') == $topic->original('author') : $
 				</nav>
 			</header>
 
-			<?php if ($post->parent->id) echo __('Replying to :parent', array(
+			<?php if ($post->parent_id) echo __('Replying to :parent', array(
 				':parent' => HTML::anchor(
 					Route::get($private ? 'forum_private_post' : 'forum_post')
-						->uri(array('topic_id' => Route::model_id($topic), 'id' => $post->parent->id)) . '#post-' . $post->parent->id,
-					HTML::chars($post->parent->topic->name)
+						->uri(array('topic_id' => Route::model_id($topic), 'id' => $post->parent_id)) . '#post-' . $post->parent_id,
+					HTML::chars($post->parent()->topic()->name)
 				))) ?>
 
 <?php echo BB::factory($post->post)->render() ?>
 
 			<footer>
-				<?php if ($post->modifies > 0) echo	__('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($post->modified), $post->modified))); ?>
+				<?php if ($post->modify_count > 0) echo __('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($post->modified), $post->modified))); ?>
 
 				<?php echo $author['signature'] ? BB::factory("\n--\n" . $author['signature'])->render() : '' ?>
 

@@ -63,7 +63,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	protected $_rules = array(
 		'forum_area_id' => array('not_empty', 'digit'),
 
-		'status'        => array('in_array', array(':value', array(self::STATUS_LOCKED, self::STATUS_SINK, self::STATUS_NORMAL))),
+		'status'        => array('in_array' => array(':value', array(self::STATUS_LOCKED, self::STATUS_SINK, self::STATUS_NORMAL))),
 
 		'name'          => array('not_empty', 'max_length' => array(':value', 128)),
 
@@ -101,12 +101,12 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	 * Load topic by bound model
 	 *
 	 * @static
-	 * @param   Jelly_Model  $bind_model  Bound model
-	 * @param   string       $bind_name   Bind config if multiple binds per model
+	 * @param   Model   $bind_model  Bound model
+	 * @param   string  $bind_name   Bind config if multiple binds per model
 	 * @return  Model_Forum_Topic
 	 */
-	public static function find_by_bind(Jelly_Model $bind_model, $bind_name = null) {
-		$model = Jelly::class_name($bind_model);
+	public static function find_by_bind(Model $bind_model, $bind_name = null) {
+		$model = Model::model_name($bind_model);
 
 		// Get correct bind config
 		if (!$bind_name) {
@@ -123,20 +123,21 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		if ($config) {
 
 			// Get area
-			$area = Jelly::query('forum_area')
-				->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
-				->and_where('bind', '=', $bind_name)
-				->limit(1)
-				->select();
-
+			$area = Model_Forum_Area::factory();
+			$area = $area->load(
+				DB::select_array($area->fields())
+					->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
+					->where('bind', '=', $bind_name)
+			);
 			if ($area->loaded()) {
 
 				// Get topic
-				$topic = Jelly::query('forum_topic')
-					->where('forum_area_id', '=', $area->id)
-					->and_where('bind_id', '=', $bind_model->id())
-					->limit(1)
-					->select();
+				$topic = Model_Forum_Topic::factory();
+				$topic = $topic->load(
+					DB::select_array($topic->fields())
+						->where('forum_area_id', '=', $area->id)
+						->where('bind_id', '=', $bind_model->id())
+				);
 
 				// If topic found, go there!
 				if ($topic->loaded()) {
@@ -181,30 +182,18 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
-	 * Find topic posts by page
-	 *
-	 * @param   Pagination  $pagination
-	 * @return  Jelly_Collection
-	 */
-	public function find_posts(Pagination $pagination) {
-		return Jelly::query('forum_post')
-			->with('topic')
-			->where('forum_topic_id', '=', $this->id)
-			->pagination($pagination)
-			->select();
-	}
-
-
-	/**
-	 * Find a post's number in topic
+	 * Find a post's number in topic.
 	 *
 	 * @param   integer  $post_id
 	 * @return  integer
 	 */
 	public function get_post_number($post_id) {
-		return $this->get('posts')
+		return (int)DB::select(array(DB::expr('COUNT(id)'), 'posts'))
+			->from(Model_Forum_Post::factory()->get_table_name())
+			->where('forum_topic_id', '=', $this->id)
 			->where('id', '<', (int)$post_id)
-			->count();
+			->execute($this->_db)
+			->get('posts');
 	}
 
 
@@ -247,6 +236,26 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Find topic posts by page
+	 *
+	 * @param   Pagination  $pagination
+	 * @return  Model_Forum_Post[]
+	 */
+	public function posts(Pagination $pagination = null) {
+		$post = Model_Forum_Post::factory();
+
+		$query = DB::select_array($post->fields())
+			->where('forum_topic_id', '=', $this->id);
+
+		if ($pagination) {
+			return $post->load($query->offset($pagination->offset), $pagination->items_per_page);
+		} else {
+			return $post->load($query, null);
+		}
+	}
+
+
+	/**
 	 * Refresh topic foreign values
 	 *
 	 * @param   boolean  $save
@@ -256,25 +265,18 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 			return false;
 		}
 
+		// Get all posts for current topic
+		$posts = $this->posts();
+		$this->post_count = count($posts);
+
 		// First post
-		$first_post = Jelly::query('forum_post')
-			->where('forum_topic_id', '=', $this->id)
-			->order_by('id', 'ASC')
-			->limit(1)
-			->select();
-		$this->first_post = $first_post;
+		$this->first_post_id = $posts[0]->id;
 
 		// Last post
-		$last_post = Jelly::query('forum_post')
-			->where('forum_topic_id', '=', $this->id)
-			->order_by('id', 'DESC')
-			->limit(1)
-			->select();
-		$this->last_post = $last_post;
-		$this->last_posted = $last_post->created;
-		$this->last_poster = $last_post->author_name;
-
-		$this->post_count = count($this->posts);
+		$last_post = $posts[$this->post_count - 1];
+		$this->last_post_id = $last_post->id;
+		$this->last_posted  = $last_post->created;
+		$this->last_poster  = $last_post->author_name;
 
 		if ($save) {
 			$this->save();
