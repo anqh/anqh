@@ -31,6 +31,20 @@ class Anqh_Model_Geo_Country extends AutoModeler {
 
 
 	/**
+	 * Load country
+	 *
+	 * @param  integer|string  $id
+	 */
+	public function __construct($id = null) {
+		parent::__construct();
+
+		if ($id !== null) {
+			$this->load(DB::select()->where(is_numeric($id) ? 'id' : 'code', '=', $id));
+		}
+	}
+
+
+	/**
 	 * Override __get() to handle JSON in i18n, returned as array.
 	 *
 	 * @param   string  $key
