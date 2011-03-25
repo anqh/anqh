@@ -100,12 +100,15 @@ class Anqh_Visitor {
 	 * @return  boolean
 	 */
 	protected function complete_login(Model_User $user) {
-		$user->logins     += 1;
+		$user->login_count++;
 		$user->old_login  = $user->last_login;
 		$user->last_login = time();
 		$user->ip         = Request::$client_ip;
 		$user->hostname   = Request::host_name();
-		$user->save();
+		try {
+			$user->save();
+		} catch (Validation_Exception $e) {
+		}
 
 		// Regenerate session_id and store user
 		$this->_session->regenerate();
