@@ -90,12 +90,8 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				)),
 				'last_posted' => new Field_Integer,
 				'last_poster' => new Field_String,
-				'read_count' => new Field_Integer(array(
-					'column' => 'reads'
-				)),
-				'post_count'   => new Field_Integer(array(
-					'column' => 'posts',
-				)),
+				'read_count' => new Field_Integer,
+				'post_count'   => new Field_Integer,
 				'votes' => new Field_Integer,
 				'points' => new Field_Integer,
 				'bind_id' => new Field_Integer,

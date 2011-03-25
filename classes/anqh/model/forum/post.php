@@ -34,7 +34,9 @@ class Anqh_Model_Forum_Post extends Jelly_Model implements Permission_Interface 
 				'author_name' => new Field_String,
 				'author_ip'   => new Field_String,
 				'author_host' => new Field_String,
-				'modifies'    => new Field_Integer,
+				'modifies'    => new Field_Integer(array(
+					'column' => 'modify_count'
+				)),
 				'parent'      => new Field_BelongsTo(array(
 					'column'  => 'parent_id',
 					'foreign' => 'forum_post',

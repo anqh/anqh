@@ -137,12 +137,8 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 					'choices' => array('' => __('None')) + self::get_binds(),
 				)),
 
-				'post_count' => new Field_Integer(array(
-					'column' => 'posts',
-				)),
-				'topic_count' => new Field_Integer(array(
-					'column' => 'topics',
-				)),
+				'post_count' => new Field_Integer,
+				'topic_count' => new Field_Integer,
 				'last_topic' => new Field_BelongsTo(array(
 					'column'  => 'last_topic_id',
 					'foreign' => 'forum_topic',
