@@ -32,10 +32,10 @@ abstract class Anqh_Geo {
 		$url = Kohana::config('geo.base_url') . '/countryInfo?country=' . $id . '&lang=' . $lang;
 		try {
 			$xml = new SimpleXMLElement($url, null, true);
-			Kohana::$log->add(Kohana::DEBUG, 'GeoNames OK: ' . $url);
+			Kohana::$log->add(Log::DEBUG, 'GeoNames OK: ' . $url);
 			return $xml;
 		} catch (Exception $e) {
-			Kohana::$log->add(Kohana::ERROR, 'GeoNames failed: ' . $url . ' - ' . Kohana::exception_text($e));
+			Kohana::$log->add(Log::ERROR, 'GeoNames failed: ' . $url . ' - ' . Kohana_Exception::text($e));
 			return false;
 		}
 	}
@@ -52,10 +52,10 @@ abstract class Anqh_Geo {
 		$url = Kohana::config('geo.base_url') . '/get?geonameId=' . (int)$id . '&lang=' . $lang . '&style=full';
 		try {
 			$xml = new SimpleXMLElement($url, null, true);
-			Kohana::$log->add(Kohana::DEBUG, 'GeoNames OK: ' . $url);
+			Kohana::$log->add(Log::DEBUG, 'GeoNames OK: ' . $url);
 			return $xml;
 		} catch (Exception $e) {
-			Kohana::$log->add(Kohana::ERROR, 'GeoNames failed: ' . $url . ' - ' . Kohana::exception_text($e));
+			Kohana::$log->add(Log::ERROR, 'GeoNames failed: ' . $url . ' - ' . Kohana_Exception::text($e));
 			return false;
 		}
 	}
@@ -78,23 +78,23 @@ abstract class Anqh_Geo {
 		if (!isset(self::$_cities[$id])) {
 
 			// Not found from cache, load from db if preferred
-			$city = Model_Geo_City::find($id);
+			$city = Model_Geo_City::factory($id);
 			if (!$city->loaded()) {
 
 				// Still not loaded, load from GeoNames
-				$city = Jelly::factory('geo_city');
+				$city = Model_Geo_City::factory();
 				if ($page = self::_get($id, $lang)) {
 					if ($country = self::find_country((string)$page->countryCode, $lang)) {
-						$city->id         = (int)$page->geonameId;
-						$city->name       = (string)$page->toponymName;
-						$city->latitude   = (float)$page->lat;
-						$city->longitude  = (float)$page->lng;
-						$city->population = (int)$page->population;
-						$city->country    = $country;
-						$city->timezone   = Model_Geo_Timezone::find((string)$page->timezone);
+						$city->id              = (int)$page->geonameId;
+						$city->name            = (string)$page->toponymName;
+						$city->latitude        = (float)$page->lat;
+						$city->longitude       = (float)$page->lng;
+						$city->population      = (int)$page->population;
+						$city->geo_country_id  = $country->id;
+						$city->geo_timezone_id = Model_Geo_Timezone::factory((string)$page->timezone)->id;
 						try {
 							$city->save();
-						} catch (Validate_Exception $e) {
+						} catch (Validation_Exception $e) {
 							return false;
 						}
 					}
@@ -141,11 +141,11 @@ abstract class Anqh_Geo {
 		if (!isset(self::$_countries[$id])) {
 
 			// Not found from cache, load from db if preferred
-			$country = Model_Geo_Country::find($id);
+			$country = Model_Geo_Country::factory($id);
 			if (!$country->loaded()) {
 
 				// Still not loaded, load from GeoNames
-				$country = Jelly::factory('geo_country');
+				$country = Model_Geo_Country::factory();
 				if (is_int($id)) {
 
 					// geonameId given
@@ -170,7 +170,7 @@ abstract class Anqh_Geo {
 					$country->population = (int)$details->population;
 					try {
 						$country->save();
-					} catch (Validate_Exception $e) {
+					} catch (Validation_Exception $e) {
 						return false;
 					}
 

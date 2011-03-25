@@ -7,50 +7,56 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Geo_Country extends Jelly_Model {
+class Anqh_Model_Geo_Country extends AutoModeler {
+
+	protected $_table_name = 'geo_countries';
+
+	protected $_data = array(
+		'id'         => null,
+		'name'       => null,
+		'code'       => null,
+		'currency'   => null,
+		'population' => null,
+		'created'    => null,
+		'modified'   => null,
+		'i18n'       => null,
+	);
+
+	protected $_rules = array(
+		'name'            => array('not_empty', 'max_length' => array(':value', 200)),
+		'code'            => array('not_empty', 'exact_length' => array(':value', 2)),
+		'currency'        => array('exact_length' => array(':value', 3)),
+		'population'      => array('digit'),
+	);
+
 
 	/**
-	 * Create new model
+	 * Override __get() to handle JSON in i18n, returned as array.
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param   string  $key
+	 * @return  mixed
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'name' => new Jelly_Field_String(array(
-				'label'  => __('Country'),
-				'unique' => true,
-				'rules'  => array(
-					'max_length' => array(200),
-					'not_empty'  => array(true),
-				),
-			)),
-			'code' => new Jelly_Field_String(array(
-				'label'  => __('Country code'),
-				'unique' => true,
-				'rules'  => array(
-					'not_empty'    => array(true),
-					'exact_length' => array(2),
-				),
-			)),
-			'currency' => new Jelly_Field_String(array(
-				'label' => __('Currency'),
-				'rules' => array(
-					'exact_length' => array(3),
-				),
-			)),
-			'population' => new Jelly_Field_Integer,
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'modified'   => new Jelly_Field_Timestamp(array(
-				'auto_now_update' => true,
-			)),
-			'i18n' => new Jelly_Field_JSON,
-			'cities' => new Jelly_Field_HasMany(array(
-				'foreign' => 'geo_city',
-			)),
-		));
+	public function __get($key) {
+		if ($key == 'i18n' && $this->_data['i18n']) {
+			return json_decode($this->_data['i18n'], true);
+		}
+
+		return parent::__get($key);
+	}
+
+
+	/**
+	 * Override __set() to handle JSON.
+	 *
+	 * @param   string  $key
+	 * @param   mixed   $value
+	 */
+	public function __set($key, $value) {
+		if ($key == 'i18n' && is_array($value)) {
+			$value = @json_encode($value);
+		}
+
+		parent::__set($key, $value);
 	}
 
 }
