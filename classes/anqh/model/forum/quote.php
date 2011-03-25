@@ -7,34 +7,18 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Quote extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Forum_Quote extends AutoModeler implements Permission_Interface {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'user' => new Jelly_Field_BelongsTo,
-			'topic' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'forum_topic_id',
-				'foreign' => 'forum_topic',
-			)),
-			'post' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'forum_post_id',
-				'foreign' => 'forum_post',
-			)),
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-		));
-	}
+	protected $_table_name = 'forum_quotes';
+
+	protected $_data = array(
+		'id'             => null,
+		'author_id'      => null,
+		'user_id'        => null,
+		'forum_topic_id' => null,
+		'forum_post_id'  => null,
+		'created'        => null,
+	);
 
 
 	/**

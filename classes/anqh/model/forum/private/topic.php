@@ -15,34 +15,38 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 	/** Personal 1-on-1 topic */
 	const PERSONAL = 'personal';
 
+	protected $_table_name = 'forum_private_topics';
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'first_post' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'first_post_id',
-				'foreign' => 'forum_private_post',
-			)),
-			'last_post' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'last_post_id',
-				'foreign' => 'forum_private_post',
-			)),
-			'posts' => new Jelly_Field_HasMany(array(
-				'foreign' => 'forum_private_post.forum_topic_id',
-			)),
+	protected $_data = array(
+		'id'            => null,
+		'forum_area_id' => null,
+		'bind_id'       => null,
 
-			'recipient_count' => new Jelly_Field_Integer,
-			'recipients' => new Jelly_Field_HasMany(array(
-				'foreign' => 'forum_private_recipient.forum_topic_id'
-			)),
-		));
+		'type'          => null,
+		'status'        => self::STATUS_NORMAL,
+		'sticky'        => false,
+		'read_only'     => null,
+		'votes'         => null,
+		'points'        => null,
 
-		parent::initialize($meta);
-	}
+		'name'          => null,
+		'old_name'      => null,
+		'author_id'     => null,
+		'author_name'   => null,
+
+		'first_post_id' => null,
+		'last_post_id'  => null,
+		'last_posted'   => null,
+		'last_poster'   => null,
+		'read_count'    => null,
+		'post_count'    => null,
+
+		'recipient_count' => null,
+	);
+
+	protected $_has_many = array(
+		'posts', 'recipients'
+	);
 
 
 	/**

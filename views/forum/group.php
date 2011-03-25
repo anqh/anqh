@@ -22,7 +22,7 @@ $areas = $group->areas();
 
 	<?php foreach ($areas as $area): ?>
 
-		<?php if (Permission::has($area, Model_Forum_Area::PERMISSION_READ)): ?>
+		<?php if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, $user)): ?>
 
 <article class="area">
 	<header class="grid6 first">
@@ -37,8 +37,8 @@ $areas = $group->areas();
 		<?php if ($area->topic_count > 0): $last_topic = $area->last_topic(); ?>
 
 		<small class="ago"><?php echo HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
-		<?php echo HTML::user($area->last_topic->last_post->author, $last_topic->last_poster) ?><br />
-		<?php echo HTML::anchor(Route::model($area->last_topic, '?page=last#last'), HTML::chars($last_topic->name), array('title' => HTML::chars($last_topic->name))) ?>
+		<?php echo HTML::user($last_topic->last_post()->author_id, $last_topic->last_poster) ?><br />
+		<?php echo HTML::anchor(Route::model($last_topic, '?page=last#last'), HTML::chars($last_topic->name), array('title' => HTML::chars($last_topic->name))) ?>
 
 		<?php else: ?>
 		<sup><?php echo __('No topics yet.') ?></sup>

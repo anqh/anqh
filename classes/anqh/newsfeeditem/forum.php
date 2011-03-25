@@ -37,7 +37,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_REPLY:
-				$topic = Model_Forum_Topic::find($item->data['topic_id']);
+				$topic = Model_Forum_Topic::factory($item->data['topic_id']);
 				if ($topic->loaded()) {
 					$text = __('replied to topic<br />:topic', array(
 						':topic' => HTML::anchor(
@@ -50,7 +50,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 				break;
 
 			case self::TYPE_TOPIC:
-				$topic = Model_Forum_Topic::find($item->data['topic_id']);
+				$topic = Model_Forum_Topic::factory($item->data['topic_id']);
 				if ($topic->loaded()) {
 					$text = __('started a new topic<br />:topic', array(
 						':topic' => HTML::anchor(
@@ -77,7 +77,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 	 */
 	public static function reply(Model_User $user = null, Model_Forum_Post $post = null) {
 		if ($user && $post) {
-			parent::add($user, 'forum', self::TYPE_REPLY, array('topic_id' => (int)$post->topic->id, 'post_id' => (int)$post->id));
+			parent::add($user, 'forum', self::TYPE_REPLY, array('topic_id' => (int)$post->forum_topic_id, 'post_id' => (int)$post->id));
 		}
 	}
 

@@ -9,25 +9,9 @@
  */
 class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->table('forum_areas');
-		$meta->fields(array(
-			'last_topic' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'last_topic_id',
-				'foreign' => 'forum_private_topic',
-			)),
-			'topics' => new Jelly_Field_HasMany(array(
-				'foreign' => 'forum_private_topic'
-			))
-		));
-
-		parent::initialize($meta);
-	}
+	protected $_has_many = array(
+		'forum_private_topics'
+	);
 
 
 	/**

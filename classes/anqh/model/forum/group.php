@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Forum_Group extends AutoModeler_ORM implements Permission_Interface {
 
 	/** Permission to create new area */
 	const PERMISSION_CREATE_AREA = 'create_area';
@@ -18,90 +18,54 @@ class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface
 	/** Hidden group */
 	const STATUS_HIDDEN = 1;
 
+	protected $_table_name = 'forum_groups';
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->sorting(array('sort' => 'ASC'));
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'name' => new Jelly_Field_String(array(
-				'label' => __('Group name'),
-				'rules' => array(
-					'not_empty'  => array(true),
-					'max_length' => array(32),
-				),
-				'filters' => array(
-					'trim' => null,
-				),
-			)),
-			'description' => new Jelly_Field_String(array(
-				'label' => __('Description'),
-				'rules' => array(
-					'max_length' => array(250),
-				),
-				'filters' => array(
-					'trim' => null,
-				),
-			)),
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true
-			)),
-			'sort' => new Jelly_Field_Integer(array(
-				'label'   => __('Sort'),
-				'default' => 0,
-			)),
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'status' => new Jelly_Field_Enum(array(
-				'label'   => __('Status'),
-				'default' => self::STATUS_NORMAL,
-				'choices' => array(
-					self::STATUS_HIDDEN => 'Hidden',
-					self::STATUS_NORMAL => 'Normal',
-				),
-				'rules' => array(
-					'not_empty' => null,
-				)
-			)),
-			'areas' => new Jelly_Field_HasMany(array(
-				'foreign' => 'forum_area',
-			))
-		));
-	}
+	protected $_data = array(
+		'id'          => null,
+		'name'        => null,
+		'description' => null,
+		'created'     => null,
+		'sort'        => 0,
+		'author_id'   => null,
+		'status'      => self::STATUS_NORMAL,
+	);
 
+	protected $_rules = array(
+		'name'        => array('not_empty', 'max_length' => array(':value', 32)),
+		'description' => array('max_length' => array(':value', 250)),
+		'status'      => array('not_empty', 'in_array' => array(':value', array(self::STATUS_HIDDEN, self::STATUS_NORMAL))),
+	);
+
+	protected $_has_many = array(
+		'forum_areas'
+	);
 
 	/**
 	 * Get group areas
 	 *
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Area[]
 	 */
 	public function areas() {
-		return $this->areas instanceof Jelly_Collection ?
-			$this->areas :
-			Jelly::query('forum_area')
-				->with('last_topic')
-				->where('forum_group_id', '=', $this->id)
-				->and_where('status', '<>', Model_Forum_Area::STATUS_HIDDEN)
-				->select();
+		return $this->find_related(
+			'forum_areas',
+			DB::select_array(Model_Forum_Area::factory()->fields())
+				->where('status', '<>', Model_Forum_Area::STATUS_HIDDEN)
+		);
 	}
 
 
 	/**
 	 * Find all groups
 	 *
-	 * @static
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Group[]
 	 */
-	public static function find_all() {
-		return Jelly::query('forum_group')
-			->where('status', '=', self::STATUS_NORMAL)
-			->select();
+	public function find_all() {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('status', '=', self::STATUS_NORMAL)
+				->order_by('sort', 'ASC'),
+			null
+		);
 	}
 
 
@@ -117,7 +81,7 @@ class Anqh_Model_Forum_Group extends Jelly_Model implements Permission_Interface
 
 		switch ($permission) {
 			case self::PERMISSION_DELETE:
-		    if (count($this->areas)) {
+		    if (count($this->areas())) {
 
 			    // Don't delete groups with areas
 			    return false;

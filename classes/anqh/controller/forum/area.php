@@ -34,7 +34,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->history = false;
 
 		$area_id = (int)$this->request->param('id');
-		$area = Model_Forum_Area::find($area_id);
+		$area = Model_Forum_Area::factory($area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, $area_id);
 		}
@@ -55,7 +55,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Load area
 		$area_id = (int)$this->request->param('id');
 		if ($area_id) {
-			$area = Model_Forum_Area::find($area_id);
+			$area = Model_Forum_Area::factory($area_id);
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
@@ -68,7 +68,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		if ($area->loaded()) {
 			$group = $area->group;
 		} else if ($group_id = (int)$this->request->param('group_id')) {
-			$group = Model_Forum_Group::find($group_id);
+			$group = Model_Forum_Group::factory($group_id);
 			$area->group = $group;
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
@@ -141,7 +141,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		}
 
 		/** @var  Model_Forum_Area  $area */
-		$area = Model_Forum_Area::find((int)$area_id);
+		$area = Model_Forum_Area::factory((int)$area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, (int)$area_id);
 		}
@@ -213,7 +213,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Posts
 		Widget::add('main', View_Module::factory('forum/private_topics', array(
 			'mod_class'  => 'topics messages',
-			'topics'     => Model_Forum_Private_Area::find_topics(self::$user, $pagination),
+			'topics'     => Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination),
 			'pagination' => $pagination
 		)));
 

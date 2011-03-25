@@ -58,7 +58,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	public function action_event() {
 		$event_id = (int)$this->request->param('id');
 
-		$event = Model_Event::find($event_id);
+		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -71,7 +71,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$bind = $time == 'before' ? 'events_upcoming' : 'events_past';
 
 		// Redirect
-		if ($topic = Model_Forum_Topic::find_by_bind($event, $bind)) {
+		if ($topic = Model_Forum_Topic::factory()->find_by_bind($event, $bind)) {
 			$this->request->redirect(Route::model($topic));
 		} else {
 			$this->request->redirect(Route::get('forum')->uri());
@@ -94,7 +94,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Load topic
 		/** @var  Model_Forum_Private_Topic|Model_Forum_Topic  $topic */
-		$topic = $this->private ? Model_Forum_Private_Topic::find($topic_id) : Model_Forum_Topic::find($topic_id);
+		$topic = $this->private ? Model_Forum_Private_Topic::factory($topic_id) : Model_Forum_Topic::factory($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -103,7 +103,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Did we request single post with ajax?
 		if ($this->ajax && isset($post_id)) {
 			$this->history = false;
-			$post = $this->private ? Model_Forum_Private_Post::find($post_id) : Model_Forum_Post::find($post_id);
+			$post = $this->private ? Model_Forum_Private_Post::factory($post_id) : Model_Forum_Post::factory($post_id);
 			if (!$post->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}
@@ -143,7 +143,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			// Quotes are supported only in public forum as we get notifications anyway in private
 			if (self::$user) {
-				$quotes = Model_Forum_Quote::find_by_user(self::$user);
+				$quotes = Model_Forum_Quote::factory()->find_by_user(self::$user);
 				if (count($quotes)) {
 					foreach ($quotes as $quote) {
 						if ($topic->id == $quote->topic->id) {
@@ -236,7 +236,7 @@ $(function() {
 			'user'       => self::$user,
 			'topic'      => $topic,
 			'posts'      => $topic->find_posts($pagination),
-			'first'      => $pagination->current_first_item,
+			'first'      => $pagination->current_first_item(),
 			'pagination' => $pagination,
 			'private'    => $this->private,
 		)));
@@ -302,13 +302,13 @@ $(function() {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
-		$topic = $this->private ? Model_Forum_Private_Topic::find($topic_id) : Model_Forum_Topic::find($topic_id);
+		$topic = $this->private ? Model_Forum_Private_Topic::factory($topic_id) : Model_Forum_Topic::factory($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
 
 		// Editing a post
-		$post = $this->private ? Model_Forum_Private_Post::find($post_id) : Model_Forum_Post::find($post_id);
+		$post = $this->private ? Model_Forum_Private_Post::factory($post_id) : Model_Forum_Post::factory($post_id);
 		if (!$post->loaded() || $post->topic->id != $topic->id || !Security::csrf_valid()) {
 			throw new Model_Exception($post, $post_id);
 		}
@@ -338,7 +338,7 @@ $(function() {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
-		$topic = $this->private ? Model_Forum_Private_Topic::find($topic_id) : Model_Forum_Topic::find($topic_id);
+		$topic = $this->private ? Model_Forum_Private_Topic::factory($topic_id) : Model_Forum_Topic::factory($topic_id);
 		if (!$topic->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -372,7 +372,7 @@ $(function() {
 		$this->history = false;
 
 		// Topic is always loaded, avoid haxing attempts to edit posts from wrong topics
-		$topic = $this->private ? Model_Forum_Private_Topic::find($topic_id) : Model_Forum_Topic::find($topic_id);
+		$topic = $this->private ? Model_Forum_Private_Topic::factory($topic_id) : Model_Forum_Topic::factory($topic_id);
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
@@ -381,7 +381,7 @@ $(function() {
 		if ($post_id) {
 
 			// Editing a post
-			$post = $this->private ? Model_Forum_Private_Post::find($post_id) : Model_Forum_Post::find($post_id);
+			$post = $this->private ? Model_Forum_Private_Post::factory($post_id) : Model_Forum_Post::factory($post_id);
 			if (!$post->loaded() || $post->topic->id != $topic->id) {
 				throw new Model_Exception($post, $post_id);
 			}
@@ -396,7 +396,7 @@ $(function() {
 
 		// Quoting a post
 		if ($quote_id) {
-			$quote = $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::find($quote_id);
+			$quote = $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory($quote_id);
 			if (!$quote->loaded() || $quote->topic->id != $topic->id) {
 				throw new Model_Exception($quote, $quote_id);
 			}
@@ -561,7 +561,7 @@ $(function() {
 
 			// Start new topic
 			/** @var  Model_Forum_Private_Area|Model_Forum_Area  $area */
-			$area = $this->private ? Model_Forum_Private_Area::find($area_id) : Model_Forum_Area::find($area_id);
+			$area = $this->private ? Model_Forum_Private_Area::factory($area_id) : Model_Forum_Area::factory($area_id);
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
@@ -591,7 +591,7 @@ $(function() {
 
 			// Edit old topic
 			/** @var  Model_Forum_Private_Topic|Model_Forum_Topic  $topic */
-			$topic = $this->private ? Model_Forum_Private_Topic::find($topic_id) : Model_Forum_Topic::find($topic_id);
+			$topic = $this->private ? Model_Forum_Private_Topic::factory($topic_id) : Model_Forum_Topic::factory($topic_id);
 			if (!$topic->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}
@@ -750,17 +750,18 @@ $(function() {
 		$this->page_subtitle  = HTML::icon_value(array(':views' => (int)$topic->read_count), ':views view', ':views views', 'views');
 		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts');
 
+		$area = $topic->area();
 		if ($this->private) {
 			$this->page_subtitle .= ' | ' . HTML::anchor(
 				Forum::private_messages_url(),
 				__('Back to :area', array(':area' => __('Private messages'))),
-				array('title' => strip_tags($topic->area->description))
+				array('title' => strip_tags($area->description))
 			);
 		} else {
 			$this->page_subtitle .= ' | ' . HTML::anchor(
-				Route::model($topic->area()),
-				__('Back to :area', array(':area' => HTML::chars($topic->area->name))),
-				array('title' => strip_tags($topic->area->description))
+				Route::model($area),
+				__('Back to :area', array(':area' => HTML::chars($area->name))),
+				array('title' => strip_tags($area->description))
 			);
 		}
 	}

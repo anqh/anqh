@@ -7,28 +7,17 @@
  * @copyright  (c) 2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Private_Recipient extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Forum_Private_Recipient extends AutoModeler_ORM implements Permission_Interface {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'topic' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'forum_topic_id',
-				'foreign' => 'forum_private_topic'
-			)),
-			'area' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'forum_area_id',
-				'foreign' => 'forum_area'
-			)),
-			'user' => new Jelly_Field_BelongsTo,
-			'unread' => new Jelly_Field_Integer
-		));
-	}
+	protected $_table_name = 'forum_private_recipients';
+
+	protected $_data = array(
+		'id'             => null,
+		'forum_topic_id' => null,
+		'forum_area_id'  => null,
+		'user_id'        => null,
+		'unread'         => null,
+	);
 
 
 	/**

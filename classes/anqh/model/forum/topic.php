@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to post reply to topic
@@ -29,80 +29,47 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 */
 	const STATUS_SINK = 2;
 
+	protected $_table_name = 'forum_topics';
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Jelly_Field_Primary,
-			'area' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'forum_area_id',
-				'foreign' => 'forum_area',
-				'rules'   => array(
-					'not_empty' => array(true),
-				)
-			)),
-			'name' => new Jelly_Field_String(array(
-				'label' => __('Topic'),
-				'rules' => array(
-					'not_empty'  => array(true),
-					'max_length' => array(128),
-				),
-				'filters' => array(
-					'trim' => null,
-				),
-			)),
-			'old_name' => new Jelly_Field_String,
-			'author' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'author_name' => new Jelly_Field_String,
-			'created' => new Jelly_Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'type' => new Jelly_Field_Integer,
-			'status' => new Jelly_Field_Enum(array(
-				'label' => __('Status'),
-				'default' => self::STATUS_NORMAL,
-				'choices' => array(
-					self::STATUS_LOCKED => __('Locked'),
-					self::STATUS_SINK   => __('Sink'),
-					self::STATUS_NORMAL => __('Normal'),
-				)
-			)),
-			'sticky' => new Jelly_Field_Boolean(array(
-				'label' => __('Sticky'),
-				'default' => false
-			)),
-			'read_only' => new Jelly_Field_Boolean,
-			'first_post' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'first_post_id',
-				'foreign' => 'forum_post',
-			)),
-			'last_post' => new Jelly_Field_BelongsTo(array(
-				'column'  => 'last_post_id',
-				'foreign' => 'forum_post',
-			)),
-			'last_posted' => new Jelly_Field_Integer,
-			'last_poster' => new Jelly_Field_String,
-			'read_count' => new Jelly_Field_Integer(array(
-				'column' => 'reads'
-			)),
-			'post_count'   => new Jelly_Field_Integer(array(
-				'column' => 'posts',
-			)),
-			'votes' => new Jelly_Field_Integer,
-			'points' => new Jelly_Field_Integer,
-			'bind_id' => new Jelly_Field_Integer,
-			'posts' => new Jelly_Field_HasMany(array(
-				'foreign' => 'forum_post',
-			))
-		));
-	}
+	protected $_data = array(
+		'id'            => null,
+		'forum_area_id' => null,
+		'bind_id'       => null,
+
+		'type'          => null,
+		'status'        => self::STATUS_NORMAL,
+		'sticky'        => false,
+		'read_only'     => null,
+		'votes'         => null,
+		'points'        => null,
+
+		'name'          => null,
+		'old_name'      => null,
+		'author_id'     => null,
+		'author_name'   => null,
+
+		'first_post_id' => null,
+		'last_post_id'  => null,
+		'last_posted'   => null,
+		'last_poster'   => null,
+		'read_count'    => null,
+		'post_count'    => null,
+	);
+
+	protected $_has_many = array(
+		'posts'
+	);
+
+	protected $_rules = array(
+		'forum_area_id' => array('not_empty', 'digit'),
+
+		'status'        => array('in_array', array(':value', array(self::STATUS_LOCKED, self::STATUS_SINK, self::STATUS_NORMAL))),
+
+		'name'          => array('not_empty', 'max_length' => array(':value', 128)),
+
+		'first_post_id' => array('digit'),
+		'last_post_id'  => array('digit'),
+	);
 
 
 	/**
@@ -111,19 +78,22 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	 * @return  Model_Forum_Area
 	 */
 	public function area() {
-		return $this->area instanceof Model_Forum_Area ? $this->area : Model_Forum_Area::find($this->area);
+		return new Model_Forum_Area($this->forum_area_id);
 	}
 
 
 	/**
-	 * Find active topics
+	 * Find active topics.
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Topic[]
 	 */
-	public static function find_active($limit = 10) {
-		return Jelly::query('forum_topic')->order_by('last_post_id', 'DESC')->limit($limit)->select();
+	public function find_active($limit = 10) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('last_post_id', 'DESC'),
+			$limit
+		);
 	}
 
 
@@ -183,30 +153,30 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 	/**
 	 * Find latest topics
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Topic[]
 	 */
-	public static function find_by_latest_post($limit = 10) {
-		return Jelly::query('forum_topic')
-			->order_by('last_post_id', 'DESC')
-			->limit($limit)
-			->select();
+	public function find_by_latest_post($limit = 10) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('last_post_id', 'DESC'),
+			$limit
+		);
 	}
 
 
 	/**
 	 * Find new topics
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Topic[]
 	 */
-	public static function find_new($limit = 10) {
-		return Jelly::query('forum_topic')
-			->order_by('id', 'DESC')
-			->limit($limit)
-			->select();
+	public function find_new($limit = 10) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('id', 'DESC'),
+			$limit
+		);
 	}
 
 
@@ -252,17 +222,27 @@ class Anqh_Model_Forum_Topic extends Jelly_Model implements Permission_Interface
 				return $user && $user->has_role('admin');
 
 			case self::PERMISSION_POST:
-		    return $user && ($this->status != self::STATUS_LOCKED || $user->has_role('admin'));
+		    return $user && ($this->status !== self::STATUS_LOCKED || $user->has_role('admin'));
 
 			case self::PERMISSION_READ:
 				return Permission::has($this->area(), Model_Forum_Area::PERMISSION_READ, $user);
 
 			case self::PERMISSION_UPDATE:
-				return $user && (($this->status != self::STATUS_LOCKED && $user->id == $this->original('author')) || $user->has_role('admin'));
+				return $user && (($this->status !== self::STATUS_LOCKED && $user->id == $this->author_id) || $user->has_role('admin'));
 
 		}
 
 	  return false;
+	}
+
+
+	/**
+	 * Get area last topic
+	 *
+	 * @return  Model_Forum_Post
+	 */
+	public function last_post() {
+		return Model_Forum_Post::factory($this->last_post_id);
 	}
 
 

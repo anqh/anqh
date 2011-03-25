@@ -26,7 +26,7 @@ class Anqh_Controller_Forum extends Controller_Template {
 		$this->page_id = 'forum';
 		$this->page_title = __('Forum');
 		$this->tabs = array(
-			'index' => array('url' => Route::get('forum')->uri(), 'text' => __('New posts')),
+			'index' => array('url' => Route::get('forum')->uri(),       'text' => __('New posts')),
 			'areas' => array('url' => Route::get('forum_group')->uri(), 'text' => __('Areas'))
 		);
 
@@ -44,7 +44,7 @@ class Anqh_Controller_Forum extends Controller_Template {
 
 		Widget::add('main', View_Module::factory('forum/topics', array(
 			'mod_class' => 'topics articles',
-			'topics'    => Model_Forum_Topic::find_active(20)
+			'topics'    => Model_Forum_Topic::factory()->find_active(20)
 		)));
 
 		$this->side_views();
@@ -60,19 +60,19 @@ class Anqh_Controller_Forum extends Controller_Template {
 				'mod_id'    => 'topics-active',
 				'mod_class' => 'cut tab topics',
 				'title'     => __('New posts'),
-				'topics'    => Model_Forum_Topic::find_active(20),
+				'topics'    => Model_Forum_Topic::factory()->find_active(20),
 			))),
 			'latest' => array('href' => '#topics-new', 'title' => __('New topics'), 'tab' => View_Module::factory('forum/topiclist', array(
 				'mod_id'    => 'topics-new',
 				'mod_class' => 'cut tab topics',
 				'title'     => __('New topics'),
-				'topics'    => Model_Forum_Topic::find_new(20),
+				'topics'    => Model_Forum_Topic::factory()->find_new(20),
 			))),
 			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => $this->tab_id == 'index', 'tab' => View_Module::factory('forum/grouplist', array(
 				'mod_id'    => 'forum-areas',
 				'mod_class' => 'cut tab areas',
 				'title'     => __('Forum areas'),
-				'groups'    => Model_Forum_Group::find_all(),
+				'groups'    => Model_Forum_Group::factory()->find_all(),
 				'user'      => self::$user,
 			))),
 		);
