@@ -54,7 +54,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'address_street'     => null,
 		'address_zip'        => null,
 		'address_city'       => null,
-		'city_id'            => null,
+		'geo_city_id'        => null,
 		'latitude'           => null,
 		'longitude'          => null,
 
@@ -167,6 +167,16 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		if (empty($array['password']) || $array['password'] !== $array[$field]) {
 			$array->error($field, 'matches', array('param1' => 'password'));
 		}
+	}
+
+
+	/**
+	 * Get city.
+	 *
+	 * @return  Model_Geo_City|null
+	 */
+	public function city() {
+		return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
 	}
 
 
