@@ -133,6 +133,20 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 
 
 	/**
+	 * Get comment image
+	 *
+	 * @return  Model_Forum_Group
+	 */
+	public function group() {
+		try {
+			return $this->forum_group_id ? Model_Forum_Group::factory($this->forum_group_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission

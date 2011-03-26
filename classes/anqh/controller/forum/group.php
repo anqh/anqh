@@ -69,24 +69,10 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			$this->page_actions[] = array('link' => Route::model($group, 'delete'), 'text' => __('Delete group'), 'class' => 'group-delete');
 		}
 
-		// Build form
-		// @todo Fix to use custom view!
-		$form = array(
-			'values' => $group,
+		Widget::add('main', View_Module::factory('forum/group_edit', array(
 			'errors' => $errors,
-			'cancel' => Request::back(Route::get('forum_group')->uri(), true),
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'        => array(),
-						'description' => array(),
-						'sort'        => array(),
-					)
-				)
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+			'group'  => $group,
+		)));
 	}
 
 

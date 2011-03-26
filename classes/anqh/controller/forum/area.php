@@ -40,8 +40,9 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		}
 		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE, self::$user);
 
-		$group = $area->group;
+		$group = $area->group();
 		$area->delete();
+		
 		$this->request->redirect(Route::model($group));
 	}
 
@@ -62,14 +63,16 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user);
 		} else {
 			$area = Model_Forum_Area::factory();
+			$area->author_id = self::$user->id;
+			$area->created   = time();
 		}
 
 		// Load group
 		if ($area->loaded()) {
-			$group = $area->group;
+			$group = $area->group();
 		} else if ($group_id = (int)$this->request->param('group_id')) {
 			$group = Model_Forum_Group::factory($group_id);
-			$area->group = $group;
+			$area->forum_group_id = $group->id;
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -79,11 +82,11 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Handle post
 		$errors = array();
 		if ($_POST) {
-			$area->set($_POST);
+			$area->set_fields(Arr::extract($_POST, Model_Forum_Area::$editable_fields));
 			try {
 				$area->save();
 				$this->request->redirect(Route::model($area));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
@@ -96,34 +99,16 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			$this->page_actions[] = array('link' => Route::model($area, 'delete'), 'text' => __('Delete area'), 'class' => 'area-delete');
 		}
 
-		// Build form
-		$form = array(
-			'values' => $area,
+		// Create group list
+		$groups = array();
+		foreach (Model_Forum_Group::factory()->find_all() as $_group) {
+			$groups[$_group->id] = $_group->name;
+		}
+		Widget::add('main', View_Module::factory('forum/area_edit', array(
 			'errors' => $errors,
-			'cancel' => Request::back(Route::get('forum_group')->uri(), true),
-			'groups' => array(
-				array(
-					'fields' => array(
-						'group'       => array(),
-						'name'        => array(),
-						'description' => array(),
-						'sort'        => array(),
-					),
-				),
-				array(
-					'header' => __('Settings'),
-					'fields' => array(
-						'access_read'  => array(),
-						'access_write' => array(),
-						'type'         => array(),
-						'bind'         => array(),
-						'status'       => array(),
-					),
-				),
-			),
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+			'groups' => $groups,
+			'area'   => $area,
+		)));
 	}
 
 
