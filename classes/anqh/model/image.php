@@ -36,11 +36,11 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		'description'       => null,
 		'format'            => null,
 		'created'           => null,
-		'view_count'        => null,
-		'comment_count'     => null,
-		'new_comment_count' => null,
-		'rate_count'        => null,
-		'rate_total'        => null,
+		'view_count'        => 0,
+		'comment_count'     => 0,
+		'new_comment_count' => 0,
+		'rate_count'        => 0,
+		'rate_total'        => 0,
 
 		'original_size'     => null,
 		'original_width'    => null,
@@ -385,8 +385,11 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 		// Validate new image
 		if ($new) {
+			$path = Kohana::config('image.upload_path');
+
+			// Download remote files
 			if ($this->remote && !$this->file) {
-				$this->file = Request::factory($this->remote)->download(null, Kohana::config('image.upload_path'));
+				$this->file = Request::factory($this->remote)->download(null, $path);
 			}
 
 			if (!$this->file || (!$this->remote && !Upload::not_empty($this->file))) {
@@ -397,14 +400,41 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::config('image.filetypes')))));
 			}
 
-			// As a remote file is no actual file field, manually set the filename
-			if ($this->remote && !is_uploaded_file($this->file['tmp_name'])) {
-				$this->file = basename($this->file['tmp_name']);
+			$upload = $this->file;
+
+			if ($this->remote && !is_uploaded_file($upload['tmp_name'])) {
+
+				// As a remote file is no actual file field, manually set the filename
+				$this->file = basename($upload['tmp_name']);
+
+			} else if (is_uploaded_file($upload['tmp_name'])) {
+
+				// Sanitize the filename
+				$upload['name'] = preg_replace('/[^a-z0-9-\.]/', '-', mb_strtolower($upload['name']));
+
+				// Strip multiple dashes
+				$upload['name'] = preg_replace('/-{2,}/', '-', $upload['name']);
+
+				// Try to save upload
+				if (false !== ($this->file = Upload::save($upload, null, $path))) {
+
+					// Get new filename
+					$this->file = basename($this->file);
+
+				}
+
 			}
 
 		}
 
-		parent::save();
+		try {
+			parent::save();
+		} catch (Validation_Exception $e) {
+			if ($new && $this->file) {
+				unlink($path . $this->file);
+			}
+			throw $e;
+		}
 
 		// Some magic on created images only
 		if ($new) {
@@ -426,9 +456,9 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			$new_file = $this->id . '_' . $this->postfix . Kohana::config('image.postfix_original') . '.jpg';
 
 			// Rename and move to correct directory using image id
-			$old_path = Kohana::config('image.upload_path');
 			$old_file = $this->file;
-			if (!rename($old_path . $old_file, $new_path . $new_file)) {
+			if (!rename($path . $old_file, $new_path . $new_file)) {
+				unlink($path . $old_file);
 				throw new Kohana_Exception(get_class($this) . ' could not move uploaded image');
 			}
 			$this->file = $new_file;

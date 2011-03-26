@@ -120,10 +120,17 @@ class Anqh_Image_EXIF {
 		$this->exif_raw = $exif_raw;
 		if (isset($exif_raw['ValidEXIFData'])) {
 
-			// parse only wanted data
+			// Parse only wanted data
 			foreach ($this->exif_vars as $field => $exif_var) {
-				if (isset($exif_raw[$exif_var[0]][$exif_var[1]]) && !empty($exif_raw[$exif_var[0]][$exif_var[1]]))
-					$exif[$field] = $exif_raw[$exif_var[0]][$exif_var[1]];
+				if (isset($exif_raw[$exif_var[0]][$exif_var[1]]) && !empty($exif_raw[$exif_var[0]][$exif_var[1]])) {
+
+					// Parse timestamp, just in case
+					if ($field === 'taken') {
+						$exif[$field] = Date::format(Date::TIME_SQL, $exif_raw[$exif_var[0]][$exif_var[1]]);
+					} else {
+						$exif[$field] = $exif_raw[$exif_var[0]][$exif_var[1]];
+					}
+				}
 			}
 
 		}
