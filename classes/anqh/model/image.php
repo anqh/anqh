@@ -161,7 +161,9 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			}
 
 			// Delete exif
-			$this->exif()->delete();
+			if ($exif = $this->exif()) {
+				$this->exif()->delete();
+			}
 
 		}
 
