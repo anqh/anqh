@@ -416,11 +416,11 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (isset($_REQUEST['front'])) {
 
 			// Change front flyer
-			/** @var  Model_Image  $image */
-			$image = Model_Image::factory((int)$_REQUEST['front']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image->id)) {
-				$event->flyer_front_image_id = $image->id;
-				$event->flyer_front_url      = $image->get_url();
+			/** @var  Model_Flyer  $flyer */
+			$flyer = Model_Flyer::factory()->find_by_image((int)$_REQUEST['front']);
+			if (Security::csrf_valid() && $flyer->loaded() && $flyer->event_id == $event->id) {
+				$event->flyer_front_image_id = $flyer->image_id;
+				$event->flyer_front_url      = $flyer->image()->get_url();
 				$event->save();
 			}
 			$cancel = true;
@@ -428,11 +428,11 @@ class Anqh_Controller_Events extends Controller_Template {
 		} else if (isset($_REQUEST['back'])) {
 
 			// Change back flyer
-			/** @var  Model_Image  $image */
-			$image = Model_Image::factory((int)$_REQUEST['back']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image->id)) {
-				$event->flyer_back_image_id = $image->id;
-				$event->flyer_back_url      = $image->get_url();
+			/** @var  Model_Flyer  $flyer */
+			$flyer = Model_Flyer::factory()->find_by_image((int)$_REQUEST['back']);
+			if (Security::csrf_valid() && $flyer->loaded() && $flyer->event_id == $event->id) {
+				$event->flyer_back_image_id = $flyer->image_id;
+				$event->flyer_back_url      = $flyer->image()->get_url();
 				$event->save();
 			}
 			$cancel = true;
@@ -440,18 +440,18 @@ class Anqh_Controller_Events extends Controller_Template {
 		} else if (isset($_REQUEST['delete'])) {
 
 			// Delete existing
-			$image = Model_Image::factory((int)$_REQUEST['delete']);
-			if (Security::csrf_valid() && $image->loaded() && $event->has('images', $image->id)) {
-				if ($image->id == $event->flyer_front_image_id) {
+			/** @var  Model_Flyer  $flyer */
+			$flyer = Model_Flyer::factory()->find_by_image((int)$_REQUEST['delete']);
+			if (Security::csrf_valid() && $flyer->loaded() && $flyer->event_id == $event->id) {
+				if ($flyer->image_id == $event->flyer_front_image_id) {
 					$event->flyer_front_image_id = null;
 					$event->flyer_front_url      = null;
-				} else if ($image->id == $event->flyer_back_image_id->id) {
+				} else if ($flyer->image_id == $event->flyer_back_image_id->id) {
 					$event->flyer_back_image_id = null;
 					$event->flyer_back_url      = null;
 				}
-				$event->remove('images', $image->id);
 				$event->save();
-				$image->delete();
+				$flyer->delete();
 			}
 			$cancel = true;
 

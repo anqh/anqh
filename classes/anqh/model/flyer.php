@@ -56,6 +56,16 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Delete flyer and image.
+	 *
+	 * @return  integer
+	 */
+	public function delete() {
+		return $this->image()->delete();
+	}
+
+
+	/**
 	 * Get flyer event.
 	 *
 	 * @return  Model_Event
