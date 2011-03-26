@@ -73,15 +73,16 @@ class Anqh_Controller_User_API extends Controller_API {
 			$searches = empty($searches) ? array('username') : $searches;
 
 			// Build query
-			$users = Jelly::query('user')->limit($limit);
+			$user  = new Model_User();
+			$users = DB::select_array($user->fields());
 
 			// Find friends first
 			if ($user_id = Arr::get($_REQUEST, 'user', 0)) {
 				$users
-					->join('friend', 'LEFT')
-					->on('user.:primary_key', '=', 'friend.friend:foreign_key')
-					->on('friend.user:foreign_key', '=', DB::expr((int)$user_id))
-					->order_by('friend.created', 'ASC');
+					->join('friends', 'LEFT')
+					->on('users.id', '=', 'friends.friend_id')
+					->on('friends.user_id', '=', (int)$user_id)
+					->order_by('friends.created', 'ASC');
 			}
 
 			foreach ($orders as $column => $direction) {
@@ -99,7 +100,7 @@ class Anqh_Controller_User_API extends Controller_API {
 			$users->where_close();
 
 			// Build data
-			foreach ($users->select() as $user) {
+			foreach ($user->load($users, $limit) as $user) {
 				$this->data['users'][] = $this->_prepare_user($user, $fields);
 			}
 
@@ -143,7 +144,7 @@ class Anqh_Controller_User_API extends Controller_API {
 
 				// Custom value
 				case 'city':
-					$data[$field] = $user->city->id ? $user->city->name : $user->city_name;
+					$data[$field] = ($city = $user->city()) ? $city->name : $user->city_name;
 					break;
 
 				case 'avatar':
@@ -151,9 +152,10 @@ class Anqh_Controller_User_API extends Controller_API {
 					break;
 
 				case 'picture':
-					if ($user->default_image->id) {
-						$data[$field] = $user->default_image->get_url();
-					} else if (Validate::url($user->picture)) {
+					if ($user->default_image_id) {
+						$image = new Model_Image($user->default_image_id);
+						$data[$field] = $image->loaded() ? $image->get_url() : '';
+					} else if (Valid::url($user->picture)) {
 						$data[$field] = URL::site($user->picture, true);
 					} else {
 						$data[$field] = null;
