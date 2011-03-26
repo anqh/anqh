@@ -13,7 +13,7 @@
 
 $images = $pending
 	? $gallery->find_images_pending($approve ? null : $user)
-	: $gallery->find_images();
+	: $gallery->images();
 
 if ($pending) echo Form::open(null, array('id' => 'form-image-approval'));
 

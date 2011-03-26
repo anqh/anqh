@@ -234,13 +234,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::factory()->find($gallery_id);
+		$gallery = Model_Gallery::factory($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
 		/** @var  Model_Image  $image */
-		$image = Model_Image::find($image_id);
+		$image = Model_Image::factory($image_id);
 		if (!$image->loaded()) {
 			throw new Model_Exception($image, $image_id);
 		}
@@ -248,9 +248,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		Permission::required($image, Model_Image::PERMISSION_DELETE, self::$user);
 
 		if (Security::csrf_valid()) {
-			foreach ($gallery->images as $image) {
+			foreach ($gallery->images() as $image) {
 				if ($image->id == $image_id) {
-					$gallery->remove('images', $image);
 					$gallery->image_count--;
 					$gallery->save();
 					$image->delete();
@@ -610,7 +609,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 						// Set default image if none set
 						if (!$gallery->default_image_id) {
-							$gallery->default_image_id = $gallery->find_images()->current()->id;
+							$gallery->default_image_id = $gallery->images()->current()->id;
 						}
 
 						$gallery->update_copyright();
@@ -733,7 +732,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		} else {
 
 			Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
-			$images = $gallery->find_images();
+			$images = $gallery->images();
 
 		}
 
@@ -1123,26 +1122,27 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						throw new Kohana_Exception(__('Already uploaded'));
 					}
 
-					$image = Model_Image::factory()
-						->set(array(
-							'author' => self::$user,
-							'file'   => $file,
-							'status' => Model_Image::NOT_ACCEPTED,
-						));
-
-					// Create bigger normal image
-					$image->normal = 'wide';
+					$image = Model_Image::factory();
+					$image->set_fields(array(
+						'author_id' => self::$user->id,
+						'file'      => $file,
+						'status'    => Model_Image::NOT_ACCEPTED,
+						'normal'    => 'wide',
+						'created'   => time(),
+					));
 					$image->save();
 
 					// Save exif
 					try {
-						Model_Image_Exif::factory()
-							->set(array('image' => $image))
-							->save();
-					} catch (Kohana_Exception $e) { }
+						$exif = Model_Image_Exif::factory();
+						$exif->image_id = $image->id;
+						$exif->save();
+					} catch (Kohana_Exception $e) {
+						throw $e;
+					}
 
 					// Set the image as gallery image
-					$gallery->add('images', $image);
+					$gallery->relate('images', array($image->id));
 					$gallery->save();
 
 					// Mark filename as uploaded for current gallery
@@ -1152,13 +1152,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					// Make sure the user has photo role to be able to see uploaded pictures
 					if (!self::$user->has_role('photo')) {
 						self::$user
-							->add('roles', Model_Role::factory('photo'))
+							->relate('roles', array(Model_Role::factory('photo')->id))
 							->save();
 					}
 
 					// Show image if uploaded with ajax
 					if ($this->ajax) {
-						echo json_encode(array(
+						$this->response->body(json_encode(array(
 							'ok'        => true,
 							'thumbnail' => HTML::anchor(
 								Route::get('gallery_image')->uri(array(
@@ -1168,13 +1168,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 								)),
 								HTML::image($image->get_url('thumbnail'))
 							)
-						));
+						)));
 						return;
 					}
 
 					$this->request->redirect(Route::model($gallery));
 
-				} catch (Validate_Exception $e) {
+				} catch (Validation_Exception $e) {
 					$errors = $e->array->errors('validation');
 				} catch (Kohana_Exception $e) {
 					$errors = array('file' => $e->getMessage());
@@ -1185,7 +1185,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Show errors if uploading with ajax, skip form
 		if ($this->ajax && !empty($errors)) {
-			echo json_encode(array('error' => Arr::get($errors, 'file')));
+			$this->response->body(json_encode(array('error' => Arr::get($errors, 'file'))));
 			return;
 		}
 
@@ -1260,100 +1260,41 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				}
 
 				// Fill gallery info from event when creating new
-				$gallery->name = $event->name;
-				$gallery->date = $event->stamp_begin;
-				$gallery->event = $event;
+				$gallery->name     = $event->name;
+				$gallery->date     = $event->stamp_begin;
+				$gallery->event_id = $event->id;
 
 			} else if ($gallery->loaded()) {
 
 				// Editing old
-				$gallery->set(Arr::intersect($_POST, Model_Gallery::$editable_fields));
+				$gallery->set_fields(Arr::intersect($_POST, Model_Gallery::$editable_fields));
 
 			}
 
 			try {
 				$gallery->save();
 				$this->request->redirect(Route::model($gallery, $upload ? 'upload' : null));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');
 			}
 		}
 
-		// Build form
-		$form = array(
-			'attributes' => array(
-				'onsubmit' => 'return false;',
-			),
-			'values' => $gallery,
-			'errors' => $errors,
-			'cancel' => $cancel,
-			'save'   => false,
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'  => array(
-							'label' => __('Event name'),
-							'tip'   => __('Enter at least 3 characters')
-						),
-					),
-				),
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('galleries/gallery_edit', array(
+			'errors'  => $errors,
+			'gallery' => $gallery,
+			'cancel'  => $cancel,
+		)));
 
 		$data = (isset($event) && $event->loaded())
 			? array(
-				'mod_title' => HTML::chars($event->name),
+				'mod_title'    => HTML::chars($event->name),
 				'mod_subtitle' => HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true),
-				'event' => $event,
+				'event'        => $event,
 			)
 			: array();
 		Widget::add('main', View_Module::factory('galleries/event', $data));
 
-		// Name autocomplete
-		Widget::add('foot', HTML::script_source('
-head.ready("jquery-ui", function() {
-	$("#field-name")
-		.autocomplete({
-			minLength: 3,
-			source: function(request, response) {
-				$.ajax({
-					url: "/api/v1/events/search",
-					dataType: "json",
-					data: {
-						q: request.term,
-						limit: 25,
-						filter: "past",
-						search: "name",
-						field: "id:name:city:stamp_begin",
-						order: "stamp_begin.desc"
-					},
-					success: function(data) {
-						response($.map(data.events, function(item) {
-							return {
-								label: item.name,
-								stamp: item.stamp_begin,
-								city: item.city,
-								value: item.name,
-								id: item.id
-							}
-						}))
-					}
-				});
-			},
-			select: function(event, ui) {
-				window.location = "' .  URL::site(Route::get('galleries')->uri(array('action' => 'upload'))) . '?from=" + ui.item.id;
-			},
-		})
-		.data("autocomplete")._renderItem = function(ul, item) {
-			return $("<li></li>")
-				.data("item.autocomplete", item)
-				.append("<a>" + $.datepicker.formatDate("dd.mm.yy", new Date(item.stamp * 1000)) + " " + item.label + ", " + item.city + "</a>")
-				.appendTo(ul);
-		};
-});
-'));	}
+	}
 
 
 	/**

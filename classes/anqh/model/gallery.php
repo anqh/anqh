@@ -172,25 +172,6 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 
 
 	/**
-	 * Get visible gallery images
-	 *
-	 * @return  Database_Result
-	 */
-	public function find_images() {
-		return $this->find_related(
-			'images',
-			DB::select_array(Model_Image::factory()->fields())
-				->join('users', 'LEFT')
-				->on('users.id', '=', 'images.author_id')
-				->where('images.status', '=', Model_Image::VISIBLE)
-				->order_by('users.username', 'ASC')
-				->order_by('images.id', 'ASC'),
-			null
-		);
-	}
-
-
-	/**
 	 * Get gallery images waiting for approval.
 	 *
 	 * @param   Model_User  $user  image owner or null for all
@@ -322,6 +303,25 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get visible gallery images
+	 *
+	 * @return  Model_Image[]
+	 */
+	public function images() {
+		return $this->find_related(
+			'images',
+			DB::select_array(Model_Image::factory()->fields())
+				->join('users', 'LEFT')
+				->on('users.id', '=', 'images.author_id')
+				->where('images.status', '=', Model_Image::VISIBLE)
+				->order_by('users.username', 'ASC')
+				->order_by('images.id', 'ASC'),
+			null
+		);
 	}
 
 
