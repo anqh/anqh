@@ -591,13 +591,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 									$author = $image->author();
 									$gallery->image_count++;
 									$authors[$author['id']] = $author['username'];
+									$image->state(AutoModeler::STATE_LOADED);
 									$image->status = Model_Image::VISIBLE;
 									$image->save();
 								}
 						    break;
 
 							case 'deny':
-								$gallery->remove('images', $image->id);
+								$gallery->remove('image', $image->id);
 						    $image->delete();
 						    break;
 
@@ -613,7 +614,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 						}
 
 						$gallery->update_copyright();
-						$gallery->modified = time();
+						$gallery->updated = time();
 					}
 					$gallery->save();
 
@@ -1310,7 +1311,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$this->tabs['gallery'] = array('url' => Route::model($gallery), 'text' => __('Gallery'));
 
 		// Set title
-		$images = count($gallery->images);
+		$images = count($gallery->images());
 		$this->page_title = HTML::chars($gallery->name);
 		$this->page_subtitle  = __2(':images image', ':images images', $images, array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 	  $this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery->event),  __('Go to event'));

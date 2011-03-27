@@ -43,8 +43,8 @@ $copyright = $multiple = null;
 			<?php if (!$pending): ?>
 
 			<figcaption>
-				<?php echo HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
-				<?php echo HTML::icon_value(array(':views' => $image->view_count), ':views view', ':views views', 'views') ?><br />
+				<?php echo HTML::icon_value(array(':comments' => (int)$image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
+				<?php echo HTML::icon_value(array(':views' => (int)$image->view_count), ':views view', ':views views', 'views') ?><br />
 			</figcaption>
 
 			<?php endif; ?>

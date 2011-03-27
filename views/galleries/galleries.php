@@ -34,7 +34,7 @@
 				<?php if (isset($approval)):
 					$copyrights = array();
 					$pending_images = $gallery->find_images_pending($approval ? null : $user);
-					foreach ($pending_images as $image) $copyrights[$image->author->id] = $image->author;
+					foreach ($pending_images as $image) $copyrights[$image->author_id] = $image->author();
 					foreach ($copyrights as $copyright_id => &$copyright) $copyright = HTML::user($copyright);
 				?>
 
