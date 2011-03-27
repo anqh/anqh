@@ -116,7 +116,7 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 		if ($this->loaded()) {
 			if (!isset($recipients[$this->id])) {
 				$recipients[$this->id] = array();
-				foreach ($this->find_recipients() as $recipient) {
+				foreach ($this->recipients() as $recipient) {
 					$recipients[$this->id][$recipient] = Arr::get(Model_User::find_user_light($recipient), 'username');
 				}
 				natcasesort($recipients[$this->id]);
