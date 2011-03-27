@@ -9,8 +9,8 @@
  */
 
 $attributes = array('enctype' => 'multipart/form-data');
-if (Arr::get($form, 'ajaxify')) {
-	$attributes['class'] = 'ajaxify';
+if ($ajaxify) {
+//	$attributes['class'] = 'ajaxify';
 	$cancel_attributes = array('class' => 'ajaxify');
 } else {
 	$cancel_attributes = null;
@@ -21,12 +21,12 @@ echo Form::open(null, $attributes);
 
 	<fieldset>
 		<ul>
-			<?php echo Form::file_wrap('name', null, __('Flyer'), $errors) ?>
+			<?php echo Form::file_wrap('file', null, __('Flyer'), $errors) ?>
 		</ul>
 	</fieldset>
 
 	<fieldset>
-		<?php echo Form::submit_wrap('save', __('Save'), null, $cancel, $cancel_attributes) ?>
+		<?php echo Form::submit_wrap('save', __('Upload'), null, $cancel, $cancel_attributes) ?>
 	</fieldset>
 
 <?php

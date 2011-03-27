@@ -461,6 +461,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
 			if ($this->ajax) {
 				$this->response->body($this->_get_mod_image($event));
+
 				return;
 			}
 
@@ -469,12 +470,15 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		$image = Model_Image::factory();
 		$image->author_id = self::$user->id;
+		$image->created   = time();
 
 		// Handle post
 		$errors = array();
-		if ($_POST && $_FILES && Security::csrf_valid()) {
-			$image->file = Arr::get($_FILES, 'file');
+		if ($_POST && $_FILES) {
+			$image->file        = Arr::get($_FILES, 'file');
 			$image->description = $event->get_forum_topic();
+//			echo Debug::dump($this->file);
+//			exit;
 			try {
 				$image->save();
 
@@ -541,6 +545,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		if ($this->ajax) {
 			$this->response->body($view);
+
 			return;
 		}
 
@@ -689,7 +694,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			$this->page_title = __('New event');
 
-			$event->author = self::$user;
+			$event->author_id = self::$user->id;
 			$edit = false;
 
 		}
@@ -934,8 +939,8 @@ class Anqh_Controller_Events extends Controller_Template {
 			$actions = array();
 			$actions[] = array('link' => Route::model($event, 'image'), 'text' => __('Add flyer'), 'class' => 'image-add ajaxify');
 			if ($image) {
-				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&front=' . $image->id,  'text' => __('As front'), 'class' => 'image-change' . ($event->flyer_front->id == $image->id ? ' disabled' : ''), 'data-change' => 'front');
-				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&back=' . $image->id,   'text' => __('As back'), 'class' => 'image-change' . ($event->flyer_back->id == $image->id ? ' disabled' : ''), 'data-change' => 'back');
+				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&front=' . $image->id,  'text' => __('As front'), 'class' => 'image-change' . ($event->flyer_front_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'front');
+				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&back=' . $image->id,   'text' => __('As back'), 'class' => 'image-change' . ($event->flyer_back_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'back');
 				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&delete=' . $image->id, 'text' => __('Delete'), 'class' => 'image-delete');
 			}
 		} else {
