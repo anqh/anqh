@@ -14,7 +14,7 @@ if ($user):
 ?>
 <ul>
 
-	<?php if ($new_comments = $user->find_new_comments()): ?>
+	<?php if ($new_comments = Anqh::notifications($user)): ?>
 	<li class="menu-messages">
 		<ul class="new-messages">
 			<?php foreach ($new_comments as $class => $link): ?>
