@@ -37,13 +37,13 @@ class Anqh_Model_NewsfeedItem extends AutoModeler {
 	 * @return  Database_Result
 	 */
 	public static function find_items($limit = 20, array $users = null) {
-		$query = DB::select()->order_by('id', 'DESC');
+		$newsfeeditem = new Model_NewsfeedItem();
+		$query = DB::select_array($newsfeeditem->fields())->order_by('id', 'DESC');
 		if (is_array($users)) {
 			$query = $query->where('user_id', 'IN', $users);
 		}
 
-		return AutoModeler::factory('newsfeeditem')
-			->load($query, $limit);
+		return $newsfeeditem->load($query, $limit);
 	}
 
 

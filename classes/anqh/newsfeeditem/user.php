@@ -41,7 +41,7 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_DEFAULT_IMAGE:
-		    $image = Model_Image::find($item->data['image_id']);
+		    $image = Model_Image::factory($item->data['image_id']);
 		    if ($image->loaded()) {
 			    $text = __('changed their default image');
 		    }
