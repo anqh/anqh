@@ -81,7 +81,7 @@ class Anqh_Controller_User_API extends Controller_API {
 				$users
 					->join('friends', 'LEFT')
 					->on('users.id', '=', 'friends.friend_id')
-					->on('friends.user_id', '=', (int)$user_id)
+					->on('friends.user_id', '=', DB::expr((int)$user_id))
 					->order_by('friends.created', 'ASC');
 			}
 
