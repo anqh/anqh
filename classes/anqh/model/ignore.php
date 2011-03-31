@@ -60,11 +60,11 @@ class Anqh_Model_Ignore extends AutoModeler {
 
 		// Try static cache
 		$ignores = Anqh::cache_get($ckey);
-		if (true || is_null($ignores)) {
+		if (is_null($ignores)) {
 
 			// Load from DB
 			$ignores = (array)DB::select('user_id')
-				->from('ignore')
+				->from('ignores')
 				->where('ignore_id', '=', $ignore_id)
 				->execute()
 				->as_array(null, 'user_id');
@@ -92,7 +92,7 @@ class Anqh_Model_Ignore extends AutoModeler {
 		if (is_null($ignores)) {
 
 			// Load from DB
-			$friends = (array)DB::select('ignore_id')
+			$ignores = (array)DB::select('ignore_id')
 				->from('ignores')
 				->where('user_id', '=', $user_id)
 				->execute()
