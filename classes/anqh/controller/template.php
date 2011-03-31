@@ -109,8 +109,8 @@ abstract class Anqh_Controller_Template extends Controller {
 			$online = new Model_User_Online($session_id);
 			$online->user_id       = self::$user->id;
 			$online->last_activity = time();
-			if (!$online->loaded()) {
-				//$online->id = $session_id;
+			if (!$online->loaded() && $session_id) {
+				$online->id = $session_id;
 			}
 			try {
 				$online->save();
