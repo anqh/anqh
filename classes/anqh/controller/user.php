@@ -222,7 +222,7 @@ class Anqh_Controller_User extends Controller_Template {
 
 		// Handle post
 		$errors = array();
-		if ($_POST && $_FILES && Security::csrf_valid()) {
+		if ($_POST && $_FILES) {
 			$image->file = Arr::get($_FILES, 'file');
 			try {
 				$image->save();
@@ -235,7 +235,7 @@ class Anqh_Controller_User extends Controller_Template {
 				} catch (Kohana_Exception $e) { }
 
 				// Set the image as user image
-				$user->relate('images', $image->id);
+				$user->relate('images', array($image->id));
 				$user->default_image_id = $image->id;
 				$user->picture          = $image->get_url(); // @TODO: Legacy, will be removed after migration
 				$user->save();
@@ -257,26 +257,11 @@ class Anqh_Controller_User extends Controller_Template {
 			}
 		}
 
-		// Build form
-		// @todo Create form!
-		$form = array(
-			'ajaxify'    => $this->ajax,
-			'values'     => $image,
-			'errors'     => $errors,
-			'attributes' => array('enctype' => 'multipart/form-data'),
-			'cancel'     => $this->ajax ? URL::user($user, 'image') . '?cancel' : URL::user($user),
-			'groups'     => array(
-				array(
-					'fields' => array(
-						'file' => array(),
-					),
-				),
-			)
-		);
-
-		$view = View_Module::factory('form/anqh', array(
+		$view = View_Module::factory('events/flyer_upload', array(
 			'mod_title' => __('Add image'),
-			'form'      => $form
+			'ajaxify'   => $this->ajax,
+			'errors'    => $errors,
+			'cancel'     => $this->ajax ? URL::user($user, 'image') . '?cancel' : URL::user($user),
 		));
 
 		if ($this->ajax) {
@@ -371,12 +356,14 @@ class Anqh_Controller_User extends Controller_Template {
 		)), Widget::TOP);
 
 		// Slideshow
-		if (count($user->images) > 1) {
+		if (count($user_images = $user->images()) > 1) {
 			$images = array();
-			foreach ($user->images as $image) $images[] = $image;
+			foreach ($user_images as $image) {
+				$images[] = $image;
+			}
 			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
 				'images'     => array_reverse($images),
-				'classes'    => array($user->default_image->id => 'default active'),
+				'classes'    => array($user->default_image_id => 'default active'),
 			)));
 		}
 

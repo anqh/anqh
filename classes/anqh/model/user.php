@@ -108,7 +108,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_has_many = array(
-		'user_comments', 'user_images', 'user_roles', 'user_tokens',
+		'comments', 'images', 'roles', 'tokens',
 	);
 
 	/**
@@ -773,6 +773,16 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get user's images.
+	 *
+	 * @return  Model_Image[]
+	 */
+	public function images() {
+		return $this->find_related('images');
 	}
 
 
