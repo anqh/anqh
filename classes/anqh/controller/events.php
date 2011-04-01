@@ -477,8 +477,6 @@ class Anqh_Controller_Events extends Controller_Template {
 		if ($_POST && $_FILES) {
 			$image->file        = Arr::get($_FILES, 'file');
 			$image->description = $event->get_forum_topic();
-//			echo Debug::dump($this->file);
-//			exit;
 			try {
 				$image->save();
 
