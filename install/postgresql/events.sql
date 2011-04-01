@@ -1,0 +1,42 @@
+CREATE TABLE "public"."events" (
+  "id" SERIAL,
+  "name" VARCHAR(64) NOT NULL,
+  "homepage" VARCHAR(100),
+  "venue_name" VARCHAR(100),
+  "venue_url" VARCHAR(100),
+  "city_name" VARCHAR(50),
+  "dj" TEXT,
+  "hours_from" INTEGER,
+  "hours_to" INTEGER,
+  "age" INTEGER,
+  "price" NUMERIC(5,2),
+  "music" TEXT,
+  "info" TEXT,
+  "modified_by" VARCHAR(512),
+  "modifies" INTEGER DEFAULT 0,
+  "views" INTEGER DEFAULT 0,
+  "flyer_front_url" VARCHAR(150),
+  "flyer_back_url" VARCHAR(150),
+  "venue_id" INTEGER,
+  "city_id" INTEGER,
+  "country_id" INTEGER,
+  "author_id" INTEGER,
+  "title" VARCHAR(50),
+  "flyer_front_image_id" INTEGER,
+  "flyer_back_image_id" INTEGER,
+  "price2" NUMERIC(5,2),
+  "stamp_begin" INTEGER,
+  "stamp_end" INTEGER,
+  "geo_city_id" INTEGER,
+  "geo_country_id" INTEGER,
+  "created" INTEGER,
+  "modified" INTEGER,
+  "favorite_count" INTEGER DEFAULT 0,
+  "venue_hidden" INTEGER,
+  CONSTRAINT "events_pkey" PRIMARY KEY("id"),
+  CONSTRAINT "events_author_id" FOREIGN KEY ("author_id")
+    REFERENCES "public"."users"("id")
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+    NOT DEFERRABLE
+) WITHOUT OIDS;
