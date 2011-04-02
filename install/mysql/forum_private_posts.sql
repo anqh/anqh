@@ -1,0 +1,23 @@
+CREATE TABLE `forum_private_posts` (
+  `id` int(11) NOT NULL auto_increment,
+  `forum_topic_id` int(11) NOT NULL,
+  `forum_area_id` int(11) NOT NULL,
+  `author_name` varchar(30) collate utf8_swedish_ci default NULL,
+  `author_id` int(11) default NULL,
+  `post` text collate utf8_swedish_ci,
+  `author_ip` varchar(15) collate utf8_swedish_ci default NULL,
+  `author_host` varchar(150) collate utf8_swedish_ci default NULL,
+  `modify_count` int(11) default NULL,
+  `attachment` varchar(50) collate utf8_swedish_ci default NULL,
+  `parent_id` int(11) default NULL,
+  `created` int(11) default NULL,
+  `modified` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `forum_topic_id` (`forum_topic_id`),
+  KEY `forum_area_id` (`forum_area_id`),
+  KEY `parent_id` (`parent_id`),
+  KEY `author_id` (`author_id`),
+  CONSTRAINT `forum_private_posts_author_id` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `forum_private_posts_forum_topic_id` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_private_topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `forum_private_posts_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `forum_private_posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
