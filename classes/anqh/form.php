@@ -357,7 +357,11 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function select_wrap($name, array $options = null, $selected = null, array $attributes = null, $label = null, $error = null, $tip = null) {
-		$selected   = $selected;
+		if (is_array($selected)) {
+			$selected = Arr::get($selected, $name);
+		} else if (is_object($selected)) {
+			$selected = $selected->$name;
+		}
 		$options    = Arr::get($options, $name, $options);
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
