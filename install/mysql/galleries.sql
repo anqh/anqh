@@ -1,0 +1,22 @@
+CREATE TABLE `galleries` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(250) collate utf8_swedish_ci NOT NULL,
+  `image_count` int(11) default NULL,
+  `dir` varchar(50) collate utf8_swedish_ci default NULL,
+  `copyright` varchar(250) collate utf8_swedish_ci default NULL,
+  `links` text collate utf8_swedish_ci,
+  `mainfile` varchar(50) collate utf8_swedish_ci default NULL,
+  `event_id` int(11) default NULL,
+  `default_image_id` int(11) default NULL,
+  `updated` int(11) default NULL,
+  `created` int(11) default NULL,
+  `date` int(11) default NULL,
+  `comment_count` int(11) default NULL,
+  `rate_count` int(11) default NULL,
+  `rate_total` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `event_id` (`event_id`),
+  KEY `default_image_id` (`default_image_id`),
+  CONSTRAINT `galleries_default_image_id` FOREIGN KEY (`default_image_id`) REFERENCES `images` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `galleries_event_id` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
