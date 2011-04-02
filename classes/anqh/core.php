@@ -19,7 +19,7 @@ class Anqh_Core {
 	 * 0.9 = Kostache(?)
 	 * 1.0 = Optimizations
 	 */
-	const VERSION = 0.7;
+	const VERSION = 0.8;
 
 	/**
 	 * @var  array  Static local cache in front of external cache
