@@ -114,12 +114,12 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	/**
 	 * Overwrite AutoModeler is_valid() to fix Validation.
 	 *
-	 * @param   Validation  $validation  a manual validation object to combine the model properties with
+	 * @param   mixed  $validation  a manual validation object to combine the model properties with
 	 * @return  boolean
 	 *
 	 * @throws  Validation_Exception
 	 */
-	public function is_valid(Validation $validation = null) {
+	public function is_valid($validation = null) {
 		$data = $validation ? $validation->copy($validation->as_array() + $this->_data) : Validation::factory($this->_data);
 		$data->bind(':model', $this);
 
@@ -180,10 +180,10 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	/**
 	 * Override save() to fix primary keys.
 	 *
-	 * @param   Validation  $validation a manual validation object to combine the model properties with
+	 * @param   mixed  $validation a manual validation object to combine the model properties with
 	 * @return  integer
 	 */
-	public function save(Validation $validation = null) {
+	public function save($validation = null) {
 
 		// Don't try to insert null primary keys
 		if (!$this->loaded() && !$this->id()) {
