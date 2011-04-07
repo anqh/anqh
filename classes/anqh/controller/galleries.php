@@ -1152,9 +1152,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 					// Make sure the user has photo role to be able to see uploaded pictures
 					if (!self::$user->has_role('photo')) {
-						self::$user
-							->relate('roles', array(Model_Role::factory('photo')->id))
-							->save();
+						self::$user->add_role('photo');
 					}
 
 					// Show image if uploaded with ajax

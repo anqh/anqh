@@ -13,11 +13,11 @@
 
 <ul>
 
-<?php foreach ($galleries as $gallery): ?>
+<?php foreach ($galleries as $gallery): $default_image = $gallery->default_image(); ?>
 	<li class="grid2<?php echo Text::alternate(' first', '', '', '') ?>">
 		<article>
 			<div class="thumb">
-				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::image($gallery->default_image()->get_url('thumbnail', $gallery->dir))) ?>
+				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('New gallery')) ?>
 			</div>
 			<h4><?= HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::chars($gallery->name)) ?></h4>
 			<div class="info">
