@@ -257,7 +257,7 @@ class Anqh_Controller_User extends Controller_Template {
 			}
 		}
 
-		$view = View_Module::factory('events/flyer_upload', array(
+		$view = View_Module::factory('user/image_upload', array(
 			'mod_title' => __('Add image'),
 			'ajaxify'   => $this->ajax,
 			'errors'    => $errors,
