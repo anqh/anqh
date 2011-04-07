@@ -44,7 +44,7 @@ define('EXT', '.php');
  * When using a legacy application with PHP >= 5.3, it is recommended to disable
  * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
  */
-error_reporting((int)getenv('KOHANA_ENV') > 1 ? E_ALL | E_STRICT : E_ALL ^ E_NOTICE);
+error_reporting((int)getenv('KOHANA_ENV') > 1 ? (E_ALL | E_STRICT) : (E_ALL ^ E_NOTICE));
 
 /**
  * End of standard configuration! Changing any of the code below should only be
@@ -81,16 +81,12 @@ if (file_exists('install' . EXT)) {
 	return include 'install' . EXT;
 }
 
-/**
- * Define the start time of the application, used for profiling.
- */
+// Define the start time of the application, used for profiling.
 if (!defined('KOHANA_START_TIME')) {
 	define('KOHANA_START_TIME', microtime(true));
 }
 
-/**
- * Define the memory usage at the start of the application, used for profiling.
- */
+// Define the memory usage at the start of the application, used for profiling.
 if (!defined('KOHANA_START_MEMORY')) {
 	define('KOHANA_START_MEMORY', memory_get_usage());
 }
@@ -98,69 +94,8 @@ if (!defined('KOHANA_START_MEMORY')) {
 // Bootstrap the application
 require APPPATH . 'bootstrap' . EXT;
 
-/**
- * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
- * If no source is specified, the URI will be automatically detected.
- */
-try {
-
-	// Attempt to execute the response
-	$response = Request::factory()->execute();
-
-} catch (Exception $e) {
-
-	// Throw errors in development environment
-	if (Kohana::$environment == Kohana::DEVELOPMENT || Kohana::$environment == Kohana::TESTING) {
-		throw $e;
-	}
-
-	// Log errors
-	Kohana::$log->add(Log::ERROR, Kohana_Exception::text($e));
-
-	if ($e instanceof Kohana_Request_Exception) {
-
-		// Annoying 404 with uris with dots, can't use Request at all
-		echo __('Something fishy just happened.. please go back and try not to do this again.');
-		exit;
-
-	} else {
-
-		// Normal 404
-		$response = Request::factory('error/404')->execute();
-
-	}
-}
-
-/**
- * Add statistics to the response.
- */
-if ($response->send_headers()->body()) {
-
-	// Render the request to get all pending database queries and files
-	//$request->response = (string)$request->response;
-
-	$queries = 0;
-	if (Kohana::$profiling) {
-
-		// DB queries
-		foreach (Profiler::groups() as $group => $benchmarks) {
-			if (strpos($group, 'database') === 0) {
-				$queries += count($benchmarks);
-			}
-		}
-
-	}
-
-	$total = array(
-		'{memory_usage}'     => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
-		'{execution_time}'   => number_format(microtime(true) - KOHANA_START_TIME, 5),
-		'{database_queries}' => $queries,
-		'{included_files}'   => count(get_included_files()),
-	);
-	$response->body(strtr($response->body(), $total));
-}
-
-/**
- * Display the request response.
- */
-echo $response->body();
+// Execute main request
+echo Request::factory()
+	->execute()
+	->send_headers()
+	->body();

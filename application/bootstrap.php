@@ -4,7 +4,6 @@
 
 // Load the core Kohana class
 require SYSPATH . 'classes/kohana/core' . EXT;
-
 if (is_file(APPPATH . 'classes/kohana' . EXT)) {
 
 	// Application extends the core
@@ -79,29 +78,18 @@ if (getenv('KOHANA_ENV') !== false) {
 Kohana::init(array(
 	'base_url'   => '/',
 	'index_file' => false,
-	'profile'    => true, //in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 	'caching'    => !in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 ));
 
 /**
  * Attach the file write to logging. Multiple writers are supported.
  */
-Kohana::$log->attach(new Log_File(APPPATH . 'logs'));
+Kohana::$log->attach(new Kohana_Log_File(APPPATH . 'logs'));
 
 /**
  * Attach a file reader to config. Multiple readers are supported.
  */
-Kohana::$config->attach(new Config_File);
-
-/**
- * Set session handler
- */
-Session::$default = 'database';
-
-/**
- * Set cookie salt
- */
-Cookie::$salt = 'anqh';
+Kohana::$config->attach(new Kohana_Config_File);
 
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
@@ -114,20 +102,32 @@ Kohana::modules(array(
 	'blog'         => MODPATH . 'blog',         // Anqh blogs
 	'galleries'    => MODPATH . 'galleries',    // Anqh galleries
 
-	'database'     => MODPATH . 'database',     // Database access
-	//'jelly'        => MODPATH . 'jelly',        // Jelly ORM
 	'auto-modeler' => MODPATH . 'auto-modeler', // Auto Modeler
+	'database'     => MODPATH . 'database',     // Database access
 	'postgresql'   => MODPATH . 'postgresql',   // PostgreSQL
 	'cache'        => MODPATH . 'cache',        // Caching with multiple backends
 	'image'        => MODPATH . 'image',        // Image manipulation
 	'pagination'   => MODPATH . 'pagination',   // Paging of results
 	'email'        => MODPATH . 'email',        // Email module
 
-	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 ));
+
+/**
+ * Set cookie salt.
+ */
+Cookie::$salt = 'anqh';
+
+/**
+ * Set session handler.
+ */
+Session::$default = 'database';
+
+/**
+ * Initialize session.
+ */
+Session::instance();
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
