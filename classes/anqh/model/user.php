@@ -171,6 +171,17 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Add a role to user.
+	 *
+	 * @param   integer|string  $role_id
+	 * @return  boolean
+	 */
+	public function add_role($role_id) {
+		return !$this->has_role($role_id) && Model_Role::add($role_id, $this);
+	}
+
+
+	/**
 	 * Get city.
 	 *
 	 * @return  Model_Geo_City|null
