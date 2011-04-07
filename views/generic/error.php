@@ -8,4 +8,6 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-echo $message;
+if (isset($title)) echo '<h1>' . $title . '</h1>';
+
+if (isset($message)) echo $message;

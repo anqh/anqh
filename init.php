@@ -21,7 +21,15 @@ function __2($string, $string_plural, $count, array $args = null) {
 	return (int)$count == 1 ? __($string, $args) : __($string_plural, $args);
 }
 
+// Our own exception handler
+if (Kohana::$errors === true) {
+	set_exception_handler(array('Anqh_Exception', 'handler'));
+}
 
+Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', 'message' => '.+'))
+	->defaults(array(
+		'controller' => 'error'
+	));
 Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sql|js|css'))
 	->defaults(array(
 		'controller' => 'static',
