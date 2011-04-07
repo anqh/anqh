@@ -87,10 +87,12 @@ class Anqh_Model_Image_Exif extends AutoModeler_ORM implements Permission_Interf
 		$file = $image->get_filename('original');
 		$exif = Image_Exif::factory($file)->read();
 		if (empty($exif)) {
-			throw new Kohana_Exception('No exif data found for :file', array(':file' => $file));
+			return false;
 		}
 
 		$this->set_fields($exif);
+
+		return true;
 	}
 
 
