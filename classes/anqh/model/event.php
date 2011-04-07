@@ -339,6 +339,34 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Get front flyer image.
+	 *
+	 * @return  Model_Image
+	 */
+	public function flyer_back() {
+		try {
+			return $this->flyer_back_image_id ? Model_Image::factory($this->flyer_back_image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * Get front flyer image.
+	 *
+	 * @return  Model_Image
+	 */
+	public function flyer_front() {
+		try {
+			return $this->flyer_front_image_id ? Model_Image::factory($this->flyer_front_image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
 	 * Get event flyers.
 	 *
 	 * @return  Model_Flyer[]
