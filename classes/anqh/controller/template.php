@@ -107,7 +107,7 @@ abstract class Anqh_Controller_Template extends Controller {
 		if (!$this->internal) {
 			$session_id = Session::instance()->id();
 			$online = new Model_User_Online($session_id);
-			$online->user_id       = self::$user->id;
+			$online->user_id       = self::$user ? self::$user->id : null;
 			$online->last_activity = time();
 			if (!$online->loaded() && $session_id) {
 				$online->id = $session_id;
@@ -345,6 +345,24 @@ head.js(
 				->set('page_title',    $this->page_title)
 				->set('page_subtitle', $this->page_subtitle);
 
+			// Add statistics
+			$queries = 0;
+			if (Kohana::$profiling) {
+				foreach (Profiler::groups() as $group => $benchmarks) {
+					if (strpos($group, 'database') === 0) {
+						$queries += count($benchmarks);
+					}
+				}
+			}
+			$total = array(
+				'{memory_usage}'     => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
+				'{execution_time}'   => number_format(microtime(true) - KOHANA_START_TIME, 5),
+				'{database_queries}' => $queries,
+				'{included_files}'   => count(get_included_files()),
+			);
+			$this->template = strtr($this->template, $total);
+
+			// Render page
 			if ($this->auto_render === true) {
 				$this->response->body($this->template);
 			}
