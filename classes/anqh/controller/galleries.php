@@ -638,7 +638,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if ($event = $gallery->event()) {
 
 			// Event flyers
-			if ($event->flyer_front_id || $event->flyer_back_id || $event->flyer_front_url || $event->flyer_back_url) {
+			if ($event->flyer_front_image_id || $event->flyer_back_image_id || $event->flyer_front_url || $event->flyer_back_url) {
 				Widget::add('side', View_Module::factory('events/flyers', array(
 					'event' => $event,
 				)), Widget::TOP);
@@ -651,14 +651,14 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		}
 
 		// Facebook
-		if (Kohana::config('site.facebook')) {
+		if ($this->request->action() !== 'pending' && Kohana::config('site.facebook')) {
 			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
 			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
-			Anqh::open_graph('description', __2(':images image', ':images images', count($gallery->images), array(':images' => count($gallery->images))) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
-			if ($event && $event->flyer_front_id) {
+			Anqh::open_graph('description', __2(':images image', ':images images', $gallery->image_count, array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
+			if ($event && $event->flyer_front_image_id) {
 				Anqh::open_graph('image', URL::site($event->flyer_front()->get_url('thumbnail'), true));
-			} else {
-				Anqh::open_graph('image', URL::site($gallery->default_image()->get_url('thumbnail'), true));
+			} else if ($default_image = $gallery->default_image()) {
+				Anqh::open_graph('image', URL::site($default_image->get_url('thumbnail'), true));
 			}
 		}
 		Anqh::share(true);
