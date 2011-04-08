@@ -111,7 +111,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$comment_id    = (int)$this->request->param('id');
 		$action        = $this->request->param('commentaction');
 
-		// Load blog_comment
+		// Load image comment
 		$comment = new Model_Image_Comment($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$image   = $comment->image();
@@ -157,8 +157,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$comment_id = (int)$this->request->param('id');
 		$action     = $this->request->param('commentaction');
 
-		// Load blog_comment
-		$comment = Model_Image_Comment::find($comment_id);
+		// Load image comment
+		$comment = Model_Image_Comment::factory($comment_id);
 		if (($action == 'delete' || $action == 'private') && Security::csrf_valid() && $comment->loaded()) {
 			$image = $comment->image;
 			$flyer = Model_Flyer::factory()->find_by_image($image->id);
@@ -695,7 +695,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$gallery = Model_Gallery::factory($gallery_id);
 		if ($gallery->loaded()) {
 			/** @var  Model_Image  $image */
-			$image = Model_Image::find($image_id);
+			$image = Model_Image::factory($image_id);
 			if ($image->loaded()) {
 				echo View_Module::factory('galleries/hovercard', array(
 					'mod_title' => HTML::chars($gallery->name),
@@ -1066,6 +1066,15 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$gallery
 			->update_copyright()
 			->save();
+
+		// Resize images
+		/* Uncomment to resize new default size
+		foreach ($gallery->images() as $image) {
+			try {
+				$image->resize(Model_Image::SIZE_WIDE);
+			} catch (Kohana_Exception $e) {}
+		}
+		 */
 
 		Request::back(Route::get('galleries')->uri());
 	}
