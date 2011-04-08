@@ -3,7 +3,7 @@ CREATE TABLE `user_comments` (
   `user_id` int(11) NOT NULL,
   `author_id` int(11) NOT NULL,
   `comment` varchar(300) COLLATE utf8_swedish_ci NOT NULL,
-  `private` smallint(6) DEFAULT NULL,
+  `private` smallint(6) DEFAULT 0 NOT NULL,
   `created` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),

@@ -4,7 +4,7 @@ CREATE TABLE "public"."image_comments" (
   "author_id" INTEGER NOT NULL,
   "user_id" INTEGER,
   "comment" VARCHAR(255),
-  "private" SMALLINT,
+  "private" SMALLINT DEFAULT 0 NOT NULL,
   "created" INTEGER,
   CONSTRAINT "image_comments_pkey" PRIMARY KEY("id"),
   CONSTRAINT "image_comments_author_id" FOREIGN KEY ("author_id")
