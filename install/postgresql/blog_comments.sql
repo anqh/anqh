@@ -4,7 +4,7 @@ CREATE TABLE "public"."blog_comments" (
   "user_id" INTEGER NOT NULL,
   "author_id" INTEGER NOT NULL,
   "comment" VARCHAR(255) NOT NULL,
-  "private" SMALLINT DEFAULT 0,
+  "private" SMALLINT DEFAULT 0 NOT NULL,
   "created" INTEGER,
   CONSTRAINT "blog_comments_pkey" PRIMARY KEY("id"),
   CONSTRAINT "blog_comments_blog_id_fkey" FOREIGN KEY ("blog_entry_id")

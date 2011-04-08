@@ -5,7 +5,7 @@ CREATE TABLE `blog_comments` (
   `author_id` int(11) NOT NULL,
   `created` int(11) default NULL,
   `comment` varchar(300) collate utf8_swedish_ci NOT NULL,
-  `private` smallint(6) default NULL,
+  `private` smallint(6) DEFAULT 0 NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `blog_entry_id` (`blog_entry_id`),
   KEY `user_id` (`user_id`,`author_id`),
