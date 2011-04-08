@@ -11,22 +11,22 @@
  */
 class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
-	const DELETED      = 'd';
-	const HIDDEN       = 'h';
-	const NOT_ACCEPTED = 'n';
-	const VISIBLE      = 'v';
-
 	/**
 	 * Permission to add/edit notes
 	 */
 	const PERMISSION_NOTE = 'note';
 
-	/** @deprecated */
-	const NORMAL   = 'normal';
-	/** @deprecated */
-	const ORIGINAL = '';
-	/** @deprecated */
-	const THUMB    = 'thumb';
+	const DELETED      = 'd';
+	const HIDDEN       = 'h';
+	const NOT_ACCEPTED = 'n';
+	const VISIBLE      = 'v';
+
+	const SIZE_ICON      = 'icon';
+	const SIZE_MAIN      = 'main';
+	const SIZE_ORIGINAL  = 'original';
+	const SIZE_SIDE      = 'side';
+	const SIZE_THUMBNAIL = 'thumbnail';
+	const SIZE_WIDE      = 'wide';
 
 	protected $_table_name = 'images';
 
@@ -53,7 +53,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		'postfix'           => null,
 		'file'              => null,
 		'remote'            => null,
-		'legacy_filename'   => null,
+		'legacy_filename'   => null, // To be deprecated
 
 		'author_id'         => null,
 	);
@@ -70,12 +70,12 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	/**
 	 * @var  string  Normal size image config
 	 */
-	public $normal = 'main';
+	public $normal = self::SIZE_MAIN;
 
 	/**
 	 * @var  array  Thumbnail configs
 	 */
-	public $thumbnails = array('thumbnail', 'icon');
+	public $thumbnails = array(self::SIZE_THUMBNAIL, self::SIZE_ICON);
 
 	/**
 	 * Add new note.
@@ -105,6 +105,12 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	}
 
 
+	/**
+	 * Convert images from local path to new path and sizes.
+	 *
+	 * @param   string  $old_path  Legacy path of old image
+	 * @throws  Kohana_Exception
+	 */
 	public function convert($old_path) {
 
 		// Make sure we have the new target directory
@@ -148,8 +154,8 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			}
 
 			// Delete original
-			if (is_file($this->get_filename('original'))) {
-				unlink($this->get_filename('original'));
+			if (is_file($this->get_filename(self::SIZE_ORIGINAL))) {
+				unlink($this->get_filename(self::SIZE_ORIGINAL));
 			}
 
 			// Delete other sizes
@@ -162,7 +168,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 			// Delete exif
 			if ($exif = $this->exif()) {
-				$this->exif()->delete();
+				$exif->delete();
 			}
 
 		}
@@ -293,7 +299,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		// Saved image, based on ID
 		$path = Kohana::config('image.path') . URL::id($this->id);
 		$path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+		$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
 
 		return $path . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 	}
@@ -314,16 +320,16 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		// Saved image, based on ID
 		$server = Kohana::config('site.image_server');
 		if ($this->legacy_filename && !$this->postfix) {
-			if ($size == 'thumbnail') {
+			if ($size == self::SIZE_THUMBNAIL) {
 				$size = 'thumb_';
-			} elseif ($size == 'original') {
+			} elseif ($size == self::SIZE_ORIGINAL) {
 				$size = '';
 			} else {
 				$size = 'pieni_';
 			}
 			$url = ($server ? 'http://' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
 		} else {
-			$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+			$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
 			$url     = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
 			$url     = $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 		}
@@ -371,6 +377,21 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 				->order_by('x', 'ASC')
 				->order_by('id', 'ASC')
 		);
+	}
+
+
+	/**
+	 * Create new resized images from original overwriting old.
+	 *
+	 * @param   string  $normal  New normal size
+	 * @param   array   $thumbs  New thumb sizes
+	 * @throws  Kohana_Exception
+	 */
+	public function resize($normal = null, array $thumbs = null) {
+		$this->normal     = (array)$normal;
+		$this->thumbnails = (array)$thumbs;
+
+		$this->_generate_images($this->get_filename(self::SIZE_ORIGINAL));
 	}
 
 
@@ -494,32 +515,6 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		$this->description = implode(', ', $description);
 
 		return $this;
-	}
-
-
-	/**
-	 * Build image URL
-	 *
-	 * @param   string  $size
-	 * @return  string
-	 *
-	 * @see  NORMAL
-	 * @see  THUMB
-	 */
-	public function url($size = self::NORMAL) {
-		$url = '';
-
-		if ($this->loaded()) {
-			$path = URL::id($this->id);
-
-			// Postfix filename if necessary
-			$postfix = in_array($size, array(self::NORMAL, self::THUMB)) ? '_' . substr($size, 0, 1) : '';
-			$filename = $this->id . $postfix . '.' . $this->format;
-
-			$url = 'http://' . Kohana::config('site.image_server') . '/' . $path . '/' . $filename;
-		}
-
-		return $url;
 	}
 
 }
