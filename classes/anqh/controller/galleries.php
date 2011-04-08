@@ -654,7 +654,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		if ($this->request->action() !== 'pending' && Kohana::config('site.facebook')) {
 			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
 			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
-			Anqh::open_graph('description', __2(':images image', ':images images', $gallery->image_count, array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
+			Anqh::open_graph('description', __($gallery->image_count == 1 ? ':images image' : ':images images', array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
 			if ($event && $event->flyer_front_image_id) {
 				Anqh::open_graph('image', URL::site($event->flyer_front()->get_url('thumbnail'), true));
 			} else if ($default_image = $gallery->default_image()) {
@@ -1068,15 +1068,15 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			->save();
 
 		// Resize images
-		/* Uncomment to resize new default size
+		/* Uncomment to create new default size
 		foreach ($gallery->images() as $image) {
 			try {
 				$image->resize(Model_Image::SIZE_WIDE);
 			} catch (Kohana_Exception $e) {}
 		}
-		 */
+		*/
 
-		Request::back(Route::get('galleries')->uri());
+		$this->request->redirect(Route::model($gallery));
 	}
 
 
@@ -1320,7 +1320,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Set title
 		$images = count($gallery->images());
 		$this->page_title = HTML::chars($gallery->name);
-		$this->page_subtitle  = __2(':images image', ':images images', $images, array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
+		$this->page_subtitle  = __($images == 1 ? ':images image' : ':images images', array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 	  $this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery->event),  __('Go to event'));
 
 		// Set actions
