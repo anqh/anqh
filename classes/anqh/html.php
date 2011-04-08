@@ -106,7 +106,7 @@ class Anqh_HTML extends Kohana_HTML {
 			// Format number
 			$formatted = Num::format($value, 0);
 			$plural = $plural ? $plural : $singular;
-			$title = ($singular && $plural) ? ' title="' . __2($singular, $plural, $value, array($var => $formatted)) . '"' : '';
+			$title = ($singular && $plural) ? ' title="' . __($value == 1 ? $singular : $plural, array($var => $formatted)) . '"' : '';
 
 		} else {
 

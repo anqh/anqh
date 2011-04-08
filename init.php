@@ -4,22 +4,9 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-
-/**
- * Plural translation function
- *
- * @param   string   $string
- * @param   string   $string_plural
- * @param   integer  $count
- * @param   array    $args
- * @return  string
- */
-function __2($string, $string_plural, $count, array $args = null) {
-	return (int)$count == 1 ? __($string, $args) : __($string_plural, $args);
-}
 
 // Our own exception handler
 if (Kohana::$errors === true) {
