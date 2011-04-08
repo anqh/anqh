@@ -153,61 +153,16 @@ class Anqh_Controller_Sign extends Controller_Template {
 		}
 
 		// Send invitation
-		$form = array(
-			'values' => $invitation,
-			'errors' => $errors,
-			'cancel' => Request::back('/', true),
-			'save'   => array(
-				'label' => __('Send invitation')
-			),
-			'groups' => array(
-				array(
-					'html'   => '<p>' . $message . '</p>',
-				),
-				'invite' => array(
-					'header' => __('Not yet invited?'),
-					'fields' => array(
-						'email' => array(
-							'label' => __('Send an invitation to'),
-							'tip'   => __('Please remember: sign up is available only with a valid, invited email.'),
-							'attributes' => array(
-								'title' => __('john.doe@domain.tld'),
-							),
-						),
-					),
-				),
-			),
-		);
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('generic/invite', array(
+			'invitation' => $invitation,
+			'errors'     => $errors,
+			'message'    => $message
+		)));
 
 		// Enter invitation
-		// @todo Use custom view
-		$form = array(
-			'values' => Model_Invitation::factory(),
-			'errors' => $errors,
-			'cancel' => Request::back('/', true),
-			'save'   => array(
-				'label' => __('Final step!')
-			),
-			'hidden' => array(
-				'signup' => true,
-			),
-			'groups' => array(
-				'invited' => array(
-					'header' => __('Got my invitation!'),
-					'fields' => array(
-						'code' => array(
-							'label' => __('Enter your invitation code'),
-							'tip'   => __('Your invitation code is included in the mail you received, 16 characters.'),
-							'attributes' => array(
-								'title' => __('M0573XC3LL3N751R'),
-							),
-						),
-					),
-				),
-			),
-		);
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('generic/invited', array(
+			'errors'     => $errors,
+		)));
 
 	}
 
@@ -218,22 +173,29 @@ class Anqh_Controller_Sign extends Controller_Template {
 	 * @param  Model_Invitation  $invitation
 	 */
 	public function _join(Model_Invitation $invitation) {
-		$user = Model_User::factory();
+		$user = new Model_User();
 		$user->email = $invitation->email;
 
 		// Handle post
 		$errors = array();
 		if ($_POST && !Arr::get($_POST, 'signup')) {
-			$user->set_fields(Arr::extract($_POST, array('username', 'password', 'password_confirm')));
-			$user->username_clean = Text::clean(Arr::get($_POST, 'username'));
-			$user->relate('roles', 1);
+			$post = Arr::extract($_POST, array('username', 'password', 'password_confirm'));
+			$validation = new Validation($post);
+			$validation->rule('password_confirm', 'matches', array(':validation', 'password', 'password_confirm'));
 			try {
-				$user->save();
+				$user->username = $post['username'];
+				$user->password = $post['password'];
+				$user->created  = time();
+				$user->save($validation);
+
+				// Delete used invitation
 				$invitation->delete();
 
+				// Login user
+				$user->add_role('login');
 				Visitor::instance()->login($user, $_POST['password']);
 
-				$this->request->redirect(Route::model($user));
+				$this->request->redirect(URL::user($user));
 			} catch (Validation_Exception $e) {
 				$user->password = $user->password_confirm = null;
 				$errors = $e->array->errors('validation');
@@ -241,52 +203,11 @@ class Anqh_Controller_Sign extends Controller_Template {
 		}
 
 		// Build form
-		// @todo Use custom form
-		$form = array(
-			'values' => $user,
+		Widget::add('main', View_Module::factory('generic/register', array(
+			'user'   => $user,
+			'code'   => $invitation->code,
 			'errors' => $errors,
-			'cancel' => Request::back('/', true),
-			'save'   => array(
-				'label' => __('Sign up!'),
-			),
-			'hidden' => array(
-				'code' => $invitation->code,
-			),
-			'groups' => array(
-				array(
-					'header' => __('Almost there!'),
-					'fields' => array(
-
-						'username' => array(
-							'attributes' => array(
-								'title' => __('JohnDoe'),
-							),
-							'tip' => __(
-								'Choose a unique username with at least <var>:length</var> characters. No special characters, thank you.',
-								array(':length' => Kohana::config('visitor.username.length_min'))
-							),
-						),
-
-						'password' => array(),
-						'password_confirm' => array(
-							'label' => __('Confirm'),
-							'tip' => __(
-								'Try to use letters, numbers and special characters for a stronger password, with at least <var>8</var> characters.'
-							),
-						),
-
-						'email' => array(
-							'attributes' => array(
-								'disabled' => 'disabled',
-								'title'    => __('john.doe@domain.tld'),
-							),
-						)
-					),
-				),
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		)));
 	}
 
 }

@@ -150,6 +150,17 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 				$value = UTF8::strtolower($value);
 				break;
 
+			// Hash password
+			case 'password':
+				$visitor = Visitor::instance();
+				$value   = $visitor->hash_password($value);
+				break;
+
+			// Set cleaned username when setting username
+			case 'username':
+				$this->username_clean = Text::clean($value);
+				break;
+
 		}
 
 		parent::__set($key, $value);
@@ -177,7 +188,25 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  boolean
 	 */
 	public function add_role($role_id) {
-		return !$this->has_role($role_id) && Model_Role::add($role_id, $this);
+
+		// Do not try to insert duplicate role
+		if (!$this->has_role($role_id)) {
+			try {
+				$role = new Model_Role($role_id);
+				if ($role->loaded()) {
+
+					// Empty roles from current user to force reload
+					$this->_roles = array();
+
+					return (bool)DB::insert('roles_users')
+						->columns(array('role_id', 'user_id'))
+						->values(array($role->id, $this->id))
+						->execute($this->_db);
+				}
+			} catch (Exception $e) {}
+		}
+
+		return false;
 	}
 
 
@@ -769,7 +798,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Does the user have any of these roles
+	 * Does the user have any of these roles.
 	 *
 	 * @param  array|string  $roles
 	 */
@@ -798,7 +827,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get user's roles
+	 * Get user's roles.
 	 *
 	 * @return  array
 	 */

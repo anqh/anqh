@@ -51,6 +51,11 @@ class Anqh_Controller_Index extends Controller_Template {
 		}
 		Widget::add('main', $view);
 
+		// Sign up
+		if (!self::$user) {
+			Widget::add('side', '<div class="grid4">' . HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add')) . '</div>', Widget::TOP);
+		}
+
 		// Shout
 		Widget::add('side', View_Module::factory('generic/shout', array(
 			'mod_title' => __('Shouts'),

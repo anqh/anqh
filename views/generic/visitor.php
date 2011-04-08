@@ -71,6 +71,4 @@ else:
 <?php
 	echo Form::close();
 
-	// echo HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add'));
-
 endif;

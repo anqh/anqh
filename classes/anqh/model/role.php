@@ -45,29 +45,6 @@ class Anqh_Model_Role extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Add a role to a user
-	 *
-	 * @static
-	 * @param  integer|string  $role_id
-	 * @param  Model_User      $user
-	 */
-	public static function add($role_id, Model_User $user) {
-		try {
-			$role = new Model_Role($role_id);
-			if ($role->loaded()) {
-				$role->user_id = $user->id;
-				$role->created = time();
-				$role->save();
-
-				return true;
-			}
-		} catch (Exception $e) {}
-
-		return false;
-	}
-
-
-	/**
 	 * Find roles by user.
 	 *
 	 * @static
