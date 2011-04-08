@@ -1124,11 +1124,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					}
 
 					$image = Model_Image::factory();
+					$image->normal = 'wide';
 					$image->set_fields(array(
 						'author_id' => self::$user->id,
 						'file'      => $file,
 						'status'    => Model_Image::NOT_ACCEPTED,
-						'normal'    => 'wide',
 						'created'   => time(),
 					));
 					$image->save();
