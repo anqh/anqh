@@ -3,7 +3,7 @@ CREATE TABLE `forum_private_topics` (
   `forum_area_id` int(11) NOT NULL,
   `name` varchar(200) collate utf8_swedish_ci NOT NULL,
   `author_name` varchar(30) collate utf8_swedish_ci default NULL,
-  `reads` int(11) unsigned default NULL,
+  `read_count` int(11) unsigned default NULL,
   `type` smallint(6) default NULL,
   `post_count` int(11) unsigned default NULL,
   `last_post_id` int(11) default NULL,
