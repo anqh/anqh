@@ -690,15 +690,18 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		if ($id instanceof Model_User) {
 
 			// Got user model, no need to load, just fill caches
-			/** @var  Model_User  $user */
-			$user = $id->light_array();
-			Anqh::cache_set($ckey . $id->id, $user, Date::DAY);
-			return $user;
+			/** @var  Model_User  $id */
+			return $id->light_array();
 
 		} else if (is_array($id)) {
 
 			// Got user array, don't fill caches as we're not 100% sure it's valid
 			return $id;
+
+		} else if (is_int($id) || is_numeric($id)) {
+
+			// Got id
+			$id = (int)$id;
 
 		} else if (is_string($id)) {
 
@@ -707,12 +710,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 		} else {
 
-			// Got id
-			$id = (int)$id;
+			return null;
 
 		}
 
-		if ($id == 0) {
+		if ($id === 0) {
 			return null;
 		}
 
@@ -759,10 +761,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  integer
 	 */
 	public static function user_id($user) {
-		if (is_int($user)) {
+		if (is_int($user) || is_numeric($user)) {
 
 			// Already got id
-			return $user;
+			return (int)$user;
 
 		} else if (is_array($user)) {
 
