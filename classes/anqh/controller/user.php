@@ -290,6 +290,9 @@ class Anqh_Controller_User extends Controller_Template {
 			$errors = array();
 			$values = array();
 
+			// Mark own comments read
+			$owner and $user->mark_comments_read();
+
 			// Handle comment
 			if (Permission::has($user, Model_User::PERMISSION_COMMENT, self::$user) && $_POST) {
 				$comment = Model_User_Comment::factory();
@@ -330,14 +333,15 @@ class Anqh_Controller_User extends Controller_Template {
 			));
 
 			$view = View_Module::factory('generic/comments', array(
-				'mod_title'  => __('Comments'),
-				'delete'     => Route::url('user_comment', array('id' => '%d', 'commentaction' => 'delete')) . '?' . Security::csrf_query(),
-				'private'    => Route::url('user_comment', array('id' => '%d', 'commentaction' => 'private')) . '?' . Security::csrf_query(),
-				'comments'   => $user->comments(self::$user, $pagination),
-				'errors'     => $errors,
-				'values'     => $values,
-				'pagination' => $pagination,
-				'user'       => self::$user,
+				'mod_title'    => __('Comments'),
+				'delete'       => Route::url('user_comment', array('id' => '%d', 'commentaction' => 'delete')) . '?' . Security::csrf_query(),
+				'private'      => Route::url('user_comment', array('id' => '%d', 'commentaction' => 'private')) . '?' . Security::csrf_query(),
+				'comments'     => $user->comments(self::$user, $pagination),
+				'new_comments' => $owner ? $user->new_comment_count : null,
+				'errors'       => $errors,
+				'values'       => $values,
+				'pagination'   => $pagination,
+				'user'         => self::$user,
 			));
 
 			if ($this->ajax) {

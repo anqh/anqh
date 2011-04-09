@@ -23,6 +23,7 @@ echo Form::open() ?>
 <?php
 echo Form::close();
 
+$new_comments = isset($new_comments) ? (int)$new_comments : 0;
 foreach ($comments as $comment):
 	$author = $comment->author();
 
@@ -47,14 +48,19 @@ foreach ($comments as $comment):
 	if ($author['id'] == $comment->user_id) {
 		$classes[] = 'owner';
 	}
+
+	// New comment?
+	if ($new_comments-- > 0) {
+		$classes[] = 'new';
+	}
  ?>
 
 <article id="comment-<?php echo $comment->id ?>" class="<?php echo implode(' ', $classes) ?>">
 	<?php echo HTML::avatar($author['avatar'], $author['username'], true) ?>
 	<?php echo HTML::user($author) ?>
-	<small class="ago"><?php echo HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?></small>
+	<small class="ago"><?php echo in_array('new', $classes) ? __('New') : '' ?> <?php echo HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?></small>
 
-	<?php if ($user && $comment->user->id == $user->id || $mine): ?>
+	<?php if ($user && $comment->user_id == $user->id || $mine): ?>
 	<nav class="actions inline">
 		<?php if ($private && !$comment->private): ?>
 		<?php echo HTML::anchor(sprintf($private, $comment->id), __('Set as private'), array('class' => 'action small comment-private')) ?>
