@@ -90,7 +90,7 @@ class Anqh_Newsfeed {
 			$class = 'Newsfeeditem_' . $item->class;
 			if (method_exists($class, 'get') && $text = call_user_func(array($class, 'get'), $item)) {
 				$feed[] = array(
-					'user'  => Model_User::find_user_light($item->user_id),
+					'user'  => Model_User::find_user_light((int)$item->user_id),
 					'stamp' => $item->stamp,
 					'text'  => $text
 				);
@@ -112,7 +112,7 @@ class Anqh_Newsfeed {
 
 				// Personal newsfeed
 		    case self::PERSONAL:
-			    $this->_items = Model_NewsfeedItem::find_items($this->max_items, array($this->_user->id));
+			    $this->_items = Model_NewsfeedItem::find_items($this->max_items, $this->_user ? array($this->_user->id) : null);
 	        break;
 
 				// Multiple user newsfeed
