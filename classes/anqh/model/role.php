@@ -39,7 +39,7 @@ class Anqh_Model_Role extends AutoModeler_ORM implements Permission_Interface {
 		parent::__construct();
 
 		if ($id !== null) {
-			$this->load(DB::select()->where(is_numeric($id) ? 'id' : 'name', '=', $id));
+			$this->load(DB::select_array($this->fields())->where(is_numeric($id) ? 'id' : 'name', '=', $id));
 		}
 	}
 

@@ -132,6 +132,30 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Load user.
+	 *
+	 * @param  integer|string  $id
+	 */
+	public function __construct($id = null) {
+		parent::__construct();
+
+		if ($id !== null) {
+			if (is_numeric($id)) {
+
+				// Load by id
+				$this->load(DB::select_array($this->fields())->where('id', '=', $id));
+
+			} else {
+
+				// Load by username
+				$this->load(DB::select_array($this->fields())->where('username_clean', '=', UTF8::strtolower($id)));
+
+			}
+		}
+	}
+
+
+	/**
 	 * Magic setter
 	 *
 	 * @param  string  $key
@@ -301,6 +325,17 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			*/
 
 		return $comments;
+	}
+
+
+	/**
+	 * Mark user's comments read.
+	 */
+	public function mark_comments_read() {
+		if ($this->new_comment_count) {
+			$this->new_comment_count = 0;
+			$this->save();
+		}
 	}
 
 	/***** /COMMENTS *****/
@@ -682,15 +717,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		// Try static cache
-		if (!$user = Anqh::cache_get($ckey . $id)) {
+		$user = Anqh::cache_get($ckey . $id);
+		if (!is_array($user)) {
 
 			// Load from DB
-			/** @var  Model_User  $model */
-			$model = Model_User::factory()->load(
-				DB::select_array(Model_User::factory()->fields())
-					->where(is_int($id) ? 'id' : 'username_clean', '=', $id)
-			);
-			$user = $model->light_array();
+			$user = Model_User::factory($id)->light_array();
 
 			Anqh::cache_set($ckey . $id, $user, Date::DAY);
 		}
@@ -707,14 +738,14 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	public function light_array() {
 		if ($this->loaded()) {
 			return array(
-				'id'         => $this->id,
+				'id'         => (int)$this->id,
 				'username'   => $this->username,
 				'gender'     => $this->gender,
 				'title'      => $this->title,
 				'signature'  => $this->signature,
 				'avatar'     => $this->avatar,
 				'thumb'      => $this->get_image_url('thumbnail'),
-				'last_login' => $this->last_login,
+				'last_login' => (int)$this->last_login,
 			);
 		}
 	}
