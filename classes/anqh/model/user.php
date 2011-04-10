@@ -335,6 +335,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		if ($this->new_comment_count) {
 			$this->new_comment_count = 0;
 			$this->save();
+
+			Anqh::cache_delete('user_' . $this->id);
 		}
 	}
 
