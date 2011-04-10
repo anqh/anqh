@@ -15,7 +15,7 @@ echo Form::open(null, array('id' => 'form-topic-edit'));
 	<fieldset id="fields-topic">
 		<ul>
 			<?php echo Form::input_wrap('name', $topic, array('tabindex' => ++$tabindex), __('Topic'), $errors) ?>
-			<?php if (!$post):
+			<?php if (!$post && $admin):
 				echo Form::select_wrap('status', array(
 					Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
 					Model_Forum_Topic::STATUS_SINK   => __('Sink'),

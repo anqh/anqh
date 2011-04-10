@@ -721,6 +721,7 @@ $(function() {
 			'errors'     => $errors,
 			'cancel'     => $cancel,
 			'user'       => self::$user,
+			'admin'      => self::$user->has_role(array('admin', 'moderator', 'forum moderator')),
 		)));
 	}
 
