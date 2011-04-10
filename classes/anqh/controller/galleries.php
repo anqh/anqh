@@ -203,7 +203,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$image_id   = $this->request->param('id');
 
 		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::factory()->find($gallery_id);
+		$gallery = Model_Gallery::factory($gallery_id);
 		if (!$gallery->loaded()) {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
@@ -211,9 +211,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
 
 		if (Security::csrf_valid()) {
-			foreach ($gallery->images as $image) {
+			foreach ($gallery->images() as $image) {
 				if ($image->id == $image_id) {
-					$gallery->default_image = $image_id;
+					$gallery->default_image_id = $image_id;
 					$gallery->save();
 					break;
 				}
