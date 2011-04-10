@@ -54,13 +54,13 @@ class Anqh_Forum {
 	 */
 	public static function topic(Model_Forum_Topic $topic) {
 		switch ($topic->status) {
-			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="locked">' . __('[Locked]') . '</span> '; break;
-			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="sink">' . __('[Sink]') . '</span> '; break;
+			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="locked">[' . __('Locked') . ']</span> '; break;
+			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="sink">[' . __('Sink') . ']</span> '; break;
 			default: $prefix = '';
 		}
 
 		if ($topic->sticky) {
-			$prefix = '<span class="sticky">' . __('[Sticky]') . '</span> ' . $prefix;
+			$prefix = '<span class="sticky">[' . __('Sticky') . ']</span> ' . $prefix;
 		}
 
 		return $prefix . HTML::chars($topic->name());
