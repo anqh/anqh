@@ -42,7 +42,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 		$group = $area->group();
 		$area->delete();
-		
+
 		$this->request->redirect(Route::model($group));
 	}
 

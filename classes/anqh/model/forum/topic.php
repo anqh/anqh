@@ -14,19 +14,13 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	 */
 	const PERMISSION_POST = 'post';
 
-	/**
-	 * Normal topic
-	 */
+	/** Normal topic */
 	const STATUS_NORMAL = 0;
 
-	/**
-	 * Locked topic
-	 */
+	/** Locked topic */
 	const STATUS_LOCKED = 1;
 
-	/**
-	 * Sunk topic, don't update last posted
-	 */
+	/** Sunk topic, don't update last posted */
 	const STATUS_SINK = 2;
 
 	protected $_table_name = 'forum_topics';
@@ -38,7 +32,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 		'type'          => null,
 		'status'        => self::STATUS_NORMAL,
-		'sticky'        => false,
+		'sticky'        => 0,
 		'read_only'     => null,
 		'votes'         => null,
 		'points'        => null,
@@ -70,6 +64,30 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		'first_post_id' => array('digit'),
 		'last_post_id'  => array('digit'),
 	);
+
+
+	/**
+	 * Magic setter
+	 *
+	 * @param  string  $key
+	 * @param  mixed   $value
+	 */
+	public function __set($key, $value)	{
+		switch ($key) {
+
+			// Legacy status <-> type
+			case 'status':
+				if ($value == self::STATUS_LOCKED && $this->type < 10) {
+					$this->type += 10;
+				} else if ($value !== self::STATUS_LOCKED && $this->type >= 10) {
+					$this->type -= 10;
+				}
+				break;
+
+		}
+
+		parent::__set($key, $value);
+	}
 
 
 	/**

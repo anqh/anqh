@@ -94,7 +94,8 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		return $topic->load(
 			DB::select_array($topic->fields())
 				->where('forum_area_id', '=', $this->id)
-				->order_by('last_post_id', 'DESC')
+				->order_by('sticky', 'DESC')
+				->order_by('last_posted', 'DESC')
 				->offset($pagination->offset),
 			$pagination->items_per_page
 		);

@@ -68,13 +68,19 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$time) {
 			$time = $event->stamp_begin > time() ? 'before' : 'after';
 		}
-		$bind = $time == 'before' ? 'events_upcoming' : 'events_past';
+		$bind = ($time == 'before') ? 'events_upcoming' : 'events_past';
 
 		// Redirect
 		if ($topic = Model_Forum_Topic::factory()->find_by_bind($event, $bind)) {
+
+			// Topic existing
 			$this->request->redirect(Route::model($topic));
+
 		} else {
+
+			// @todo Create new topic
 			$this->request->redirect(Route::get('forum')->uri());
+
 		}
 	}
 
@@ -450,8 +456,13 @@ $(function() {
 					// Topic
 					$topic->post_count++;
 					$topic->last_post_id = $post->id;
-					$topic->last_posted  = $post->created;
 					$topic->last_poster  = $post->author_name;
+
+					// If current topic is set to sink, don't update last posted date
+					if ($topic->status != Model_Forum_Topic::STATUS_SINK) {
+						$topic->last_posted = $post->created;
+					}
+
 					$topic->save();
 
 					// Area, only for public topics
@@ -554,19 +565,15 @@ $(function() {
 			$this->page_title = HTML::chars($area->name);
 			if ($this->private) {
 
-				/** @var  Model_Forum_Private_Topic  $topic */
-				$topic  = Model_Forum_Private_Topic::factory();
-				/** @var  Model_Forum_Private_Post  $post */
-				$post   = Model_Forum_Private_Post::factory();
-				$recipients = array();
+				$topic  = new Model_Forum_Private_Topic();
+				$post   = new Model_Forum_Private_Post();
 				$cancel = Route::url('forum_area', array('id' => 'private', 'action' => ''));
+				$recipients = array();
 
 			} else {
 
-				/** @var  Model_Forum_Topic  $topic */
-				$topic  = Model_Forum_Topic::factory();
-				/** @var  Model_Forum_Post  $topic */
-				$post   = Model_Forum_Post::factory();
+				$topic  = new Model_Forum_Topic();
+				$post   = new Model_Forum_Post();
 				$cancel = Route::model($area);
 
 			}
@@ -636,6 +643,7 @@ $(function() {
 				$topic->author_name   = self::$user->username;
 				$topic->name          = $_POST['name'];
 				$topic->forum_area_id = $area->id;
+				$topic->created       = time();
 				try {
 					$topic->is_valid();
 				} catch (Validation_Exception $e) {
@@ -687,7 +695,7 @@ $(function() {
 			} else {
 
 				// Old topic
-				$topic->set_fields(Arr::intersect($_POST, array('name', 'status')));
+				$topic->set_fields(Arr::intersect($_POST, array('name', 'status', 'sticky')));
 				try {
 					$topic->save();
 
@@ -714,8 +722,6 @@ $(function() {
 			'cancel'     => $cancel,
 			'user'       => self::$user,
 		)));
-
-		//Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
 	}
 
 
@@ -725,13 +731,7 @@ $(function() {
 	 * @param  Model_Forum_Topic  $topic
 	 */
 	protected function _set_title(Model_Forum_Topic $topic = null) {
-		switch ($topic->status) {
-			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="locked">' . __('[Locked]') . '</span> '; break;
-			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="sink">' . __('[Sink]') . '</span> '; break;
-			default: $prefix = '';
-		}
-
-		$this->page_title = $prefix . HTML::chars($topic->name());
+		$this->page_title     = Forum::topic($topic);
 		$this->page_subtitle  = HTML::icon_value(array(':views' => (int)$topic->read_count), ':views view', ':views views', 'views');
 		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts');
 

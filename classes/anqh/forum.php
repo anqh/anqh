@@ -44,4 +44,26 @@ class Anqh_Forum {
 		return Route::get('forum_private_area')->uri();
 	}
 
+
+	/**
+	 * Get prefixed forum title.
+	 *
+	 * @static
+	 * @param   Model_Forum_Topic  $topic
+	 * @return  string
+	 */
+	public static function topic(Model_Forum_Topic $topic) {
+		switch ($topic->status) {
+			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="locked">' . __('[Locked]') . '</span> '; break;
+			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="sink">' . __('[Sink]') . '</span> '; break;
+			default: $prefix = '';
+		}
+
+		if ($topic->sticky) {
+			$prefix = '<span class="sticky">' . __('[Sticky]') . '</span> ' . $prefix;
+		}
+
+		return $prefix . HTML::chars($topic->name());
+	}
+
 }
