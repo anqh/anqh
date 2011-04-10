@@ -128,7 +128,7 @@ class Anqh_Core {
 			$new_quotes = count($forum_quotes);
 			$quote = $forum_quotes->current();
 			$new['new-forum-quotes'] = HTML::anchor(
-				Route::get('forum_post')->uri(array('topic_id' => Route::model_id($quote->topic), 'id' => $quote->post->id)) . '#post-' . $quote->post->id,
+				Route::get('forum_post')->uri(array('topic_id' => $quote->forum_topic_id, 'id' => $quote->forum_post_id)) . '#post-' . $quote->forum_post_id,
 				$new_quotes,
 				array('title' => __('Forum quotes')
 			));
