@@ -82,7 +82,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public static $editable_fields = array(
 		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
-		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags',
+		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info',
 	);
 
 
@@ -500,6 +500,56 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		$favorites = $this->find_favorites();
 
 		return isset($favorites[(int)$user]);
+	}
+
+
+	/**
+	 * Set event tags.
+	 *
+	 * @param   array  $tags
+	 * @return  Model_Event
+	 */
+	public function set_tags(array $tags = null) {
+		$old_tags = $this->tags();
+		$new_tags = (array)$tags;
+
+		// Delete removed tags
+		foreach (array_diff(array_keys($old_tags), $new_tags) as $tag_id) {
+			$this->remove('tag', (int)$tag_id);
+		}
+
+		// Add new tags
+		$add = array();
+		foreach (array_diff($new_tags, array_keys($old_tags)) as $tag_id) {
+			$tag = Model_Tag::factory((int)$tag_id);
+			if ($tag && $tag->loaded()) {
+				$add[] = (int)$tag->id;
+			}
+		}
+		$add and $this->relate('tags', $add);
+
+		// Normalized tags for old version, to be deprecated
+		if ($this->music != ($music = implode(', ', $this->tags()))) {
+			$this->music = $music;
+			$this->save();
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Get event tags.
+	 *
+	 * @return  array
+	 */
+	public function tags() {
+		$tags = array();
+		foreach ($this->find_related('tags') as $tag) {
+			$tags[$tag->id] = $tag->name;
+		}
+
+		return $tags;
 	}
 
 

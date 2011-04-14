@@ -686,7 +686,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		} else {
 
 			// Creating new
-			$event = Model_Event::factory();
+			$event = new Model_Event();
 			Permission::required($event, Model_Event::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
@@ -803,15 +803,6 @@ class Anqh_Controller_Events extends Controller_Template {
 				$event->geo_country_id = $city->geo_country_id;
 			}
 
-			// Old version
-			if (count($event->tags)) {
-				$music = array();
-				foreach ($event->tags as $tag) {
-					$music[] = $tag->name;
-				}
-				$event->music = implode(', ', $music);
-			}
-
 			// Validate event
 			try {
 				$event->is_valid();
@@ -827,6 +818,9 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				$event->save();
 
+				// Set tags
+				$event->set_tags(Arr::get($_POST, 'tag'));
+
 				$edit ? NewsfeedItem_Events::event_edit(self::$user, $event) : NewsfeedItem_Events::event(self::$user, $event);
 
 				$this->request->redirect(Route::model($event));
@@ -836,8 +830,8 @@ class Anqh_Controller_Events extends Controller_Template {
 		// Tags
 		$tags = array();
 		$tag_group = new Model_Tag_Group('Music');
-		if ($tag_group->loaded() && count($tag_group->tags)) {
-			foreach ($tag_group->tags as $tag) {
+		if ($tag_group->loaded() && count($tag_group->tags())) {
+			foreach ($tag_group->tags() as $tag) {
 				$tags[$tag->id()] = $tag->name();
 			}
 		}

@@ -42,7 +42,7 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 				<?php echo Form::input_wrap('homepage', $event, null, __('Homepage'), $event_errors) ?>
 				<?php echo Form::textarea_wrap('dj',   $event, null, true, __('Performers'), $event_errors) ?>
 				<?php echo Form::textarea_wrap('info', $event, null, true, __('Other information'), $event_errors, null, true) ?>
-				<?php // @todo tags ?>
+				<?php echo Form::checkboxes_wrap('tag', $tags, $event->tags(), __('Music'), $event_errors, null, 'pills') ?>
 			</ul>
 		</fieldset>
 
