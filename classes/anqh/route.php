@@ -12,13 +12,13 @@ class Anqh_Route extends Kohana_Route {
 	/**
 	 * Return model specific route
 	 *
-	 * @param   object  $model
+	 * @param   Model   $model
 	 * @param   string  $action
 	 * @param   string  $params
 	 * @param   string  $route   Defaults to model name
 	 * @return  string
 	 */
-	public static function model($model, $action = '', $params = null, $route = null) {
+	public static function model(Model $model, $action = '', $params = null, $route = null) {
 		return Route::url($route ? $route : Model::model_name($model), array(
 			'id'     => self::model_id($model),
 			'action' => $action,
@@ -31,10 +31,10 @@ class Anqh_Route extends Kohana_Route {
 	 * Return model id for routing/URLs
 	 *
 	 * @static
-	 * @param   object  $model
+	 * @param   Model  $model
 	 * @return  string
 	 */
-	public static function model_id($model) {
+	public static function model_id(Model $model) {
 		return URL::title($model->id() . ' ' . $model->slug(), '-', true);
 	}
 
