@@ -34,7 +34,6 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 	 *
 	 * @param   string  $key    the field name to set
 	 * @param   string  $value  the value to set to
-	 * @throws  AutoModeler_Exception
 	 */
 	public function __set($key, $value) {
 
@@ -48,7 +47,10 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 			$value = null;
 		}
 
-		parent::__set($key, $value);
+		if (array_key_exists($key, $this->_data)) {
+			$this->_data[$key] = $value;
+			$this->_validated = FALSE;
+		}
 	}
 
 
