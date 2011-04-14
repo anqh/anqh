@@ -16,6 +16,11 @@
 	</header>
 	<?php echo Text::auto_p(HTML::chars($event->dj)) ?>
 
+	<?php if ($tags = $event->tags()): ?>
+	<footer><?php echo implode(', ', $tags); ?></footer>
+	<?php elseif (!empty($event->music)): ?>
+	<footer><?php echo $event->music ?></footer>
+	<?php endif; ?>
 </article>
 <?php	endif; ?>
 

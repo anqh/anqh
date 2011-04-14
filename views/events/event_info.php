@@ -77,11 +77,11 @@ endif;
 	<?php if ($event->age > 0)
 		echo  __('Age limit'), ': ', __(':years years', array(':years' => '<var>' . $event->age . '</var>')), '<br />' ?>
 
-<?php if (!empty($event->homepage))
-	echo HTML::anchor($event->homepage) ?>
+	<?php if (!empty($event->homepage))
+		echo HTML::anchor($event->homepage) ?>
 
-	<?php if (count($event->tags)): ?>
-	<br /><br /><?php foreach ($event->tags as $tag) echo $tag->name, ' '; ?>
+	<?php if ($tags = $event->tags()): ?>
+	<br /><br /><?php echo implode(', ', $tags); ?>
 	<?php elseif (!empty($event->music)): ?>
 	<br /><br /><?php echo $event->music ?>
 	<?php endif; ?>
