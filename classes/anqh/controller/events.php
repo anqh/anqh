@@ -916,17 +916,15 @@ class Anqh_Controller_Events extends Controller_Template {
 	protected function _get_mod_image(Model_Event $event) {
 
 		// Display front flyer by default
-		if ($event->flyer_front_image_id) {
-			$image = new Model_Image($event->flyer_front_image_id);
+		if ($image = $event->flyer_front()) {
 			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			$link  = Route::model($flyer);
-		} else if ($event->flyer_back_image_id) {
-			$image = new Model_Image($event->flyer_back_image_id);
+		} else if ($image = $event->flyer_back()) {
 			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			$link  = Route::model($flyer);
 		} else if (count($flyers = $event->flyers())) {
-			$image = $flyers[0];
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
+			$flyer = $flyers[0];
+			$image = $flyer->image();
 			$link  = Route::model($flyer);
 		} else {
 			$image = null;
