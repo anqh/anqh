@@ -39,9 +39,10 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 		<fieldset id="fields-primary">
 			<ul>
 				<?php echo Form::input_wrap('name', $event, null, __('Event'), $event_errors) ?>
+				<?php echo Form::input_wrap('homepage', $event, null, __('Homepage'), $event_errors) ?>
 				<?php echo Form::textarea_wrap('dj',   $event, null, true, __('Performers'), $event_errors) ?>
 				<?php echo Form::textarea_wrap('info', $event, null, true, __('Other information'), $event_errors, null, true) ?>
-				<?php //echo $event->input('tags', 'form/anqh', array('errors' => $event_errors, 'class' => 'pills', 'values' => $tags)) ?>
+				<?php // @todo tags ?>
 			</ul>
 		</fieldset>
 
