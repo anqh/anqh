@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -22,6 +22,11 @@
 		'errors'  => isset($errors) ? $errors : null,
 		'cancel'  => isset($cancel) ? $cancel : null,
 		'post'    => $post,
-		'action'  => Route::model($topic, 'reply'),
+		'action'  => $post->parent_id	?
+			Route::url($private ? 'forum_private_post' : 'forum_post', array(
+				'topic_id' => $topic->id,
+				'id'       => $post->parent_id,
+				'action'   => 'quote'
+			)) : Route::model($topic, 'reply'),
 	)) ?>
 </section>

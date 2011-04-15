@@ -400,6 +400,7 @@ $(function() {
 			if (!$post->loaded()) {
 				$post->post = '[quote author="' . $quote->author_name . '" post="' . $quote->id . '"]' . $quote->post . "[/quote]\n\n";
 			}
+			$post->parent_id = $quote_id;
 		}
 
 		$this->_set_title($topic);
@@ -419,9 +420,6 @@ $(function() {
 				$post->author_id      = self::$user->id;
 				$post->author_name    = self::$user->username;
 				$post->created        = time();
-				if ($quote_id) {
-					$post->parent_id = $quote_id;
-				}
 				$increase = true;
 
 				// Notify recipients
@@ -443,13 +441,14 @@ $(function() {
 				if ($increase) {
 
 					// Quote, only for public topics
-					if (!$this->private && $quote_id && $quote->author->id) {
-						$quote = Model_Forum_Quote::factory();
-						$quote->set_fields(array(
-							'user_id'        => $quote->author_id,
-							'author_id'      => self::$user->id,
-							'forum_topic_id' => $topic->id,
-							'forum_post_id'  => $post->id));
+					if (!$this->private && $quote_id && $quote->author_id) {
+						$quoted = $quote->author_id;
+						$quote = new Model_Forum_Quote();
+						$quote->user_id        = $quoted;
+						$quote->author_id      = self::$user->id;
+						$quote->forum_topic_id = $topic->id;
+						$quote->forum_post_id  = $post->id;
+						$quote->created        = time();
 						$quote->save();
 					}
 
@@ -503,12 +502,12 @@ $(function() {
 
 		// Common attributes
 		$form = array(
-			'errors'    => $errors,
-			'ajax'      => $this->ajax ? true : null,
-			'topic'     => $topic,
-			'post'      => $post,
-			'user'      => self::$user,
-			'private'   => $this->private,
+			'errors'  => $errors,
+			'ajax'    => $this->ajax ? true : null,
+			'topic'   => $topic,
+			'post'    => $post,
+			'user'    => self::$user,
+			'private' => $this->private,
 			'cancel'  => $this->ajax
 				? Route::get($this->private ? 'forum_private_post' : 'forum_post')
 						->uri(array(
