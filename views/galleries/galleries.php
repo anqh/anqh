@@ -4,21 +4,20 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
 /** @var  Model_Gallery $gallery */
-$gallery = null;
 ?>
 
 <ul>
 
-<?php foreach ($galleries as $gallery): ?>
+<?php foreach ($galleries as $gallery): $default_image = $gallery->default_image(); ?>
 	<li class="grid2<?php echo Text::alternate(' first', '', '', '') ?>">
 		<article>
 			<div class="thumb">
-				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::image($gallery->default_image->get_url('thumbnail', $gallery->dir))) ?>
+				<?php echo HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('New gallery')) ?>
 			</div>
 			<h4><?= HTML::anchor(Route::model($gallery, isset($approval) ? 'pending' : null), HTML::chars($gallery->name)) ?></h4>
 			<div class="info">
@@ -35,7 +34,7 @@ $gallery = null;
 				<?php if (isset($approval)):
 					$copyrights = array();
 					$pending_images = $gallery->find_images_pending($approval ? null : $user);
-					foreach ($pending_images as $image) $copyrights[$image->author->id] = $image->author;
+					foreach ($pending_images as $image) $copyrights[$image->author_id] = $image->author();
 					foreach ($copyrights as $copyright_id => &$copyright) $copyright = HTML::user($copyright);
 				?>
 

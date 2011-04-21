@@ -4,10 +4,10 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to approve images
@@ -34,6 +34,39 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 */
 	const PERMISSION_UPLOAD = 'upload';
 
+	protected $_table_name = 'galleries';
+
+	protected $_data = array(
+		'id'               => null,
+		'name'             => null,
+		'links'            => null,
+		'date'             => null,
+		'event_id'         => null,
+		'default_image_id' => null,
+		'copyright'        => null,
+		'dir'              => null,
+		'mainfile'         => null,
+
+		'image_count'      => null,
+		'comment_count'    => null,
+		'rate_count'       => null,
+		'rate_total'       => null,
+		'created'          => null,
+		'updated'          => null,
+	);
+
+	protected $_rules = array(
+		'name'             => array('not_empty', 'length' => array(':value', 3, 250)),
+		'date'             => array('not_empty', 'digit'),
+		'event_id'         => array('digit'),
+		'default_image_id' => array('digit'),
+	);
+
+	protected $_has_many = array(
+		'images'
+	);
+
+
 	/**
 	 * @var  array  User editable fields
 	 */
@@ -43,50 +76,30 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Create new model
+	 * Get gallery default image.
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @return  Model_Image
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Field_Primary,
-			'name' => new Field_String(array(
-				'label' => __('Name'),
-				'rules' => array(
-					'not_empty'  => null,
-					'min_length' => array(3),
-					'max_length' => array(250),
-				),
-			)),
-			'links' => new Field_Text,
-			'created' => new Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'modified' => new Field_Timestamp(array(
-				'column' => 'updated',
-			)),
-			'image_count' => new Field_Integer,
-			'comment_count' => new Field_Integer,
-			'rate_count' => new Field_Integer,
-			'rate_total' => new Field_Integer,
+	public function default_image() {
+		try {
+			return $this->default_image_id ? Model_Image::factory($this->default_image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
 
-			'date' => new Field_Timestamp(array(
-				'rules' => array(
-					'not_empty' => null,
-				),
-			)),
-			'event' => new Field_BelongsTo,
 
-			'default_image' => new Field_BelongsTo(array(
-				'column'  => 'default_image_id',
-				'foreign' => 'image',
-			)),
-			'images' => new Field_ManyToMany,
-
-			'copyright' => new Field_String,
-			'dir' => new Field_String,
-			'mainfile' => new Field_String,
-		));
+	/**
+	 * Get event attached to gallery.
+	 *
+	 * @return  Model_Event
+	 */
+	public function event() {
+		try {
+			return $this->event_id ? Model_Event::factory($this->event_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 
@@ -96,27 +109,27 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * @param   integer  $event_id
 	 * @return  Model_Gallery
 	 */
-	public static function find_by_event($event_id) {
-		return Jelly::select('gallery')
-			->where('event_id', '=', (int)$event_id)
-			->limit(1)
-			->execute();
+	public function find_by_event($event_id) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('event_id', '=', (int)$event_id)
+		);
 	}
 
 
 	/**
 	 * Find gallery by image id
 	 *
+	 * @static
 	 * @param   integer  $image_id
 	 * @return  Model_Gallery
 	 */
 	public static function find_by_image($image_id) {
-		return Jelly::select('gallery')
-			->join('galleries_images')
-			->on('gallery.:primary_key', '=', 'galleries_images.gallery:foreign_key')
-			->where('image_id', '=', (int)$image_id)
-			->limit(1)
-			->execute();
+		try {
+			return Model_Image::factory($image_id)->gallery();
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 
@@ -124,79 +137,73 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * Find multiple galleries by image ids
 	 *
 	 * @param   array  $image_ids
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_by_images($image_ids) {
-		return Jelly::select('gallery')
-			->join('galleries_images')
-			->on('gallery.:primary_key', '=', 'galleries_images.gallery:foreign_key')
-			->where('image_id', 'IN', $image_ids)
-			->execute();
+	public function find_by_images($image_ids) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->join('galleries_images')
+				->on('galleries.id', '=', 'galleries_images.gallery_id')
+				->where('image_id', 'IN', $image_ids),
+			null
+		);
 	}
 
 
 	/**
 	 * Find galleries by year and month
 	 *
-	 * @static
 	 * @param   integer  $year
 	 * @param   integer  $month
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_by_month($year, $month) {
-		return Jelly::select('gallery')
-			->year_month($year, $month)
-			->execute();
+	public function find_by_month($year, $month) {
+		$start = mktime(0, 0, 0, $month, 1, $year);
+		$end   = strtotime('+1 month', $start);
+
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('image_count', '>', 0)
+				->where('date', 'BETWEEN', array($start, $end))
+				->order_by('date', 'DESC'),
+			null
+		);
 	}
 
 
 	/**
-	 * Get visible gallery images
-	 *
-	 * @return  Jelly_Collection
-	 */
-	public function find_images() {
-		return $this
-			->get('images')
-			->with('author')
-			->where('status', '=', Model_Image::VISIBLE)
-			->order_by('username', 'ASC')
-			->order_by('images.id', 'ASC')
-			->execute();
-	}
-
-
-	/**
-	 * Get gallery images waiting for approval
+	 * Get gallery images waiting for approval.
 	 *
 	 * @param   Model_User  $user  image owner or null for all
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
 	public function find_images_pending(Model_User $user = null) {
-		$images = $this->get('images')
+		$query = DB::select_array(Model_Image::factory()->fields())
 			->where('status', 'IN', array(Model_Image::HIDDEN, Model_Image::NOT_ACCEPTED))
 			->order_by('author_id');
 
+		// Limit by user
 		if ($user) {
-			$images->and_where('author_id', '=', $user->id);
+			$query = $query->and_where('author_id', '=', $user->id);
 		}
 
-		return $images->execute();
+		return $this->find_related('images', $query);
 	}
 
 
 	/**
 	 * Find galleries with latest images
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_latest($limit = 15) {
-		return Jelly::select('gallery')
-			->latest()
-			->limit((int)$limit)
-			->execute();
+	public function find_latest($limit = 15) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('image_count', '>', 0)
+				->order_by('updated', 'DESC'),
+			$limit
+		);
 	}
 
 
@@ -204,14 +211,17 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	 * Get months with galleries.
 	 * Returns array of years => months => count
 	 *
-	 * @static
 	 * @return  array
 	 */
-	public static function find_months() {
+	public function find_months() {
 		$months = array();
 
 		// Build counts
-		$galleries = Jelly::select('gallery')->where('image_count', '>', 0)->execute();
+		$galleries = $this->load(
+			DB::select_array($this->fields())
+				->where('image_count', '>', 0),
+			null
+		);
 		foreach ($galleries as $gallery) {
 			list($year, $month) = explode(' ', date('Y n', $gallery->date));
 
@@ -238,11 +248,10 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Get galleries with images waiting for approval
 	 *
-	 * @static
 	 * @param   Model_User  $user  Null for all
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_pending(Model_User $user = null) {
+	public function find_pending(Model_User $user = null) {
 		$galleries = DB::select('gallery_id')
 			->distinct(true)
 			->from('galleries_images')
@@ -256,7 +265,11 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 			$galleries->where('author_id', '=', $user->id);
 		}
 
-		return Jelly::select('gallery')->where('id', 'IN', $galleries)->execute();
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('id', 'IN', $galleries),
+			null
+		);
 	}
 
 
@@ -294,15 +307,46 @@ class Anqh_Model_Gallery extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Get visible gallery images
+	 *
+	 * @return  Model_Image[]
+	 */
+	public function images() {
+		return $this->find_related(
+			'images',
+			DB::select_array(Model_Image::factory()->fields())
+				->join('users', 'LEFT')
+				->on('users.id', '=', 'images.author_id')
+				->where('images.status', '=', Model_Image::VISIBLE)
+				->order_by('users.username', 'ASC')
+				->order_by('images.id', 'ASC'),
+			null
+		);
+	}
+
+
+	/**
 	 * Update copyright info
 	 *
 	 * @return  Model_Gallery
 	 */
 	public function update_copyright() {
-		$copyrights = array();
-		$authors    = $this->get('images')->select('author_id');
-		$copyright  = Jelly::select('user')->where('id', 'IN', $authors)->execute();
-		foreach ($copyright as $author) $copyrights[$author->username_clean] = $author->username;
+		$copyrights = $authors = array();
+
+		// Load author ids
+		foreach ($this->images() as $image) {
+			if ($image->author_id) {
+				$authors[$image->author_id] = '';
+			}
+		}
+
+		// Load usernames
+		foreach ($authors as $author_id => $author) {
+			if ($author = Model_User::find_user($author_id)) {
+				$copyrights[$author->username_clean] = $author->username;
+			}
+		}
+
 		ksort($copyrights);
 		$this->copyright = implode(', ', $copyrights);
 

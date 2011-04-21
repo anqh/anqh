@@ -9,10 +9,11 @@
  */
 
 /** @var  Model_Gallery  $gallery */
+/** @var  Model_Image    $image */
 
 $images = $pending
 	? $gallery->find_images_pending($approve ? null : $user)
-	: $gallery->find_images();
+	: $gallery->images();
 
 if ($pending) echo Form::open(null, array('id' => 'form-image-approval'));
 
@@ -21,7 +22,7 @@ $copyright = $multiple = null;
 
 	<?php foreach ($images as $image): ?>
 
-		<?php if ($image->author->id != $copyright): $copyright = $image->author->id; ?>
+		<?php if ($image->author_id != $copyright): $copyright = $image->author_id; ?>
 			<?php if ($multiple): ?>
 
 </ul>
@@ -42,8 +43,8 @@ $copyright = $multiple = null;
 			<?php if (!$pending): ?>
 
 			<figcaption>
-				<?php echo HTML::icon_value(array(':comments' => $image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
-				<?php echo HTML::icon_value(array(':views' => $image->view_count), ':views view', ':views views', 'views') ?><br />
+				<?php echo HTML::icon_value(array(':comments' => (int)$image->comment_count), ':comments comment', ':comments comments', 'posts') ?>
+				<?php echo HTML::icon_value(array(':views' => (int)$image->view_count), ':views view', ':views views', 'views') ?><br />
 			</figcaption>
 
 			<?php endif; ?>

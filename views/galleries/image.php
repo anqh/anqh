@@ -13,14 +13,15 @@ $approve = isset($approve) && !is_null($approve) ? 'approve' : '';
 $note_array = array();
 if (count($notes)):
 	foreach ($notes as $noted):
+		$noted_user   = $noted->user();
 		$note_array[] = array(
 			'id'     => (int)$noted->id,
 			'x'      => (int)$noted->x,
 			'y'      => (int)$noted->y,
 			'width'  => (int)$noted->width,
 			'height' => (int)$noted->height,
-			'name'   => $noted->user->loaded() ? $noted->user->username : $noted->name,
-			'url'    => $noted->user->loaded() ? URL::base() . URL::user($noted->user) : null
+			'name'   => $noted_user ? $noted_user['username'] : $noted->name,
+			'url'    => $noted_user ? URL::base() . URL::user($noted_user) : null
 		);
 	endforeach;
 endif;
@@ -68,10 +69,10 @@ endif; ?>
 	<figcaption class="notes icon tag">
 		<ul>
 
-			<?php $i = 0; if ($notes) foreach ($notes as $noted): $i++; $name = $noted->user->loaded() ? $noted->user->username : $noted->name; ?>
+			<?php $i = 0; if ($notes) foreach ($notes as $noted): $i++; $noted_user = $noted->user(); $name = $noted_user ? $noted_user['username'] : $noted->name; ?>
 			<li>
-				<?php if ($noted->user->loaded()): ?>
-					<?php echo HTML::user($noted->user, null, array('data-note-id' => $noted->id)); ?>
+				<?php if ($noted_user): ?>
+					<?php echo HTML::user($noted_user, null, array('data-note-id' => $noted->id)); ?>
 				<?php else: ?>
 					<span data-note-id="<?php echo $noted->id; ?>"><?php echo HTML::chars($name); ?></span>
 				<?php endif; ?>

@@ -21,7 +21,7 @@ echo Form::open(null, array('id' => 'form-flyer-edit-event'));
 
 <div class="grid1">
 	<fieldset class="grid1">
-		<?php echo Form::hidden('event_id', $flyer->original('event')) ?>
+		<?php echo Form::hidden('event_id', $flyer->event_id) ?>
 		<?php echo Form::csrf() ?>
 		<?php echo Form::submit_wrap('save', __('Save')) ?>
 	</fieldset>
@@ -32,7 +32,7 @@ echo Form::open(null, array('id' => 'form-flyer-edit-event'));
 <div class="grid8 first">
 	<fieldset id="fields-info">
 		<ul>
-			<?php echo $flyer->input('name', 'form/anqh', array('errors' => $errors)) ?>
+			<?php echo Form::input_wrap('name', $flyer, null, __('Event'), $errors) ?>
 		</ul>
 	</fieldset>
 </div>
@@ -40,7 +40,21 @@ echo Form::open(null, array('id' => 'form-flyer-edit-event'));
 <div class="grid3">
 	<fieldset id="fields-date">
 		<ul>
-			<?php echo $flyer->input('stamp_begin', 'form/anqh', array('default_time' => '22:00', 'errors' => $errors)) ?>
+			<?php echo Form::input_wrap(
+				'stamp_begin[date]',
+				is_numeric($flyer->stamp_begin) ? Date::format('DMYYYY', $flyer->stamp_begin) : $flyer->stamp_begin,
+				array('class' => 'date', 'maxlength' => 10),
+				__('Date'),
+				Arr::get($errors, 'stamp_begin')
+			) ?>
+			<?php echo Form::select_wrap(
+				'stamp_begin[time]',
+				Date::hours_minutes(30, true),
+				is_numeric($flyer->stamp_begin) ? Date::format('HHMM', $flyer->stamp_begin) : (empty($flyer->stamp_begin) ? '22:00' : $flyer->stamp_begin),
+				array('class' => 'time'),
+				__('At'),
+				Arr::get($errors, 'stamp_begin')
+			) ?>
 		</ul>
 	</fieldset>
 </div>
