@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Index extends Controller_Template {
@@ -50,6 +50,11 @@ class Anqh_Controller_Index extends Controller_Template {
 			return;
 		}
 		Widget::add('main', $view);
+
+		// Sign up
+		if (!self::$user) {
+			Widget::add('side', '<div class="grid4">' . HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add')) . '</div>', Widget::TOP);
+		}
 
 		// Shout
 		Widget::add('side', View_Module::factory('generic/shout', array(

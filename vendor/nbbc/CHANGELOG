@@ -1,5 +1,12 @@
 
-2010-06-05 / released / Phantom Inker (inker2576@yahoo.com)
+2010-09-17 / v1.4.5 / Phantom Inker (inker2576@yahoo.com)
+	* SECURITY FIX:  Fixed a bug that would allow arbitrary HTML
+		injection via the standard [acronym] tag.
+
+2010-08-16 / non-released / Phantom Inker (inker2576@yahoo.com)
+	* Added another unit test for unclosed lists.
+
+2010-06-05 / v1.4.4 / Phantom Inker (inker2576@yahoo.com)
 	* Fixed the long-standing bug in verbatim parsing so that
 		interior content is now truly verbatim and unprocessed.
 		This allows source code to be correctly represented inside

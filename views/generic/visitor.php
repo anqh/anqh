@@ -14,7 +14,7 @@ if ($user):
 ?>
 <ul>
 
-	<?php if ($new_comments = $user->find_new_comments()): ?>
+	<?php if ($new_comments = Anqh::notifications($user)): ?>
 	<li class="menu-messages">
 		<ul class="new-messages">
 			<?php foreach ($new_comments as $class => $link): ?>
@@ -70,7 +70,5 @@ else:
 </ul>
 <?php
 	echo Form::close();
-
-	// echo HTML::anchor(Route::get('sign')->uri(array('action' => 'up')), __('Sign up now!'), array('class' => 'action user-add'));
 
 endif;

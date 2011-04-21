@@ -4,50 +4,40 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Image_Exif extends AutoModeler_ORM implements Permission_Interface {
+
+	protected $_table_name = 'exifs';
+
+	protected $_data = array(
+		'id'            => null,
+		'image_id'      => null,
+		'make'          => null,
+		'model'         => null,
+		'exposure'      => null,
+		'aperture'      => null,
+		'focal'         => null,
+		'iso'           => null,
+		'taken'         => null,
+		'flash'         => null,
+		'program'       => null,
+		'metering'      => null,
+		'latitude'      => null,
+		'latitude_ref'  => null,
+		'longitude'     => null,
+		'longitude_ref' => null,
+		'altitude'      => null,
+		'altitude_ref'  => null,
+		'lens'          => null,
+	);
 
 	public $editable_fields = array(
-		'id', 'image', 'make', 'model', 'exposure', 'aperture', 'focal', 'iso',
+		'id', 'image_id', 'make', 'model', 'exposure', 'aperture', 'focal', 'iso',
 		'taken', 'flash', 'program', 'metering', 'latitude', 'latitude_ref',
 		'longitude', 'longitude_ref', 'altitude', 'altitude_ref', 'lens'
 	);
-
-
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->table('exifs')
-			->fields(array(
-				'id'        => new Field_Primary,
-				'image'     => new Field_BelongsTo,
-				'make'      => new Field_String,
-				'model'     => new Field_String,
-				'exposure'  => new Field_String,
-				'aperture'  => new Field_String,
-				'focal'     => new Field_String,
-				'iso'       => new Field_Integer,
-				'taken'     => new Field_Timestamp(array(
-					'format' => 'Y-m-d H:i:s'
-				)),
-				'flash'     => new Field_String,
-				'program'   => new Field_String,
-				'metering'  => new Field_String,
-				'latitude'  => new Field_Float,
-				'latitude_ref'  => new Field_String,
-				'longitude' => new Field_Float,
-				'longitude_ref' => new Field_String,
-				'altitude'  => new Field_String,
-				'altitude_ref'  => new Field_String,
-				'lens'      => new Field_String,
-			));
-	}
 
 
 	/**
@@ -70,6 +60,16 @@ class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface 
 
 
 	/**
+	 * Get the image of current EXIF data.
+	 *
+	 * @return  Model_Image
+	 */
+	public function image() {
+		return Model_Image::factory($this->image_id);
+	}
+
+
+	/**
 	 * Read image exif data and save if found
 	 *
 	 * @throws  Kohana_Exception
@@ -78,7 +78,7 @@ class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface 
 	public function read() {
 
 		// Image required
-		$image = $this->image;
+		$image = $this->image();
 		if (!$image->loaded()) {
 			throw new Kohana_Exception('Image required for exif data');
 		}
@@ -87,31 +87,29 @@ class Anqh_Model_Image_Exif extends Jelly_Model implements Permission_Interface 
 		$file = $image->get_filename('original');
 		$exif = Image_Exif::factory($file)->read();
 		if (empty($exif)) {
-			throw new Kohana_Exception('No exif data found for :file', array(':file' => $file));
+			return false;
 		}
 
-		$this->set($exif);
+		$this->set_fields($exif);
+
+		return true;
 	}
 
 
 	/**
-	 * Creates or updates the current exif data
+	 * Creates or updates the current exif data.
 	 *
-	 * If $key is passed, the record will be assumed to exist
-	 * and an update will be executed, even if the model isn't loaded().
-	 *
-	 * @param   mixed  $key
-	 * @return  $this
+	 * @return  boolean
 	 */
-	public function save($key = null) {
+	public function save() {
 
 		// If new EXIF data, try to read from image
-		if (!$this->loaded() && !$key) {
+		if (!$this->loaded()) {
 			$this->read();
 		}
 
 		// If was new and no exif data was found it will not be saved
-		parent::save($key);
+		return parent::save();
 	}
 
 }

@@ -5,7 +5,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Visitor {
@@ -32,8 +32,10 @@ class Anqh_Visitor {
 	 * @param  array  $config
 	 */
 	public function __construct($config = array()) {
-		$config['salt_pattern'] = preg_split('/,\s*/', Kohana::config('visitor')->get('salt_pattern'));
-		$this->_config = $config;
+		$config['salt_pattern'] = Arr::get($config, 'salt_pattern', Kohana::config('visitor')->get('salt_pattern'));
+		!is_array($config['salt_pattern']) and $config['salt_pattern'] = preg_split('/,\s*/', $config['salt_pattern']);
+
+		$this->_config  = $config;
 		$this->_session = Session::instance();
 	}
 
@@ -47,10 +49,10 @@ class Anqh_Visitor {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
 
 			// Load the token and user
-			$token = Jelly::select('user_token')->where('token', '=', $token)->load();
-
-			if ($token->loaded() AND $token->user->loaded()) {
-				if ($token->user_agent === sha1(Request::$user_agent)) {
+			$token = new Model_User_Token($token);
+			if ($token->loaded() && $token->user_id) {
+				$user = Model_User::find_user($token->user_id);
+				if ($user && $token->user_agent === sha1(Request::$user_agent)) {
 
 					// Save the token to create a new unique token
 					$token->update();
@@ -59,7 +61,7 @@ class Anqh_Visitor {
 					Cookie::set($this->_config['cookie_name'], $token->token, $token->expires - time());
 
 					// Complete the login with the found data
-					$this->complete_login($token->user);
+					$this->complete_login($user);
 
 					// Automatic login was successful
 					return true;
@@ -100,16 +102,19 @@ class Anqh_Visitor {
 	 * @return  boolean
 	 */
 	protected function complete_login(Model_User $user) {
-		$user->logins     += 1;
+		$user->login_count++;
 		$user->old_login  = $user->last_login;
 		$user->last_login = time();
 		$user->ip         = Request::$client_ip;
 		$user->hostname   = Request::host_name();
-		$user->save();
+		try {
+			$user->save();
+		} catch (Validation_Exception $e) {
+		}
 
-		// Regenerate session_id and store user
+		// Regenerate session_id and store user id
 		$this->_session->regenerate();
-		$this->_session->set($this->_config['session_key'], $user);
+		$this->_session->set($this->_config['session_key'], $user->id);
 
 		return true;
 	}
@@ -206,12 +211,16 @@ class Anqh_Visitor {
 
 
 	/**
-	 * Gets the currently logged in user from the session or null
+	 * Gets the currently logged in user from the session or null.
 	 *
 	 * @return  mixed
 	 */
 	public function get_user() {
-		return $this->_session->get($this->_config['session_key'], null);
+		if ($user_id = $this->_session->get($this->_config['session_key'], null)) {
+			return Model_User::find_user($user_id);
+		}
+
+		return null;
 	}
 
 
@@ -290,11 +299,11 @@ class Anqh_Visitor {
 	 * @return  Visitor
 	 */
 	public static function instance() {
-		if (!Visitor::$_instance) {
-			Visitor::$_instance = new Visitor(Kohana::config('visitor'));
+		if (!self::$_instance) {
+			self::$_instance = new Visitor(Kohana::config('visitor'));
 		}
 
-		return Visitor::$_instance;
+		return self::$_instance;
 	}
 
 
@@ -308,15 +317,15 @@ class Anqh_Visitor {
 		$status = false;
 
 		// Get the user from the session
-		$user = $this->_session->get($this->_config['session_key']);
+		$user = $this->get_user();
 
 		// Not logged in, maybe autologin?
 		if (!is_object($user) && $this->_config['lifetime'] && $this->auto_login()) {
-			$user = $this->_session->get($this->_config['session_key']);
+			$user = $this->get_user();
 		}
 
 		// Check if potential user has optional roles
-		if (is_object($user) && $user instanceof Model_User && $user->loaded()) {
+		if ($user instanceof Model_User && $user->loaded()) {
 			$status = (empty($roles)) ? true : $user->has_role($roles);
 		}
 
@@ -346,14 +355,12 @@ class Anqh_Visitor {
 		$password = $this->hash_password($password, $salt);
 
 		// If the passwords match, perform a login
-		if ($user->has_role('login') && $user->password === $password) {
+		if ($user->password === $password && $user->has_role('login')) {
 			if ($remember === true) {
 
 				// Create a new autologin token
-				$token = Model::factory('user_token');
-
-				// Set token data
-				$token->user = $user->id;
+				$token = new Model_User_Token();
+				$token->user_id = $user->id;
 				$token->expires = time() + $this->_config['lifetime'];
 				$token->create();
 
@@ -385,9 +392,9 @@ class Anqh_Visitor {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
 			Cookie::delete($this->_config['cookie_name']);
 
-			$token = Jelly::select('user_token')->where('token', '=', $token)->limit(1)->load();
-			if ($token->loaded() && $logout_all) {
-				Jelly::delete('user_token')->where('user_id', '=', $token->user->id)->execute();
+			$token = new Model_User_Token($token);
+			if ($logout_all && $token->loaded()) {
+				Model_User_Token::delete_all($token->user_id);
 			} else if ($token->loaded()) {
 				$token->delete();
 			}

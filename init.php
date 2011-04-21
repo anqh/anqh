@@ -4,10 +4,19 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+// Our own exception handler
+if (Kohana::$errors === true) {
+	set_exception_handler(array('Anqh_Exception', 'handler'));
+}
+
+Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', 'message' => '.+'))
+	->defaults(array(
+		'controller' => 'error'
+	));
 Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sql|js|css'))
 	->defaults(array(
 		'controller' => 'static',

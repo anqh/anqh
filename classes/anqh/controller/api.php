@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_API extends Controller {
@@ -44,15 +44,16 @@ class Anqh_Controller_API extends Controller {
 	public function before() {
 
 		// Log request
-		Model_API_Request::factory()->set(array(
-			'ip'      => Request::$client_ip,
-			'request' => $this->request->uri . (empty($_GET) ? '' : '?' . http_build_query($_GET)),
-		))->save();
+		$api_request = Model_API_Request::factory();
+		$api_request->ip      = Request::$client_ip;
+		$api_request->request = $this->request->uri() . (empty($_REQUEST) ? '' : '?' . http_build_query($_REQUEST));
+		$api_request->created = time();
+		$api_request->save();
 
 		// Rate limit
-		$rate_span = Kohana::config('api.rate_span');
+		$rate_span  = Kohana::config('api.rate_span');
 		$rate_limit = Kohana::config('api.rate_limit');
-		$requests = Model_API_Request::request_count(time() - $rate_span, Request::$client_ip);
+		$requests   = Model_API_Request::request_count(time() - $rate_span, Request::$client_ip);
 		$requests_left = $rate_limit - $requests;
 		if ($requests_left < 0) {
 			throw new Controller_API_Exception('Request limit reached');
@@ -88,20 +89,20 @@ class Anqh_Controller_API extends Controller {
 
 			// Support JSON and JSONP
 			case self::FORMAT_JSON:
-		    $this->request->headers['Content-Type'] = 'application/json';
+		    $this->response->headers('Content-Type', 'application/json');
 
 		    // Check and sanitize JSONP
 		    $jsonp = Arr::get($_REQUEST, 'callback');
-		    if ($jsonp && Validate::alpha_dash($jsonp)) {
-			    $this->request->response = $jsonp . '(' . json_encode($this->data) . ')';
+		    if ($jsonp && Valid::alpha_dash($jsonp)) {
+			    $this->response->body($jsonp . '(' . json_encode($this->data) . ')');
 		    } else {
-			    $this->request->response = json_encode($this->data);
+			    $this->response->body(json_encode($this->data));
 		    }
 		    break;
 
 			case self::FORMAT_XML:
-		    $this->request->headers['Content-Type'] = 'application/xml';
-		    $this->request->response = Arr::xml($this->data);
+		    $this->response->headers('Content-Type', 'application/xml');
+		    $this->response->body(Arr::xml($this->data));
 		    break;
 
 		}

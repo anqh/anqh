@@ -3,27 +3,25 @@
 require_once(Kohana::find_file('vendor', 'nbbc/nbbc'));
 
 /**
- * BBCode lbrary
+ * BBCode library
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
- * @copyright  (c) 2008-9, the Phantom Inker
- * @copyright  (c) 2004-2008 AddedBytes
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_BB extends BBCode {
 
 	/**
-	 * The BBCode formatted text
-	 *
-	 * @var  string
+	 * @var  string  The BBCode formatted text
 	 */
 	protected $text = null;
 
 
 	/**
 	 * Create new BBCode object and initialize our own settings
+	 *
+	 * @param  string  $text
 	 */
 	public function __construct($text = null) {
 		parent::BBCode();
@@ -85,7 +83,7 @@ class Anqh_BB extends BBCode {
 
 				// Parent post id
 				case 'post':
-					$post = Jelly::select('forum_post', (int)$param['value']);
+					$post = Model_Forum_Post::factory((int)$param['value']);
 					break;
 
 				// Parent post author
@@ -99,10 +97,10 @@ class Anqh_BB extends BBCode {
 
 		// Add parent post
 		if (isset($post) && $post->loaded()) {
-			$quote = '<blockquote cite="' . URL::site(Route::model($post->topic)) . '?post=' . $post->id . '#post-' . $post->id . '">';
+			$quote = '<blockquote cite="' . URL::site(Route::model($post->topic())) . '?post=' . $post->id . '#post-' . $post->id . '">';
 
 			// Override author
-			$author = Model_User::find_user_light($post->original('author'));
+			$author = Model_User::find_user_light($post->author_id);
 		} else {
 			$quote = '<blockquote>';
 		}

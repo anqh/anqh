@@ -30,8 +30,8 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-define("BBCODE_VERSION", "1.4.4");
-define("BBCODE_RELEASE", "2010-06-05");
+define("BBCODE_VERSION", "1.4.5");
+define("BBCODE_RELEASE", "2010-09-17");
 define("BBCODE_VERBATIM", 2);
 define("BBCODE_REQUIRED", 1);
 define("BBCODE_OPTIONAL", 0);
@@ -519,7 +519,7 @@ var $default_tag_rules = Array(
 ),
 'acronym' => Array(
 'mode' => BBCODE_MODE_ENHANCED,
-'template' => '<span class="bbcode_acronym" title="{$_default}">{$_content/v}</span>',
+'template' => '<span class="bbcode_acronym" title="{$_default/e}">{$_content/v}</span>',
 'class' => 'inline',
 'allow_in' => Array('listitem', 'block', 'columns', 'inline', 'link'),
 ),
@@ -791,7 +791,7 @@ return "<a href=\"{$bbcode->wiki_url}$name\" class=\"bbcode_wiki\">"
 function DoImage($bbcode, $action, $name, $default, $params, $content) {
 if ($action == BBCODE_CHECK) return true;
 $content = trim($bbcode->UnHTMLEncode(strip_tags($content)));
-if (preg_match("/\\.(?:gif|jpeg|jpg|jpe|png)$/", $content)) {
+if (preg_match("/\\.(?:gif|GIF|jpeg|JPEG|jpg|JPG|jpe|JPE|png|PNG)$/", $content)) {
 if (preg_match("/^[a-zA-Z0-9_][^:]+$/", $content)) {
 if (!preg_match("/(?:\\/\\.\\.\\/)|(?:^\\.\\.\\/)|(?:^\\/)/", $content)) {
 $info = @getimagesize("{$bbcode->local_img_dir}/{$content}");
@@ -1442,7 +1442,7 @@ $end = $this->Internal_CleanupWSByIteratingPointer(@$rule['before_endtag'], 0, $
 $this->Internal_CleanupWSByPoppingStack(@$rule['after_tag'], $output);
 $tag_body = $this->Internal_CollectTextReverse($output, count($output)-1, $end);
 $this->Internal_CleanupWSByPoppingStack(@$rule['before_tag'], $this->stack);
-$this->Internal_UpdateParamsForMissingEndTag($token[BBCODE_STACK_TAG]);
+$this->Internal_UpdateParamsForMissingEndTag(@$token[BBCODE_STACK_TAG]);
 $tag_output = $this->DoTag(BBCODE_OUTPUT, $name,
 @$token[BBCODE_STACK_TAG]['_default'], @$token[BBCODE_STACK_TAG], $tag_body);
 $output = Array(Array(

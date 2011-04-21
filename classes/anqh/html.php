@@ -106,7 +106,7 @@ class Anqh_HTML extends Kohana_HTML {
 			// Format number
 			$formatted = Num::format($value, 0);
 			$plural = $plural ? $plural : $singular;
-			$title = ($singular && $plural) ? ' title="' . __2($singular, $plural, $value, array($var => $formatted)) . '"' : '';
+			$title = ($singular && $plural) ? ' title="' . __($value == 1 ? $singular : $plural, array($var => $formatted)) . '"' : '';
 
 		} else {
 
@@ -161,34 +161,34 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
-	 * Creates a style sheet link element.
+	 * Override style() to allow overriding attributes.
 	 *
-	 *     echo HTML::style('media/css/screen.css');
+	 *  echo HTML::style('media/css/screen.css');
 	 *
-	 * @param   string  file name
-	 * @param   array   default attributes
+	 * @param   string   file name
+	 * @param   array    default attributes
+	 * @param   mixed    protocol to pass to URL::base()
 	 * @param   boolean  include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function style($file, array $attributes = null, $index = false) {
-
-		// Add the base URL
-		if (strpos($file, '://') === FALSE) {
-			$file = URL::base($index).$file;
+	public static function style($file, array $attributes = null, $protocol = null, $index = false) {
+		if (strpos($file, '://') === false) {
+			// Add the base URL
+			$file = URL::base($protocol, $index).$file;
 		}
 
 		// Set the stylesheet link
 		$attributes['href'] = $file;
 
-		// Set the stylesheet rel
-		$attributes['rel'] = Arr::get($attributes, 'rel', 'stylesheet');
+		// Set the stylesheet rel and type if not set
+		$attributes = (array)$attributes + array(
+			'rel'  => 'stylesheet',
+			'type' => 'text/css'
+		);
 
-		// Set the stylesheet type
-		$attributes['type'] = Arr::get($attributes, 'type', 'text/css');
-
-		return '<link'.HTML::attributes($attributes).' />';
+		return '<link' . HTML::attributes($attributes) . ' />';
 	}
 
 
@@ -204,7 +204,7 @@ class Anqh_HTML extends Kohana_HTML {
 		// Extract datetime
 		$datetime = (is_array($attributes)) ? Arr::get_once($attributes, 'datetime') : $attributes;
 		if ($datetime) {
-			$time = is_int($datetime) ? $datetime : strtotime($datetime);
+			$time = is_numeric($datetime) ? $datetime : strtotime($datetime);
 			$datetime = Date::format($short ? Date::DATE_8601 : Date::TIME_8601, $time);
 			if (is_array($attributes)) {
 				$attributes['datetime'] = $datetime;

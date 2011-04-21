@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_NewsfeedItem_User extends NewsfeedItem implements NewsfeedItem_Interface {
+class Anqh_NewsfeedItem_User extends NewsfeedItem {
 
 	/**
 	 * Changes new default image
@@ -41,14 +41,14 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem implements NewsfeedItem_Interf
 		switch ($item->type) {
 
 			case self::TYPE_DEFAULT_IMAGE:
-		    $image = Jelly::select('image')->load($item->data['image_id']);
+		    $image = Model_Image::factory($item->data['image_id']);
 		    if ($image->loaded()) {
 			    $text = __('changed their default image');
 		    }
 		    break;
-			
+
 			case self::TYPE_FRIEND:
-				$friend = Jelly::select('user')->load($item->data['friend_id']);
+				$friend = Model_User::find_user($item->data['friend_id']);
 				if ($friend->loaded()) {
 					$text = __('added :friend as a friend', array(':friend' => HTML::user($friend)));
 				}

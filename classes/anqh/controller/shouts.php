@@ -32,14 +32,15 @@ class Anqh_Controller_Shouts extends Controller_Template {
 		$errors = array();
 
 		if (Permission::has($shout, Permission_Interface::PERMISSION_CREATE) && Security::csrf_valid()) {
-			$shout->author = self::$user;
-			$shout->shout  = $_POST['shout'];
+			$shout->author_id = self::$user->id;
+			$shout->shout     = $_POST['shout'];
+			$shout->created   = time();
 			try {
 				$shout->save();
 				if (!$this->ajax) {
 					$this->request->redirect(Route::get('shouts')->uri());
 				}
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}

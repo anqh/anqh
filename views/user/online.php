@@ -11,11 +11,11 @@
 $guests = Model_User_Online::get_guest_count();
 $online = Model_User_Online::find_online_users();
 $counts = array();
-if (count($online)) {
-	$counts[] = __2(':members member', ':members members', count($online), array(':members' => count($online)));
+if ($count = count($online)) {
+	$counts[] = __($count == 1 ? ':members member' : ':members members', array(':members' => $count));
 }
 if ($guests) {
-	$counts[] = __2(':guests guest', ':guests guests', $guests, array(':guests' => $guests));
+	$counts[] = __($guests == 1 ? ':guests guest':  ':guests guests', array(':guests' => $guests));
 }
 
 echo '<div class="totals">' . __(':users users online', array(

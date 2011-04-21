@@ -4,112 +4,113 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ *
+ * @todo  Refactor to use uniqid instead of id_postfix for filename
  */
-class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
-
-	const DELETED      = 'd';
-	const HIDDEN       = 'h';
-	const NOT_ACCEPTED = 'n';
-	const VISIBLE      = 'v';
+class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to add/edit notes
 	 */
 	const PERMISSION_NOTE = 'note';
 
-	/** @deprecated */
-	const NORMAL   = 'normal';
-	/** @deprecated */
-	const ORIGINAL = '';
-	/** @deprecated */
-	const THUMB    = 'thumb';
+	const DELETED      = 'd';
+	const HIDDEN       = 'h';
+	const NOT_ACCEPTED = 'n';
+	const VISIBLE      = 'v';
+
+	const SIZE_ICON      = 'icon';
+	const SIZE_MAIN      = 'main';
+	const SIZE_ORIGINAL  = 'original';
+	const SIZE_SIDE      = 'side';
+	const SIZE_THUMBNAIL = 'thumbnail';
+	const SIZE_WIDE      = 'wide';
+
+	protected $_table_name = 'images';
+
+	protected $_data = array(
+		'id'                => null,
+		'status'            => self::VISIBLE,
+		'description'       => null,
+		'format'            => null,
+		'created'           => null,
+		'view_count'        => 0,
+		'comment_count'     => 0,
+		'new_comment_count' => 0,
+		'rate_count'        => 0,
+		'rate_total'        => 0,
+
+		'original_size'     => null,
+		'original_width'    => null,
+		'original_height'   => null,
+		'width'             => null,
+		'height'            => null,
+		'thumb_width'       => null,
+		'thumb_height'      => null,
+
+		'postfix'           => null,
+		'file'              => null,
+		'remote'            => null,
+		'legacy_filename'   => null, // To be deprecated
+
+		'author_id'         => null,
+	);
+
+	protected $_rules = array(
+		'status'            => array('not_empty', 'in_array' => array(':value', array(self::DELETED, self::HIDDEN, self::NOT_ACCEPTED, self::VISIBLE))),
+		'remote'            => array('url'),
+	);
+
+	protected $_belongs_to = array(
+		'galleries'
+	);
 
 	/**
 	 * @var  string  Normal size image config
 	 */
-	public $normal = 'main';
+	public $normal = self::SIZE_MAIN;
 
 	/**
 	 * @var  array  Thumbnail configs
 	 */
-	public $thumbnails = array('thumbnail', 'icon');
-
+	public $thumbnails = array(self::SIZE_THUMBNAIL, self::SIZE_ICON);
 
 	/**
-	 * Create new model
+	 * Add new note.
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param   integer  $author_id
+	 * @param   array    $position    x, y, width, height
+	 * @param   mixed    $user        Model_User or username
+	 * @return  Model_Image_Note
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id'       => new Field_Primary,
-			'status'   => new Field_Enum(array(
-				'default' => self::VISIBLE,
-				'choices' => array(
-					self::DELETED      => __('Deleted'),
-					self::HIDDEN       => __('Hidden'),
-					self::NOT_ACCEPTED => __('Not accepted'),
-					self::VISIBLE      => __('Visible'),
-				)
-			)),
-			'description' => new Field_String,
-			'format'      => new Field_String,
-			'created'     => new Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'view_count' => new Field_Integer(array(
-				'default' => 0,
-				'column' => 'views',
-			)),
-			'comment_count' => new Field_Integer(array(
-				'default' => 0,
-				'column' => 'comments',
-			)),
-			'new_comment_count' => new Field_Integer(array(
-				'default' => 0,
-			)),
-			'rate_count' => new Field_Integer(array(
-				'default' => 0,
-			)),
-			'rate_total' => new Field_Integer(array(
-				'default' => 0,
-			)),
+	public function add_note($author_id, array $position = null, $user = null) {
+		Model_Image_Note::factory()->add($author_id, $this->id, $position, $user);
 
-			'original_size'   => new Field_Integer,
-			'original_width'  => new Field_Integer,
-			'original_height' => new Field_Integer,
-			'width'           => new Field_Integer,
-			'height'          => new Field_Integer,
-			'thumb_width'     => new Field_Integer,
-			'thumb_height'    => new Field_Integer,
-
-			'postfix' => new Field_String,
-			'file'    => new Field_File(array(
-				'label' => __('Image'),
-				'path'  => Kohana::config('image.upload_path'),
-			)),
-			'remote' => new Field_URL,
-			'legacy_filename' => new Field_String,
-
-			'author' => new Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'exif' => new Field_HasOne(array(
-				'foreign' => 'image_exif',
-			)),
-			'comments' => new Field_HasMany(array(
-				'foreign' => 'image_comment',
-			)),
-			'notes' => new Field_HasMany(array(
-				'foreign' => 'image_note',
-			)),
-		));
+		$this->update_description()->save();
 	}
 
 
+	/**
+	 * Get image comments
+	 *
+	 * @param   Model_User  $viewer
+	 * @return  Database_Result
+	 */
+	public function comments(Model_User $viewer = null) {
+		$query = Model_Comment::query_viewer(DB::select_array(Model_Image_Comment::factory()->fields()), $viewer);
+
+		return $this->find_related('image_comments', $query);
+	}
+
+
+	/**
+	 * Convert images from local path to new path and sizes.
+	 *
+	 * @param   string  $old_path  Legacy path of old image
+	 * @throws  Kohana_Exception
+	 */
 	public function convert($old_path) {
 
 		// Make sure we have the new target directory
@@ -142,11 +143,10 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Deletes a single image and files
 	 *
-	 * @param   $key  A key to use for non-loaded records
 	 * @return  boolean
 	 **/
-	public function delete($key = null) {
-		if (!$key && $this->loaded()) {
+	public function delete() {
+		if ($this->loaded()) {
 
 			// Delete default
 			if (is_file($this->get_filename())) {
@@ -154,8 +154,8 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			}
 
 			// Delete original
-			if (is_file($this->get_filename('original'))) {
-				unlink($this->get_filename('original'));
+			if (is_file($this->get_filename(self::SIZE_ORIGINAL))) {
+				unlink($this->get_filename(self::SIZE_ORIGINAL));
 			}
 
 			// Delete other sizes
@@ -167,11 +167,60 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			}
 
 			// Delete exif
-			$this->exif->delete();
+			if ($exif = $this->exif()) {
+				$exif->delete();
+			}
 
 		}
 
-		return parent::delete($key);
+		return parent::delete();
+	}
+
+
+	/**
+	 * Get EXIF data for image.
+	 *
+	 * @return  Model_Exif
+	 */
+	public function exif() {
+		if ($exif = $this->find_related('image_exifs')) {
+			return $exif->current();
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * Get images with new comments.
+	 *
+	 * @param   Model_User  $user
+	 * @return  Database_Result
+	 */
+	public function find_new_comments(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('author_id', '=', $user->id)
+				->and_where('new_comment_count', '>', 0),
+			null
+		);
+	}
+
+
+	/**
+	 * Get image gallery
+	 *
+	 * @return  Model_Gallery
+	 */
+	public function gallery() {
+		if ($gallery = $this->find_parent('galleries')) {
+			$gallery = $gallery->current();
+			$gallery->state(AutoModeler::STATE_LOADED);
+
+			return $gallery;
+		}
+
+		return null;
 	}
 
 
@@ -237,31 +286,6 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Get images with new comments
-	 *
-	 * @static
-	 * @param   Model_User $user
-	 * @return  Jelly_Collection
-	 */
-	public static function find_new_comments(Model_User $user) {
-		return Jelly::select('image')
-			->where('author_id', '=', $user->id)
-			->and_where('new_comment_count', '>', 0)
-			->execute();
-	}
-
-
-	/**
-	 * Get image notes
-	 *
-	 * @return  Jelly_Collection
-	 */
-	public function find_notes() {
-		return $this->get('notes')->order_by('x', 'ASC')->order_by('id', 'ASC')->execute();
-	}
-
-
-	/**
 	 * Get full path and filename of specific image size or empty for default
 	 *
 	 * @param   string   $size
@@ -275,7 +299,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 		// Saved image, based on ID
 		$path = Kohana::config('image.path') . URL::id($this->id);
 		$path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+		$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
 
 		return $path . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 	}
@@ -289,23 +313,23 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 * @return  string
 	 */
 	public function get_url($size = null, $legacy_dir = null) {
-		if (!$this->loaded()) {
+		if (!$this->id) {
 			return null;
 		}
 
 		// Saved image, based on ID
 		$server = Kohana::config('site.image_server');
 		if ($this->legacy_filename && !$this->postfix) {
-			if ($size == 'thumbnail') {
+			if ($size == self::SIZE_THUMBNAIL) {
 				$size = 'thumb_';
-			} elseif ($size == 'original') {
+			} elseif ($size == self::SIZE_ORIGINAL) {
 				$size = '';
 			} else {
 				$size = 'pieni_';
 			}
 			$url = ($server ? 'http://' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
 		} else {
-			$postfix = $size == 'original' ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+			$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
 			$url     = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
 			$url     = $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 		}
@@ -330,7 +354,7 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    return $user && ($user->id == $this->author->id || $user->has_role('admin', 'photo moderator'));
+		    return $user && ($user->id == $this->author_id || $user->has_role('admin', 'photo moderator'));
 
 			case self::PERMISSION_READ:
 		    return true;
@@ -342,23 +366,53 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Creates or updates the current image
+	 * Get image notes
 	 *
-	 * If $key is passed, the record will be assumed to exist
-	 * and an update will be executed, even if the model isn't loaded().
+	 * @return  Database_Result
+	 */
+	public function notes() {
+		return $this->find_related(
+			'image_notes',
+			DB::select_array(Model_Image_Note::factory()->fields())
+				->order_by('x', 'ASC')
+				->order_by('id', 'ASC')
+		);
+	}
+
+
+	/**
+	 * Create new resized images from original overwriting old.
 	 *
-	 * @param   mixed  $key
-	 * @return  $this
+	 * @param   string  $normal  New normal size
+	 * @param   array   $thumbs  New thumb sizes
+	 * @throws  Kohana_Exception
+	 */
+	public function resize($normal = null, array $thumbs = null) {
+		$this->normal     = (array)$normal;
+		$this->thumbnails = (array)$thumbs;
+
+		$this->_generate_images($this->get_filename(self::SIZE_ORIGINAL));
+	}
+
+
+	/**
+	 * Creates or updates the current image.
+	 *
+	 * @param   Validation  $validation a manual validation object to combine the model properties with
+	 * @return  integer
 	 *
 	 * @throws  Kohana_Exception
 	 */
-	public function save($key = null) {
-		$new = !$this->loaded() && !$key;
+	public function save(Validation $validation = null) {
+		$new = !(bool)$this->id;
 
 		// Validate new image
 		if ($new) {
+			$path = Kohana::config('image.upload_path');
+
+			// Download remote files
 			if ($this->remote && !$this->file) {
-				$this->file = Remote::download($this->remote, null, Kohana::config('image.upload_path'));
+				$this->file = Request::factory($this->remote)->download(null, $path);
 			}
 
 			if (!$this->file || (!$this->remote && !Upload::not_empty($this->file))) {
@@ -369,14 +423,41 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::config('image.filetypes')))));
 			}
 
-			// As a remote file is no actual file field, manually set the filename
-			if ($this->remote && !is_uploaded_file($this->file['tmp_name'])) {
-				$this->file = basename($this->file['tmp_name']);
+			$upload = $this->file;
+
+			if ($this->remote && !is_uploaded_file($upload['tmp_name'])) {
+
+				// As a remote file is no actual file field, manually set the filename
+				$this->file = basename($upload['tmp_name']);
+
+			} else if (is_uploaded_file($upload['tmp_name'])) {
+
+				// Sanitize the filename
+				$upload['name'] = preg_replace('/[^a-z0-9-\.]/', '-', mb_strtolower($upload['name']));
+
+				// Strip multiple dashes
+				$upload['name'] = preg_replace('/-{2,}/', '-', $upload['name']);
+
+				// Try to save upload
+				if (false !== ($this->file = Upload::save($upload, null, $path))) {
+
+					// Get new filename
+					$this->file = basename($this->file);
+
+				}
+
 			}
 
 		}
 
-		parent::save($key);
+		try {
+			parent::save();
+		} catch (Validation_Exception $e) {
+			if ($new && $this->file) {
+				unlink($path . $this->file);
+			}
+			throw $e;
+		}
 
 		// Some magic on created images only
 		if ($new) {
@@ -398,9 +479,9 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 			$new_file = $this->id . '_' . $this->postfix . Kohana::config('image.postfix_original') . '.jpg';
 
 			// Rename and move to correct directory using image id
-			$old_path = Kohana::config('image.upload_path');
 			$old_file = $this->file;
-			if (!rename($old_path . $old_file, $new_path . $new_file)) {
+			if (!rename($path . $old_file, $new_path . $new_file)) {
+				unlink($path . $old_file);
 				throw new Kohana_Exception(get_class($this) . ' could not move uploaded image');
 			}
 			$this->file = $new_file;
@@ -422,38 +503,18 @@ class Anqh_Model_Image extends Jelly_Model implements Permission_Interface {
 	 */
 	public function update_description() {
 		$description = array();
-		foreach ($this->find_notes() as $note) {
-			$description[] = ($note->user->loaded() ? $note->user->username : $note->name);
+
+		/** @var  Model_Image_Note  $note */
+		foreach ($this->notes() as $note) {
+			if ($user = $note->user()) {
+				$description[] = $user['username'];
+			} else {
+				$description[] = $note->name;
+			}
 		}
 		$this->description = implode(', ', $description);
 
 		return $this;
-	}
-
-
-	/**
-	 * Build image URL
-	 *
-	 * @param   string  $size
-	 * @return  string
-	 *
-	 * @see  NORMAL
-	 * @see  THUMB
-	 */
-	public function url($size = self::NORMAL) {
-		$url = '';
-
-		if ($this->loaded()) {
-			$path = URL::id($this->id);
-
-			// Postfix filename if necessary
-			$postfix = in_array($size, array(self::NORMAL, self::THUMB)) ? '_' . substr($size, 0, 1) : '';
-			$filename = $this->id . $postfix . '.' . $this->format;
-
-			$url = 'http://' . Kohana::config('site.image_server') . '/' . $path . '/' . $filename;
-		}
-
-		return $url;
 	}
 
 }

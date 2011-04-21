@@ -105,14 +105,23 @@ abstract class Anqh_Controller_Template extends Controller {
 
 		// Online users
 		if (!$this->internal) {
-			$online = Model_User_Online::find(Session::instance()->id());
-			if (!$online->loaded()) {
-				$online->id = Session::instance()->id();
+			$session_id = Session::instance()->id();
+			$online = new Model_User_Online($session_id);
+			$online->user_id       = self::$user ? self::$user->id : null;
+			$online->last_activity = time();
+			if (!$online->loaded() && $session_id) {
+				$online->id = $session_id;
 			}
-			$online->user = self::$user;
 			try {
 				$online->save();
-			} catch (Validate_Exception $e) {}
+			} catch (Validation_Exception $e) {
+
+			} catch (Database_Exception $e) {
+
+				// Might happen if no session id set
+
+			}
+
 		}
 
 	}
@@ -125,7 +134,7 @@ abstract class Anqh_Controller_Template extends Controller {
 		if ($this->ajax || $this->internal) {
 
 			// AJAX and HMVC requests
-			$this->request->response .= '';
+			$this->response->body($this->response->body() . '');
 
 		} else if ($this->auto_render) {
 
@@ -134,8 +143,8 @@ abstract class Anqh_Controller_Template extends Controller {
 			$session = Session::instance();
 
 			// Save current URI
-			if ($this->history && $this->request->status < 400) {
-				$uri = $this->request->uri;
+			if ($this->history && $this->response->status() < 400) {
+				$uri = $this->request->current_uri();
 				unset($this->breadcrumb[$uri]);
 				$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
 				$this->breadcrumb[$uri] = $this->page_title;
@@ -145,7 +154,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			}
 
 			// Controller name as the default page id if none set
-			empty($this->page_id) && $this->page_id = $this->request->controller;
+			empty($this->page_id) and $this->page_id = $this->request->controller();
 
 
 			// Stylesheets
@@ -171,26 +180,29 @@ abstract class Anqh_Controller_Template extends Controller {
 					'selected' => $this->tab_id,
 				)));
 			}
-			Widget::add('tabs', View::factory('generic/tabs_top',   array('tabs' => $this->tabs, 'selected' => $this->tab_id)));
+			Widget::add('tabs', View::factory('generic/tabs_top', array(
+				'tabs'     => $this->tabs,
+				'selected' => $this->tab_id
+			)));
 
 			// Footer
 			Widget::add('footer', View_Module::factory('events/event_list', array(
 				'mod_id'    => 'footer-events-new',
 				'mod_class' => 'article grid4 first cut events',
 				'mod_title' => __('New events'),
-				'events'    => Model_Event::find_new(10)
+				'events'    => Model_Event::factory()->find_new(10)
 			)));
 			Widget::add('footer', View_Module::factory('forum/topiclist', array(
 				'mod_id'    => 'footer-topics-active',
 				'mod_class' => 'article grid4 cut topics',
 				'mod_title' => __('New posts'),
-				'topics'    => Model_Forum_Topic::find_by_latest_post(10)
+				'topics'    => Model_Forum_Topic::factory()->find_by_latest_post(10)
 			)));
 			Widget::add('footer', View_Module::factory('blog/entry_list', array(
 				'mod_id'    => 'footer-blog-entries',
 				'mod_class' => 'article grid4 cut blogentries',
 				'mod_title' => __('New blogs'),
-				'entries'   => Model_Blog_Entry::find_new(10),
+				'entries'   => Model_Blog_Entry::factory()->find_new(10),
 			)));
 
 
@@ -317,7 +329,7 @@ head.js(
 				$this->language . ' ' .                      // Language
 				$session->get('page_width', 'fixed') . ' ' . // Fixed/liquid layout
 				$session->get('page_main', 'left') . ' ' .   // Left/right aligned layout
-				$this->request->action . ' ' .               // Controller method
+				$this->request->action() . ' ' .             // Controller method
 				$this->page_class);                          // Controller set classes
 			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
 
@@ -333,8 +345,26 @@ head.js(
 				->set('page_title',    $this->page_title)
 				->set('page_subtitle', $this->page_subtitle);
 
+			// Add statistics
+			$queries = 0;
+			if (Kohana::$profiling) {
+				foreach (Profiler::groups() as $group => $benchmarks) {
+					if (strpos($group, 'database') === 0) {
+						$queries += count($benchmarks);
+					}
+				}
+			}
+			$total = array(
+				'{memory_usage}'     => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
+				'{execution_time}'   => number_format(microtime(true) - KOHANA_START_TIME, 5),
+				'{database_queries}' => $queries,
+				'{included_files}'   => count(get_included_files()),
+			);
+			$this->template = strtr($this->template, $total);
+
+			// Render page
 			if ($this->auto_render === true) {
-				$this->request->response = $this->template;
+				$this->response->body($this->template);
 			}
 
 		}

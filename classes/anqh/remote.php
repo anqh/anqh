@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Remote extends Kohana_Remote {
@@ -30,7 +30,7 @@ class Anqh_Remote extends Kohana_Remote {
 	 * @return  false    on failure
 	 */
 	public static function download($url, $filename = NULL, $directory = NULL, $chmod = 0644) {
-		if (!Validate::url($url)) {
+		if (!Valid::url($url)) {
 			return false;
 		}
 

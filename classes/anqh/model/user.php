@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to post comments
@@ -29,6 +29,93 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 */
 	const PERMISSION_IGNORE = 'ignore';
 
+	protected $_table_name = 'users';
+
+	protected $_data = array(
+		'id'                 => null,
+		'username'           => null,
+		'username_clean'     => null,
+		'password'           => null,
+		'email'              => null,
+
+		// Personal information
+		'name'               => null,
+		'dob'                => null,
+		'gender'             => null,
+		'title'              => null,
+		'signature'          => null,
+		'description'        => null,
+		'homepage'           => null,
+		'avatar'             => null,
+		'picture'            => null,
+		'default_image_id'   => null,
+
+		// Location
+		'address_street'     => null,
+		'address_zip'        => null,
+		'address_city'       => null,
+		'geo_city_id'        => null,
+		'latitude'           => null,
+		'longitude'          => null,
+
+		// Stats
+		'login_count'        => null,
+		'last_login'         => null,
+		'old_login'          => null,
+		'post_count'         => 0,
+		'new_comment_count'  => 0,
+		'comment_count'      => 0,
+		'left_comment_count' => 0,
+		'created'            => null,
+		'modified'           => null,
+		'ip'                 => null,
+		'hostname'           => null,
+
+	);
+
+	protected $_rules = array(
+		'username'           => array(
+			'not_empty',
+			'length'              => array(':value', 1, 30),
+			'regex'               => array(':value', '/^[a-zåäöA-ZÅÄÖ0-9_\.\-& ^]+$/ui'),
+			'AutoModeler::unique' => array(':model', ':value', ':field')
+		),
+		'username_clean'     => array('not_empty', 'AutoModeler::unique' => array(':model', ':value', ':field')),
+		'password'           => array('not_empty'),
+		'email'              => array('not_empty', 'email', 'AutoModeler::unique' => array(':model', ':value', ':field')),
+
+		'name'               => array('max_length' => array(':value', 50)),
+		'dob'                => array('date'),
+		'gender'             => array('in_array' => array(':value', array('f', 'm'))),
+		'homepage'           => array('url'),
+		'default_image_id'   => array('digit'),
+
+		'address_street'     => array('max_length' => array(':value', 50)),
+		'address_zip'        => array('digit', 'length' => array(':value', 4, 5)),
+		'address_city'       => array('max_length' => array(':value', 50)),
+		'city_id'            => array('digit'),
+		'latitude'           => array('numeric'),
+		'longitude'          => array('numeric'),
+
+		'login_count'        => array('digit'),
+		'last_login'         => array('digit'),
+		'post_count'         => array('digit'),
+		'new_comment_count'  => array('digit'),
+		'comment_count'      => array('digit'),
+		'left_comment_count' => array('digit'),
+		'created'            => array('digit'),
+		'modified'           => array('digit'),
+	);
+
+	protected $_has_many = array(
+		'comments', 'images', 'roles', 'tokens',
+	);
+
+	/**
+	 * @var  array  User's roles
+	 */
+	protected $_roles = array();
+
 	/**
 	 * @var  array  Static cache of Model_Users loaded
 	 */
@@ -45,168 +132,26 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Create new model
+	 * Load user.
 	 *
-	 * @param  Jelly_Meta  $meta
+	 * @param  integer|string  $id
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$visitor = Visitor::instance();
+	public function __construct($id = null) {
+		parent::__construct();
 
-		$meta
-			->name_key('username')
-			->fields(array(
-				'id' => new Field_Primary,
-				'username' => new Field_String(array(
-					'label'  => __('Username'),
-					'unique' => true,
-					'rules'  => array(
-						'not_empty'  => null,
-						'min_length' => array(max((int)Kohana::config('visitor.username.length_min'), 1)),
-						'max_length' => array(min((int)Kohana::config('visitor.username.length_max'), 30)),
-						'regex'      => array('/^[' . Kohana::config('visitor.username.chars') . ']+$/ui'),
-					),
-				)),
-				'username_clean' => new Field_String(array(
-					'unique' => true,
-					'rules'  => array(
-						'not_empty' => null,
-					)
-				)),
-				'password' => new Field_Password(array(
-					'label'     => __('Password'),
-					'hash_with' => array($visitor, 'hash_password'),
-					'rules'     => array(
-						'not_empty'  => null,
-						'min_length' => array(6),
-					)
-				)),
-				'password_confirm' => new Field_Password(array(
-					'label'     => __('Password confirmation'),
-					'in_db'     => false,
-					'callbacks' => array(
-						'matches' => array('Model_User', '_check_password_matches')
-					),
-					'rules' => array(
-						'not_empty'  => null,
-						'min_length' => array(max((int)$visitor->get_config('password.length_min'), 1)),
-					)
-				)),
-				'email' => new Field_Email(array(
-					'label'  => __('Email'),
-					'unique' => true,
-					'filters' => array(
-						'mb_strtolower' => null,
-					),
-				)),
+		if ($id !== null) {
+			if (is_numeric($id)) {
 
-				'name' => new Field_String(array(
-					'label' => __('Name'),
-					'rules' => array(
-						'min_length' => array(1),
-						'max_length' => array(50),
-					),
-				)),
-				'dob' => new Field_Date(array(
-					'null'   => true,
-					'label'  => __('Date of Birth'),
-					'format' => 'Y-m-d',
-					'pretty_format' => 'j.n.Y',
-				)),
-				'gender' => new Field_Enum(array(
-					'label'   => __('Gender'),
-					'choices' => array(
-						'f' => __('Female'),
-						'm' => __('Male'),
-					)
-				)),
-				'avatar' => new Field_String(array(
-					'label' => __('Avatar'),
-				)),
-				'address_street' => new Field_String(array(
-					'label' => __('Street address'),
-					'rules' => array(
-						'max_length' => array(50),
-					),
-				)),
-				'address_zip' => new Field_String(array(
-					'label' => __('Zip code'),
-					'rules' => array(
-						'min_length' => array(4),
-						'max_length' => array(5),
-						'digit'      => null
-					),
-				)),
-				'address_city' => new Field_String(array(
-					'label'   => __('City'),
-					'rules'   => array(
-						'max_length' => array(50)
-					),
-				)),
-				'city'        => new Field_BelongsTo(array(
-					'column'  => 'city_id',
-					'foreign' => 'geo_city',
-				)),
-				'latitude'    => new Field_Float,
-				'longitude'   => new Field_Float,
-				'title'       => new Field_String(array(
-					'label' => __('Title'),
-				)),
-				'signature'   => new Field_Text(array(
-					'label' => __('Signature'),
-				)),
-				'description' => new Field_Text(array(
-					'label' => __('Description'),
-				)),
-				'homepage'    => new Field_URL(array(
-					'label' => __('Homepage'),
-				)),
+				// Load by id
+				$this->load(DB::select_array($this->fields())->where('id', '=', $id));
 
-				'login_count' => new Field_Integer(array(
-					'column'  => 'logins',
-					'default' => 0,
-				)),
-				'last_login' => new Field_Timestamp,
-				'created'    => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'modified' => new Field_Timestamp,
+			} else {
 
-				// Foreign values, should make own models?
-				'post_count' => new Field_Integer(array(
-					'column'  => 'posts',
-					'default' => 0,
-				)),
-				'new_comment_count' => new Field_Integer(array(
-					'column'  => 'newcomments',
-					'default' => 0,
-				)),
-				'comment_count' => new Field_Integer(array(
-					'column'  => 'comments',
-					'default' => 0,
-				)),
-				'left_comment_count' => new Field_Integer(array(
-					'column'  => 'commentsleft',
-					'default' => 0,
-				)),
+				// Load by username
+				$this->load(DB::select_array($this->fields())->where('username_clean', '=', UTF8::strtolower($id)));
 
-				'tokens' => new Field_HasMany(array(
-					'foreign' => 'user_token'
-				)),
-				'roles' => new Field_ManyToMany,
-
-				'picture' => new Field_String,
-				'default_image' => new Field_BelongsTo(array(
-					'foreign' => 'image',
-					'column'  => 'default_image_id',
-				)),
-				'images'  => new Field_ManyToMany,
-				'friends' => new Field_HasMany(array(
-					'foreign' => 'friend'
-				)),
-				'comments' => new Field_HasMany(array(
-					'foreign' => 'user_comment'
-				)),
-			));
+			}
+		}
 	}
 
 
@@ -229,6 +174,17 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				$value = UTF8::strtolower($value);
 				break;
 
+			// Hash password
+			case 'password':
+				$visitor = Visitor::instance();
+				$value   = $visitor->hash_password($value);
+				break;
+
+			// Set cleaned username when setting username
+			case 'username':
+				$this->username_clean = Text::clean($value);
+				break;
+
 		}
 
 		parent::__set($key, $value);
@@ -242,93 +198,71 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Validate  $array
 	 * @param  string    $field
 	 */
-	public static function _check_password_matches(Validate $array, $field) {
+	public static function _check_password_matches(Validation $array, $field) {
 		if (empty($array['password']) || $array['password'] !== $array[$field]) {
 			$array->error($field, 'matches', array('param1' => 'password'));
 		}
 	}
 
 
-	/***** AUTH *****/
-
 	/**
-	 * Validates an array for a matching password and password_confirm field.
+	 * Add a role to user.
 	 *
-	 * @param  array    values to check
-	 * @param  string   save the user if
-	 * @return boolean
+	 * @param   integer|string  $role_id
+	 * @return  boolean
 	 */
-	public function change_password(array &$array, $save = false) {
+	public function add_role($role_id) {
 
-		if ($status = $this->validate($array, false, array(), array(), array('rules' => 'password'))) {
-			// Change the password
-			$this->password = $array['password'];
+		// Do not try to insert duplicate role
+		if (!$this->has_role($role_id)) {
+			try {
+				$role = new Model_Role($role_id);
+				if ($role->loaded()) {
 
-			if ($save !== false && $status = $this->save()) {
-				if (is_string($save)) {
-					// Redirect to the success page
-					url::redirect($save);
+					// Empty roles from current user to force reload
+					$this->_roles = array();
+
+					return (bool)DB::insert('roles_users')
+						->columns(array('role_id', 'user_id'))
+						->values(array($role->id, $this->id))
+						->execute($this->_db);
 				}
-			}
+			} catch (Exception $e) {}
 		}
 
-		return $status;
+		return false;
 	}
 
 
 	/**
-	 * Validates login information from an array, and optionally redirects
-	 * after a successful login.
+	 * Get city.
 	 *
-	 * @param  array    values to check
-	 * @param  string   URI or URL to redirect to
-	 * @return boolean
+	 * @return  Model_Geo_City|null
 	 */
-	public function login(array &$array, $redirect = false) {
-
-		// Login starts out invalid
-		$status = false;
-
-		// Log login attempt
-		$login = Jelly::factory('login')->set(array(
-			'username' => $array['username'],
-			'password' => !empty($array['password']),
-		));
-
-		if ($this->validate($array, false, array(), array(), array('rules' => 'login'))) {
-
-			// Attempt to load the user
-			$this->find_user($array['username']);
-			if ($this->loaded()) {
-				$login->uid = $this->id;
-				$login->username = $this->username;
-
-				if (Visitor::instance()->login($this, $array['password'])) 	{
-					$login->success = 1;
-
-					// Redirect after a successful login
-					if (is_string($redirect))	{
-						$login->save();
-						url::redirect($redirect);
-					}
-
-					// Login is successful
-					$status = true;
-
-				} else {
-					$array->add_error('username', 'invalid');
-				}
-			}
-		}
-
-		$login->save();
-		return $status;
+	public function city() {
+		return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
 	}
-
-	/***** /AUTH *****/
 
 
 	/***** COMMENTS *****/
+
+	/**
+	 * Get image comments
+	 *
+	 * @param   Model_User  $viewer
+	 * @param   Pagination  $pagination
+	 * @return  Model_User_Comment[]
+	 */
+	public function comments(Model_User $viewer = null, Pagination $pagination = null) {
+		$comment = Model_User_Comment::factory();
+		$query   = Model_Comment::query_viewer(DB::select_array($comment->fields())->where('user_id', '=', $this->id), $viewer);
+
+		return $comment->load(
+			$query->offset($pagination ? $pagination->offset : 0),
+			$pagination ? $pagination->items_per_page : null
+		);
+	}
+
 
 	/**
 	 * Get user's comments
@@ -366,12 +300,19 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			} else if ($user) {
 
 				// Public and my comments
-				$comments = $this->user_comments->and_open()->where('private', '=', 0)->or_where('author_id', '=', $user->id)->close()->find_all($page_size, $page_offset);
+				$comments = $this->user_comments
+					->and_open()
+					->where('private', '=', 0)
+					->or_where('author_id', '=', $user->id)
+					->close()
+					->find_all($page_size, $page_offset);
 
 			} else {
 
 				// Only public comments
-				$comments = $this->user_comments->where('private', '=', 0)->find_all($page_size, $page_offset);
+				$comments = $this->user_comments
+					->where('private', '=', 0)
+					->find_all($page_size, $page_offset);
 
 			}
 
@@ -388,145 +329,15 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Get user's new comment counts
-	 *
-	 * @return  array
+	 * Mark user's comments read.
 	 */
-	public function find_new_comments() {
-		$new = array();
-
-		// Profile comments
+	public function mark_comments_read() {
 		if ($this->new_comment_count) {
-			$new['new-comments'] = HTML::anchor(URL::user($this), $this->new_comment_count, array('title' => __('New comments')));
+			$this->new_comment_count = 0;
+			$this->save();
+
+			Anqh::cache_delete('user_' . $this->id);
 		}
-
-		// Forum private messages
-		$private_messages = Forum::find_new_private_messages($this);
-		if (count($private_messages)) {
-			$new_messages = 0;
-			foreach ($private_messages as $private_message) {
-				$new_messages += $private_message->unread;
-			}
-			$new['new-private-messages'] = HTML::anchor(Route::model($private_message->topic) . '?page=last#last', $new_messages, array('title' => __('New private messages')));
-		}
-		unset($private_messages);
-
-		// Blog comments
-		$blog_comments = Model_Blog_Entry::find_new_comments($this);
-		if (count($blog_comments)) {
-			$new_comments = 0;
-			foreach ($blog_comments as $blog_entry) {
-				$new_comments += $blog_entry->new_comment_count;
-			}
-			$new['new-blog-comments'] = HTML::anchor(Route::model($blog_entry), $new_comments, array('title' => __('New blog comments')));
-		}
-		unset($blog_comments);
-
-		// Forum quotes
-		$forum_quotes = Model_Forum_Quote::find_by_user($this);
-		if (count($forum_quotes)) {
-			$new_quotes = count($forum_quotes);
-			$quote = $forum_quotes->current();
-			$new['new-forum-quotes'] = HTML::anchor(
-				Route::get('forum_post')->uri(array('topic_id' => Route::model_id($quote->topic), 'id' => $quote->post->id)) . '#post-' . $quote->post->id,
-				$new_quotes,
-				array('title' => __('Forum quotes')
-			));
-		}
-
-		// Images waiting for approval
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, $this)) {
-			$gallery_approvals = Model_Gallery::find_pending(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, $this) ? null : $this);
-			if (count($gallery_approvals)) {
-				$new_approvals = count($gallery_approvals);
-				$new['new-gallery-approvals'] = HTML::anchor(
-					Route::get('galleries')->uri(array('action' => 'approval')),
-					$new_approvals,
-					array('title' => __('Galleries waiting for approval')
-				));
-			}
-		}
-
-		// Flyer comments
-		$flyer_comments = Model_Flyer::find_new_comments($this);
-		$flyers = array();
-		if (count($flyer_comments)) {
-			$new_comments = 0;
-			foreach ($flyer_comments as $flyer) {
-				$flyers[$flyer->image->id] = true;
-				$new_comments += $flyer->image->new_comment_count;
-			}
-			$new['new-flyer-comments'] = HTML::anchor(
-				Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')),
-				$new_comments,
-				array('title' => __('New flyer comments')
-			));
-		}
-		unset($flyer_comments);
-
-		// Image comments
-		$image_comments = Model_Image::find_new_comments($this);
-		$note_comments  = Model_Image_Note::find_new_comments($this);
-		if (count($image_comments) || count($note_comments)) {
-			$new_comments = 0;
-			$new_image = null;
-			foreach ($image_comments as $image) {
-
-				// @TODO: Until flyer comments are fixed..
-				if (!isset($flyers[$image->id])) {
-					$new_comments += $image->new_comment_count;
-				  $new_image = $image;
-				}
-
-			}
-			foreach ($note_comments as $note) {
-				$new_comments += $note->new_comment_count;
-			  $new_image = $note->image;
-			}
-
-			if ($new_comments) {
-				$new['new-image-comments'] = HTML::anchor(
-					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_image->id)), 'id' => $new_image->id, 'action' => '')),
-					$new_comments,
-					array('title' => __('New image comments')
-				));
-			}
-		}
-		unset($image_comments, $note_comments, $new_image);
-
-		// Image tags
-		$notes  = Model_Image_Note::find_new_notes($this);
-		if (count($notes)) {
-			$new_notes = 0;
-			$new_note = null;
-			foreach ($notes as $note) {
-				$new_notes++;
-			  $new_note_image = $note->image;
-			}
-
-			if ($new_notes) {
-				$new['new-image-notes'] = HTML::anchor(
-					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_note_image->id)), 'id' => $new_note_image->id, 'action' => '')),
-					$new_notes,
-					array('title' => __('New image tags')
-				));
-			}
-		}
-		unset($note_comments, $new_note_image);
-
-		// Private messages
-
-		return $new;
-	}
-
-
-	/**
-	 * Get user's total comment count
-	 *
-	 * @return  integer
-	 */
-	public function get_comment_count() {
-		return (int)Jelly::select('user_comment')->where('user_id', '=', $this->id)->count();
 	}
 
 	/***** /COMMENTS *****/
@@ -539,9 +350,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param   string  $id
 	 * @return  User_External_Model
+	 * @deprecated
 	 */
 	public function find_external_by_id($id) {
-		return ORM::factory('user_external')->where(array('user_id' => $this->id, 'id' => $id))->find();
+		return ORM::factory('user_external')
+			->where(array('user_id' => $this->id, 'id' => $id))
+			->find();
 	}
 
 
@@ -550,9 +364,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param   string  $provider
 	 * @return  User_External_Model
+	 * @deprecated
 	 */
 	public function find_external_by_provider($provider) {
-		return ORM::factory('user_external')->where(array('user_id' => $this->id, 'provider' => $provider))->find();
+		return ORM::factory('user_external')
+			->where(array('user_id' => $this->id, 'provider' => $provider))
+			->find();
 	}
 
 
@@ -562,9 +379,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param   string  $id
 	 * @param   string  $provider
 	 * @return  User_Model
+	 * @deprecated
 	 */
 	public static function find_user_by_external($id, $provider) {
-		$external_user = ORM::factory('user_external')->where(array('id' => $id, 'provider' => $provider))->find();
+		$external_user = ORM::factory('user_external')
+			->where(array('id' => $id, 'provider' => $provider))
+			->find();
 
 		return ($external_user->loaded()) ? $external_user->user : new User_Model();
 	}
@@ -575,6 +395,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @param  string  $id
 	 * @param  string  $provider
+	 * @deprecated
 	 */
 	public function map_external($id, $provider) {
 
@@ -602,23 +423,11 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Create friendship
 	 *
-	 * @param  Model_User  $friend
+	 * @param  Model_User  $user
 	 */
-	public function add_friend(Model_User $friend) {
-
-		// Don't add duplicate friends or oneself
-		if ($this->loaded()
-			&& $this->id != $friend->id
-			&& !$this->is_friend($friend)
-			&& (bool)Jelly::factory('friend')->set(array(
-				'user'   => $this,
-				'friend' => $friend
-			))->save()) {
-
-			// Clear cache
-			Anqh::cache_delete('friends_' . $this->id);
-
-			return true;
+	public function add_friend(Model_User $user) {
+		if ($this->loaded() && $this->id != $user->id && !$this->is_friend($user)) {
+			return Model_Friend::add($this->id, $user->id);
 		}
 
 		return false;
@@ -631,19 +440,8 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $ignore
 	 */
 	public function add_ignore(Model_User $ignore) {
-		if ($this->loaded()
-			&& $this->id != $ignore->id
-			&& !$this->is_ignored($ignore)
-			&& (bool)Jelly::factory('ignore')->set(array(
-				'user'   => $this,
-				'ignore' => $ignore
-			))->save()) {
-
-			// Clear caches
-			Anqh::cache_delete('ignores_' . $this->id);
-			Anqh::cache_delete('ignorers_' . $ignore->id);
-
-			return true;
+		if ($this->loaded() && $this->id != $ignore->id	&& !$this->is_ignored($ignore)) {
+			return Model_Ignore::add($this->id, $ignore->id);
 		}
 
 		return false;
@@ -656,20 +454,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $friend
 	 */
 	public function delete_friend(Model_User $friend) {
-		if ($this->loaded()
-			&& $this->is_friend($friend)
-			&& (bool)Jelly::delete('friend')
-				->where('user_id', '=', $this->id)
-				->where('friend_id', '=', $friend->id)
-				->execute()) {
-
-			// Clear cache
-			Anqh::cache_delete('friends_' . $this->id);
-
-		  return true;
-		}
-
-	  return false;
+		return $this->loaded() && Model_Friend::unfriend($this->id, $friend->id);
 	}
 
 
@@ -679,21 +464,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $ignore
 	 */
 	public function delete_ignore(Model_User $ignore) {
-		if ($this->loaded()
-			&& $this->is_ignored($ignore)
-			&& (bool)Jelly::delete('ignore')
-				->where('user_id', '=', $this->id)
-				->where('ignore_id', '=', $ignore->id)
-				->execute()) {
-
-			// Clear caches
-			Anqh::cache_delete('ignores_' . $this->id);
-			Anqh::cache_delete('ignorers_' . $ignore->id);
-
-		  return true;
-		}
-
-	  return false;
+		return $this->loaded() && Model_Ignore::unignore($this->id, $ignore->id);
 	}
 
 
@@ -703,22 +474,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_friends() {
-		$ckey = 'friends_';
-
-		// Try static cache
-		$friends = Anqh::cache_get($ckey . $this->id);
-		if (is_null($friends)) {
-
-			// Load from DB
-			$friends = array();
-			foreach (Jelly::select('friend')->where('user_id', '=', $this->id)->execute() as $friend) {
-				$friends[] = $friend->friend->id;
-			}
-
-			Anqh::cache_set($ckey . $this->id, $friends, Date::HOUR);
-		}
-
-		return $friends;
+		return Model_Friend::find_by_user($this->id);
 	}
 
 
@@ -729,22 +485,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_ignores($ignorers = false) {
-		$ckey = $ignorers ? 'ignorers_' : 'ignores_';
-
-		// Try static cache
-		$ignores = Anqh::cache_get($ckey . $this->id);
-		if (is_null($ignores)) {
-
-			// Load from DB
-			$ignores = array();
-			foreach (Jelly::select('ignore')->where($ignorers ? 'ignore_id' : 'user_id', '=', $this->id)->execute() as $ignore) {
-				$ignores[] = $ignorers ? $ignore->user->id : $ignore->ignore->id;
-			}
-
-			Anqh::cache_set($ckey . $this->id, $ignores, Date::HOUR);
-		}
-
-		return $ignores;
+		return $ignorers ? Model_Ignore::find_by_ignorer($this->id) : Model_Ignore::find_by_user($this->id);
 	}
 
 
@@ -754,7 +495,45 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  integer
 	 */
 	public function get_friend_count() {
-		return (int)Jelly::select('friend')->where('user_id', '=', $this->id)->count();
+		return count($this->find_friends());
+	}
+
+
+	/**
+	 * Get user's default image url
+	 *
+	 * @param   string  $size
+	 * @return  string
+	 */
+	public function get_image_url($size = null) {
+		if ($this->default_image_id) {
+			$image = Model_Image::factory($this->default_image_id)->get_url($size);
+		} else if (Valid::url($this->picture)) {
+			$image = $this->picture;
+		} else {
+			$image = null;
+		}
+
+		return $image;
+	}
+
+
+	/**
+	 * Get enterprise Validation for checking password
+	 *
+	 * @static
+	 * @param   array  $user_post
+	 * @return  Validation
+	 */
+	public static function get_password_validation($user_post) {
+		return Validation::factory(
+			array(
+				'password'         => Arr::get($user_post, 'password'),
+				'password_confirm' => Arr::get($user_post, 'password_confirm'),
+			))
+			->rule('password_confirm', 'not_empty')
+			->rule('password', 'matches', array(':validation', 'password', 'password_confirm')
+		);
 	}
 
 
@@ -778,7 +557,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		$is_friend = in_array($friend, $this->find_friends());
+		$is_friend = in_array($friend, (array)$this->find_friends());
 
 		if (isset($benchmark)) {
 			Profiler::stop($benchmark);
@@ -809,7 +588,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 			return false;
 		}
 
-		$is_ignored = in_array($ignore, $this->find_ignores($ignored_by));
+		$is_ignored = in_array($ignore, (array)$this->find_ignores($ignored_by));
 
 		if (isset($benchmark)) {
 			Profiler::stop($benchmark);
@@ -826,7 +605,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 *
 	 * @static
 	 * @param   mixed  $user  id, username, email, Model_User, user array or false for current session
-	 * @return  Model_User  or null
+	 * @return  Model_User|null
 	 */
 	public static function find_user($id = false) {
 		static $session = false;
@@ -856,7 +635,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				$id = (int)$id;
 			} else if (is_array($id)) {
 				$id = (int)$id['id'];
-			} else if (Validate::email($id)) {
+			} else if (Valid::email($id)) {
 				$id = mb_strtolower($id);
 			} else {
 				$id = Text::clean($id);
@@ -866,7 +645,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 				// Found from static cache
 				return self::$_users[$id];
 
-			} else if ($user = Cache::instance()->get_('user_' . $id)) {
+			} else if ($user = Anqh::cache_get('user_' . $id)) {
 
 				// Found from cache
 				$user = unserialize($user);
@@ -875,9 +654,12 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 				// Not found from caches, try db
 				if (is_int($id)) {
-					$user = Jelly::select('user', $id);
+					$user = Model_User::factory($id);
 				} else {
-					$user = Jelly::select('user')->where(Validate::email($id) ? 'email' : 'username_clean', '=', $id)->limit(1)->execute();
+					$user = Model_User::factory()->load(
+						DB::select_array(Model_User::factory()->fields())
+							->where(Valid::email($id) ? 'email' : 'username_clean', '=', $id)
+					);
 				}
 				$cache = true;
 
@@ -888,7 +670,7 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($user && $user->loaded()) {
 			self::$_users[$user->id] = self::$_users[Text::clean($user->username)] = self::$_users[mb_strtolower($user->email)] = $user;
 			if ($cache) {
-				Cache::instance()->set_('user_' . $user->id, serialize($user), 3600);
+				Anqh::cache_set('user_' . $user->id, serialize($user), Date::DAY);
 			}
 		} else {
 			$user = null;
@@ -910,15 +692,18 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 		if ($id instanceof Model_User) {
 
 			// Got user model, no need to load, just fill caches
-			/** @var  Model_User  $user */
-			$user = $id->light_array();
-			Anqh::cache_set($ckey . $id->id, $user, Date::DAY);
-			return $user;
+			/** @var  Model_User  $id */
+			return $id->light_array();
 
 		} else if (is_array($id)) {
 
 			// Got user array, don't fill caches as we're not 100% sure it's valid
 			return $id;
+
+		} else if (is_int($id) || is_numeric($id)) {
+
+			// Got id
+			$id = (int)$id;
 
 		} else if (is_string($id)) {
 
@@ -927,21 +712,20 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 		} else {
 
-			// Got id
-			$id = (int)$id;
+			return null;
 
 		}
 
-		if ($id == 0) {
+		if ($id === 0) {
 			return null;
 		}
 
 		// Try static cache
-		if (!$user = Anqh::cache_get($ckey . $id)) {
+		$user = Anqh::cache_get($ckey . $id);
+		if (!is_array($user)) {
 
 			// Load from DB
-			$model = Jelly::select('user')->where(is_int($id) ? 'id' : 'username_clean', '=', $id)->limit(1)->execute();
-			$user = $model->light_array();
+			$user = Model_User::factory($id)->light_array();
 
 			Anqh::cache_set($ckey . $id, $user, Date::DAY);
 		}
@@ -958,14 +742,14 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	public function light_array() {
 		if ($this->loaded()) {
 			return array(
-				'id'         => $this->id,
+				'id'         => (int)$this->id,
 				'username'   => $this->username,
 				'gender'     => $this->gender,
 				'title'      => $this->title,
 				'signature'  => $this->signature,
 				'avatar'     => $this->avatar,
-				'thumb'      => $this->default_image->loaded() ? $this->default_image->get_url('thumbnail') : (Validate::url($this->picture) ? $this->picture : null),
-				'last_login' => $this->last_login,
+				'thumb'      => $this->get_image_url('thumbnail'),
+				'last_login' => (int)$this->last_login,
 			);
 		}
 	}
@@ -979,10 +763,10 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 	 * @return  integer
 	 */
 	public static function user_id($user) {
-		if (is_int($user)) {
+		if (is_int($user) || is_numeric($user)) {
 
 			// Already got id
-			return $user;
+			return (int)$user;
 
 		} else if (is_array($user)) {
 
@@ -1049,20 +833,45 @@ class Anqh_Model_User extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Does the user have any of these roles
+	 * Does the user have any of these roles.
 	 *
 	 * @param  array|string  $roles
 	 */
 	public function has_role($roles) {
-		foreach ($this->get('roles')->execute() as $role) {
-			if (is_array($roles) && in_array($role->name, $roles)
-				|| is_numeric($roles) && $role->id == $roles
-				|| is_string($roles) && $role->name == $roles) {
+		foreach ($this->roles() as $id => $role) {
+			if ((is_array($roles) && in_array($role, $roles))
+				|| (is_numeric($roles) && $id == $roles)
+				|| (is_string($roles) && $role == $roles)
+			) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get user's images.
+	 *
+	 * @return  Model_Image[]
+	 */
+	public function images() {
+		return $this->find_related('images');
+	}
+
+
+	/**
+	 * Get user's roles.
+	 *
+	 * @return  array
+	 */
+	public function roles() {
+		if (!$this->_roles) {
+			$this->_roles = Model_Role::find_by_user($this);
+		}
+
+		return $this->_roles;
 	}
 
 }

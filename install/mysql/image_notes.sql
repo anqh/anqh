@@ -1,0 +1,21 @@
+CREATE TABLE `image_notes` (
+  `id` int(11) NOT NULL auto_increment,
+  `image_id` int(11) NOT NULL,
+  `author_id` int(11) default NULL,
+  `name` varchar(30) collate utf8_swedish_ci NOT NULL,
+  `user_id` int(11) default NULL,
+  `x` int(11) default NULL,
+  `y` int(11) default NULL,
+  `width` int(11) default NULL,
+  `height` int(11) default NULL,
+  `created` int(11) default NULL,
+  `new_comment_count` int(11) default NULL,
+  `new_note` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `author_id` (`author_id`),
+  KEY `image_id` (`image_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `image_notes_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `image_notes_author_id_fkey` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `image_notes_image_id_fkey` FOREIGN KEY (`image_id`) REFERENCES `images` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View extends Kohana_View {
@@ -22,9 +22,9 @@ class Anqh_View extends Kohana_View {
 
 			// Display the exception message only if not in production
 			ob_start();
-			Kohana::exception_handler($e);
+			Anqh_Exception::handler($e);
 
-			if (Kohana::$environment == Kohana::PRODUCTION) {
+			if (Kohana::$environment === Kohana::PRODUCTION) {
 				ob_end_clean();
 				return __('An error occured and has been logged.');
 			} else {

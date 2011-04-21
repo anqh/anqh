@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 return array(
@@ -34,28 +34,28 @@ return array(
 	'sizes' => array(
 
 		// Max width image, default for gallery
-		'wide' => array(
+		Model_Image::SIZE_WIDE => array(
 			'width'  => 760,
 			'height' => 550,
 			'resize' => array(760, 570), // Wide column
 		),
 
 		// Main column
-		'main' => array(
+		Model_Image::SIZE_MAIN => array(
 			'width'  => 440,
 			'height' => 590,
 			'resize' => array(440, 590), // Used for side column too, resized in browser
 		),
 
 		// Side column
-		'side' => array(
+		Model_Image::SIZE_SIDE => array(
 			'width'  => 290,
 			'height' => 580,
 			'resize' => array(290, 580),
 		),
 
 		// Thumbnail
-		'thumbnail' => array(
+		Model_Image::SIZE_THUMBNAIL => array(
 			'postfix' => '_t',
 			'width'   => 140,
 			'height'  => 140,
@@ -65,7 +65,7 @@ return array(
 		),
 
 		// Square
-		'icon' => array(
+		Model_Image::SIZE_ICON => array(
 			'postfix' => '_i',
 			'width'   => 50,
 			'height'  => 50,

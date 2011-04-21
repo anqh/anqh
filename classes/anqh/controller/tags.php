@@ -46,12 +46,12 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::find($tag_id);
-		if (!$tag->loaded()) {
+		$tag = Model_Tag::factory($tag_id);
+		if (!$tag->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
 
-		$group = $tag->group;
+		$group = $tag->tag_group;
 		$tag->delete();
 
 		$this->request->redirect(Route::model($group));
@@ -65,8 +65,8 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->history = false;
 
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::find($group_id);
-		if (!$group->loaded()) {
+		$group = Model_Tag_Group::factory($group_id);
+		if (!$group->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($group, $group_id);
 		}
 
@@ -99,7 +99,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 		$this->page_actions[] = array('link' => Route::get('tag_group_add')->uri(), 'text' => __('Add group'), 'class' => 'group-add');
 
 		Widget::add('main', View_Module::factory('tags/groups', array(
-			'groups' => Model_Tag_Group::find_all(),
+			'groups' => Model_Tag_Group::factory()->find_all(),
 		)));
 	}
 
@@ -109,19 +109,19 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_group() {
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::find($group_id);
+		$group = Model_Tag_Group::factory($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
 
-		$this->page_title = HTML::chars($group->name);
+		$this->page_title    = HTML::chars($group->name);
 		$this->page_subtitle = HTML::chars($group->description);
 
 		$this->page_actions[] = array('link' => Route::model($group, 'editgroup'), 'text' => __('Edit group'), 'class' => 'group-edit');
 		$this->page_actions[] = array('link' => Route::model($group, 'add'),  'text' => __('Add tag'),    'class' => 'tag-add');
 
 		Widget::add('main', View_Module::factory('tags/tags', array(
-			'tags' => $group->tags,
+			'tags' => $group->tags(),
 		)));
 	}
 
@@ -131,15 +131,15 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 */
 	public function action_tag() {
 		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::find($tag_id);
+		$tag = Model_Tag::factory($tag_id);
 		if (!$tag->loaded()) {
 			throw new Model_Exception($tag, $tag_id);
 		}
-		$this->page_title = HTML::chars($tag->name);
-		$this->page_subtitle = HTML::chars($tag->description);
 
+		$this->page_title     = HTML::chars($tag->name);
+		$this->page_subtitle  = HTML::chars($tag->description);
 		$this->page_actions[] = array('link' => Route::model($tag, 'edit'),   'text' => __('Edit tag'),  'class' => 'tag-edit');
-		$this->page_actions[] = array('link' => Route::model($tag, 'delete'), 'text' => __('Delete tag'),'class' => 'tag-delete');
+		$this->page_actions[] = array('link' => Route::model($tag, 'delete') . '?' . Security::csrf_query(), 'text' => __('Delete tag'),'class' => 'tag-delete');
 	}
 
 
@@ -154,52 +154,39 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Edit group
-			$group = Model_Tag_Group::find($group_id);
+			$group = Model_Tag_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
-			$this->page_title = HTML::chars($group->name);
-			$this->page_subtitle = HTML::chars($group->description);
 
-			$this->page_actions[] = array('link' => Route::model($group, 'deletegroup'), 'text' => __('Delete group'), 'class' => 'group-delete');
-			$cancel = Route::model($group);
+			$this->page_title     = HTML::chars($group->name);
+			$this->page_subtitle  = HTML::chars($group->description);
+			$this->page_actions[] = array('link' => Route::model($group, 'deletegroup') . '?' . Security::csrf_query(), 'text' => __('Delete group'), 'class' => 'group-delete');
 
 		} else {
 
 			// Create new group
 			$group = Model_Tag_Group::factory();
+			$group->author_id = self::$user->id;
+			$group->created   = time();
+
 			$this->page_title = __('Tag group');
-			$cancel = Route::get('tags')->uri();
 
 		}
 
 		$errors = array();
 		if ($_POST) {
-			$group->set($_POST);
+			$group->name        = Arr::get($_POST, 'name');
+			$group->description = Arr::get($_POST, 'description');
 			try {
 				$group->save();
 				$this->request->redirect(Route::model($group));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
 
-		// Build form
-		$form = array(
-			'values' => $group,
-			'errors' => $errors,
-			'cancel' => $cancel,
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'        => array(),
-						'description' => array(),
-					)
-				)
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('tags/edit_group', array('group' => $group, 'errors' => $errors)));
 	}
 
 
@@ -215,25 +202,28 @@ class Anqh_Controller_Tags extends Controller_Template {
 		if ($group_id) {
 
 			// Add new tag
-			$group = Model_Tag_Group::find($group_id);
+			$group = Model_Tag_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
-			$this->page_title = HTML::chars($group->name);
+			$tag = Model_Tag::factory();
+			$tag->tag_group_id = $group_id;
+			$tag->author_id    = self::$user->id;
+			$tag->created      = time();
+
+			$this->page_title    = HTML::chars($group->name);
 			$this->page_subtitle = HTML::chars($group->description);
-			$tag = Model_Tag::factory()->set(array('group' => $group));
-			$cancel = Route::model($group);
 
 		} else if ($tag_id) {
 
 			// Edit old tag
-			$tag = Model_Tag::find($tag_id);
+			$tag = Model_Tag::factory($tag_id);
 			if (!$tag->loaded()) {
 				throw new Model_Exception($tag, $tag_id);
 			}
-			$this->page_title = HTML::chars($tag->name);
+
+			$this->page_title    = HTML::chars($tag->name);
 			$this->page_subtitle = HTML::chars($tag->description);
-			$cancel = Route::model($tag);
 
 		} else {
 			Request::back(Route::get('tags')->uri());
@@ -241,31 +231,17 @@ class Anqh_Controller_Tags extends Controller_Template {
 
 		$errors = array();
 		if ($_POST) {
-			$tag->set($_POST);
+			$tag->name        = Arr::get($_POST, 'name');
+			$tag->description = Arr::get($_POST, 'description');
 			try {
 				$tag->save();
 				$this->request->redirect(Route::model($tag));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
 
-		// Build form
-		$form = array(
-			'values' => $tag,
-			'errors' => $errors,
-			'cancel' => $cancel,
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'        => array(),
-						'description' => array(),
-					)
-				)
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+		Widget::add('main', View_Module::factory('tags/edit', array('tag' => $tag, 'errors' => $errors)));
 	}
 
 }

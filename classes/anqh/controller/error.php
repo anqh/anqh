@@ -10,20 +10,73 @@
 class Anqh_Controller_Error extends Controller_Template {
 
 	/**
+	 * @var  string  Error page template
+	 */
+	public $template = 'generic/error';
+
+
+	/**
+	 * Construct controller
+	 */
+	public function before() {
+		parent::before();
+
+		// Always render template
+		$this->template = View::factory($this->template);
+
+		// Internal requests only
+		if (!$this->request->is_initial()) {
+			if ($message = rawurldecode($this->request->param('message'))) {
+				$this->template->message = $message;
+			}
+		} else {
+
+			// External requests show always 404
+			$this->request->action(404);
+
+		}
+
+		$this->response->status((int)$this->request->action());
+	}
+
+
+	/**
+	 * Destroy controller
+	 */
+	public function after() {
+		$this->response->body($this->template);
+	}
+
+
+	/**
 	 * Action: 404
 	 */
 	public function action_404() {
-		$this->history = false;
-		$this->auto_render = true;
-		$this->internal = false;
-		$this->request->status = 404;
+		$this->response->status(404);
 
-		if (!$this->ajax) {
-			$this->template = View::factory($this->template);
-			$this->page_title = __('404 - le fu.');
-		} else {
-			$this->response = __('404 - le fu.');
+		// Log broken links inside our own site
+		if (isset($_SERVER['HTTP_REFERER']) && strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== false) {
+			Kohana::$log->add(Log::INFO, 'Broken link at ' . $_SERVER['HTTP_REFERER']);
 		}
+
+		$this->template->title = __('404 - le fu.');
+	}
+
+
+	/**
+	 * Action: 500
+	 */
+	public function action_500() {
+		$this->response->status(200);
+		$this->template->title = __('Internal Server Fu.');
+	}
+
+
+	/**
+	 * Action: 500
+	 */
+	public function action_503() {
+		$this->template->title = __('Maintenance Mode');
 	}
 
 }
