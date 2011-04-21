@@ -38,4 +38,14 @@ class Anqh_Model_Forum_Private_Recipient extends AutoModeler_ORM implements Perm
 		return false;
 	}
 
+
+	/**
+	 * Get topic.
+	 *
+	 * @return  Model_Forum_Private_Topic
+	 */
+	public function topic() {
+		return new Model_Forum_Private_Topic($this->forum_topic_id);
+	}
+
 }
