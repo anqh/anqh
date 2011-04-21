@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
@@ -37,7 +37,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_REPLY:
-				$topic = Jelly::select('forum_topic')->load($item->data['topic_id']);
+				$topic = Model_Forum_Topic::factory($item->data['topic_id']);
 				if ($topic->loaded()) {
 					$text = __('replied to topic<br />:topic', array(
 						':topic' => HTML::anchor(
@@ -50,7 +50,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 				break;
 
 			case self::TYPE_TOPIC:
-				$topic = Jelly::select('forum_topic')->load($item->data['topic_id']);
+				$topic = Model_Forum_Topic::factory($item->data['topic_id']);
 				if ($topic->loaded()) {
 					$text = __('started a new topic<br />:topic', array(
 						':topic' => HTML::anchor(
@@ -77,7 +77,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 	 */
 	public static function reply(Model_User $user = null, Model_Forum_Post $post = null) {
 		if ($user && $post) {
-			parent::add($user, 'forum', self::TYPE_REPLY, array('topic_id' => (int)$post->topic->id, 'post_id' => (int)$post->id));
+			parent::add($user, 'forum', self::TYPE_REPLY, array('topic_id' => (int)$post->forum_topic_id, 'post_id' => (int)$post->id));
 		}
 	}
 

@@ -20,8 +20,8 @@
 		<h5><?php echo HTML::anchor(Route::model($group), HTML::chars($group->name)) ?></h5>
 		<ul class="areas">
 
-		<?php	foreach ($group->areas as $area): ?>
-			<?php if (Permission::has($area, Permission_Interface::PERMISSION_READ)): ?>
+		<?php	foreach ($group->areas() as $area): ?>
+			<?php if (Permission::has($area, Permission_Interface::PERMISSION_READ, $user)): ?>
 			<li><?php echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => strip_tags($area->description))) ?></li>
 			<?php endif; ?>
 		<?php endforeach; ?>

@@ -28,7 +28,7 @@ class Anqh_Controller_Forum_Private extends Controller_Forum_Topic {
 	public function action_post() {
 
 		// Get private areas
-		$areas = Model_Forum_Private_Area::find_areas();
+		$areas = Model_Forum_Private_Area::factory()->find_areas();
 
 		// Default to first
 		return $this->_edit_topic($areas->current()->id);

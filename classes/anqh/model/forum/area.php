@@ -4,10 +4,10 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interface {
 
 	/** Permission to post new topic */
 	const PERMISSION_POST = 'post';
@@ -39,6 +39,43 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 	/** Only admins can start new topics */
 	const WRITE_ADMINS = 1;
 
+	protected $_table_name = 'forum_areas';
+
+	protected $_data = array(
+		'id'             => null,
+		'forum_group_id' => null,
+		'name'           => null,
+		'description'    => null,
+		'sort'           => 0,
+		'created'        => null,
+		'author_id'      => null,
+
+		'access_read'    => self::READ_NORMAL,
+		'access_write'   => self::WRITE_NORMAL,
+		'status'         => self::STATUS_NORMAL,
+		'type'           => self::TYPE_NORMAL,
+		'bind'           => null,
+
+		'post_count'     => null,
+		'topic_count'    => null,
+		'last_topic_id'  => null,
+	);
+
+	protected $_has_many = array(
+		'forum_topics'
+	);
+
+	protected $_rules = array(
+		'forum_group_id' => array('digit'),
+		'name'           => array('not_empty', 'max_length' => array(':value', 64)),
+		'description'    => array('max_length' => array(':value', 250)),
+
+		'access_read'    => array('not_empty', 'in_array' => array(':value', array(self::READ_MEMBERS, self::READ_NORMAL))),
+		'access_write'   => array('not_empty', 'in_array' => array(':value', array(self::WRITE_ADMINS, self::WRITE_NORMAL))),
+		'status'         => array('not_empty', 'in_array' => array(':value', array(self::STATUS_HIDDEN, self::STATUS_NORMAL))),
+		'type'           => array('not_empty', 'in_array' => array(':value', array(self::TYPE_PRIVATE, self::TYPE_BIND, self::TYPE_NORMAL))),
+	);
+
 	/** @var  array  User editable fields */
 	public static $editable_fields = array(
 		'group', 'name', 'description', 'sort', 'access_read', 'access_write', 'status', 'type', 'bind'
@@ -46,124 +83,22 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 
 
 	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->sorting(array('sort' => 'ASC'))
-			->fields(array(
-				'id' => new Field_Primary,
-				'group' => new Field_BelongsTo(array(
-					'label'   => __('Forum group'),
-					'column'  => 'forum_group_id',
-					'foreign' => 'forum_group',
-				)),
-				'name' => new Field_String(array(
-					'label' => __('Area name'),
-					'rules' => array(
-						'not_empty' => array(true),
-						'max_length' => array(64),
-					),
-				)),
-				'description' => new Field_String(array(
-					'label' => __('Description'),
-					'rules' => array(
-						'max_length' => array(250),
-					),
-				)),
-				'sort' => new Field_Integer(array(
-					'label'   => __('Sort'),
-					'default' => 0,
-				)),
-				'created' => new Field_Timestamp(array(
-					'auto_now_create' => true,
-				)),
-				'author' => new Field_BelongsTo(array(
-					'column'  => 'author_id',
-					'foreign' => 'user',
-				)),
-
-				'access_read' => new Field_Enum(array(
-					'label'   => __('Read access'),
-					'default' => self::READ_NORMAL,
-					'choices' => array(
-						self::READ_MEMBERS => 'Members only',
-						self::READ_NORMAL  => 'Everybody',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'access_write' => new Field_Enum(array(
-					'null'    => true,
-					'label'   => __('Write access'),
-					'default' => self::WRITE_NORMAL,
-					'choices' => array(
-						self::WRITE_ADMINS => 'Admins only',
-						self::WRITE_NORMAL => 'Members',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'status' => new Field_Enum(array(
-					'label'   => __('Status'),
-					'default' => self::STATUS_NORMAL,
-					'choices' => array(
-						self::STATUS_HIDDEN => 'Hidden',
-						self::STATUS_NORMAL => 'Normal',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'type' => new Field_Enum(array(
-					'label'   => __('Type'),
-					'column'  => 'area_type',
-					'default' => self::TYPE_NORMAL,
-					'choices' => array(
-						self::TYPE_PRIVATE => 'Private',
-						self::TYPE_BIND    => 'Bind, topics bound to foreign model',
-						self::TYPE_NORMAL  => 'Normal',
-					),
-					'rules'   => array(
-						'not_empty' => null,
-					)
-				)),
-				'bind' => new Field_Enum(array(
-					'label'   => __('Bind config'),
-					'choices' => array('' => __('None')) + self::get_binds(),
-				)),
-
-				'post_count' => new Field_Integer,
-				'topic_count' => new Field_Integer,
-				'last_topic' => new Field_BelongsTo(array(
-					'column'  => 'last_topic_id',
-					'foreign' => 'forum_topic',
-				)),
-				'topics' => new Field_HasMany(array(
-					'foreign' => 'forum_topic'
-				))
-			));
-
-		return $meta;
-	}
-
-
-	/**
 	 * Find area's paginated active topics
 	 *
 	 * @param   Pagination $pagination
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Topic[]
 	 */
 	public function find_active_topics(Pagination $pagination) {
-		return $this
-			->get('topics')
-			->order_by('last_post_id', 'DESC')
-			->pagination($pagination)
-			->execute();
+		$topic = Model_Forum_Topic::factory();
+
+		return $topic->load(
+			DB::select_array($topic->fields())
+				->where('forum_area_id', '=', $this->id)
+				->order_by('sticky', 'DESC')
+				->order_by('last_posted', 'DESC')
+				->offset($pagination->offset),
+			$pagination->items_per_page
+		);
 	}
 
 
@@ -199,6 +134,20 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 
 
 	/**
+	 * Get comment image
+	 *
+	 * @return  Model_Forum_Group
+	 */
+	public function group() {
+		try {
+			return $this->forum_group_id ? Model_Forum_Group::factory($this->forum_group_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
@@ -229,6 +178,16 @@ class Anqh_Model_Forum_Area extends Jelly_Model implements Permission_Interface 
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get area last topic
+	 *
+	 * @return  Model_Forum_Topic
+	 */
+	public function last_topic() {
+		return Model_Forum_Topic::factory($this->last_topic_id);
 	}
 
 }

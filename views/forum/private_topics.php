@@ -22,7 +22,7 @@
 
 <article>
 	<span class="grid1 first from">
-		<?php echo HTML::user($topic->original('author'), $topic->author_name) ?>
+		<?php echo HTML::user($topic->author_id, $topic->author_name) ?>
 	</span>
 
 	<header class="grid4 topic">
@@ -42,7 +42,7 @@
 
 	<span class="grid2 latest">
 		<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-		<?php echo HTML::user($topic->original('last_poster'), $topic->last_poster) ?>
+		<?php echo HTML::user($topic->last_poster, $topic->last_poster) ?>
 	</span>
 </article>
 

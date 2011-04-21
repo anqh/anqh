@@ -7,9 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-?>
-
-<?php foreach ($posts as $post):
+foreach ($posts as $post):
 
 	// Ignore
 	if (!Permission::has($post, Model_Forum_Post::PERMISSION_READ, $user)) continue;
@@ -78,6 +76,7 @@ head.ready("anqh", function() {
 	$("section.post-content form").live("submit", function(e) {
 		e.preventDefault();
 		var post = $(this).closest("article");
+		post.loading();
 		$.post($(this).attr("action"), $(this).serialize(), function(data) {
 			post.replaceWith(data);
 		});

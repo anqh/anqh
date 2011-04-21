@@ -4,47 +4,35 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Forum_Quote extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Forum_Quote extends AutoModeler implements Permission_Interface {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id' => new Field_Primary,
-			'author' => new Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
-			'user' => new Field_BelongsTo,
-			'topic' => new Field_BelongsTo(array(
-				'column'  => 'forum_topic_id',
-				'foreign' => 'forum_topic',
-			)),
-			'post' => new Field_BelongsTo(array(
-				'column'  => 'forum_post_id',
-				'foreign' => 'forum_post',
-			)),
-			'created' => new Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-		));
-	}
+	protected $_table_name = 'forum_quotes';
+
+	protected $_data = array(
+		'id'             => null,
+		'author_id'      => null,
+		'user_id'        => null,
+		'forum_topic_id' => null,
+		'forum_post_id'  => null,
+		'created'        => null,
+	);
 
 
 	/**
 	 * Find quotes by quoted user
 	 *
 	 * @param   Model_User  $user
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Quote[]
 	 */
-	public static function find_by_user(Model_User $user) {
-		return Jelly::select('forum_quote')->where('user_id', '=', $user->id)->execute();
+	public function find_by_user(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('user_id', '=', $user->id),
+			null
+		);
 	}
 
 

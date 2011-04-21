@@ -9,26 +9,9 @@
  */
 class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta
-			->table('forum_areas')
-			->fields(array(
-				'last_topic' => new Field_BelongsTo(array(
-					'column'  => 'last_topic_id',
-					'foreign' => 'forum_private_topic',
-				)),
-				'topics' => new Field_HasMany(array(
-					'foreign' => 'forum_private_topic'
-				))
-			));
-
-		parent::initialize($meta);
-	}
+	protected $_has_many = array(
+		'forum_private_topics'
+	);
 
 
 	/**
@@ -36,11 +19,11 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	 *
 	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  null
 	 *
 	 * @todo  Remove
 	 */
-	public static function find_active($limit = 10, Model_User $user = null) {
+	public function find_active($limit = 10, Model_User $user = null) {
 		return null;
 	}
 
@@ -48,11 +31,14 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	/**
 	 * Find private areas
 	 *
-	 * @static
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Private_Area[]
 	 */
-	public static function find_areas() {
-		return Jelly::select('forum_area')->where('type', '=', self::TYPE_PRIVATE)->execute();
+	public function find_areas() {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('type', '=', self::TYPE_PRIVATE),
+			null
+		);
 	}
 
 
@@ -61,19 +47,22 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	 *
 	 * @static
 	 * @param   Model_User  $user
-	 * @param   Pagination  $paginatinon
+	 * @param   Pagination  $pagination
 	 * @param   string      $type
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Private_Topic[]
 	 */
-	public static function find_topics(Model_User $user, Pagination $paginatinon, $type = null) {
-		$topics = Jelly::select('forum_private_topic')
-			->join('forum_private_recipient')
-			->on('forum_private_topic.:primary_key', '=', 'forum_private_recipient.forum_topic:foreign_key')
-			->where('user_id', '=', $user->id)
-			->order_by('last_post_id', 'DESC')
-			->pagination($paginatinon);
+	public static function find_topics(Model_User $user, Pagination $pagination, $type = null) {
+		$topic = Model_Forum_Private_Topic::factory();
 
-		return $topics->execute();
+		return $topic->load(
+			DB::select_array($topic->fields())
+				->join('forum_private_recipients')
+				->on('forum_private_topics.id', '=', 'forum_private_recipients.forum_topic_id')
+				->where('user_id', '=', $user->id)
+				->order_by('last_post_id', 'DESC')
+				->offset($pagination->offset),
+			$pagination->items_per_page
+		);
 	}
 
 

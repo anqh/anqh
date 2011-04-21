@@ -34,14 +34,15 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->history = false;
 
 		$area_id = (int)$this->request->param('id');
-		$area = Model_Forum_Area::find($area_id);
+		$area = Model_Forum_Area::factory($area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, $area_id);
 		}
 		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE, self::$user);
 
-		$group = $area->group;
+		$group = $area->group();
 		$area->delete();
+
 		$this->request->redirect(Route::model($group));
 	}
 
@@ -55,21 +56,23 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Load area
 		$area_id = (int)$this->request->param('id');
 		if ($area_id) {
-			$area = Model_Forum_Area::find($area_id);
+			$area = Model_Forum_Area::factory($area_id);
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
 			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user);
 		} else {
 			$area = Model_Forum_Area::factory();
+			$area->author_id = self::$user->id;
+			$area->created   = time();
 		}
 
 		// Load group
 		if ($area->loaded()) {
-			$group = $area->group;
+			$group = $area->group();
 		} else if ($group_id = (int)$this->request->param('group_id')) {
-			$group = Model_Forum_Group::find($group_id);
-			$area->group = $group;
+			$group = Model_Forum_Group::factory($group_id);
+			$area->forum_group_id = $group->id;
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -79,11 +82,11 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Handle post
 		$errors = array();
 		if ($_POST) {
-			$area->set($_POST);
+			$area->set_fields(Arr::extract($_POST, Model_Forum_Area::$editable_fields));
 			try {
 				$area->save();
 				$this->request->redirect(Route::model($area));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
@@ -96,34 +99,16 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			$this->page_actions[] = array('link' => Route::model($area, 'delete'), 'text' => __('Delete area'), 'class' => 'area-delete');
 		}
 
-		// Build form
-		$form = array(
-			'values' => $area,
+		// Create group list
+		$groups = array();
+		foreach (Model_Forum_Group::factory()->find_all() as $_group) {
+			$groups[$_group->id] = $_group->name;
+		}
+		Widget::add('main', View_Module::factory('forum/area_edit', array(
 			'errors' => $errors,
-			'cancel' => Request::back(Route::get('forum_group')->uri(), true),
-			'groups' => array(
-				array(
-					'fields' => array(
-						'group'       => array(),
-						'name'        => array(),
-						'description' => array(),
-						'sort'        => array(),
-					),
-				),
-				array(
-					'header' => __('Settings'),
-					'fields' => array(
-						'access_read'  => array(),
-						'access_write' => array(),
-						'type'         => array(),
-						'bind'         => array(),
-						'status'       => array(),
-					),
-				),
-			),
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+			'groups' => $groups,
+			'area'   => $area,
+		)));
 	}
 
 
@@ -141,7 +126,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		}
 
 		/** @var  Model_Forum_Area  $area */
-		$area = Model_Forum_Area::find((int)$area_id);
+		$area = Model_Forum_Area::factory((int)$area_id);
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, (int)$area_id);
 		}
@@ -189,31 +174,33 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->tab_id = 'private';
 
 		// Set title
-		$this->page_title = HTML::chars(__('Private messages'));
-		$this->page_subtitle = __('Personal and group messages');
+		$this->page_title     = HTML::chars(__('Private messages'));
+		$this->page_subtitle  = __('Personal and group messages');
 		$this->page_subtitle .= ' | ' . HTML::anchor(
-			Route::get('forum_group')->uri(array('action' => '')),
+			Route::url('forum_group', array('action' => '')),
 			__('Back to forum groups')
 		);
 
 		// Set actions
 		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST, self::$user)) {
 			$this->page_actions[] = array(
-				'link' => Route::get('forum_private_topic_add')->uri(array('action' => 'post')),
-				'text' => __('New message'), 'class' => 'topic-add'
+				'link'  => Route::url('forum_private_topic_add', array('action' => 'post')),
+				'text'  => __('New message'),
+				'class' => 'topic-add'
 			);
 		}
 
 		// Pagination
 		$pagination = Pagination::factory(array(
+			'url'            => Route::url('forum_private_area'),
 			'items_per_page' => Kohana::config('forum.topics_per_page'),
-			'total_items'    => Model_Forum_Private_Topic::get_count(self::$user),
+			'total_items'    => Model_Forum_Private_Topic::factory()->get_count(self::$user),
 		));
 
 		// Posts
 		Widget::add('main', View_Module::factory('forum/private_topics', array(
 			'mod_class'  => 'topics messages',
-			'topics'     => Model_Forum_Private_Area::find_topics(self::$user, $pagination),
+			'topics'     => Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination),
 			'pagination' => $pagination
 		)));
 

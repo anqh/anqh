@@ -21,13 +21,13 @@
 
 <article>
 	<header class="grid6 first topic">
-		<?php echo HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('class' => 'grid5 first')) ?>
+		<?php echo HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('class' => 'grid5 first')) ?>
 		<span class="grid1 replies"><?php echo Num::format($topic->post_count - 1, 0) ?></span>
 	</header>
 
 	<p class="grid2 latest">
 		<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-		<?php echo HTML::user($topic->original('last_poster'), $topic->last_poster) ?>
+		<?php echo HTML::user($topic->last_poster, $topic->last_poster) ?>
 	</p>
 </article>
 

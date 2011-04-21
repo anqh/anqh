@@ -16,7 +16,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		$this->history = false;
 
 		$group_id = (int)$this->request->param('id');
-		$group = Model_Forum_Group::find($group_id);
+		$group = Model_Forum_Group::factory($group_id);
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
@@ -38,23 +38,25 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 		// Load group
 		if ($group_id) {
-			$group = Model_Forum_Group::find((int)$group_id);
+			$group = Model_Forum_Group::factory((int)$group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, (int)$group_id);
 			}
 		} else {
 			$group = Model_Forum_Group::factory();
+			$group->created   = time();
+			$group->author_id = self::$user->id;
 		}
 		Permission::required($group, $group->loaded() ? Model_Forum_Group::PERMISSION_UPDATE : Model_Forum_Group::PERMISSION_CREATE, self::$user);
 
 		// Handle post
 		$errors = array();
 		if ($_POST) {
-			$group->set($_POST);
+			$group->set_fields(Arr::intersect($_POST, array('name', 'description', 'sort')));
 			try {
 				$group->save();
 				$this->request->redirect(Route::model($group));
-			} catch (Validate_Exception $e) {
+			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
@@ -67,23 +69,10 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			$this->page_actions[] = array('link' => Route::model($group, 'delete'), 'text' => __('Delete group'), 'class' => 'group-delete');
 		}
 
-		// Build form
-		$form = array(
-			'values' => $group,
+		Widget::add('main', View_Module::factory('forum/group_edit', array(
 			'errors' => $errors,
-			'cancel' => Request::back(Route::get('forum_group')->uri(), true),
-			'groups' => array(
-				array(
-					'fields' => array(
-						'name'        => array(),
-						'description' => array(),
-						'sort'        => array(),
-					)
-				)
-			)
-		);
-
-		Widget::add('main', View_Module::factory('form/anqh', array('form' => $form)));
+			'group'  => $group,
+		)));
 	}
 
 
@@ -98,7 +87,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		if (!$group_id) {
 
 			// All groups
-			$groups = Model_Forum_Group::find_all();
+			$groups = Model_Forum_Group::factory()->find_all();
 			if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::get('forum_group_add')->uri(), 'text' => __('New group'), 'class' => 'group-add');
 			}
@@ -106,7 +95,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		} else {
 
 			// One group
-			$group = Model_Forum_Topic::find($group_id);
+			$group = Model_Forum_Group::factory($group_id);
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
@@ -115,7 +104,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($group, 'edit'), 'text' => __('Edit group'), 'class' => 'group-edit');
 			}
-			if (Permission::has($group, Model_Forum_GROUP::PERMISSION_CREATE_AREA, self::$user)) {
+			if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$user)) {
 				$this->page_actions[] = array('link' => Route::model($group, 'add'), 'text' => __('New area'), 'class' => 'area-add');
 			}
 			$groups = array($group);
@@ -123,7 +112,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 		$this->page_title = count($groups) > 1 ? __('Forum areas') : $groups[0]->name;
 		foreach ($groups as $group) {
-			Widget::add('main', View_Module::factory('forum/group', array('group' => $group)));
+			Widget::add('main', View_Module::factory('forum/group', array('group' => $group, 'user' => self::$user)));
 		}
 
 		$this->side_views();

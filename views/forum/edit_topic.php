@@ -14,8 +14,15 @@ echo Form::open(null, array('id' => 'form-topic-edit'));
 
 	<fieldset id="fields-topic">
 		<ul>
-			<?php echo $topic->input('name', 'form/anqh', array('errors' => $errors, 'attributes' => array('tabindex' => ++$tabindex))) ?>
-			<?php if (!$post) echo $topic->input('status', 'form/anqh', array('errors' => $errors, 'attributes' => array('tabindex' => ++$tabindex))) ?>
+			<?php echo Form::input_wrap('name', $topic, array('tabindex' => ++$tabindex), __('Topic'), $errors) ?>
+			<?php if (!$post && $admin):
+				echo Form::select_wrap('status', array(
+					Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
+					Model_Forum_Topic::STATUS_SINK   => __('Sink'),
+					Model_Forum_Topic::STATUS_LOCKED => __('Locked'),
+				), $topic, array('tabindex' => ++$tabindex), __('Status'), $errors);
+				echo Form::radios_wrap('sticky', array(0 => __('Normal'), 1 => __('Sticky')), $topic->sticky, null, __('Sticky'), $errors);
+			endif; ?>
 			<?php if ($private) echo Form::textarea_wrap('recipients', $recipients, array('rows' => 3, 'placeholder' => __('Required'), 'tabindex' => ++$tabindex), null, __('Recipients'), $errors) ?>
 		</ul>
 	</fieldset>
@@ -23,7 +30,7 @@ echo Form::open(null, array('id' => 'form-topic-edit'));
 	<?php if ($post): ?>
 	<fieldset id="fields-post">
 		<ul>
-			<?php echo $post->input('post', 'form/anqh', array('errors' => $errors, 'attributes' => array('tabindex' => ++$tabindex))) ?>
+			<?php echo Form::textarea_wrap('post', $post, array('tabindex' => ++$tabindex), true, __('Post'), $errors) ?>
 		</ul>
 	</fieldset>
 	<?php endif; ?>

@@ -15,46 +15,49 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 	/** Personal 1-on-1 topic */
 	const PERSONAL = 'personal';
 
+	protected $_table_name = 'forum_private_topics';
 
-	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
-	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'first_post' => new Field_BelongsTo(array(
-				'column'  => 'first_post_id',
-				'foreign' => 'forum_private_post',
-			)),
-			'last_post' => new Field_BelongsTo(array(
-				'column'  => 'last_post_id',
-				'foreign' => 'forum_private_post',
-			)),
-			'posts' => new Field_HasMany(array(
-				'foreign' => 'forum_private_post.forum_topic_id',
-			)),
+	protected $_data = array(
+		'id'            => null,
+		'forum_area_id' => null,
+		'bind_id'       => null,
 
-			'recipient_count' => new Field_Integer,
-			'recipients' => new Field_HasMany(array(
-				'foreign' => 'forum_private_recipient.forum_topic_id'
-			)),
-		));
+		'type'          => null,
+		'status'        => self::STATUS_NORMAL,
+		'sticky'        => false,
+		'read_only'     => null,
+		'votes'         => null,
+		'points'        => null,
 
-		parent::initialize($meta);
-	}
+		'name'          => null,
+		'old_name'      => null,
+		'author_id'     => null,
+		'author_name'   => null,
+
+		'first_post_id' => null,
+		'last_post_id'  => null,
+		'last_posted'   => null,
+		'last_poster'   => null,
+		'read_count'    => null,
+		'post_count'    => null,
+
+		'recipient_count' => null,
+	);
+
+	protected $_has_many = array(
+		'posts', 'recipients'
+	);
 
 
 	/**
 	 * Find active topics
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  null
 	 *
 	 * @todo  Remove
 	 */
-	public static function find_active($limit = 10) {
+	public function find_active($limit = 10) {
 		return null;
 	}
 
@@ -62,40 +65,38 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 	/**
 	 * Find latest topics
 	 *
-	 * @static
 	 * @param   integer     $limit
 	 * @param   string      $type  GROUP, PERSONAL or null for both
 	 * @param   Model_User  $user  Recipient
-	 * @return  Jelly_Collection
+	 * @return  Model_Forum_Private_Topic[]
 	 *
 	 * @throws  InvalidArgumentException  if user missing
 	 */
-	public static function find_by_latest_post($limit = 10, $type = null, Model_User $user = null) {
+	public function find_by_latest_post($limit = 10, $type = null, Model_User $user = null) {
 		if (!$user) {
 			throw new InvalidArgumentException('User required.');
 		}
 
-		$topics = Jelly::select('forum_private_topic')
-			->join('forum_private_recipients', 'INNER')
-			->on('forum_private_topic.:primary_key', '=', 'forum_private_recipients.topic:foreign_key')
-			->where('user_id', '=', $user->id)
-			->order_by('last_post_id', 'DESC')
-			->limit($limit);
-
-		return $topics->execute();
+		return $this->load(
+			DB::select_array($this->fields())
+				->join('forum_private_topic', 'INNER')
+				->on('forum_private_topic.id', '=', 'forum_private_recipients.forum_topic_id')
+				->where('user_id', '=', $user->id)
+				->order_by('last_post_id', 'DESC'),
+			$limit
+		);
 	}
 
 
 	/**
 	 * Find new topics
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  null
 	 *
 	 * @todo  Remove
 	 */
-	public static function find_new($limit = 10) {
+	public function find_new($limit = 10) {
 		return null;
 	}
 
@@ -115,7 +116,7 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 		if ($this->loaded()) {
 			if (!isset($recipients[$this->id])) {
 				$recipients[$this->id] = array();
-				foreach ($this->find_recipients() as $recipient) {
+				foreach ($this->recipients() as $recipient) {
 					$recipients[$this->id][$recipient] = Arr::get(Model_User::find_user_light($recipient), 'username');
 				}
 				natcasesort($recipients[$this->id]);
@@ -129,46 +130,18 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 
 
 	/**
-	 * Get message recipient ids
-	 *
-	 * @return  array
-	 */
-	public function find_recipients() {
-		static $recipients;
-
-		if (!is_array($recipients)) {
-			$recipients = array();
-		}
-
-		if ($this->loaded()) {
-			if (!isset($recipients[$this->id])) {
-				$recipients[$this->id] = array();
-				$users = DB::select('user_id')->from('forum_private_recipients')->where('forum_topic_id', '=', $this->id)->execute();
-				foreach ($users as $user) {
-					$recipients[$this->id][(int)$user['user_id']] = (int)$user['user_id'];
-				}
-			}
-
-			return $recipients[$this->id];
-		}
-
-		return array();
-	}
-
-
-	/**
 	 * Get private message count
 	 *
-	 * @static
 	 * @param   Model_User  $user  Recipient
 	 * @param   string      $type  GROUP, PERSONAL or null for both
 	 * @return  integer
 	 */
-	public static function get_count(Model_User $user, $type = null) {
-		$topics = Jelly::select('forum_private_recipient')
-			->where('user_id', '=', $user->id);
-
-		return $topics->count();
+	public function get_count(Model_User $user, $type = null) {
+		return (int)DB::select(array(DB::expr('COUNT(id)'), 'message_count'))
+			->from('forum_private_recipients')
+			->where('user_id', '=', $user->id)
+			->execute($this->_db)
+			->get('message_count');
 	}
 
 
@@ -189,7 +162,7 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 		    return ($this->status != self::STATUS_LOCKED || $user->has_role('admin')) && $this->has_permission(self::PERMISSION_READ, $user);
 
 			case self::PERMISSION_READ:
-				return $user && $this->get('recipients')->where('user_id', '=', $user->id)->count();
+				return $user && in_array($user->id, $this->recipients());
 
 			case self::PERMISSION_UPDATE:
 				return $this->has_permission(self::PERMISSION_READ, $user) && parent::has_permission($permission, $user);
@@ -233,32 +206,53 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 
 
 	/**
-	 * Refresh topic foreign values
+	 * Find topic posts by page
 	 *
-	 * @param   boolean  $save
+	 * @param   Pagination  $pagination
+	 * @return  Model_Forum_Post[]
 	 */
-	public function refresh($save = true) {
-		if (!$this->loaded()) {
-			return false;
+	public function posts(Pagination $pagination = null) {
+		$post = Model_Forum_Private_Post::factory();
+
+		$query = DB::select_array($post->fields())
+			->where('forum_topic_id', '=', $this->id);
+
+		if ($pagination) {
+			return $post->load($query->offset($pagination->offset), $pagination->items_per_page);
+		} else {
+			return $post->load($query, null);
+		}
+	}
+
+
+	/**
+	 * Get message recipient ids
+	 *
+	 * @return  array
+	 */
+	public function recipients() {
+		static $recipients;
+
+		if (!is_array($recipients)) {
+			$recipients = array();
 		}
 
-		// First post
-		$first_post = Jelly::select('forum_private_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'ASC')->limit(1)->execute();
-		$this->first_post = $first_post;
+		if ($this->loaded()) {
+			if (!isset($recipients[$this->id])) {
+				$recipients[$this->id] = array();
+				$users = DB::select('user_id')
+					->from('forum_private_recipients')
+					->where('forum_topic_id', '=', $this->id)
+					->execute();
+				foreach ($users as $user) {
+					$recipients[$this->id][(int)$user['user_id']] = (int)$user['user_id'];
+				}
+			}
 
-		// Last post
-		$last_post = Jelly::select('forum_private_post')->where('forum_topic_id', '=', $this->id)->order_by('id', 'DESC')->limit(1)->execute();
-		$this->last_post = $last_post;
-		$this->last_posted = $last_post->created;
-		$this->last_poster = $last_post->author_name;
-
-		$this->post_count = count($this->posts);
-
-		if ($save) {
-			$this->save();
+			return $recipients[$this->id];
 		}
 
-		return true;
+		return array();
 	}
 
 
@@ -283,12 +277,14 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 		$new_recipients = array_diff_key($recipients, $this->find_recipient_names());
 		if ($new_recipients) {
 			foreach ($new_recipients as $recipient_id => $recipient_name) {
-				Model_Forum_Private_Recipient::factory()->set(array(
-					'topic'  => $this,
-					'area'   => $this->area,
-					'user'   => $recipient_id,
-					'unread' => $this->post_count ? $this->post_count : 1
-				))->save();
+				$recipient = Model_Forum_Private_Recipient::factory();
+				$recipient->set_fields(array(
+					'forum_topic_id'  => $this->id,
+					'forum_area_id'   => $this->forum_area_id,
+					'user_id'         => $recipient_id,
+					'unread'          => $this->post_count ? $this->post_count : 1
+				));
+				$recipient->save();
 			}
 		}
 
