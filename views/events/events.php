@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 ?>
@@ -28,7 +28,7 @@
 			</header>
 			<?php endif; ?>
 
-			<?php	foreach ($city_events as $event): ?>
+			<?php	foreach ($city_events as $event): $venue = $event->venue(); ?>
 
 			<article>
 
@@ -43,8 +43,8 @@
 
 					<?php if ($event->venue_hidden): ?>
 					@ <?php echo __('Underground') ?>
-					<?php elseif ($event->venue->loaded()): ?>
-					@ <?php echo HTML::anchor(Route::model($event->venue), $event->venue->name) ?>
+					<?php elseif ($venue): ?>
+					@ <?php echo HTML::anchor(Route::model($venue), $venue->name) ?>
 					<?php elseif ($event->venue_name): ?>
 					@ <?php echo HTML::chars($event->venue_name) ?>
 					<?php endif; ?>

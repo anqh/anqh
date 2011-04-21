@@ -15,7 +15,7 @@ $_city       = '';
 foreach ($venues as $v):
 
 	// Group by city
-	$_city = Text::capitalize($v->city->loaded() ? $v->city->name : $v->city_name);
+	$_city = Text::capitalize($v->city() ? $v->city()->name : $v->city_name);
 	!isset($list[$_city]) and $list[$_city] = array();
 	$list[$_city][$v->id] = $v->name;
 
@@ -38,10 +38,11 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 	<div class="grid8 first">
 		<fieldset id="fields-primary">
 			<ul>
-				<?php echo $event->input('name', 'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('dj',   'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('info', 'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('tags', 'form/anqh', array('errors' => $event_errors, 'class' => 'pills', 'values' => $tags)) ?>
+				<?php echo Form::input_wrap('name', $event, null, __('Event'), $event_errors) ?>
+				<?php echo Form::input_wrap('homepage', $event, null, __('Homepage'), $event_errors) ?>
+				<?php echo Form::textarea_wrap('dj',   $event, null, true, __('Performers'), $event_errors) ?>
+				<?php echo Form::textarea_wrap('info', $event, null, true, __('Other information'), $event_errors, null, true) ?>
+				<?php echo Form::checkboxes_wrap('tag', $tags, $event->tags(), __('Music'), $event_errors, null, 'pills') ?>
 			</ul>
 		</fieldset>
 
@@ -63,52 +64,40 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 	<div class="grid4">
 		<fieldset id="fields-when">
 			<ul>
-				<?php echo $event->input('stamp_begin', 'form/anqh', array('label_date' => __('When?'), 'label_time' => __('At'), 'default_time' => '22:00', 'errors' => $event_errors)) ?>
-				<?php echo $event->input('stamp_end',   'form/anqh', array('default_time' => '04:00', 'errors' => $event_errors)) ?>
+				<?php echo Form::input_wrap(
+					'stamp_begin[date]',
+					is_numeric($event->stamp_begin) ? Date::format('DMYYYY', $event->stamp_begin) : $event->stamp_begin,
+					array('class' => 'date', 'maxlength' => 10),
+					__('When?'),
+					Arr::get($event_errors, 'stamp_begin')
+				) ?>
+				<?php echo Form::select_wrap(
+					'stamp_begin[time]',
+					Date::hours_minutes(30, true),
+					is_numeric($event->stamp_begin) ? Date::format('HHMM', $event->stamp_begin) : (empty($event->stamp_begin) ? '22:00' : $event->stamp_begin),
+					array('class' => 'time'),
+					__('At'),
+					Arr::get($event_errors, 'stamp_begin')
+				) ?>
+
+				<?php echo Form::select_wrap(
+					'stamp_end[time]',
+					Date::hours_minutes(30, true),
+					is_numeric($event->stamp_end) ? Date::format('HHMM', $event->stamp_end) : (empty($event->stamp_end) ? '04:00' : $event->stamp_end),
+					array('class' => 'time'),
+					'-',
+					Arr::get($event_errors, 'stamp_end')
+				) ?>
 			</ul>
 		</fieldset>
-
-		<!--
-		<fieldset id="fields-flyers">
-			<legend><?php echo __('Flyers') ?></legend>
-			<ul>
-
-				<?php if ($event->flyer_front_url || $event->flyer_back_url): ?>
-				<li>
-					<?php if ($event->flyer_front_url) echo HTML::anchor('#flyer-front', HTML::image($event->flyer_front_url, array('width' => 150)), array('title' => __('Change front flyer'), 'onclick' => "\$('input[name=flyer_front_url]').toggle(); return false;")) ?>
-					<?php if ($event->flyer_back_url)  echo HTML::anchor('#flyer-back',  HTML::image($event->flyer_back_url,  array('width' => 150)), array('title' => __('Change back flyer'),  'onclick' => "\$('input[name=flyer_back_url]').toggle(); return false;")) ?>
-				</li>
-				<?php endif; ?>
-
-				<?php echo $event->input('flyer_front_url', 'form/anqh', array(
-					'label'      => null,
-					'errors'     => $event_errors,
-					'attributes' => array(
-						'style'       => $event->flyer_front_url ? 'display: none' : '',
-						'title'       => __('Front flyer'),
-						'placeholder' => __('Front flyer'),
-					))) ?>
-				<?php echo $event->input('flyer_back_url',  'form/anqh', array(
-					'label'  => null,
-					'errors' => $event_errors,
-					'tip'    => __('You can also upload flyers after saving the event'),
-					'attributes' => array(
-						'style'       => $event->flyer_back_url ? 'display: none' : '',
-						'title'       => __('Back flyer'),
-						'placeholder' => __('Back flyer'),
-					))) ?>
-
-			</ul>
-		</fieldset>
-		-->
 
 		<fieldset id="fields-tickets">
 			<legend><?php echo __('Tickets') ?></legend>
 			<ul>
 				<li class="choice"><?php echo Form::checkbox('free', 'true', false, array('id' => 'field-free')), Form::label('field-free', __('Free entry')) ?></li>
-				<?php echo $event->input('price',  'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('price2', 'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('age',    'form/anqh', array('errors' => $event_errors)) ?>
+				<?php echo Form::input_wrap('price',  $event, null, __('Tickets'), $event_errors) ?>
+				<?php echo Form::input_wrap('price2', $event, null, __('Preasel tickets'), $event_errors) ?>
+				<?php echo Form::input_wrap('age',    $event, null, __('Age limit'), $event_errors) ?>
 			</ul>
 		</fieldset>
 
@@ -116,10 +105,10 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 			<legend><?php echo __('Venue') ?></legend>
 			<ul>
 				<li class="choice"><?php echo Form::checkbox('venue_hidden', 'true', $event->venue_hidden, array('id' => 'field-ug')), Form::label('field-ug', __('Underground')) ?></li>
-				<?php echo Form::select_wrap('venue', $list, $venue && $venue->loaded() ? $venue->id : '', null,	__('Venue')) ?>
+				<?php echo Form::select_wrap('venue', $list, $venue ? $venue->id : '', null, __('Venue')) ?>
 				<li class="choice"><?php echo HTML::anchor('#new-venue', __('Not in list?'), array('class' => 'venue-add')) ?></li>
-				<?php echo $event->input('venue_name', 'form/anqh', array('errors' => $event_errors)) ?>
-				<?php echo $event->input('city_name',  'form/anqh', array('errors' => $event_errors)) ?>
+				<?php echo Form::input_wrap('venue_name', $event, null, __('Venue'), $event_errors) ?>
+				<?php echo Form::input_wrap('city_name',  $event, null, __('City'), $event_errors) ?>
 			</ul>
 		</fieldset>
 	</div>
@@ -160,47 +149,7 @@ head.ready("anqh", function() {
 	// Datepicker
 	$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');
 
-
-	/*
-	// Venues
-	var venues = ' . json_encode(empty($venues) ? '' : $venues) . ';
-
-	$("#field-venue").change(function() {
-		$("#field-venue-name").val("");
-		$("#fields-venue").hide();
-		var id = this.value;
-		$.each(venues, function(index, venue) {
-			if (venue.value == id && venue.city) {
-				if (venue.latitude && venue.longitude) {
-					$("#map").googleMap({ marker: true, lat: venue.latitude, long: venue.longitude });
-				}
-			}
-		});
-	});
-	*/
-
-	// $("#fields-venue").append("<div id=\"map\">' . __('Loading map..') . '</div>");
-	// $("#map").googleMap(' . ($venue->latitude ? json_encode(array('marker' => true, 'lat' => $venue->latitude, 'long' => $venue->longitude)) : '') . ');
 	$("#field-city-name").autocompleteCity({ latitude: "city_latitude", longitude: "city_longitude" });
-	// $("#field-venue-name").foursquareVenue({ venueId: "foursquare_id", categoryId: "foursquare_category_id" });
-
-	/*
-	$("input[name=address]").blur(function(event) {
-		var address = $("input[name=address]").val();
-		var city = $("input[name=city_name]").val();
-		if (address != "" && city != "") {
-			var geocode = address + ", " + city;
-			Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK && results.length) {
-					$("input[name=latitude]").val(results[0].geometry.location.lat());
-					$("input[name=longitude]").val(results[0].geometry.location.lng());
-					$("#map").googleMap({ marker: true, lat: results[0].geometry.location.lat(), long: results[0].geometry.location.lng() });
-				}
-			});
-		}
-	});
-	*/
-
 
 	// Tickets
 	$("#field-free").change(function() {

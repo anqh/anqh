@@ -8,19 +8,19 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-if ($event->venue && $event->venue->id):
+if ($_venue = $event->venue()):
 
 	// Venue found from db
-	$venue = HTML::anchor(Route::model($event->venue), HTML::chars($event->venue->name));
-	$address = HTML::chars($event->venue->address) . ', ' . HTML::chars($event->venue->city_name);
-	$info = HTML::anchor(Route::model($event->venue), __('Venue info'));
+	$venue   = HTML::anchor(Route::model($_venue), HTML::chars($_venue->name));
+	$address = HTML::chars($_venue->address) . ', ' . HTML::chars($_venue->city_name);
+	$info    = HTML::anchor(Route::model($_venue), __('Venue info'));
 
-	if ($event->venue->latitude):
+	if ($_venue->latitude):
 		$map = array(
-			'marker'     => HTML::chars($event->venue->name),
-			'infowindow' => HTML::chars($event->venue->address) . '<br />' . HTML::chars($event->venue->city_name),
-			'lat'        => $event->venue->latitude,
-			'long'       => $event->venue->longitude
+			'marker'     => HTML::chars($_venue->name),
+			'infowindow' => HTML::chars($_venue->address) . '<br />' . HTML::chars($_venue->city_name),
+			'lat'        => $_venue->latitude,
+			'long'       => $_venue->longitude
 		);
 		Widget::add('foot', HTML::script_source('
 head.ready("anqh", function() {
@@ -37,16 +37,16 @@ head.ready("anqh", function() {
 elseif ($event->venue_name):
 
 	// No venue in db
-	$venue = HTML::chars($event->venue_name);
+	$venue   = HTML::chars($event->venue_name);
 	$address = HTML::chars($event->city_name);
-	$info = $event->venue_url ? HTML::anchor($event->venue_url, HTML::chars($event->venue_url)) : '';
+	$info    = $event->venue_url ? HTML::anchor($event->venue_url, HTML::chars($event->venue_url)) : '';
 
 else:
 
 	// Venue not set
-	$venue = $event->venue_hidden ? __('Underground') : __('(Unknown)');
+	$venue   = $event->venue_hidden ? __('Underground') : __('(Unknown)');
 	$address = HTML::chars($event->city_name);
-	$info = '';
+	$info    = '';
 
 endif;
 ?>
@@ -77,11 +77,11 @@ endif;
 	<?php if ($event->age > 0)
 		echo  __('Age limit'), ': ', __(':years years', array(':years' => '<var>' . $event->age . '</var>')), '<br />' ?>
 
-<?php if (!empty($event->homepage))
-	echo HTML::anchor($event->homepage) ?>
+	<?php if (!empty($event->homepage))
+		echo HTML::anchor($event->homepage) ?>
 
-	<?php if (count($event->tags)): ?>
-	<br /><br /><?php foreach ($event->tags as $tag) echo $tag->name, ' '; ?>
+	<?php if ($tags = $event->tags()): ?>
+	<br /><br /><?php echo implode(', ', $tags); ?>
 	<?php elseif (!empty($event->music)): ?>
 	<br /><br /><?php echo $event->music ?>
 	<?php endif; ?>

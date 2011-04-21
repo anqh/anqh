@@ -4,159 +4,100 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
+class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 	/**
 	 * Permission to add favorite
 	 */
 	const PERMISSION_FAVORITE = 'favorite';
 
-	/**
-	 * @var  array  User editable fields
-	 */
-	public static $editable_fields = array(
-		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'venue_name', 'city', 'city_name', 'age', 'price', 'price2', 'dj', 'info', 'tags'
+	protected $_table_name = 'events';
+
+	protected $_data = array(
+		'id'                   => null,
+		'name'                 => null,
+		'title'                => null,
+		'homepage'             => null,
+		'stamp_begin'          => null,
+		'stamp_end'            => null,
+
+		'venue_hidden'         => null,
+		'venue_id'             => null,
+		'venue_name'           => null,
+		'venue_url'            => null,
+		'city_name'            => null,
+		'geo_city_id'          => null,
+		'geo_country_id'       => null,
+
+		'dj'                   => null,
+		'info'                 => null,
+		'age'                  => null,
+		'price'                => null,
+		'price2'               => null,
+		'music'                => null,
+		'flyer_front_url'      => null,
+		'flyer_back_url'       => null,
+		'flyer_front_image_id' => null,
+		'flyer_back_image_id'  => null,
+		'favorite_count'       => null,
+
+		'modifies'             => null,
+		'views'                => null,
+		'created'              => null,
+		'modified'             => null,
+		'author_id'            => null,
+	);
+
+	protected $_rules = array(
+		'name'                 => array('not_empty', 'length' => array(':value', 3, 64)),
+		'homepage'             => array('url'),
+		'stamp_begin'          => array('not_empty', 'digit'),
+		'stamp_end'            => array('not_empty', 'digit'),
+
+		'venue_hidden'         => array('in_array' => array(':value', array(0, 1))),
+		'venue_id'             => array('digit'),
+		'venue_url'            => array('url'),
+		'city_name'            => array('not_empty'),
+		'geo_city_id'          => array('digit'),
+		'geo_country_id'       => array('digit'),
+
+		'age'                  => array('range' => array(':value', 0, 99)),
+		'flyer_front_url'      => array('url'),
+		'flyer_back_url'       => array('url'),
+		'flyer_front_image_id' => array('digit'),
+		'flyer_back_image_id'  => array('digit'),
+		'favorite_count'       => array('digit'),
+	);
+
+	protected $_has_many = array(
+		'tags', 'images', 'favorites'
 	);
 
 
 	/**
-	 * Create new model
-	 *
-	 * @param  Jelly_Meta  $meta
+	 * @var  array  User editable fields
 	 */
-	public static function initialize(Jelly_Meta $meta) {
-		$meta->fields(array(
-			'id'   => new Field_Primary,
-			'name' => new Field_String(array(
-				'label' => __('Name'),
-				'rules' => array(
-					'not_empty'  => array(true),
-					'min_length' => array(3),
-					'max_length' => array(64),
-				),
-			)),
-			'title'    => new Field_String,
-			'homepage' => new Field_URL(array(
-				'label' => __('Homepage'),
-			)),
-			'stamp_begin' => new Field_DateTime(array(
-				'label'      => __('From'),
-				'label_date' => __('Date'),
-				'label_time' => '',
-				'rules' => array(
-					'not_empty' => null,
-				),
-			)),
-			'stamp_end' => new Field_DateTime(array(
-				'label'      => __('To'),
-				'label_time' => '-',
-				'show_date'  => false,
-				'rules' => array(
-					'not_empty' => null,
-				),
-			)),
-			'venue' => new Field_BelongsTo(array(
-				'null' => true,
-			)),
-			'venue_name'  => new Field_String(array(
-				'label' => __('Venue'),
-			)),
-			'venue_url' => new Field_URL,
-			'city'      => new Field_BelongsTo(array(
-				'foreign' => 'geo_city',
-				'null'    => true,
-			)),
-			'city_name' => new Field_String(array(
-				'label' => __('City'),
-				'rules' => array(
-					'not_empty' => null,
-				),
-			)),
-			'country' => new Field_BelongsTo(array(
-				'foreign' => 'geo_country',
-				'null'    => true,
-			)),
-			'venue_hidden' => new Field_Boolean,
+	public static $editable_fields = array(
+		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
+		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info',
+	);
 
-			'dj' => new Field_Text(array(
-				'label' => __('Performers'),
-			)),
-			'info' => new Field_Text(array(
-				'label'  => __('Other information'),
-				'bbcode' => true,
-			)),
-			'age' => new Field_Integer(array(
-				'label' => __('Age limit'),
-				'null'  => true,
-				'rules' => array(
-					'range' => array(0, 99),
-				)
-			)),
-			'price' => new Field_Float(array(
-				'label' => __('Tickets'),
-				'null'  => true,
-			)),
-			'price2' => new Field_Float(array(
-				'label' => __('Presale tickets'),
-				'null'  => true,
-			)),
-			'music' => new Field_Text,
 
-			'created' => new Field_Timestamp(array(
-				'auto_now_create' => true,
-			)),
-			'modified' => new Field_Timestamp(array(
-				'auto_now_update' => true,
-			)),
-			'author' => new Field_BelongsTo(array(
-				'column'  => 'author_id',
-				'foreign' => 'user',
-			)),
+	/**
+	 * Override __set() to handle datetime.
+	 *
+	 * @param   string  $key
+	 * @param   mixed   $value
+	 */
+	public function __set($key, $value) {
+		if (($key == 'stamp_begin' || $key == 'stamp_end') && !is_numeric($value)) {
+			$value = strtotime(is_array($value) ? $value['date'] . ' ' . $value['time'] : $value);
+		}
 
-			'num_modifies' => new Field_Integer(array(
-				'column' => 'modifies',
-			)),
-			'num_views' => new Field_Integer(array(
-				'column' => 'views',
-			)),
-
-			'flyer_front_url' => new Field_Url(array(
-				'label' => __('Flyer front')
-			)),
-			'flyer_back_url'  => new Field_Url(array(
-				'label' => __('Flyer back')
-			)),
-			'flyer_front' => new Field_BelongsTo(array(
-				'column'  => 'flyer_front_image_id',
-				'foreign' => 'image',
-			)),
-			'flyer_back' => new Field_BelongsTo(array(
-				'column'  => 'flyer_back_image_id',
-				'foreign' => 'image',
-			)),
-			'tags'      => new Field_ManyToMany(array(
-				'label' => __('Music'),
-			)),
-			'flyers'    => new Field_ManyToMany(array(
-				'foreign' => 'image',
-				'through' => array(
-					'model'   => 'flyer',
-					'columns' => array('event_id', 'image_id')
-				),
-			)),
-			'images'    => new Field_ManyToMany,
-			'favorites' => new Field_ManyToMany(array(
-				'foreign' => 'user',
-				'through' => array(
-					'model'   => 'favorite',
-					'columns' => array('event_id', 'user_id')
-				),
-			)),
-			'favorite_count' => new Field_Integer,
-		));
+		parent::__set($key, $value);
 	}
 
 
@@ -166,16 +107,20 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $user
 	 */
 	public function add_favorite(Model_User $user) {
-		if ($this->loaded()
-			&& !$this->is_favorite($user)
-			&& (bool)Jelly::factory('favorite')->set(array(
-				'user'  => $user,
-				'event' => $this
-			))->save()) {
-			$this->favorite_count++;
-			$this->save();
+		if ($this->loaded()	&& !$this->is_favorite($user)) {
 
-			return true;
+			// Create favorite
+			$favorite = Model_Favorite::factory();
+			$favorite->user_id  = $user->id;
+			$favorite->event_id = $this->id;
+			$favorite->created  = time();
+
+			if ($favorite->save()) {
+				$this->favorite_count++;
+				$this->save();
+
+				return true;
+			}
 		}
 
 		return false;
@@ -186,14 +131,40 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * Add flyer to event
 	 *
 	 * @param   Model_Image  $image
-	 * @return  bool
+	 * @return  boolean
 	 */
 	public function add_flyer(Model_Image $image) {
-		return $this->loaded() && Jelly::factory('flyer')
-			->set(array(
-				'image' => $image,
-				'event' => $this
-			))->save();
+		if ($this->loaded()) {
+			$flyer = new Model_Flyer();
+			$flyer->image_id    = $image->id;
+			$flyer->event_id    = $this->id;
+			$flyer->name        = $this->name;
+			$flyer->stamp_begin = $this->stamp_begin;
+
+			return $flyer->save();
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Get event city.
+	 *
+	 * @return  Model_Geo_City
+	 */
+	public function city() {
+		return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
+	}
+
+
+	/**
+	 * Get event country.
+	 *
+	 * @return  Model_Geo_Country
+	 */
+	public function country() {
+		return $this->geo_country_id ? new Model_Geo_Country($this->geo_country_id) : null;
 	}
 
 
@@ -203,16 +174,19 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	 * @param  Model_User  $user
 	 */
 	public function delete_favorite(Model_User $user) {
-		if ($this->loaded()
-			&& $this->is_favorite($user)
-			&& (bool)Jelly::delete('favorite')
-				->where('user_id', '=', $user->id)
-				->where('event_id', '=', $this->id)
-				->execute()) {
-			$this->favorite_count--;
-			$this->save();
+		if ($this->loaded() && $this->is_favorite($user)) {
 
-			return true;
+			// Delete favorite
+			if ((bool)DB::delete('favorites')
+				->where('user_id', '=', $user->id)
+				->and_where('event_id', '=', $this->id)
+				->execute()) {
+
+				$this->favorite_count--;
+				$this->save();
+
+				return true;
+			}
 		}
 
 		return false;
@@ -230,7 +204,10 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 		if (!is_array($favorites)) {
 			$favorites = array();
 			if ($this->loaded()) {
-				$users = DB::select('user_id')->from('favorites')->where('event_id', '=', $this->id)->execute();
+				$users = DB::select('user_id')
+					->from('favorites')
+					->where('event_id', '=', $this->id)
+					->execute();
 				foreach ($users as $user) {
 					$favorites[(int)$user['user_id']] = (int)$user['user_id'];
 				}
@@ -244,85 +221,158 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 	/**
 	 * Find events between given time period, return grouped by date
 	 *
-	 * @static
-	 * @param   integer  $from  From timestamp
-	 * @param   integer  $to    To timestamp
+	 * @param   integer  $stamp_begin
+	 * @param   integer  $stamp_end
+	 * @param   string   $order
 	 * @return  array
 	 */
-	public static function find_grouped_between($from, $to) {
-		return Jelly::select('event')->between($from, $to, 'ASC')->execute_grouped();
+	public function find_grouped_between($stamp_begin, $stamp_end, $order = 'DESC') {
+		$stamp_begin = (int)$stamp_begin;
+		$stamp_end   = (int)$stamp_end;
+
+		if (!$stamp_begin || !$stamp_end) {
+			throw new Kohana_Exception('Start and end time must be given');
+		}
+
+		if ($stamp_begin > $stamp_end) {
+			$stamp_temp  = $stamp_begin;
+			$stamp_begin = $stamp_end;
+			$stamp_end   = $stamp_temp;
+		}
+
+		$events = $this->load(
+			DB::select_array($this->fields())
+				->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))
+				->order_by('stamp_begin', $order == 'ASC' ? 'ASC' : 'DESC')
+				->order_by('city_name', 'ASC'),
+			null
+		);
+
+		return $this->_group_by_city($events);
 	}
 
 
 	/**
-	 * Find past events, return grouped by date
+	 * Find past events, return grouped by date.
 	 *
-	 * @static
 	 * @param   integer  $limit
 	 * @return  array
 	 */
-	public static function find_grouped_past($limit = 10) {
-		return Jelly::select('event')->past()->limit($limit)->execute_grouped();
+	public function find_grouped_past($limit = 10) {
+		$events = $this->load(
+			DB::select_array($this->fields())
+				->where('stamp_begin', '<', strtotime('today'))
+				->order_by('stamp_begin', 'DESC')
+				->order_by('city_name', 'ASC'),
+			$limit
+		);
+
+		return $this->_group_by_city($events);
 	}
 
 
 	/**
-	 * Find upcoming events, return grouped by date
+	 * Find upcoming events, return grouped by date.
 	 *
-	 * @static
 	 * @param   integer  $limit
 	 * @return  array
 	 */
-	public static function find_grouped_upcoming($limit = 10) {
-		return Jelly::select('event')->upcoming()->limit($limit)->execute_grouped();
+	public function find_grouped_upcoming($limit = 10) {
+		$events = $this->load(
+			DB::select_array($this->fields())
+				->where('stamp_begin', '>=', strtotime('today'))
+				->order_by('stamp_begin', 'ASC')
+				->order_by('city_name', 'ASC'),
+			$limit
+		);
+
+		return $this->_group_by_city($events);
 	}
 
 
 	/**
-	 * Find hot (=favorites) events
+	 * Find hot (=favorites) events.
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_hot($limit = 20) {
-		return Jelly::select('event')
-			->where('stamp_begin', '>', time())
-			->and_where('favorite_count', '>', 0)
-			->order_by('favorite_count', 'DESC')
-			->limit($limit)
-			->execute();
+	public function find_hot($limit = 20) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('stamp_begin', '>', strtotime('today'))
+				->and_where('favorite_count', '>', 0)
+				->order_by('favorite_count', 'DESC'),
+			$limit
+		);
 	}
 
 
 	/**
-	 * Find last modified events
+	 * Find last modified events.
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_modified($limit = 20) {
-		return Jelly::select('event')
-			->where('modified', 'IS NOT', null)
-			->order_by('modified', 'DESC')
-			->limit(20)
-			->execute();
+	public function find_modified($limit = 20) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('modified', 'IS NOT', null)
+				->order_by('modified', 'DESC'),
+			$limit
+		);
 	}
 
 
 	/**
 	 * Find new events
 	 *
-	 * @static
 	 * @param   integer  $limit
-	 * @return  Jelly_Collection
+	 * @return  Database_Result
 	 */
-	public static function find_new($limit = 20) {
-		return Jelly::select('event')
-			->order_by('id', 'DESC')
-			->limit($limit)
-			->execute();
+	public function find_new($limit = 20) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->order_by('id', 'DESC'),
+			$limit
+		);
+	}
+
+
+	/**
+	 * Get front flyer image.
+	 *
+	 * @return  Model_Image
+	 */
+	public function flyer_back() {
+		try {
+			return $this->flyer_back_image_id ? Model_Image::factory($this->flyer_back_image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * Get front flyer image.
+	 *
+	 * @return  Model_Image
+	 */
+	public function flyer_front() {
+		try {
+			return $this->flyer_front_image_id ? Model_Image::factory($this->flyer_front_image_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
+	}
+
+
+	/**
+	 * Get event flyers.
+	 *
+	 * @return  Model_Flyer[]
+	 */
+	public function flyers() {
+		return Model_Flyer::factory()->find_by_event($this->id);
 	}
 
 
@@ -343,6 +393,53 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 
 	/**
+	 * Group events by city
+	 *
+	 * @param   array|Database_Result  $events
+	 * @return  array
+	 */
+	protected function _group_by_city($events) {
+		$grouped = array();
+		if (count($events)) {
+
+			// Build grouped array
+			foreach ($events as $event) {
+
+				// Date
+				$date = date('Y-m-d', $event->stamp_begin);
+				if (!isset($grouped[$date])) {
+					$grouped[$date] = array();
+				}
+
+				// City
+				$city = UTF8::ucfirst(mb_strtolower($event->city_id ? $event->city()->name : $event->city_name));
+				if (!isset($grouped[$date][$city])) {
+					$grouped[$date][$city] = array();
+				}
+
+				$grouped[$date][$city][] = $event;
+			}
+
+			// Sort by city
+			$dates = array_keys($grouped);
+			foreach ($dates as $date) {
+				ksort($grouped[$date]);
+
+				// Drop empty cities to last
+				if (isset($grouped[$date][''])) {
+					$grouped[$date][__('Elsewhere')] = $grouped[$date][''];
+					unset($grouped[$date]['']);
+				}
+
+			}
+
+		}
+
+		return $grouped;
+	}
+
+
+	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
@@ -358,7 +455,7 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
-		    return $user && ($this->author->id == $user->id || $user->has_role('admin', 'event moderator'));
+		    return $user && ($this->author_id == $user->id || $user->has_role('admin', 'event moderator'));
 
 			case self::PERMISSION_READ:
 				return true;
@@ -385,9 +482,9 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 
 	/**
-	 * Check for favorite
+	 * Check for favorite.
 	 *
-	 * @param  Model_User|integer  $user  id, User_Model
+	 * @param  mixed  $user
 	 */
 	public function is_favorite($user) {
 		if (empty($user)) {
@@ -396,11 +493,77 @@ class Anqh_Model_Event extends Jelly_Model implements Permission_Interface {
 
 		if ($user instanceof Model_User) {
 			$user = $user->id;
+		} else if (is_array($user)) {
+			$user = $user['id'];
 		}
 
 		$favorites = $this->find_favorites();
 
 		return isset($favorites[(int)$user]);
+	}
+
+
+	/**
+	 * Set event tags.
+	 *
+	 * @param   array  $tags
+	 * @return  Model_Event
+	 */
+	public function set_tags(array $tags = null) {
+		$old_tags = $this->tags();
+		$new_tags = (array)$tags;
+
+		// Delete removed tags
+		foreach (array_diff(array_keys($old_tags), $new_tags) as $tag_id) {
+			$this->remove('tag', (int)$tag_id);
+		}
+
+		// Add new tags
+		$add = array();
+		foreach (array_diff($new_tags, array_keys($old_tags)) as $tag_id) {
+			$tag = Model_Tag::factory((int)$tag_id);
+			if ($tag && $tag->loaded()) {
+				$add[] = (int)$tag->id;
+			}
+		}
+		$add and $this->relate('tags', $add);
+
+		// Normalized tags for old version, to be deprecated
+		if ($this->music != ($music = implode(', ', $this->tags()))) {
+			$this->music = $music;
+			$this->save();
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Get event tags.
+	 *
+	 * @return  array
+	 */
+	public function tags() {
+		$tags = array();
+		foreach ($this->find_related('tags') as $tag) {
+			$tags[$tag->id] = $tag->name;
+		}
+
+		return $tags;
+	}
+
+
+	/**
+	 * Get event venue
+	 *
+	 * @return  Model_Venue
+	 */
+	public function venue() {
+		try {
+			return $this->venue_id ? Model_Venue::factory($this->venue_id) : null;
+		} catch (AutoModeler_Exception $e) {
+			return null;
+		}
 	}
 
 }
