@@ -204,7 +204,7 @@ class Anqh_HTML extends Kohana_HTML {
 		// Extract datetime
 		$datetime = (is_array($attributes)) ? Arr::get_once($attributes, 'datetime') : $attributes;
 		if ($datetime) {
-			$time = is_int($datetime) ? $datetime : strtotime($datetime);
+			$time = is_numeric($datetime) ? $datetime : strtotime($datetime);
 			$datetime = Date::format($short ? Date::DATE_8601 : Date::TIME_8601, $time);
 			if (is_array($attributes)) {
 				$attributes['datetime'] = $datetime;
