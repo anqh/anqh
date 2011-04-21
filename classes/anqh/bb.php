@@ -3,13 +3,11 @@
 require_once(Kohana::find_file('vendor', 'nbbc/nbbc'));
 
 /**
- * BBCode lbrary
+ * BBCode library
  *
  * @package    Anqh
  * @author     Antti Qvickström
  * @copyright  (c) 2010-2011 Antti Qvickström
- * @copyright  (c) 2008-2009 the Phantom Inker
- * @copyright  (c) 2004-2008 AddedBytes
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_BB extends BBCode {
@@ -22,6 +20,8 @@ class Anqh_BB extends BBCode {
 
 	/**
 	 * Create new BBCode object and initialize our own settings
+	 *
+	 * @param  string  $text
 	 */
 	public function __construct($text = null) {
 		parent::BBCode();
