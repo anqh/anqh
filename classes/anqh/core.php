@@ -107,7 +107,7 @@ class Anqh_Core {
 			foreach ($private_messages as $private_message) {
 				$new_messages += $private_message->unread;
 			}
-			$new['new-private-messages'] = HTML::anchor(Route::model($private_message->topic) . '?page=last#last', $new_messages, array('title' => __('New private messages')));
+			$new['new-private-messages'] = HTML::anchor(Route::model($private_message->topic()) . '?page=last#last', $new_messages, array('title' => __('New private messages')));
 		}
 		unset($private_messages);
 
