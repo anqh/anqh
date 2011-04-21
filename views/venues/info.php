@@ -120,17 +120,17 @@ head.ready("anqh", function() {
 ?>
 		<fieldset>
 			<ul>
-				<?php echo $venue->input('city_name', 'form/anqh') ?>
-				<?php echo $venue->input('name', 'form/anqh', array('attributes' => array('placeholder' => __('Fill city first')))) ?>
-				<?php echo $venue->input('address', 'form/anqh', array('attributes' => array('placeholder' => __('Fill venue first')))) ?>
-				<?php echo $venue->input('foursquare_id', 'form/anqh', array('attributes' => array('readonly' => 'readonly'))) ?>
-				<?php echo $venue->input('foursquare_category_id', 'form/anqh', array('attributes' => array('readonly' => 'readonly'))) ?>
+				<?php echo Form::input_wrap('city_name', $venue, null, __('City')) ?>
+				<?php echo Form::input_wrap('name', $venue, array('attributes' => array('placeholder' => __('Fill city first'))), __('Name')) ?>
+				<?php echo Form::input_wrap('address', $venue, array('attributes' => array('placeholder' => __('Fill venue first'))), __('Address')) ?>
+				<?php echo Form::input_wrap('foursquare_id', $venue, array('attributes' => array('readonly' => 'readonly')), __('Foursquare ID')) ?>
+				<?php echo Form::input_wrap('foursquare_category_id', $venue, array('attributes' => array('readonly' => 'readonly')), __('Foursquare category ID')) ?>
 			</ul>
 		</fieldset>
 		<fieldset>
-			<?php echo Form::hidden('city_id', $venue->city->loaded() ? $venue->city->id : 0) ?>
-			<?php echo Form::hidden('latitude', Arr::pick($venue->latitude, $venue->city->loaded() ? $venue->city->latitude : 0)) ?>
-			<?php echo Form::hidden('longitude', Arr::pick($venue->longitude, $venue->city->loaded() ? $venue->city->longitude : 0)) ?>
+			<?php echo Form::hidden('city_id', $venue->city_id) ?>
+			<?php echo Form::hidden('latitude', Arr::pick($venue->latitude, $venue->city ? $venue->city->latitude : 0)) ?>
+			<?php echo Form::hidden('longitude', Arr::pick($venue->longitude, $venue->city ? $venue->city->longitude : 0)) ?>
 
 			<?php echo Form::csrf() ?>
 			<?php echo Form::submit_wrap('save', __('Link'), null, false) ?>
@@ -141,7 +141,7 @@ head.ready("anqh", function() {
 
 		echo HTML::script_source('
 head.ready("anqh", function() {
-
+ace
 	$("#link-foursquare").click(function() {
 		$(this).hide();
 		$("#form-foursquare-link").show("fast");

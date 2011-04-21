@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
@@ -36,7 +36,7 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_VENUE:
-		    $venue = Jelly::select('venue')->load($item->data['venue_id']);
+		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
 			    $text = __('added new venue<br />:venue', array(
 				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
@@ -45,7 +45,7 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 		    break;
 
 			case self::TYPE_VENUE_EDIT:
-		    $venue = Jelly::select('venue')->load($item->data['venue_id']);
+		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
 			    $text = __('updated venue<br />:venue', array(
 				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))

@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -13,20 +13,10 @@ Route::set('api_venues', 'api/<version>/venues/<action>(.<format>)', array('vers
 		'controller' => 'venues_api',
 		'version'    => 'v1',
 	));
-Route::set('venue_category_add', 'venues/addcategory')
-	->defaults(array(
-		'controller' => 'venues',
-		'action'     => 'addcategory',
-	));
 Route::set('venue_add', 'venues/(<id>/)add')
 	->defaults(array(
 		'controller' => 'venues',
 		'action'     => 'add',
-	));
-Route::set('venue_category', 'venues/<id>(/<action>)', array('action' => 'editcategory|deletecategory'))
-	->defaults(array(
-		'controller' => 'venues',
-		'action'     => 'category',
 	));
 Route::set('venue', 'venue/<id>(/<action>(/<param>))', array('action' => 'venue|edit|delete|image|combine|foursquare'))
 	->defaults(array(
