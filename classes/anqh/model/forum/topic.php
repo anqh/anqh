@@ -263,7 +263,8 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		$post = Model_Forum_Post::factory();
 
 		$query = DB::select_array($post->fields())
-			->where('forum_topic_id', '=', $this->id);
+			->where('forum_topic_id', '=', $this->id)
+			->order_by('created', 'ASC');
 
 		if ($pagination) {
 			return $post->load($query->offset($pagination->offset), $pagination->items_per_page);
