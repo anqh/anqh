@@ -34,9 +34,6 @@
 [submodule "modules/galleries"]
 	path = modules/galleries
 	url = git@github.com:anqh/galleries.git
-[submodule "modules/jelly"]
-	path = modules/jelly
-	url = git@github.com:anqqa/kohana-jelly.git
 [submodule "modules/postgresql"]
 	path = modules/postgresql
 	url = git@github.com:anqqa/kohana-postgresql.git
@@ -52,3 +49,6 @@
 [submodule "modules/msg"]
 	path = modules/msg
 	url = git://github.com/goyote/msg.git
+[submodule "modules/auto-modeler"]
+	path = modules/auto-modeler
+	url = git://github.com/zombor/Auto-Modeler.git

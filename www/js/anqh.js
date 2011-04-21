@@ -397,6 +397,12 @@ $.fn.autocompleteEvent = function(options) {
 						window.location = ui.item.url;
 						break;
 
+					// Execute action
+					default:
+						if (typeof options.action == 'function') {
+							options.action(event, ui);
+						}
+
 				}
 			}
 

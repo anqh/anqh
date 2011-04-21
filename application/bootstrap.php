@@ -2,6 +2,20 @@
 
 //-- Environment setup --------------------------------------------------------
 
+// Load the core Kohana class
+require SYSPATH . 'classes/kohana/core' . EXT;
+if (is_file(APPPATH . 'classes/kohana' . EXT)) {
+
+	// Application extends the core
+	require APPPATH . 'classes/kohana' . EXT;
+
+} else {
+
+	// Load empty core extension
+	require SYSPATH . 'classes/kohana' . EXT;
+
+}
+
 /**
  * Set the default time zone.
  *
@@ -37,10 +51,15 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 //-- Configuration and initialization -----------------------------------------
 
 /**
- * Environment check, defaults to Kohana::DEVELOPMENT
+ * Set the default language
  */
-if (isset($_SERVER['ENVIRONMENT'])) {
-	Kohana::$environment = $_SERVER['ENVIRONMENT'];
+I18n::lang('en-us');
+
+/**
+ * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
+ */
+if (getenv('KOHANA_ENV') !== false) {
+	Kohana::$environment = constant('Kohana::' . strtoupper(getenv('KOHANA_ENV')));
 }
 
 /**
@@ -59,7 +78,6 @@ if (isset($_SERVER['ENVIRONMENT'])) {
 Kohana::init(array(
 	'base_url'   => '/',
 	'index_file' => false,
-	'profile'    => true, //in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 	'caching'    => !in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING)),
 ));
 
@@ -74,36 +92,42 @@ Kohana::$log->attach(new Kohana_Log_File(APPPATH . 'logs'));
 Kohana::$config->attach(new Kohana_Config_File);
 
 /**
- * Set session handler
+ * Enable modules. Modules are referenced by a relative or absolute path.
+ */
+Kohana::modules(array(
+	'core'         => MODPATH . 'anqh',         // Anqh core
+	'events'       => MODPATH . 'events',       // Anqh event calendar
+	'forum'        => MODPATH . 'forum',        // Anqh forums
+	'venues'       => MODPATH . 'venues',       // Anqh venues
+	'blog'         => MODPATH . 'blog',         // Anqh blogs
+	'galleries'    => MODPATH . 'galleries',    // Anqh galleries
+
+	'auto-modeler' => MODPATH . 'auto-modeler', // Auto Modeler
+	'database'     => MODPATH . 'database',     // Database access
+	'postgresql'   => MODPATH . 'postgresql',   // PostgreSQL
+	'cache'        => MODPATH . 'cache',        // Caching with multiple backends
+	'image'        => MODPATH . 'image',        // Image manipulation
+	'pagination'   => MODPATH . 'pagination',   // Paging of results
+	'email'        => MODPATH . 'email',        // Email module
+
+	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+));
+
+/**
+ * Set cookie salt.
+ */
+Cookie::$salt = 'anqh';
+
+/**
+ * Set session handler.
  */
 Session::$default = 'database';
 
 /**
- * Enable modules. Modules are referenced by a relative or absolute path.
+ * Initialize session.
  */
-Kohana::modules(array(
-	'core'       => MODPATH . 'anqh',       // Anqh core
-	'events'     => MODPATH . 'events',     // Anqh event calendar
-	'forum'      => MODPATH . 'forum',      // Anqh forums
-	'venues'     => MODPATH . 'venues',     // Anqh venues
-	'blog'       => MODPATH . 'blog',       // Anqh blogs
-	'galleries'  => MODPATH . 'galleries',  // Anqh galleries
-
-	'database'   => MODPATH . 'database',   // Database access
-	'jelly'      => MODPATH . 'jelly',      // Jelly ORM
-	'postgresql' => MODPATH . 'postgresql', // PostgreSQL
-	'cache'      => MODPATH . 'cache',      // Caching with multiple backends
-	'image'      => MODPATH . 'image',      // Image manipulation
-	'pagination' => MODPATH . 'pagination', // Paging of results
-	'email'      => MODPATH . 'email',      // Email module
-	'msg'        => MODPATH . 'msg',        // Messages
-	'asset'      => MODPATH . 'asset',      // Asset handling
-
-	// 'auth'       => MODPATH.'auth',       // Basic authentication
-	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-));
+Session::instance();
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
@@ -114,71 +138,3 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'controller' => 'index',
 		'action'     => 'index',
 	));
-
-/**
- * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
- * If no source is specified, the URI will be automatically detected.
- */
-try {
-
-	// Attempt to execute the response
-	$request = Request::instance()->execute();
-
-} catch (Exception $e) {
-
-	// Throw errors in development environment
-	if (Kohana::$environment == Kohana::DEVELOPMENT || Kohana::$environment == Kohana::TESTING) {
-		throw $e;
-	}
-
-	// Log errors
-	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
-
-	if ($e instanceof Kohana_Request_Exception) {
-
-		// Annoying 404 with uris with dots, can't use Request at all
-		echo __('Something fishy just happened.. please go back and try not to do this again.');
-		exit;
-
-	} else {
-
-		// Normal 404
-		$request = Request::factory('error/404')->execute();
-
-	}
-}
-
-/**
- * Add statistics to the response.
- */
-if ($request->response) {
-
-	// Render the request to get all pending database queries and files
-	$request->response = (string)$request->response;
-
-	$queries = 0;
-	if (Kohana::$profiling) {
-
-		// DB queries
-		foreach (Profiler::groups() as $group => $benchmarks) {
-			if (strpos($group, 'database') === 0) {
-				$queries += count($benchmarks);
-			}
-		}
-
-	}
-
-	$total = array(
-		'{memory_usage}'     => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2) . 'KB',
-		'{execution_time}'   => number_format(microtime(true) - KOHANA_START_TIME, 5),
-		'{database_queries}' => $queries,
-		'{included_files}'   => count(get_included_files()),
-		'{kohana_version}'   => Kohana::VERSION,
-	);
-	$request->response = strtr($request->response, $total);
-}
-
-/**
- * Display the request response.
- */
-echo $request->send_headers()->response;
