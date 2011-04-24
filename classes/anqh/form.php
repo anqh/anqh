@@ -52,9 +52,9 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a button form input.
 	 *
-	 * @param   string        input name
-	 * @param   string        input value
-	 * @param   array         html attributes
+	 * @param   string        $name        input name
+	 * @param   string        $body        input value
+	 * @param   array         $attributes  html attributes
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
@@ -74,10 +74,10 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a checkbox form input.
 	 *
-	 * @param   string         input name
-	 * @param   string         input value
-	 * @param   boolean|array  checked status
-	 * @param   array          html attributes
+	 * @param   string         $name        input name
+	 * @param   string         $value       input value
+	 * @param   boolean|array  $checked     checked status
+	 * @param   array          $attributes  html attributes
 
 	 * @param   string         $label
 	 * @param   string|array   $error
@@ -186,8 +186,8 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a file upload form input.
 	 *
-	 * @param   string        input name
-	 * @param   array         html attributes
+	 * @param   string        $name        input name
+	 * @param   array         $attributes  html attributes
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
@@ -220,9 +220,9 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a form input. Defaults to a text type.
 	 *
-	 * @param   string        input name
-	 * @param   string        input value
-	 * @param   array         html attributes
+	 * @param   string        $name        input name
+	 * @param   string        $value       input value
+	 * @param   array         $attributes  html attributes
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
@@ -272,9 +272,9 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a password form input.
 	 *
-	 * @param   string        input name
-	 * @param   string        input value
-	 * @param   array         html attributes
+	 * @param   string        $name        input name
+	 * @param   string        $value       input value
+	 * @param   array         $attributes  html attributes
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
@@ -312,7 +312,7 @@ class Anqh_Form extends Kohana_Form {
 	 *
 	 * @param   string        $name     input name
 	 * @param   array         $values   input values
-	 * @param   array         $checked  checked status
+	 * @param   string        $checked  checked status
 	 * @param   array         $attributes
 	 *
 	 * @param   string        $label
@@ -346,10 +346,10 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a select form input.
 	 *
-	 * @param   string        input name
-	 * @param   array         available options
-	 * @param   string        selected option
-	 * @param   array         html attributes
+	 * @param   string        $name        input name
+	 * @param   array         $options     available options
+	 * @param   string        $selected    selected option
+	 * @param   array         $attributes  html attributes
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
@@ -375,9 +375,9 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a submit form input with cancel link.
 	 *
-	 * @param   string  input name
-	 * @param   string  input value
-	 * @param   array   html attributes
+	 * @param   string  $name               input name
+	 * @param   string  $value              input value
+	 * @param   array   $attributes         html attributes
 	 *
 	 * @param   string  $cancel             cancel url
 	 * @param   array   $cancel_attributes  html attributes for cancel
@@ -407,14 +407,15 @@ class Anqh_Form extends Kohana_Form {
 	/**
 	 * Creates a textarea form input.
 	 *
-	 * @param   string        textarea name
-	 * @param   string        textarea body
-	 * @param   array         html attributes
-	 * @param   boolean       encode existing HTML characters
+	 * @param   string        $name           textarea name
+	 * @param   string        $body           textarea body
+	 * @param   array         $attributes     html attributes
+	 * @param   boolean       $double_encode  encode existing HTML characters
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
+	 * @param   boolean       $bbcode
 	 * @return  string
 	 */
 	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = null, $error = null, $tip = null, $bbcode = null) {
@@ -429,14 +430,8 @@ class Anqh_Form extends Kohana_Form {
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
 		if ($bbcode) {
 			$input .= HTML::script_source('
-head.ready("jquery", function() {
-	head.js(
-		{ "jquery-markitup": "' . URL::base() . 'js/jquery.markitup.pack.js" },
-		{ "bbcode": "' . URL::base() . 'js/markitup.bbcode.js" },
-		function() {
-			$("#' . $attributes['id'] . '").markItUp(bbCodeSettings);
-		}
-	);
+head.ready("bbcode", function() {
+	$("#' . $attributes['id'] . '").markItUp(bbCodeSettings);
 });
 ');
 		}

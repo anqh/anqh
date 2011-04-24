@@ -94,4 +94,32 @@ class Anqh_Model_User_Online extends AutoModeler_ORM implements Permission_Inter
 		return false;
 	}
 
+
+	/**
+	 * Update current online user.
+	 *
+	 * @static
+	 * @param   Model_User  $user
+	 */
+	public static function update($user) {
+		$session_id = Session::instance()->id();
+
+		$online = Model_User_Online::factory($session_id);
+		if (!$online->loaded() && $session_id) {
+			$online->id = $session_id;
+		}
+		$online->user_id       = $user ? $user->id : null;
+		$online->last_activity = time();
+		try {
+			$online->save();
+		} catch (Validation_Exception $e) {
+
+		} catch (Database_Exception $e) {
+
+			// Might happen if no session id set
+
+		}
+
+	}
+
 }

@@ -7,8 +7,7 @@ require_once(Kohana::find_file('vendor', 'lessphp/lessc.inc'));
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
- * @copyright  (c) 2009-2010 Leaf Corcoran (lessphp)
+ * @copyright  (c) 2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Less extends lessc {
@@ -44,13 +43,13 @@ class Anqh_Less extends lessc {
 
 				// Compile LESS
 				if ($compile) {
-					$compiler = new self($file);
+					$compiler = new Less($file);
 					file_put_contents($css, $compiler->parse());
 				}
 				$file = $css;
 
 			} catch (Exception $e) {
-				Kohana::$log->add(Kohana::ERROR, __METHOD__ . ': Error compiling LESS file ' . $file . ', ' . $e->getMessage());
+				Kohana::$log->add(Log::ERROR, __METHOD__ . ': Error compiling LESS file ' . $file . ', ' . $e->getMessage());
 			}
 
 		}

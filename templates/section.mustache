@@ -1,0 +1,28 @@
+
+<section class="{{_class}} mod" id="{{id}}"{{#role}} role="{{role}}"{{/role}}>
+
+	{{#has_tabs}}
+	<ul class="tabs">
+		{{#tabs}}
+		<li{{#selected}} class="selected"{{/selected}}><a href="{{url}}">{{text}}</a></li>
+		{{/tabs}}
+	</ul>
+	{{/has_tabs}}
+
+	{{#title}}
+	<header>
+		<h3>{{{title}}}</h3>
+	</header>
+	{{/title}}
+
+	<div>
+		{{{actions}}}
+		{{{pagination}}}
+
+		{{>content}}
+
+		{{{pagination}}}
+		{{{actions2}}}
+	</div>
+
+</section><!-- {{#id}}#{{id}}{{/id}}{{^id}}.{{_class}}{{/id}} -->

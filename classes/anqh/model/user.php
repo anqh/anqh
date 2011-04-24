@@ -421,9 +421,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	/***** FRIENDS & FOES *****/
 
 	/**
-	 * Create friendship
+	 * Create friendship.
 	 *
-	 * @param  Model_User  $user
+	 * @param   Model_User  $user
+	 * @return  boolean
 	 */
 	public function add_friend(Model_User $user) {
 		if ($this->loaded() && $this->id != $user->id && !$this->is_friend($user)) {
@@ -435,9 +436,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Add user to ignore
+	 * Add user to ignore.
 	 *
-	 * @param  Model_User  $ignore
+	 * @param   Model_User  $ignore
+	 * @return  boolean
 	 */
 	public function add_ignore(Model_User $ignore) {
 		if ($this->loaded() && $this->id != $ignore->id	&& !$this->is_ignored($ignore)) {
@@ -449,9 +451,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Delete friendship
+	 * Delete friendship.
 	 *
-	 * @param  Model_User  $friend
+	 * @param   Model_User  $friend
+	 * @return  boolean
 	 */
 	public function delete_friend(Model_User $friend) {
 		return $this->loaded() && Model_Friend::unfriend($this->id, $friend->id);
@@ -459,12 +462,45 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Remove ignore
+	 * Remove ignore.
 	 *
-	 * @param  Model_User  $ignore
+	 * @param   Model_User  $ignore
+	 * @return  boolean
 	 */
 	public function delete_ignore(Model_User $ignore) {
 		return $this->loaded() && Model_Ignore::unignore($this->id, $ignore->id);
+	}
+
+
+	/**
+	 * Get users by birthday.
+	 *
+	 * @static
+	 * @param   integer  $stamp_from
+	 * @return  array    uid => dob
+	 */
+	public static function find_by_birthday($stamp) {
+		$stamp = (int)$stamp;
+		$date  = date('m-d', $stamp);
+		$ckey  = 'birthday_' . $date;
+
+		// Load from cache
+		$birthdays = Anqh::cache_get($ckey);
+		if (!is_array($birthdays)) {
+
+			// Load from db
+			$birthdays = DB::select('id', 'dob')
+				->from('users')
+				// Casting date to string should work in MySQL and PostgreSQL
+				->where(DB::expr('SUBSTR(CAST(dob AS CHAR(10)), 6)'), '=', $date)
+				->execute()
+				->as_array('id', 'dob');
+			asort($birthdays);
+			Anqh::cache_set('birthday_' . $date, $birthdays, Date::HOUR);
+
+		}
+
+		return $birthdays;
 	}
 
 
@@ -486,6 +522,22 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public function find_ignores($ignorers = false) {
 		return $ignorers ? Model_Ignore::find_by_ignorer($this->id) : Model_Ignore::find_by_user($this->id);
+	}
+
+
+	/**
+	 * Get new users.
+	 *
+	 * @param   integer  $limit
+	 * @return  array
+	 */
+	public static function find_new_users($limit = 1) {
+		return (array)DB::select('id', 'created')
+			->from('users')
+			->order_by('id', 'DESC')
+			->limit((int)$limit)
+			->execute()
+			->as_array('id', 'created');
 	}
 
 
@@ -538,9 +590,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Check for friendship
+	 * Check for friendship.
 	 *
-	 * @param  mixed  $friend  Model_User, array, $id
+	 * @param   mixed  $friend  Model_User, array, $id
+	 * @return  boolean
 	 */
 	public function is_friend($friend) {
 		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
@@ -551,9 +604,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			$friend = (int)$friend->id;
 		} else if (is_array($friend)) {
 			$friend = (int)Arr::get($friend, 'id');
+		} else {
+			$friend = (int)$friend;
 		}
 
-		if (!is_int($friend) || $friend == 0) {
+		if (!$friend) {
 			return false;
 		}
 
@@ -568,10 +623,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Check for friendship
+	 * Check for friendship.
 	 *
-	 * @param  mixed    $friend      Model_User, array, $id
-	 * @param  boolean  $ignored_by  Check if the user ignored by $ignore or ignoring $ignore
+	 * @param   mixed    $ignore      Model_User, array, $id
+	 * @param   boolean  $ignored_by  Check if the user ignored by $ignore or ignoring $ignore
+	 * @return  boolean
 	 */
 	public function is_ignored($ignore, $ignored_by = false) {
 		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
@@ -582,9 +638,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			$ignore = (int)$ignore->id;
 		} else if (is_array($ignore)) {
 			$ignore = (int)Arr::get($ignore, 'id');
+		} else {
+			$ignore = (int)$ignore;
 		}
 
-		if (!is_int($ignore) || $ignore == 0) {
+		if (!$ignore) {
 			return false;
 		}
 
@@ -604,7 +662,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * Load one user.
 	 *
 	 * @static
-	 * @param   mixed  $user  id, username, email, Model_User, user array or false for current session
+	 * @param   mixed  $id  id, username, email, Model_User, user array or false for current session
 	 * @return  Model_User|null
 	 */
 	public static function find_user($id = false) {

@@ -10,51 +10,6 @@
 abstract class Anqh_Controller_Template extends Controller {
 
 	/**
-	 * @var  boolean  auto render template
-	 **/
-	public $auto_render = true;
-
-	/**
-	 * @var  array  Bookmarks / navigation history
-	 */
-	protected $breadcrumb = array();
-
-	/**
-	 * @var  boolean  Add current page to history
-	 */
-	protected $history = true;
-
-	/**
-	 * @var  array  Actions for current page
-	 */
-	protected $page_actions = array();
-
-	/**
-	 * @var  string  Current page class
-	 */
-	protected $page_class;
-
-	/**
-	 * @var  string  Current page id, defaults to controller name
-	 */
-	protected $page_id;
-
-	/**
-	 * @var  string  Page main content position
-	 */
-	protected $page_main = 'left';
-
-	/**
-	 * @var  string  Current page subtitle
-	 */
-	protected $page_subtitle = '';
-
-	/**
-	 * @var  string  Current page title
-	 */
-	protected $page_title = '';
-
-	/**
 	 * @var  string  Page width setting, 'fixed' or 'liquid'
 	 */
 	protected $page_width = 'fixed';
@@ -68,16 +23,6 @@ abstract class Anqh_Controller_Template extends Controller {
 	 * @var  array  Skin files imported in skin, check against file modification time for LESS
 	 */
 	protected $skin_imports;
-
-	/**
-	 * @var  string  Selected tab
-	 */
-	protected $tab_id;
-
-	/**
-	 * @var  array  Tabs navigation
-	 */
-	protected $tabs;
 
 	/**
 	 * @var  string  page template
@@ -95,33 +40,9 @@ abstract class Anqh_Controller_Template extends Controller {
 		$this->breadcrumb = Session::instance()->get('breadcrumb', array());
 		$this->history = $this->history && !$this->ajax;
 
-		// Open outside links to other tab
-		HTML::$windowed_urls = true;
-
 		// Load the template
 		if ($this->auto_render === true) {
 			$this->template = View::factory($this->template);
-		}
-
-		// Online users
-		if (!$this->internal) {
-			$session_id = Session::instance()->id();
-			$online = new Model_User_Online($session_id);
-			$online->user_id       = self::$user ? self::$user->id : null;
-			$online->last_activity = time();
-			if (!$online->loaded() && $session_id) {
-				$online->id = $session_id;
-			}
-			try {
-				$online->save();
-			} catch (Validation_Exception $e) {
-
-			} catch (Database_Exception $e) {
-
-				// Might happen if no session id set
-
-			}
-
 		}
 
 	}
@@ -143,6 +64,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			$session = Session::instance();
 
 			// Save current URI
+			/* Moved to Controller
 			if ($this->history && $this->response->status() < 400) {
 				$uri = $this->request->current_uri();
 				unset($this->breadcrumb[$uri]);
@@ -152,6 +74,7 @@ abstract class Anqh_Controller_Template extends Controller {
 					->set('history', $uri . ($_GET ? URL::query($_GET) : ''))
 					->set('breadcrumb', $this->breadcrumb);
 			}
+			 */
 
 			// Controller name as the default page id if none set
 			empty($this->page_id) and $this->page_id = $this->request->controller();
@@ -180,10 +103,12 @@ abstract class Anqh_Controller_Template extends Controller {
 					'selected' => $this->tab_id,
 				)));
 			}
+			/*
 			Widget::add('tabs', View::factory('generic/tabs_top', array(
 				'tabs'     => $this->tabs,
 				'selected' => $this->tab_id
 			)));
+			 */
 
 			// Footer
 			Widget::add('footer', View_Module::factory('events/event_list', array(
@@ -208,7 +133,7 @@ abstract class Anqh_Controller_Template extends Controller {
 
 			// Skin
 			$skins = Kohana::config('site.skins');
-			$skin = $session->get('skin', 'dark');
+			$skin = 'dark';//$session->get('skin', 'dark');
 			$skin_imports = array(
 				'ui/mixin.less',
 				'ui/grid.less',
@@ -234,7 +159,7 @@ abstract class Anqh_Controller_Template extends Controller {
 						'rel'   => $skin_name,
 					));
 			}
-			Widget::add('dock', __('Theme') . ': ' . implode(', ', $classes));
+			//Widget::add('dock', __('Theme') . ': ' . implode(', ', $classes));
 
 			// Language selection
 			$available_languages  = Kohana::config('locale.languages');

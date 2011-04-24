@@ -38,12 +38,10 @@ Route::set('user_comment', 'member/comment/<id>/<commentaction>', array('comment
 		'controller' => 'user',
 		'action'     => 'comment',
 	));
-/*
 Route::set('users', 'members(/<action>)')
 	->defaults(array(
 		'controller' => 'users',
 	));
-*/
 Route::set('sign', 'sign/<action>', array('action' => 'up|in|out'))
 	->defaults(array(
 		'controller' => 'sign',

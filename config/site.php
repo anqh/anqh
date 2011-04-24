@@ -49,8 +49,8 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home' => array('url' => '/', 'text' => __('Home')),
 		/*
+		'home'    => array('url' => '/', 'text' => __('Home')),
 		'events'  => array('url' => Route::get('events')->uri(),  'text' => __('Events')),
 		'venues'  => array('url' => Route::get('venues')->uri(),  'text' => __('Venues')),
 		'music'   => array('url' => Route::get('music')->uri(),   'text' => __('Music')),

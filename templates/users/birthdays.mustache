@@ -1,0 +1,13 @@
+
+<dl>
+	{{#birthdays}}
+	<dt>{{date}} {{{link}}}</dt>
+	<dd>
+		<ul>
+			{{#users}}
+			<li>{{{user}}} {{age}} years</li>
+			{{/users}}
+		</ul>
+	</dd>
+	{{/birthdays}}
+</dl>

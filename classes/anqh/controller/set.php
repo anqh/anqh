@@ -50,6 +50,7 @@ class Anqh_Controller_Set extends Controller {
 		if (isset($skins[$skin])) {
 			Session::instance()->set('skin', $skin);
 		}
+		Session::instance()->set('skin', $skin);
 
 		if ($this->ajax) {
 			return;

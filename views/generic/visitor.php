@@ -37,9 +37,9 @@ if ($user):
 			<li class="menu-ignores"><?php echo HTML::anchor(URL::user($user, 'ignores'), __('Ignores'), array('class' => 'icon ignores')) ?></li>
 			<li class="menu-settings"><?php echo HTML::anchor(URL::user($user, 'settings'), __('Settings'), array('class' => 'icon settings')) ?></li>
 			<?php if ($user->has_role('admin')): ?>
-			<li class="menu-roles admin"><?php echo HTML::anchor(Route::get('roles')->uri(), __('Roles'), array('class' => 'icon role')) ?></li>
-			<li class="menu-tags admin"><?php echo HTML::anchor(Route::get('tags')->uri(), __('Tags'), array('class' => 'icon tag')) ?></li>
-			<li class="menu-profiler admin"><?php echo HTML::anchor('#debug', __('Profiler'), array('class' => 'icon profiler', 'onclick' => '$("div.kohana").toggle();')) ?></li>
+			<li class="menu-roles admin"><?php echo HTML::anchor(Route::url('roles'), __('Roles'), array('class' => 'icon role')) ?></li>
+			<li class="menu-tags admin"><?php echo HTML::anchor(Route::url('tags'), __('Tags'), array('class' => 'icon tag')) ?></li>
+			<li class="menu-profiler admin"><?php echo HTML::anchor('#debug', __('Profiler'), array('class' => 'icon profiler', 'onclick' => "\$('div.kohana').toggle();")) ?></li>
 			<?php endif; ?>
 		</ul>
 	</li>

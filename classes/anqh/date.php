@@ -108,7 +108,7 @@ class Anqh_Date extends Kohana_Date {
 	 *
 	 * @param   string  $format
 	 * @param   mixed   $date    defaults to now
-	 * @return  strign
+	 * @return  string
 	 */
 	public static function format($format, $date = null) {
 		if (!$date) $date = time();
@@ -190,9 +190,9 @@ class Anqh_Date extends Kohana_Date {
 	 * e.g., <1min, yesterday, 3 months or 2004
 	 *
 	 * @static
-	 * @param   integer  $time
-	 * @param   boolean  $short  Include ago/in
-	 * @param   boolean  $wrap   Wrap number in <var>
+	 * @param   integer  $timestamp
+	 * @param   boolean  $short      Include ago/in
+	 * @param   boolean  $wrap       Wrap number in <var>
 	 * @return  string
 	 */
 	public static function short_span($timestamp, $short = true, $wrap = false) {
@@ -228,6 +228,30 @@ class Anqh_Date extends Kohana_Date {
 		} else {
 			return __('in :span', array(':span' => $span));
 		}
+	}
+
+
+	/**
+	 * Split date to array.
+	 *
+	 * @static
+	 * @param   string|integer  $date
+	 * @return  array
+	 */
+	public static function split($date) {
+		$date = is_numeric($date) ? (int)$date : strtotime($date);
+		list($weekday, $weekday_short, $day, $month, $month_name, $month_short, $year, $year_short) = explode(' ', strftime('%A %a %d %m %B %b %Y %y', $date));
+
+		return array(
+			'weekday'       => $weekday,
+			'weekday_short' => $weekday_short,
+			'day'           => $day,
+			'month'         => $month,
+			'month_name'    => $month_name,
+			'month_short'   => $month_short,
+			'year'          => $year,
+			'year_short'    => $year_short,
+		);
 	}
 
 }
