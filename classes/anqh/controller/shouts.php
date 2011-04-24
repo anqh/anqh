@@ -12,7 +12,15 @@ class Anqh_Controller_Shouts extends Controller_Page {
 	/**
 	 * Action: index
 	 */
-	public function action_index() {}
+	public function action_index() {
+
+		// Build page
+		$this->view = View_Page::factory(__('Shouts'));
+
+		// Shouts
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
+
+	}
 
 
 	/**
@@ -39,6 +47,19 @@ class Anqh_Controller_Shouts extends Controller_Page {
 		}
 
 		$this->request->redirect(Route::get('shouts')->uri());
+	}
+
+
+	/**
+	 * Get shouts.
+	 *
+	 * @return  View_Shouts
+	 */
+	public function section_shouts() {
+		$section = new View_Index_Shouts();
+		$section->title = null;
+
+		return $section;
 	}
 
 }

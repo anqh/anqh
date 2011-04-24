@@ -213,7 +213,7 @@ class Anqh_Visitor {
 	/**
 	 * Gets the currently logged in user from the session or null.
 	 *
-	 * @return  mixed
+	 * @return  Model_User
 	 */
 	public function get_user() {
 		if ($user_id = $this->_session->get($this->_config['session_key'], null)) {
@@ -295,7 +295,6 @@ class Anqh_Visitor {
 	/**
 	 * Return a static instance of Visitor.
 	 *
-	 * @param   array  $config
 	 * @return  Visitor
 	 */
 	public static function instance() {

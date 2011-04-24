@@ -38,11 +38,6 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	);
 
 	/**
-	 * @var  array  Actio to view maps for overriding default
-	 */
-	protected $_action_views = array();
-
-	/**
 	 * @var  boolean  AJAX-like request
 	 */
 	protected $ajax = false;
@@ -130,11 +125,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected static $user = false;
 
 	/**
-<<<<<<< HEAD
 	 * @var  View_Page  Page class
-=======
-	 * @var  View_Layout|View_Page  Page class
->>>>>>> 5b2899d... View class bases views to replace Kostache and Kohana templates
 	 */
 	protected $view;
 
@@ -198,22 +189,6 @@ abstract class Anqh_Controller extends Kohana_Controller {
 
 			}
 			$this->_response_format = key($accept_types);
-<<<<<<< HEAD
-=======
-
-			// Try to autoload Kostache view layout, one view model for each controller
-			/** @deprecated */
-			if (!$this instanceof Controller_Template) {
-				$directory = $this->request->directory() ? $this->request->directory() . '/' : '';
-				$view_path = $directory . $this->request->controller() . '/' . Arr::get($this->_action_views, $this->request->action(), $this->request->action());
-				$view_path = strtolower($view_path);
-
-				$this->view = $this->_prepare_view($view_path, $this->_response_format);
-			} else {
-				$this->view = null;
-			}
-
->>>>>>> 5b2899d... View class bases views to replace Kostache and Kohana templates
 		}
 
 	}
@@ -249,74 +224,10 @@ abstract class Anqh_Controller extends Kohana_Controller {
 			// Set headers
 			$this->response->headers('Content-Type', $this->_response_format);
 
-<<<<<<< HEAD
-=======
-			// Kostache
-			/** @deprecated */
-			if ($this->view instanceof Kostache) {
-				if ($this->_request_type !== self::REQUEST_INITIAL) {
-
-					// Render full layout only with initial request
-					$this->view->render_layout = false;
-
-				} else {
-
-					// Set template values from controller, to be deprecated mostly
-					$this->view->set('actions',  $this->page_actions);
-					$this->view->set('class',    $this->page_class);
-					$this->view->set('id',       $this->page_id);
-					$this->view->set('language', $this->language);
-					$this->view->set('subtitle', $this->page_subtitle);
-					$this->view->set('tabs',     $this->tabs);
-					$this->view->set('tab_id',   $this->tab_id);
-					$this->view->set('title',    $this->page_title);
-
-				}
-			}
-
->>>>>>> 5b2899d... View class bases views to replace Kostache and Kohana templates
 			// Set response
 			$this->response->body($this->view);
 
 		}
 	}
 
-<<<<<<< HEAD
-=======
-
-	/**
-	 * Load proper template view based on requested format.
-	 *
-	 * @deprecated
-	 * @param   string  $view_path
-	 * @param   string  $response_format
-	 * @return  Kostache|string|null
-	 */
-	protected function _prepare_view($view_path, $response_format = self::FORMAT_HTML) {
-
-		// Validate response format
-		if (($format_path = Arr::get($this->_accept_formats, $response_format)) === null) {
-			return null;
-		}
-
-		// Include format path
-		$full_view_path = trim($view_path . '/' . $format_path, '/');
-
-		// Load template
-		try {
-			return Kostache::factory($full_view_path);
-		} catch (Kohana_Exception $e) {
-
-			// If no View class found, return static template
-			if ($file = Kohana::find_file('templates', $full_view_path, 'mustache')) {
-				return file_get_contents($file);
-			}
-
-			// If still not found, return template supporting deprecated views with Widgets
-			return Kostache::factory('deprecated');
-
-		}
-	}
-
->>>>>>> 5b2899d... View class bases views to replace Kostache and Kohana templates
 }

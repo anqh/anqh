@@ -25,6 +25,11 @@ abstract class Anqh_View_Base {
 	private static $_initialized = false;
 
 	/**
+	 * @var  string  Render result
+	 */
+	protected $_render = '';
+
+	/**
 	 * @var  Model_User  Current authenticated user, if any
 	 */
 	protected static $_user = null;
@@ -55,6 +60,20 @@ abstract class Anqh_View_Base {
 
 
 	/**
+	 * Executed before rendering.
+	 */
+	public function before() {}
+
+
+	/**
+	 * Executed after rendering.
+	 *
+	 * @see  _render
+	 */
+	public function after() {}
+
+
+	/**
 	 * Factory method.
 	 *
 	 * @return  Anqh_View_Base
@@ -75,14 +94,21 @@ abstract class Anqh_View_Base {
 
 
 	/**
-	 * Return View Model as string.
+	 * Return view class as string.
 	 *
 	 * @return  string
 	 * @uses    Anhq_View_Model::render()
 	 */
 	public function __toString() {
 		try {
-			return $this->render();
+
+			// Render view
+			$this->before();
+			$this->_render = $this->render();
+			$this->after();
+
+			return $this->_render;
+
 		} catch (Exception $e) {
 
 			// Display the exception message only if not in production
@@ -95,6 +121,7 @@ abstract class Anqh_View_Base {
 			} else {
 				return ob_get_clean();
 			}
+
 		}
 	}
 

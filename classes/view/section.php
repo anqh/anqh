@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * View Section
+ * View section.
  *
  * @package    Anqh
  * @author     Antti Qvickström

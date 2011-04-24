@@ -34,15 +34,7 @@ class View_Index_Shouts extends View_Section {
 
 
 	/**
-	 * Initialize shouts.
-	 */
-	public function _initialize() {
-		$this->_routes['shout'] = Route::get('shouts')->uri(array('action' => 'shout'));
-	}
-
-
-	/**
-	 * Render newsfeed.
+	 * Render content.
 	 *
 	 * @return  string
 	 */

@@ -476,7 +476,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * Get users by birthday.
 	 *
 	 * @static
-	 * @param   integer  $stamp_from
+	 * @param   integer  $stamp
 	 * @return  array    uid => dob
 	 */
 	public static function find_by_birthday($stamp) {
@@ -663,7 +663,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 *
 	 * @static
 	 * @param   mixed  $id  id, username, email, Model_User, user array or false for current session
-	 * @return  Model_User|null
+	 * @return  Model_User
 	 */
 	public static function find_user($id = false) {
 		static $session = false;

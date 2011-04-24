@@ -29,7 +29,7 @@ class View_Newsfeed extends View_Section {
 	public $mini = false;
 
 	/**
-	 * @var  Newsfeed  Newsfeed type
+	 * @var  string  Newsfeed type
 	 * @see  TYPE_ALL
 	 * @see  TYPE_FRIENDS
 	 */
@@ -37,40 +37,65 @@ class View_Newsfeed extends View_Section {
 
 
 	/**
-	 * Initialize shouts.
+	 * Create new newsfeed view.
 	 */
-	public function _initialize() {
+	public function __construct() {
+		parent::__construct();
+
+		$this->title = __("What's new");
 	}
 
 
 	/**
-	 * Var method for has_tabs.
+	 * Render newsfeed.
 	 *
-	 * @return  boolean
+	 * @return  string
 	 */
-	public function has_tabs() {
-		return (bool)self::$user;
+	public function content() {
+		if ($items = $this->_items()) {
+			ob_start();
+
+?>
+
+<ul>
+
+	<?php foreach ($items as $item) { ?>
+	<li>
+		<?php echo $item['avatar'] ?>
+		<?php echo $item['user'] ?> <small class="ago"><?php echo $item['stamp'] ?></small>
+		<?php echo $item['text'] ?>
+	</li>
+	<?php } ?>
+
+</ul>
+
+<?php
+
+			return ob_get_clean();
+		}
+
+		return __('Whoa, we are totally out of news items for you!');
 	}
 
 
 	/**
-	 * Newsfeed items.
+	 * Get newsfeed items.
 	 *
 	 * @return  array
 	 */
-	public function items() {
+	protected function _items() {
 		switch ($this->type) {
 
 			// Friend newsfeed
 			case self::TYPE_FRIENDS:
-				$newsfeed = new Newsfeed(self::$user, Newsfeed::USERS);
-				$newsfeed->users = self::$user->find_friends(0, 0);
+				$newsfeed = new Newsfeed(self::$_user, Newsfeed::USERS);
+				$newsfeed->users = self::$_user->find_friends(0, 0);
 		    break;
 
 			// All users
 			case self::TYPE_ALL:
 			default:
-				$newsfeed = new NewsFeed(self::$user, Newsfeed::ALL);
+				$newsfeed = new NewsFeed(self::$_user, Newsfeed::ALL);
 		    break;
 
 		}
@@ -94,23 +119,20 @@ class View_Newsfeed extends View_Section {
 
 
 	/**
-	 * Var method for tabs.
+	 * Get tabs.
 	 *
 	 * @return  array
 	 */
 	public function tabs() {
 		$tabs = array();
-		if ($this->has_tabs()) {
-			// @todo: Fix 403 Forbidden unless action index used, .htaccess issue
+		if (self::$_user_id) {
 			$tabs[] = array(
 				'selected' => $this->type === self::TYPE_ALL,
-				'url'      => Route::url('default') . 'index?newsfeed=' . self::TYPE_ALL,
-				'text'     => __('All'),
+				'tab'      => HTML::anchor(Route::url('default') . '?newsfeed=' . self::TYPE_ALL, __('All')),
 			);
 			$tabs[] = array(
 				'selected' => $this->type === self::TYPE_FRIENDS,
-				'url'      => Route::url('default') . 'index?newsfeed=' . self::TYPE_FRIENDS,
-				'text'     => __('Friends'),
+				'tab'      => HTML::anchor(Route::url('default') . '?newsfeed=' . self::TYPE_FRIENDS, __('Friends')),
 			);
 		}
 

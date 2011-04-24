@@ -9,7 +9,6 @@
  */
 class View_Users_Online extends View_Section {
 
-
 	/**
 	 * @var  array  Friends online
 	 */
@@ -32,16 +31,18 @@ class View_Users_Online extends View_Section {
 
 
 	/**
-	 * Initialize Online.
+	 * Create new shouts view.
 	 */
-	public function _initialize() {
+	public function __construct() {
+		parent::__construct();
+
 		$this->_guest_count = Model_User_Online::get_guest_count();
 		$users              = Model_User_Online::find_online_users();
-		$this->title        = __('Online') . ' <span>(' . ($this->_guest_count + count($users)) . ')</span>';
+		$this->title        = __('Online');
 
 		// Build user lists
 		$this->_friends = $this->_users = array();
-		$friends = (bool)self::$user ? self::$user->find_friends() : array();
+		$friends = (bool)self::$_user ? self::$_user->find_friends() : array();
 		foreach ($users as $user_id) {
 			$user = Model_User::find_user_light($user_id);
 			if (in_array($user_id, $friends)) {
@@ -54,32 +55,31 @@ class View_Users_Online extends View_Section {
 
 
 	/**
-	 * Var method for guest_count.
+	 * Render content.
 	 *
-	 * @return  integer
+	 * @return  string
 	 */
-	public function guest_count() {
-		return $this->_guest_count;
-	}
+	public function content() {
+		ob_start();
 
+?>
 
-	/**
-	 * Var method for friends.
-	 *
-	 * @return  array
-	 */
-	public function friends() {
-		return array_values($this->_friends);
-	}
+<ul>
+	<?php foreach ($this->_friends as $user) { ?>
+	<li><?php echo $user ?></li>
+	<?php } ?>
+</ul>
 
+<ul>
+	<?php foreach ($this->_users as $user) { ?>
+	<li><?php echo $user ?></li>
+	<?php } ?>
+	<li><?php echo __('and :count guests', array(':count' => $this->_guest_count)) ?></li>
+</ul>
 
-	/**
-	 * Var method for users.
-	 *
-	 * @return  array
-	 */
-	public function users() {
-		return array_values($this->_users);
+<?php
+
+		return ob_get_clean();
 	}
 
 }

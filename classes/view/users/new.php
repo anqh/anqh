@@ -16,38 +16,39 @@ class View_Users_New extends View_Section {
 
 
 	/**
-	 * Initialize New users.
-	 */
-	public function _initialize() {
-		$this->title = __('New users');
-	}
-
-
-	/**
-	 * Var method for new_users.
+	 * Render content.
 	 *
-	 * @return  array
+	 * @return  string
 	 */
-	public function new_users() {
-		$dates     = array();
+	public function content() {
+		$dates = array();
 		foreach (Model_User::find_new_users($this->limit) as $user_id => $stamp) {
 			$user = Model_User::find_user_light($user_id);
 			$dates[Date::format(Date::DMY_SHORT, $stamp)][] = array(
-				'avatar' => HTML::avatar($user['avatar'], $user['username']),
-				'user'   => HTML::user($user),
-				'time'   => Date::format(Date::TIME, $stamp),
+				'user'  => $user,
+				'stamp' => $stamp,
 			);
 		}
 
-		$new_users = array();
+		ob_start();
+
 		foreach ($dates as $date => $users) {
-			$new_users[] = array(
-				'date'  => $date,
-				'users' => $users,
-			);
+?>
+
+<h4><?php echo $date ?></h4>
+<ul>
+	<?php foreach ($users as $user) { ?>
+	<li>
+		<?php echo HTML::avatar($user['user']['avatar'], $user['user']['username']), ' ', HTML::user($user['user']) ?><br />
+		<time class="meta"><?php echo Date::format(Date::TIME, $user['stamp']) ?></time>
+	</li>
+	<?php } ?>
+</ul>
+
+<?php
 		}
 
-		return $new_users;
+		return ob_get_clean();
 	}
 
 }

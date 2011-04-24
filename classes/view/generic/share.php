@@ -15,11 +15,6 @@ class View_Generic_Share extends View_Section {
 	public $class = 'share';
 
 	/**
-	 * @var  string  Google Analytics
-	 */
-	public $google_analytics;
-
-	/**
 	 * @var  string  Shared title
 	 */
 	public $title;
@@ -31,20 +26,25 @@ class View_Generic_Share extends View_Section {
 
 
 	/**
-	 * Initialize share.
+	 * Create new view.
+	 *
+	 * @param  string  $url
+	 * @param  string  $title
 	 */
-	public function _initialize() {
-		$this->id = Kohana::config('site.share');
-		$this->google_analytics = Kohana::config('site.google_analytics');
+	public function __construct($url = null, $title = null) {
+		$this->url   = $url;
+		$this->title = $title;
 	}
 
 
 	/**
-	 * Var method for attributes.
+	 * Render content.
 	 *
 	 * @return  string
 	 */
-	public function attributes() {
+	public function content() {
+		static $script = true;
+
 		$attributes = array();
 
 		// Custom URL
@@ -59,24 +59,64 @@ class View_Generic_Share extends View_Section {
 			$attributes['addthis:title'] = $title;
 		}
 
-		return HTML::attributes($attributes);
+		ob_start();
+
+?>
+
+<div class="addthis_toolbox addthis_default_style addthis_32x32_style"<?php echo HTML::attributes($attributes) ?>>
+	<a class="addthis_button_facebook"></a>
+	<a class="addthis_button_twitter"></a>
+	<a class="addthis_button_google_plusone" g:plusone:count="false" g:plusone:size="standard"></a>
+	<a class="addthis_button_email"></a>
+	<a class="addthis_button_compact"></a>
+	<a class="addthis_counter addthis_bubble_style"></a>
+</div>
+
+<?php if ($script) { ?>
+	<?php if (Kohana::config('site.google_analytics')) { ?>
+
+<script>
+	var addthis_config, addthis_share;
+	head.ready('google-analytics',	function() {
+		addthis_config = {
+			data_ga_tracker: tracker,
+			data_track_clickback: true,
+			pubid: '<?php echo Kohana::config('site.share') ?>'
+		};
+		addthis_share = {
+			templates: {
+				twitter: '{{title}}: {{url}} (via @<?php echo Kohana::config('site.share') ?>)'
+			}
+		};
+
+		var at = document.createElement('script'); at.type = 'text/javascript'; at.async = true;
+		at.src = 'http://s7.addthis.com/js/250/addthis_widget.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(at);
+	});
+</script>
+
+	<?php } else { ?>
+
+<script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=<?php echo Kohana::config('site.share') ?>"></script>
+
+<?php
+			}
+		}
+
+		// Add JavaScript only once
+		$script = false;
+
+		return ob_get_clean();
 	}
 
 
 	/**
-	 * Var method for script.
+	 * Render <header>.
 	 *
-	 * @return  boolean
+	 * @return  string
 	 */
-	public function script() {
-		static $script = false;
-
-		if (!$script) {
-			$script = true;
-			return false;
-		}
-
-		return true;
+	public function header() {
+		return '';
 	}
 
 }

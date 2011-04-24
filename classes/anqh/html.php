@@ -161,6 +161,18 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
+	 * List separator.
+	 *
+	 * @static
+	 * @param   boolean  $html  Include span
+	 * @return  string
+	 */
+	public static function separator($html = true) {
+		return $html ? ' <span class="separator">&middot;</span> ' : ' &middot; ';
+	}
+
+
+	/**
 	 * Override style() to allow overriding attributes.
 	 *
 	 *  echo HTML::style('media/css/screen.css');
@@ -195,9 +207,10 @@ class Anqh_HTML extends Kohana_HTML {
 	/**
 	 * Return formatted <time> tag
 	 *
-	 * @param  string        $str
-	 * @param  array|string  $attributes  handled as time if not an array
-	 * @param  boolean       $short       use only date
+	 * @param   string        $str
+	 * @param   array|string  $attributes  handled as time if not an array
+	 * @param   boolean       $short       use only date
+	 * @return  string
 	 */
 	public static function time($str, $attributes = null, $short = false) {
 

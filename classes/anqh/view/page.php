@@ -14,6 +14,11 @@ class Anqh_View_Page extends View_Base {
 	const COLUMN_TOP  = 'top';
 
 	/**
+	 * @var  array  Page actions
+	 */
+	public $actions = array();
+
+	/**
 	 * @var  string  Base URL
 	 */
 	public $base = '/';
@@ -49,9 +54,14 @@ class Anqh_View_Page extends View_Base {
 	public $styles = array();
 
 	/**
-	 * @var  string  Page <title>
+	 * @var  string  Page title
 	 */
 	public $title;
+
+	/**
+	 * @var  string  Page subtitle
+	 */
+	public $subtitle;
 
 
 	/**
@@ -73,14 +83,20 @@ class Anqh_View_Page extends View_Base {
 	/**
 	 * Add content to a column.
 	 *
-	 * @param  string  $column
-	 * @param  string  $content
+	 * @param  string        $column
+	 * @param  string|array  $content
 	 *
 	 * @see  COLUMN_*
 	 */
 	public function add($column, $content) {
 		if (!isset($this->_content[$column])) {
-			$this->_content[$column] = array($content);
+			$this->_content[$column] = array();
+		}
+
+		if (is_array($content)) {
+			foreach ($content as $_content) {
+				$this->_content[$column][] = $_content;
+			}
 		} else {
 			$this->_content[$column][] = $content;
 		}
@@ -96,6 +112,11 @@ class Anqh_View_Page extends View_Base {
 	 * @see  COLUMN_*
 	 */
 	public function content($column) {
+		if ($deprecated = Widget::get($column)) {
+			$this->_content[$column] = (array)$this->_content[$column];
+			array_unshift($this->_content[$column], $deprecated);
+		}
+
 		if (!empty($this->_content[$column])) {
 			ob_start();
 
@@ -229,6 +250,15 @@ class Anqh_View_Page extends View_Base {
 
 		<section role="complementary">
 
+			<nav role="navigation">
+				<ul role="menubar">
+					<li role="menuitem"><a href="<?php echo $this->base ?>"><?php echo __('Front page') ?></a></li>
+					<?php foreach (Kohana::config('site.menu') as $id => $item) { ?>
+					<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
+					<?php } ?>
+				</ul>
+			</nav>
+
 			<?php echo $this->footer() ?>
 
 		</section>
@@ -334,7 +364,7 @@ class Anqh_View_Page extends View_Base {
 		<ul role="menubar">
 			<li role="menuitem"><h1><a href="<?php echo $this->base ?>"><?php echo Kohana::config('site.site_name') ?></a></h1></li>
 			<?php foreach (Kohana::config('site.menu') as $id => $item) { ?>
-			<li role="menuitem" class="menu-<?php echo $id ?> {{selected}}"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
+			<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
 			<?php } ?>
 		</ul>
 	</nav><!-- #mainmenu -->
@@ -495,12 +525,45 @@ class Anqh_View_Page extends View_Base {
 	 * @return  string
 	 */
 	protected function _title() {
-		if ($this->title) {
+		if ($this->title || $this->actions) {
 			ob_start();
 
 ?>
 
-			<header id="title"><h2><?php echo HTML::chars($this->title) ?></h2></header>
+			<header id="title">
+
+				<?php if ($this->title) { ?>
+				<h2><?php echo HTML::chars($this->title) ?></h2>
+				<?php } ?>
+
+				<?php if ($this->subtitle) { ?>
+				<p><?php echo $this->subtitle ?></p>
+				<?php } ?>
+
+				<?php if ($this->actions) { ?>
+				<nav>
+
+				<?php foreach ($this->actions as $action) {
+						if (is_array($action)) {
+
+							// Action is a link
+							$attributes = $action;
+							unset($attributes['link'], $attributes['text']);
+							$attributes['class'] = isset($attributes['class']) ? 'action ' . $attributes['class'] : 'action';
+							echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+
+						} else {
+
+							// Action is HTML
+							echo $action;
+
+						}
+					} ?>
+
+				</nav>
+				<?php } ?>
+
+			</header>
 
 <?php
 
@@ -543,9 +606,9 @@ class Anqh_View_Page extends View_Base {
 	<nav id="visitor">
 		<ul role="menubar">
 
-<!--			{{#notifications}}
-			<li role="menuitem" class="menu-notification {{class}}">{{{link}}}</li>
-			{{/notifications}}-->
+			<?php foreach (Anqh::notifications(self::$_user) as $class => $link) { ?>
+			<li role="menuitem" class="menu-notification <?php echo $class ?>"><?php echo $link ?></li>
+			<?php } ?>
 
 			<li role="menuitem" aria-haspopup="true" class="menu-profile">
 				<?php echo HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?>

@@ -15,7 +15,7 @@ class Anqh_Form extends Kohana_Form {
 	public $errors = null;
 
 	/**
-	 * @var  Jelly_Model  Model being edited
+	 * @var  object  Model being edited
 	 */
 	public $model = null;
 
@@ -23,30 +23,6 @@ class Anqh_Form extends Kohana_Form {
 	 * @var  array  Form values
 	 */
 	public $values = null;
-
-
-	/**
-	 * Build input attributes from Jelly model rules
-	 *
-	 * @static
-	 * @param   Jelly_Model  $field
-	 * @return  array
-	 */
-	public static function attributes(Jelly_Field $field) {
-		$attributes = array();
-		foreach ($field->rules as $rule => $params) {
-			switch ($rule) {
-				// case 'max_length': $attributes['maxlength'] = $params[0]; break; // @todo Strangely broken
-				case 'not_empty':  $attributes['placeholder'] = __('Required'); $attributes['required'] = 'required'; break;
-			}
-		}
-
-		if ($field instanceof Field_URL) {
-			$attributes['placeholder'] = 'http://';
-		}
-
-		return $attributes;
-	}
 
 
 	/**

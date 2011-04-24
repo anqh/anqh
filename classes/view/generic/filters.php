@@ -10,18 +10,121 @@
 class View_Generic_Filters extends View_Section {
 
 	/**
-	 * @var  string  Section class
-	 */
-	public $class = 'filters';
-
-	/**
 	 * @var  array  Filters
 	 */
 	public $filters = array();
 
+
 	/**
-	 * @var  string  Filter type
+	 * Create new view.
 	 */
-	public $type = 'filter';
+	public function __construct() {
+		parent::__construct();
+
+		$this->id    = 'filters';
+		$this->class = 'filters';
+	}
+
+
+	/**
+	 * Render content.
+	 *
+	 * @return  string
+	 */
+	public function content() {
+		ob_start();
+
+		echo Form::open(null, array('class' => 'filters pills'));
+
+		foreach ($this->filters as $type => $filter) {
+?>
+
+<fieldset>
+	<!-- <legend><?php echo HTML::chars($filter['name']) ?>:</legend>-->
+	<ul>
+		<li>
+			<?php echo Form::checkbox('filter[]', 'all', true, array('id' => 'all-' . $type)) ?>
+			<?php echo Form::label('all-' . $type, __('All')) ?>
+		</li>
+		<?php foreach ($filter['filters'] as $key => $name) { ?>
+		<li>
+			<?php echo Form::checkbox('filter[]', $type . '-' . $key, false, array('id' => $type . '-' . $key)) ?>
+			<?php echo Form::label($type . '-' . $key, $name) ?>
+		</li>
+		<?php } ?>
+	</ul>
+</fieldset>
+
+<?php
+		}
+
+		echo form::close();
+
+		Widget::add('footer', html::script_source('
+		function filters(all) {
+			if (all) {
+
+				// Open all
+				$("form.filters input").each(function() {
+					$("." + this.id + ":hidden").slideDown("normal");
+				});
+
+			} else {
+
+				// Filter individually
+				$("form.filters input").each(function() {
+					if ($(this).is(":checked")) {
+						$("." + this.id + ":hidden").slideDown("normal");
+					} else {
+						$("." + this.id + ":visible").slideUp("normal");
+					}
+				});
+
+			}
+		}
+
+		head.ready("jquery-ui", function() {
+
+			// Hook clicks
+			$("form.filters :checkbox").click(function() {
+
+				var checked = $(this).is(":checked");
+
+				if ($(this).val() != "all") {
+
+					// Individual filters
+					if (checked) {
+
+						// Uncheck "all"
+						$("form.filters input[value=all]").attr("checked", false);
+
+					}
+
+					// Check "all" if no other filters
+					if ($("form.filters input[value!=all]").is(":checked") == false) {
+						$("form.filters input[value=all]").attr("checked", "checked");
+						filters(true);
+					} else {
+						filters();
+					}
+
+				} else {
+
+					// All filters
+					if (!checked) {
+						return false;
+					}
+
+					$("form.filters input[value!=all]").attr("checked", false);
+					filters(checked);
+
+				}
+
+			});
+		});
+		'));
+
+		return ob_get_clean();
+	}
 
 }

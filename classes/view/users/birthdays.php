@@ -31,12 +31,20 @@ class View_Users_Birthdays extends View_Section {
 
 
 	/**
-	 * Initialize User_Birthdays.
+	 * Initialize birthdays.
 	 */
-	public function _initialize() {
+	public function __construct() {
+		parent::__construct();
+
 		$this->stamp = strtotime('today', time());
 
 		$this->title = __('Birthdays');
+
+		$this->tabs = array(
+			array(
+				'tab' => HTML::anchor(Route::url('users'), __('Show more')),
+			),
+		);
 	}
 
 
@@ -45,12 +53,12 @@ class View_Users_Birthdays extends View_Section {
 	 *
 	 * @return  array
 	 */
-	public function birthdays() {
+	protected function _birthdays() {
 		if ($this->_birthdays === null) {
 			$today    = strtotime('today');
 			$stamp    = strtotime('today', $this->stamp);
 			$stamp_to = strtotime('+' . $this->days . ' days', $this->stamp);
-			$friends  = self::$user ? self::$user->find_friends() : null;
+			$friends  = self::$_user ? self::$_user->find_friends() : null;
 
 			// Load birthdays
 			$this->_birthdays = array();
@@ -112,7 +120,7 @@ class View_Users_Birthdays extends View_Section {
 						'users' => $users,
 					);
 					if ($today_count) {
-						$_birthdays['link'] = ($this->limit ? ' | ' . HTML::anchor(Route::url('users'), __('Show all')) : '') . ' (' . $today_count . ')';
+						$_birthdays['link'] = ($this->limit ? HTML::separator() . HTML::anchor(Route::url('users'), __('Show all')) : '') . ' (' . $today_count . ')';
 					}
 
 					$this->_birthdays[] = $_birthdays;
@@ -124,6 +132,39 @@ class View_Users_Birthdays extends View_Section {
 		}
 
 		return $this->_birthdays;
+	}
+
+
+	/**
+	 * Render content.
+	 *
+	 * @return  string
+	 */
+	public function content() {
+		if ($birthdays = $this->_birthdays()) {
+			ob_start();
+
+?>
+
+<dl>
+	<?php foreach ($birthdays as $birthday) { ?>
+	<dt><?php echo Arr::get($birthday, 'date') ?> <?php echo Arr::get($birthday, 'link') ?></dt>
+	<dd>
+		<ul>
+			<?php foreach ($birthday['users'] as $user) { ?>
+			<li><?php echo __($user['age'] == 1 ? ':age year' : ':age years', array(':age' => $user['age'])) ?> <?php echo $user['user'] ?></li>
+			<?php } ?>
+		</ul>
+	</dd>
+	<?php } ?>
+</dl>
+
+<?php
+
+			return ob_get_clean();
+		}
+
+		return '';
 	}
 
 }
