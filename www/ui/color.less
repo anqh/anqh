@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2011 Anqh
+ *
+ *        Dawn   Day    Dusk   Night
+ * Body:  light  light  dark   dark
+ * Main:  light  light  light  dark
+ * Side:  dark   light  dark   dark
+ */
+
+/* Generic colors */
+@blue:                                 #268bd2; /* rgb( 38, 139, 210) */
+@cyan:                                 #2aa198; /* rgb( 42, 161, 152) */
+@green:                                #859900; /* rgb(133, 153,   0) */
+@magenta:                              #d33682; /* rgb(211,  54, 130) */
+@orange:                               #cb4b16; /* rgb(203,  75,  22) */
+@red:                                  #dc322f; /* rgb(220,  50,  47) */
+@violet:                               #6c71c4; /* rgb(108, 113, 196) */
+@yellow:                               #b58900; /* rgb(181, 137,   0) */
+@color-error:                          desaturate(@orange, 25%);
+@color-female:                         desaturate(@magenta, 25%);
+@color-male:                           desaturate(@blue, 25%);
+@color-info:                           desaturate(@yellow, 25%);
+@color-link:                           desaturate(@cyan, 25%);
+@color-negative:                       desaturate(@red, 25%);
+@color-positive:                       desaturate(@green, 25%);
+@color-private:                        desaturate(@violet, 25%);
+
+/* Dark colors */
+@dark-background:                      #1d1d1d;
+@dark-body-background:                 black url(bg1.png) repeat-x left top;
+@dark-edge-light:                      #393939;
+@dark-edge-shadow:                     #0c0c0c;
+@dark-link:                            @color-link; //#636363;
+@dark-text:                            #535353;
+@dark-text-meta:                       #9a9a9a;
+@dark-text-shadow:                     rgba(0, 0, 0, .2);
+@dark-title:                           black;
+
+/* Light colors */
+@light-background:                     #f9f9f9;
+@light-body-background:                #f0f0f0;
+@light-edge-light:                     white;
+@light-edge-shadow:                    #f0f0f0;
+@light-link:                           @color-link; //#818181;
+@light-text:                           #ededed;
+@light-text-meta:                      #9a9a9a;
+@light-text-shadow:                    rgba(0, 0, 0, .75);
+@light-title:                          white;
+
+/* Fade strengths */
+@fade-strong:                          25%;
+@fade-medium:                          50%;
+@fade-weak:                            75%;

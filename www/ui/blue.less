@@ -1,0 +1,49 @@
+/*
+ * Warm Blue theme
+ *
+ * Copyright (c) 2011 Anqh
+ */
+
+/* Fade strengths */
+@fade-strong:                          25%;
+@fade-medium:                          50%;
+@fade-weak:                            75%;
+
+/* Generic colors */
+@blue:                                 #268bd2; // rgb( 38, 139, 210)
+@cyan:                                 #2aa198; // rgb( 42, 161, 152)
+@green:                                #859900; // rgb(133, 153,   0)
+@magenta:                              #d33682; // rgb(211,  54, 130)
+@orange:                               #cb4b16; // rgb(203,  75,  22)
+@red:                                  #dc322f; // rgb(220,  50,  47)
+@violet:                               #6c71c4; // rgb(108, 113, 196)
+@yellow:                               #b58900; // rgb(181, 137,   0)
+@color-error:                          desaturate(@orange, 25%);
+@color-female:                         desaturate(@magenta, 25%);
+@color-male:                           desaturate(@blue, 25%);
+@color-info:                           desaturate(@yellow, 25%);
+@color-link:                           desaturate(@cyan, 25%);
+@color-negative:                       desaturate(@red, 25%);
+@color-positive:                       desaturate(@green, 25%);
+@color-private:                        desaturate(@violet, 25%);
+
+/* Blue theme */
+@color-background:                     #110e23; // Body
+@color-accent:                         #7ce9fe; // Links, highlights, call to action
+@color-accent2:                        fadeout(@color-accent, 50%);
+@color-accent3:                        #242446; // Separators
+@color-title:                          #f3f3f3; // Header
+@color-text:                           #bababa; // Section header
+@color-text2:                          darken(@color-text, 33%); // #666, #454550; // Content
+@color-text3:                          darken(@color-text, 50%); // #454545; // Meta
+
+@color-link:                           @color-accent2;
+@color-user:                           desaturate(@color-accent, 50%);
+//@color-female:                         (#f00 * .3) + (@color-user * .7);
+//@color-male:                           (#00f * .3) + (@color-user * .7);
+@color-female:                         hsl(0%, saturation(@color-user), lightness(@color-user));
+@color-male:                           hsl(240%, saturation(@color-user), lightness(@color-user));
+
+/* Build CSS */
+@import 'mixin.less';
+@import 'anqh.less';

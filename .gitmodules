@@ -52,3 +52,6 @@
 [submodule "modules/auto-modeler"]
 	path = modules/auto-modeler
 	url = git://github.com/zombor/Auto-Modeler.git
+[submodule "www/js/markitup"]
+	path = www/js/markitup
+	url = git://github.com/markitup/1.x.git

@@ -103,12 +103,12 @@ Kohana::modules(array(
 	'galleries'    => MODPATH . 'galleries',    // Anqh galleries
 
 	'auto-modeler' => MODPATH . 'auto-modeler', // Auto Modeler
-	'database'     => MODPATH . 'database',     // Database access
-	'postgresql'   => MODPATH . 'postgresql',   // PostgreSQL
 	'cache'        => MODPATH . 'cache',        // Caching with multiple backends
+	'database'     => MODPATH . 'database',     // Database access
+	'email'        => MODPATH . 'email',        // Email module
 	'image'        => MODPATH . 'image',        // Image manipulation
 	'pagination'   => MODPATH . 'pagination',   // Paging of results
-	'email'        => MODPATH . 'email',        // Email module
+	'postgresql'   => MODPATH . 'postgresql',   // PostgreSQL
 
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
@@ -118,6 +118,11 @@ Kohana::modules(array(
  * Set cookie salt.
  */
 Cookie::$salt = 'anqh';
+
+/**
+ * Set cache config.
+ */
+Cache::$default = 'default';
 
 /**
  * Set session handler.

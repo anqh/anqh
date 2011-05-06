@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2011 Anqh
+ *
+ * Solarized color palette by Ethan Schoonover, http://ethanschoonover.com/solarized
+ *
+ * Content:            Dark:     Light:
+ * Background          base03    base3
+ * Background alt      base02    base2
+ * Primary text        base0     base00
+ * Emphasized          base1     base01
+ * Secondary text      base01    base1
+ */
+@base03:                               #002b36; /* rgb(  0,  43,  54) */
+@base02:                               #073642; /* rgb(  7,  54,  66) */
+@base01:                               #586e75; /* rgb( 88, 110, 117) */
+@base00:                               #657b83; /* rgb(101, 123, 131) */
+@base0:                                #839496; /* rgb(131, 148, 150) */
+@base1:                                #93a1a1; /* rgb(147, 161, 161) */
+@base2:                                #eee8d5; /* rgb(238, 232, 213) */
+@base3:                                #fdf6e3; /* rgb(253, 246, 227) */
+@yellow:                               #b58900; /* rgb(181, 137,   0) */
+@orange:                               #cb4b16; /* rgb(203,  75,  22) */
+@red:                                  #dc322f; /* rgb(220,  50,  47) */
+@magenta:                              #d33682; /* rgb(211,  54, 130) */
+@violet:                               #6c71c4; /* rgb(108, 113, 196) */
+@blue:                                 #268bd2; /* rgb( 38, 139, 210) */
+@cyan:                                 #2aa198; /* rgb( 42, 161, 152) */
+@green:                                #859900; /* rgb(133, 153,   0) */
+
+@color-accent:                         desaturate(@magenta, 25%);
+//@color-background:                     desaturate(@base03, 100%);
+@color-background:                     black;
+//@color-background-alt:                 desaturate(@base02, 100%);
+@color-background-alt:                 #161616;
+@color-error:                          desaturate(@orange, 25%);
+@color-info:                           desaturate(@yellow, 25%);
+@color-link:                           desaturate(@blue, 25%);
+@color-negative:                       desaturate(@red, 25%);
+@color-positive:                       desaturate(@green, 25%);
+@color-private:                        desaturate(@violet, 25%);
+@color-text:                           desaturate(@base0, 100%);
+@color-text-alt:                       desaturate(@base01, 100%);
+@color-text-strong:                    desaturate(@base1, 100%);
+
+/* Fade strengths */
+@fade-strong:                          25%;
+@fade-medium:                          50%;
+@fade-weak:                            75%;

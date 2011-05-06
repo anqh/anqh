@@ -11,7 +11,8 @@ header,
 hgroup,
 menu,
 nav,
-section                                { display: block; }
+section,
+video                                  { display: block; }
 details,
 figure,
 mark,
