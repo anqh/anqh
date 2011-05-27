@@ -18,15 +18,15 @@ Route::set('event', 'event/<id>(/<action>(/<param>))', array('action' => 'edit|d
 		'controller' => 'events',
 		'action'     => 'event',
 	));
-Route::set('events_ymd', 'events/<year>/week/<week>', array('year' => '\d{4}', 'week' => '\d{2}'))
+Route::set('events_yw', 'events/<year>/week/<week>', array('year' => '\d{4}', 'week' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'events',
-		'action'     => 'browse',
+		'action'     => 'index',
 	));
 Route::set('events_ymd', 'events/<year>(/<month>(/<day>))', array('year' => '\d{4}', 'month' => '\d{1,2}', 'day' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'events',
-		'action'     => 'browse',
+		'action'     => 'index',
 	));
 Route::set('events', 'events(/<action>)', array('action' => 'add|upcoming|past|browser|flyers'))
 	->defaults(array(

@@ -32,17 +32,33 @@ foreach ($venues as $v):
 endforeach;
 unset($venues, $v);
 
-echo Form::open(null, array('id' => 'form-event-edit'));
+echo Form::open(null, array('id' => 'form-event'));
 ?>
+
+<!--
+	<?php if ($event_errors) { ?>
+	<ul class="errors">
+		<?php foreach ($event_errors as $error) { ?>
+		<li><?php echo $error ?></li>
+		<?php } ?>
+	</ul>
+	<?php } ?>
+	<?php if ($venue_errors) { ?>
+	<ul class="errors">
+		<?php foreach ($venue_errors as $error) { ?>
+		<li><?php echo $error ?></li>
+		<?php } ?>
+	</ul>
+	<?php } ?>
+-->
 
 	<div class="grid8 first">
 		<fieldset id="fields-primary">
 			<ul>
 				<?php echo Form::input_wrap('name', $event, null, __('Event'), $event_errors) ?>
-				<?php echo Form::input_wrap('homepage', $event, null, __('Homepage'), $event_errors) ?>
 				<?php echo Form::textarea_wrap('dj',   $event, null, true, __('Performers'), $event_errors) ?>
 				<?php echo Form::textarea_wrap('info', $event, null, true, __('Other information'), $event_errors, null, true) ?>
-				<?php echo Form::checkboxes_wrap('tag', $tags, $event->tags(), __('Music'), $event_errors, null, 'pills') ?>
+				<?php echo Form::input_wrap('homepage', $event, null, __('Homepage'), $event_errors) ?>
 			</ul>
 		</fieldset>
 
@@ -91,24 +107,30 @@ echo Form::open(null, array('id' => 'form-event-edit'));
 			</ul>
 		</fieldset>
 
-		<fieldset id="fields-tickets">
-			<legend><?php echo __('Tickets') ?></legend>
-			<ul>
-				<li class="choice"><?php echo Form::checkbox('free', 'true', false, array('id' => 'field-free')), Form::label('field-free', __('Free entry')) ?></li>
-				<?php echo Form::input_wrap('price',  $event, null, __('Tickets'), $event_errors) ?>
-				<?php echo Form::input_wrap('price2', $event, null, __('Preasel tickets'), $event_errors) ?>
-				<?php echo Form::input_wrap('age',    $event, null, __('Age limit'), $event_errors) ?>
-			</ul>
-		</fieldset>
-
 		<fieldset id="fields-venue">
 			<legend><?php echo __('Venue') ?></legend>
 			<ul>
-				<li class="choice"><?php echo Form::checkbox('venue_hidden', 'true', $event->venue_hidden, array('id' => 'field-ug')), Form::label('field-ug', __('Underground')) ?></li>
-				<?php echo Form::select_wrap('venue', $list, $venue ? $venue->id : '', null, __('Venue')) ?>
-				<li class="choice"><?php echo HTML::anchor('#new-venue', __('Not in list?'), array('class' => 'venue-add')) ?></li>
-				<?php echo Form::input_wrap('venue_name', $event, null, __('Venue'), $event_errors) ?>
+				<li class="choice"><?php echo Form::checkbox('venue_hidden', 'true', (bool)$event->venue_hidden, array('id' => 'field-ug')), Form::label('field-ug', __('Underground')) ?></li>
+<!--				<?php echo Form::select_wrap('venue', $list, $venue ? $venue->id : '', null, __('Venue')) ?>
+				<li class="choice"><?php echo HTML::anchor('#new-venue', __('Not in list?'), array('class' => 'venue-add')) ?></li>-->
+				<?php echo Form::input_wrap('venue_name', $event, (bool)$event->venue_hidden ? array('disabled' => 'disabled') : null, __('Venue'), $event_errors) ?>
 				<?php echo Form::input_wrap('city_name',  $event, null, __('City'), $event_errors) ?>
+			</ul>
+		</fieldset>
+
+		<fieldset id="fields-tickets">
+			<legend><?php echo __('Tickets') ?></legend>
+			<ul>
+				<li class="choice"><?php echo Form::checkbox('free', 'true', $event->price === '0.00', array('id' => 'field-free')), Form::label('field-free', __('Free entry')) ?></li>
+				<?php echo Form::input_wrap('price', $event, $event->price === '0.00' ? array('disabled' => 'disabled') : null, __('Tickets'), $event_errors) ?>
+<!--				<?php echo Form::input_wrap('price2', $event, null, __('Preasel tickets'), $event_errors) ?>-->
+				<?php echo Form::input_wrap('age', $event, null, __('Age limit'), $event_errors) ?>
+			</ul>
+		</fieldset>
+
+		<fieldset id="fields-music">
+			<ul>
+				<?php echo Form::checkboxes_wrap('tag', $tags, $event->tags(), __('Music'), $event_errors, null, 'pills') ?>
 			</ul>
 		</fieldset>
 	</div>
@@ -149,14 +171,20 @@ head.ready("anqh", function() {
 	// Datepicker
 	$("#field-stamp-begin-date").datepicker(' . json_encode($options) . ');
 
-	$("#field-city-name").autocompleteCity({ latitude: "city_latitude", longitude: "city_longitude" });
+	//$("#field-city-name").autocompleteCity({ latitude: "city_latitude", longitude: "city_longitude" });
+	$("#field-city-name").autocompleteGeo();
 
 	// Tickets
 	$("#field-free").change(function() {
-		$("#field-price, label[for=field-price], #field-price2, label[for=field-price2]").toggle(!this.checked);
+		this.checked ? $("#field-price").attr("disabled", "disabled") : $("#field-price").removeAttr("disabled");
+//		$("#field-price, label[for=field-price], #field-price2, label[for=field-price2]").toggle(!this.checked);
 	});
 
 	// Venue
+	$("#field-ug").change(function() {
+		this.checked ? $("#field-venue-name").attr("disabled", "disabled") : $("#field-venue-name").removeAttr("disabled");
+	});
+/*
 	var unlisted = false;
 	$("#field-ug").change(function() {
 		$("#field-venue, label[for=field-venue], a.venue-add").toggle(!this.checked && !unlisted);
@@ -171,6 +199,6 @@ head.ready("anqh", function() {
 		$("#field-ug").attr("checked", false);
 		$("#field-city-name").val($("#field-venue option:selected").parent("optgroup").attr("label"));
 	});
-
+*/
 });
 ');

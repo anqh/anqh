@@ -60,7 +60,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'venue_hidden'         => array('in_array' => array(':value', array(0, 1))),
 		'venue_id'             => array('digit'),
 		'venue_url'            => array('url'),
-		'city_name'            => array('not_empty'),
+		//'city_name'            => array('not_empty'),
 		'geo_city_id'          => array('digit'),
 		'geo_country_id'       => array('digit'),
 
@@ -334,6 +334,21 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 			DB::select_array($this->fields())
 				->order_by('id', 'DESC'),
 			$limit
+		);
+	}
+
+
+	/**
+	 * Find events happening now.
+	 *
+	 * @return  Model_Event[]
+	 */
+	public function find_now() {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where(DB::expr(time()), 'BETWEEN', DB::expr('stamp_begin AND stamp_end'))
+				->order_by('city_name', 'ASC'),
+			null
 		);
 	}
 

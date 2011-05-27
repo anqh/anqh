@@ -7,12 +7,29 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Events extends Controller_Template {
+class Anqh_Controller_Events extends Controller_Page {
+
+	/**
+	 * @var  array  Override default action views
+	 */
+	protected $_action_views = array(
+		'add' => 'edit',
+	);
 
 	/**
 	 * @var  DateTime
 	 */
 	public $date;
+
+	/**
+	 * @var  integer  Browse from
+	 */
+	public $stamp_begin = null;
+
+	/**
+	 * @var  integer  Browse to
+	 */
+	public $stamp_end = null;
 
 
 	/**
@@ -22,14 +39,9 @@ class Anqh_Controller_Events extends Controller_Template {
 		parent::before();
 
 		$this->date = new DateTime;
-		$this->tabs = array(
-			'upcoming' => array('url' => Route::get('events')->uri(array('action' => 'upcoming')), 'text' => __('Upcoming events')),
-			'past'     => array('url' => Route::get('events')->uri(array('action' => 'past')),     'text' => __('Past events')),
-			'browse'   => array('url' => Route::get('events')->uri(array('action' => 'browse')),   'text' => __('Browse calendar')),
-		);
 
 		if (Permission::has(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user)) {
-			$this->tabs['flyers'] = array('url' => Route::get('events')->uri(array('action' => 'flyers')),   'text' => __('Import flyers'));
+			$this->page_actions[] = array('link' => Route::url('events', array('action' => 'flyers')), 'text' => __('Import flyers'));
 		}
 	}
 
@@ -38,8 +50,6 @@ class Anqh_Controller_Events extends Controller_Template {
 	 * Action: add
 	 */
 	public function action_add() {
-		$this->page_title = __('Event');
-
 		return $this->_edit_event();
 	}
 
@@ -49,47 +59,15 @@ class Anqh_Controller_Events extends Controller_Template {
 	 */
 	public function action_browse() {
 		$this->page_title = __('Events');
-		$this->tab_id = 'browse';
+		$this->tab_id     = 'browse';
 
-		$year  = (int)$this->request->param('year');
-		$month = (int)$this->request->param('month');
-		$day   = (int)$this->request->param('day');
-		$week  = (int)$this->request->param('week');
 
-		$day   = $day ? $day : date('j');
-		$month = $month ? $month : date('n');
-		$year  = $year ? $year : date('Y');
-		$first = mktime(0, 0, 0, $month, $day, $year);
-		$last  = strtotime('+1 week', $first);
 
-		// Set actions
-		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
-		}
-
-		// Load events
-		$events = Model_Event::factory()->find_grouped_between($first, $last);
-		if (count($events)) {
-			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
-
+/*
 			Widget::add('main', View_Module::factory('generic/filters', array(
 				'filters' => $this->_filters($events),
 			)));
-			Widget::add('main', View_Module::factory('events/events', array(
-				'events' => $events,
-			)));
-		}
-
-		// Calendar
-		Widget::add('side', View_Module::factory('events/calendar', array(
-			'date'      => $first,
-			'url_day'   => '/events/:year/:month/:day',
-			'url_month' => '/events/:year/:month',
-		)), Widget::TOP);
-
-		// Tabs
-		$this->_tabs();
-
+*/
 	}
 
 
@@ -115,7 +93,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$date = $event->stamp_begin;
 		$event->delete();
 
-		$this->request->redirect(Route::get('events_ymd')->uri(array('year' => date('Y', $date), 'month' => date('m', $date), 'day' => date('d', $date))));
+		$this->request->redirect(Route::url('events_ymd', array('year' => date('Y', $date), 'month' => date('m', $date), 'day' => date('d', $date))));
 	}
 
 
@@ -141,6 +119,8 @@ class Anqh_Controller_Events extends Controller_Template {
 		}
 		Permission::required($event, Model_Event::PERMISSION_READ, self::$user);
 
+		$this->view->event = $event;
+
 		// Set actions
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
@@ -153,23 +133,27 @@ class Anqh_Controller_Events extends Controller_Template {
 			}
 		}
 
-		$this->page_title = HTML::chars($event->name);
-		$this->page_subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
-		$this->page_subtitle .= ' | ' . HTML::anchor(Route::get('forum_event')->uri(array('id' => $event->id)), __('Go to discussion'));
-		$this->page_subtitle .= ' | ' . HTML::anchor(Route::get('gallery_event')->uri(array('id' => $event->id)), __('Go to gallery'));
+		$this->view->title = $event->name;
+		// $this->page_subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
+		$this->view->subtitle  = HTML::anchor(Route::get('forum_event')->uri(array('id' => $event->id)), __('Go to discussion'));
+		$this->view->subtitle .= ' | ' . HTML::anchor(Route::get('gallery_event')->uri(array('id' => $event->id)), __('Go to gallery'));
 
 		// Facebook
 		if (Kohana::config('site.facebook')) {
 			Anqh::open_graph('type', 'activity');
-			Anqh::open_graph('title', $this->page_title);
+			Anqh::open_graph('title', $event->name);
 			Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
 			Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
-			$event->flyer_front and Anqh::open_graph('image', URL::site($event->flyer_front->get_url('thumbnail'), true));
+			if ($event->flyer_front()) {
+				Anqh::open_graph('image', $event->flyer_front()->get_url('thumbnail'));
+			}
 		}
 		Anqh::share(true);
 
 		// Event performers and extra info
 		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
+
+		Widget::add('side', $this->section_share());
 
 		// Event flyers
 		if (count($flyers = $event->flyers()) > 1) {
@@ -379,7 +363,7 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->history = false;
 
 		// Hover card works only with ajax
-		if (!$this->ajax) {
+		if ($this->_request_type !== Controller::REQUEST_AJAX) {
 			return $this->action_event();
 		}
 
@@ -390,6 +374,7 @@ class Anqh_Controller_Events extends Controller_Template {
 				'event'      => $event
 			));
 		}
+		exit;
 	}
 
 
@@ -400,17 +385,16 @@ class Anqh_Controller_Events extends Controller_Template {
 		$this->history = false;
 
 		// Load event
-		$event_id = (int)$this->request->param('id');
 		/** @var  Model_Event  $event */
-		$event = Model_Event::factory($event_id);
+		$event_id = (int)$this->request->param('id');
+		$event    = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
 		Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
 
-		if (!$this->ajax) {
+		if ($this->_request_type !== Controller::REQUEST_AJAX) {
 			$this->page_title = HTML::chars($event->name);
-			$this->page_subtitle = HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true);
 		}
 
 		if (isset($_REQUEST['front'])) {
@@ -459,7 +443,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
-			if ($this->ajax) {
+			if ($this->_request_type === Controller::REQUEST_AJAX) {
 				$this->response->body($this->_get_mod_image($event));
 
 				return;
@@ -468,13 +452,12 @@ class Anqh_Controller_Events extends Controller_Template {
 			$this->request->redirect(Route::model($event));
 		}
 
-		$image = Model_Image::factory();
-		$image->author_id = self::$user->id;
-		$image->created   = time();
-
 		// Handle post
 		$errors = array();
 		if ($_POST && $_FILES) {
+			$image = Model_Image::factory();
+			$image->author_id   = self::$user->id;
+			$image->created     = time();
 			$image->file        = Arr::get($_FILES, 'file');
 			$image->description = $event->get_forum_topic();
 			try {
@@ -520,7 +503,7 @@ class Anqh_Controller_Events extends Controller_Template {
 
 				NewsfeedItem_Events::event_edit(self::$user, $event);
 
-				if ($this->ajax) {
+				if ($this->_request_type === Controller::REQUEST_AJAX) {
 					$this->response->body($this->_get_mod_image($event));
 					return;
 				}
@@ -541,13 +524,14 @@ class Anqh_Controller_Events extends Controller_Template {
 			'cancel'    => $this->ajax ? Route::model($event, 'image') . '?cancel' : Route::model($event),
 		));
 
-		if ($this->ajax) {
-			$this->response->body($view);
+		$this->view->errors = &$errors;
+		$this->view->event  = &$event;
 
-			return;
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
+			echo $view;
+
+			exit;
 		}
-
-		Widget::add('main', $view);
 	}
 
 
@@ -555,44 +539,68 @@ class Anqh_Controller_Events extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
-		return $this->action_upcoming();
-	}
+		$year  = (int)$this->request->param('year');
+		$month = (int)$this->request->param('month');
+		$day   = (int)$this->request->param('day');
+		$week  = (int)$this->request->param('week');
+
+		// Default to upcoming events for current week
+		if (!$day && !$month && !$year && !$week) {
+			$this->stamp_begin = strtotime('today');
+			$this->stamp_end   = strtotime('next monday', $this->stamp_begin);
+
+			// Add one week if less than 3 days to next monday
+			if ($this->stamp_end - $this->stamp_begin <= Date::DAY * 3) {
+				$this->stamp_end = strtotime('+1 week', $this->stamp_end);
+			}
+
+			$previous = strtotime('last monday', $this->stamp_begin);
+			$next     = $this->stamp_end;
+		} else {
+			$year = $year ? $year : date('Y');
+			if ($week) {
+				$this->stamp_begin = strtotime($year . '-W' . ($week < 10 ? '0' . $week : $week));
+			} else {
+				$day   = $day ? $day : date('j');
+				$month = $month ? $month : date('n');
+				$this->stamp_begin = mktime(0, 0, 0, $month, $day, $year);
+			}
+			$this->stamp_end = strtotime('+1 week', $this->stamp_begin);
+			$previous        = strtotime('-1 week', $this->stamp_begin);
+			$next            = $this->stamp_end;
+		}
 
 
-	/**
-	 * Action: past events
-	 */
-	public function action_past() {
-		$this->page_title = __('Past events');
-		$this->tab_id = 'past';
+		// Build page
+		$this->view = View_Page::factory(__('Events'));
+
+		// Filters
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters());
+
+		// Event list
+		$this->view->add(View_Page::COLUMN_MAIN, $this->sections_events());
+
+		// Calendar
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_calendar());
+
+		// Hot events
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_hot());
+
+		// New events
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_new());
+
+		// Updated events
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_updated());
 
 		// Set actions
+		$this->page_actions[] = array('link' => Route::url('events_ymd', array('year' => date('Y', $previous), 'month' => date('m', $previous), 'day' => date('d', $previous))), 'text' => __('Previous'));
+		$this->page_actions[] = array('link' => Route::url('events_ymd', array('year' => date('Y', $next),     'month' => date('m', $next),     'day' => date('d', $next))),     'text' => __('Next'));
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
 			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
 		}
 
 		// Load events
-		$events = Model_Event::factory()->find_grouped_past(25);
-		if (count($events)) {
-			//$this->page_subtitle = __2(':events event', ':events events', count($events), array(':events' => '<var>' . count($events) . '</var>'));
-
-			Widget::add('main', View_Module::factory('generic/filters', array(
-				'filters' => $this->_filters($events),
-			)));
-			Widget::add('main', View_Module::factory('events/events', array(
-				'events' => $events,
-			)));
-		}
-
-		// Calendar
-		Widget::add('side', View_Module::factory('events/calendar', array(
-			'url_day'   => '/events/:year/:month/:day',
-			'url_month' => '/events/:year/:month',
-		)), Widget::TOP);
-
-		// Tabs
-		$this->_tabs();
-
+		$this->view->stamp = $this->stamp_begin;
 	}
 
 
@@ -619,50 +627,12 @@ class Anqh_Controller_Events extends Controller_Template {
 
 
 	/**
-	 * Action: upcoming events
-	 */
-	public function action_upcoming() {
-		$this->page_title = __('Upcoming events');
-		$this->tab_id = 'upcoming';
-
-		// Set actions
-		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
-		}
-
-		// Load events
-		$events = Model_Event::factory()->find_grouped_upcoming(25);
-		if (count($events)) {
-			Widget::add('main', View_Module::factory('generic/filters', array(
-				'filters' => $this->_filters($events),
-			)));
-			Widget::add('main', View_Module::factory('events/events', array(
-				'events' => $events,
-			)));
-		}
-
-		// Calendar
-		Widget::add('side', View_Module::factory('events/calendar', array(
-			'url_day'   => '/events/:year/:month/:day',
-			'url_month' => '/events/:year/:month',
-		)), Widget::TOP);
-
-		// Tabs
-		$this->_tabs();
-
-	}
-
-
-	/**
 	 * Edit event
 	 *
 	 * @param  integer  $event_id
 	 */
 	protected function _edit_event($event_id = null) {
 		$this->history = false;
-
-		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
-		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
 
 		if ($event_id) {
 
@@ -693,6 +663,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			$this->page_title = __('New event');
 
 			$event->author_id = self::$user->id;
+			$event->created   = time();
 			$edit = false;
 
 		}
@@ -712,64 +683,15 @@ class Anqh_Controller_Events extends Controller_Template {
 
 			} else if ($venue_name = Arr::get($_POST, 'venue_name')) {
 
-				// New venue
-				if ($city_id = (int)Arr::get_once($_POST, 'city_id')) {
-					$city = Geo::find_city($city_id);
-				}
-
-				if ($foursquare_id = (int)Arr::get_once($_POST, 'foursquare_id')) {
-
-					// Foursquare venue
-					// @todo: Refetch data using id?
-					$venue = Model_Venue::factory()->find_by_foursquare($foursquare_id);
-					if (!$venue->loaded()) {
-						$venue = Model_Venue::factory();
-						$venue->set_fields(array(
-							'foursquare_id'          => $foursquare_id,
-							'foursquare_category_id' => Arr::get_once($_POST, 'foursquare_category_id')
-						));
-					}
-
-				} else {
-
-					// Check for duplicate venue
-					$venues = Model_Venue::factory()->find_by_name($venue_name);
-					if ($venues->count()) {
-						$address   = strtolower(trim(Arr::get($_POST, 'address')));
-						$city_name = strtolower(isset($city) ? $city->name : Arr::get($_POST, 'city_name'));
-						foreach ($venues as $venue_old) {
-							if (strtolower($venue_old->city_name) == $city_name && (empty($address) || empty($venue_old->address) || levenshtein(strtolower($venue_old->address), $address) < 4)) {
-
-								// Venue in same town with almost same address, assume same
-								$venue = $venue_old;
-								break;
-
-							}
+				// Check for duplicate venue
+				$venues = Model_Venue::factory()->find_by_name($venue_name);
+				if ($venues->count()) {
+					$city_name = strtolower(Arr::get($_POST, 'city_name'));
+					foreach ($venues as $venue_old) {
+						if (strtolower($venue_old->city_name) == $city_name) {
+							$venue = $venue_old;
+							break;
 						}
-					}
-
-				}
-
-				// Fill rest of the venue info if not found and not hidden
-				if (!$venue_hidden) {
-					!isset($venue) and $venue = Model_Venue::factory();
-					if (!$venue->loaded()) {
-						$venue->name       = Arr::get($_POST, 'venue_name');
-						$venue->address    = Arr::get($_POST, 'address');
-						$venue->latitude   = Arr::get($_POST, 'latitude');
-						$venue->longitude  = Arr::get($_POST, 'longitude');
-						$venue->event_host = true;
-						$venue->author_id  = self::$user->id;
-						if (isset($city) && $city->loaded()) {
-							$venue->geo_city_id    = $city->id;
-							$venue->city_name      = $city->name;
-							$venue->geo_country_id = $city->geo_country_id;
-						} else {
-							$venue->city_name = Arr::get($_POST, 'city_name');
-						}
-						try {
-							$venue->save();
-						} catch (Validation_Exception $venue_validation) {}
 					}
 				}
 
@@ -780,27 +702,40 @@ class Anqh_Controller_Events extends Controller_Template {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
 			$event->set_fields($post);
+			if (Arr::get($_POST, 'free')) {
+				$event->price = 0;
+			}
 
+			// Venue/location
+			$event->venue_hidden = (bool)$venue_hidden;
 			if ($venue_hidden) {
 
 				// Hidden events don't have a venue
-				$event->venue_id     = null;
-				$event->venue_name   = null;
-				$event->venue_hidden = true;
+				$event->venue_id    = null;
+				$event->venue_name  = null;
 
-			} else {
-				$event->venue_hidden = false;
+			} else if (isset($venue)) {
 
-				// Set venue to event if venue is saved
-				if (isset($venue)) {
+				// Venue loaded
+				$event->venue_id  = $venue->id;
+				$event->city_name = $venue->city_name;
+
+			} else if (!empty($venue_name)) {
+
+				// Create new venue
+				$venue = Model_Venue::factory();
+				$venue->name       = Arr::get($_POST, 'venue_name');
+				$venue->address    = Arr::get($_POST, 'address');
+				$venue->latitude   = Arr::get($_POST, 'latitude');
+				$venue->longitude  = Arr::get($_POST, 'longitude');
+				$venue->event_host = true;
+				$venue->author_id  = self::$user->id;
+				$venue->city_name  = $event->city_name;
+				try {
+					$venue->save();
 					$event->venue_id = $venue->id;
-				}
+				} catch (Validation_Exception $venue_validation) {}
 
-			}
-			if (isset($city)) {
-				$event->geo_city_id    = $city->id;
-				$event->city_name      = $city->name;
-				$event->geo_country_id = $city->geo_country_id;
 			}
 
 			// Validate event
@@ -827,6 +762,12 @@ class Anqh_Controller_Events extends Controller_Template {
 			}
 		}
 
+		// Fill the required information to view
+		$this->view->event = $event;
+		$this->view->event_errors = isset($event_validation) ? $event_validation->array->errors('validation') : null;
+		$this->view->venue = isset($venue) ? $venue : null;
+		$this->view->venue_errors = isset($venue_validation) ? $venue_validation->array->errors('validation') : null;
+
 		// Tags
 		$tags = array();
 		$tag_group = new Model_Tag_Group('Music');
@@ -836,7 +777,7 @@ class Anqh_Controller_Events extends Controller_Template {
 			}
 		}
 
-		Widget::add('wide', View_Module::factory('events/edit', array(
+		Widget::add('top', View_Module::factory('events/edit', array(
 			'event'        => $event,
 			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
 			'tags'         => $tags,
@@ -852,6 +793,113 @@ class Anqh_Controller_Events extends Controller_Template {
 			'cancel'       => $cancel,
 		)));
 	}
+
+
+	/**
+	 * Load events.
+	 *
+	 * @return  array
+	 */
+	private function _events() {
+		static $events = null;
+
+		if (is_null($events)) {
+			$events = Model_Event::factory()->find_grouped_between($this->stamp_begin, $this->stamp_end, 'ASC');
+		}
+
+		return $events;
+	}
+
+
+	/**
+	 * Get calendar.
+	 *
+	 * @return  View_Calendar
+	 */
+	public function section_calendar() {
+		$section = new View_Calendar();
+		$section->date      = $this->stamp_begin;
+		$section->url_day   = Route::url('events') . '/:year/:month/:day';
+		$section->url_week  = Route::url('events') . '/:year/week/:week';
+		$section->url_month = Route::url('events') . '/:year/:month';
+
+		return $section;
+	}
+
+
+	/**
+	 * Get events.
+	 *
+	 * @return  View_Events_List
+	 */
+	public function section_events_hot() {
+		$section = new View_Events_List();
+		$section->title  = __('Hot events');
+		$section->events = Model_Event::factory()->find_hot(20);
+
+		return $section;
+	}
+
+
+	/**
+	 * Get events.
+	 *
+	 * @return  View_Events_List
+	 */
+	public function section_events_new() {
+		$section = new View_Events_List();
+		$section->title  = __('New events');
+		$section->events = Model_Event::factory()->find_new(15);
+
+		return $section;
+	}
+
+
+	/**
+	 * Get events.
+	 *
+	 * @return  View_Events_List
+	 */
+	public function section_events_updated() {
+		$section = new View_Events_List();
+		$section->title  = __('Updated events');
+		$section->events = Model_Event::factory()->find_modified(10);
+
+		return $section;
+	}
+
+
+	/**
+	 * Get filters.
+	 *
+	 * @return  View_Generic_Filters
+	 */
+	public function section_filters() {
+		$section = new View_Generic_Filters();
+		$section->filters = $this->_filters($this->_events());
+
+		return $section;
+	}
+
+
+	/**
+	 * Get events.
+	 *
+	 * @return  View_Events_Day[]
+	 */
+	public function sections_events() {
+		$days = array();
+		foreach ($this->_events() as $date => $cities) {
+			$section = new View_Events_Day();
+			$section->date   = $date;
+			$section->events = $cities;
+
+			$days[] = $section;
+		}
+
+		return $days;
+	}
+
 
 	/**
 	 * Build filter items
@@ -941,35 +989,6 @@ class Anqh_Controller_Events extends Controller_Template {
 			'image'        => $image,
 			'link'         => $link,
 		));
-	}
-
-
-	/**
-	 * New, updated and hot events
-	 */
-	protected function _tabs() {
-		$tabs = array(
-			'hot' => array('href' => '#events-hot', 'title' => __('Hot events'), 'tab' => View_Module::factory('events/event_list', array(
-				'mod_id'    => 'events-hot',
-				'mod_class' => 'cut tab events',
-				'title'     => __('Hot Events'),
-				'events'    =>  Model_Event::factory()->find_hot(20),
-			))),
-			'active' => array('href' => '#events-new', 'title' => __('New events'), 'tab' => View_Module::factory('events/event_list', array(
-				'mod_id'    => 'events-new',
-				'mod_class' => 'cut tab events',
-				'title'     => __('New Events'),
-				'events'    =>  Model_Event::factory()->find_new(20),
-			))),
-			'latest' => array('href' => '#events-updated', 'title' => __('Updated events'), 'tab' => View_Module::factory('events/event_list', array(
-				'mod_id'    => 'events-updated',
-				'mod_class' => 'cut tab events',
-				'title'     => __('Updated Events'),
-				'events'    => Model_Event::factory()->find_modified(20),
-			))),
-		);
-
-		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'events-tab', 'tabs' => $tabs)));
 	}
 
 }
