@@ -233,8 +233,7 @@ p.cut,
 
 
 /* Content */
-#content {
-  &                                    { color: @color-text2; margin: 0 auto; overflow: hidden; width: @page-width; }
+#content                               { clear: both; color: @color-text2; margin: 0 auto; overflow: hidden; width: @page-width;
   header h3                            { color: @color-text; padding-bottom: 0; }
 
   dt                                   { color: @color-text; font-weight: bold; }
@@ -761,22 +760,17 @@ section.events article.event           { overflow: hidden;
   @page-width:                         738px;
   .grid-width (@col: 1)                { width: ((@page-width / @columns) * @col - @gutter); }
 
-  /* Top */
-  #visitor {
-    form,
-    ul[role=menubar]                   { width: @page-width; }
-  }
-
   /* Header */
-  #mainmenu {
-    ul[role=menubar]                   { width: @page-width; }
+  #header                              {
+    nav                                { float: none; margin: 0 auto; width: @page-width; }
+    nav ul[role=menubar]               { width: auto; }
   }
 
   /* Content */
   #content {
     &                                  { width: @page-width; }
-    section.main                       { .grid-width(7); }
-    aside                              { .grid-width(2); }
+    #main                              { .grid-width(7); }
+    #side                              { .grid-width(2); }
   }
 
   /* Footer */
@@ -798,7 +792,7 @@ section.events article.event           { overflow: hidden;
   .ad                                  { display: none !important; }
 
   #content {
-    aside                              { padding: 0; }
+    #side                              { padding: 0; }
   }
 
   /* Members page */
@@ -811,33 +805,29 @@ section.events article.event           { overflow: hidden;
 @media only screen and (min-width: 480px) and (max-width: 767px) {
   @columns:                            6;
   @page-width:                         480px;
-  .grid-width (@col: 1; @extra: 0)     { width: ((@page-width / @columns) * @col - @gutter) + @extra; }
-
-  /* Top */
-  #visitor {
-    form,
-    ul[role=menubar]                   { width: @page-width; }
-  }
+  .grid-width (@col: 1)                { width: ((@page-width / @columns) * @col - @spacing); }
 
   /* Header */
-  #mainmenu {
-    ul[role=menubar]                   { width: @page-width; }
+  #header                              {
+    nav                                { float: none; margin: 0 auto; width: @page-width; }
   }
 
   /* Content */
   #content {
     &                                  { width: @page-width; }
-    section.main,
-    aside                              { float: none; .grid-width(6); }
-    aside .mod                         { clear: none; float: left; .grid-width(3; -10px); }
+    #main,
+    #side                              { float: none; width: 100%; }
+    #side section                      { clear: none; float: left; .grid-width(3); }
+    #side section:nth-child(even)      { margin-left: @gutter; }
   }
 
   /* Footer */
   #footer {
-    & > .container                     { width: @page-width; }
+    [role=complementary]               { width: @page-width; }
     nav                                { display: none; }
-    section                            { .grid-width(3); }
-    [role=contentinfo]                 { clear: both; }
+    section.article                    { .grid-width(3); margin-right: 0; }
+    section.article:nth-of-type(even)  { margin-left: @gutter; }
+    [role=contentinfo]                 { clear: both; width: @page-width; }
   }
 
 }
@@ -848,21 +838,17 @@ section.events article.event           { overflow: hidden;
   @page-width:                         320px;
   .grid-width (@col: 1)                { width: ((@page-width / @columns) * @col - @gutter); }
 
-  /* Top */
-  #visitor {
-    form,
-    ul[role=menubar]                   { width: @page-width; }
-    li.menu-clock                      { display: none; }
-  }
-
   /* Header */
-  #mainmenu {
-    &                                  { height: 80px; }
-    ul[role=menubar]                   { width: @page-width; }
-    li                                 { line-height: 40px; }
-    li:hover                           { border-top-color: transparent; }
-    h1,
-    h1 a                               { height: 80px; }
+  #header                              { height: 80px;
+    nav                                { float: none; margin: 0 auto; width: @page-width; }
+    nav ul[role=menubar]               { width: auto; }
+    li.menu-clock                      { display: none; }
+    #mainmenu                          { height: 80px;
+      li                               { line-height: 40px; }
+      li:hover                         { border-top-color: transparent; }
+      h1,
+      h1 a                             { height: 80px; }
+    }
   }
 
   /* Content */
