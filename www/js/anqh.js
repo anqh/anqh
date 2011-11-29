@@ -890,11 +890,13 @@ $(function() {
 
 
 	// Ajax tabs
+	/*
 	$('body').delegate('.tabs a', 'click', function() {
 		$(this).closest('section.mod').ajaxify($(this).attr('href'), null, 'GET');
 
 		return false;
 	});
+	*/
 
 
 	// Slideshows, scrollables
