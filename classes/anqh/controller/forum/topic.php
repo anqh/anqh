@@ -15,8 +15,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	public function before() {
 		parent::before();
 
-		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
-		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
+//		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
+//		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
 	}
 
 
