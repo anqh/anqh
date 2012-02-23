@@ -55,3 +55,6 @@
 [submodule "www/js/markitup"]
 	path = www/js/markitup
 	url = git://github.com/markitup/1.x.git
+[submodule "www/static/bootstrap"]
+	path = www/static/bootstrap
+	url = git://github.com/twitter/bootstrap.git

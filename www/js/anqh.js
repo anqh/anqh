@@ -33,10 +33,14 @@ var Anqh = {
 				modal: true,
 				close: function(ev, ui) { $(this).remove(); },
 				closeText: '✕',
-				buttons: {
+/*				buttons: {
 					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
 					'✕ No, cancel': function() { $(this).dialog('close'); }
-				}
+				},*/
+				buttons: [
+					{ 'text': '✓ Yes, do it!', 'class': 'btn btn-danger', click: function() { $(this).dialog('close'); action(); } },
+					{ 'text': '✕ No, cancel',  'class': 'btn', click: function() { $(this).dialog('close'); } }
+				]
 			});
 		} else {
 			$('#confirm-dialog').dialog('open');
@@ -806,7 +810,53 @@ $(function() {
 
 
 	// Hover card
-	$('a.hoverable').hovercard();
+	if ('popover' in $.fn) {
+		var hoverTimeout;
+		$(document).on({
+			mouseenter: function() {
+				var $this = $(this);
+
+				// Load ajax only once
+				if (!$this.data('hovercard')) {
+					$this.data('hovercard', true);
+
+					// Use deferred to wait for ajax and delay before showing popover
+					var dfd = $.Deferred();
+					$.get($this.attr('href')+ '/hover', function cardLoaded(card) {
+						var $card = $(card);
+
+						// Create the popover when we have the contents
+						$this.popover({
+							title:   $card.find('header').remove().text(),
+							content: $card.html(),
+							delay:   { show: 500, hide: 500 }
+						});
+
+						// Ajax done
+						dfd.resolve();
+
+					});
+
+					// Initial manual delay
+					hoverTimeout = setTimeout(function delay() {
+						dfd.done(function show() {
+							$this.popover('show');
+						});
+					}, 500);
+
+				}
+
+			},
+			mouseleave: function() {
+
+				// Don't show the popover if not hovering anymore
+				clearInterval(hoverTimeout);
+
+			}
+		}, 'a.hoverable');
+	} else {
+		$('a.hoverable').hovercard();
+	}
 
 
 	// Theme
@@ -856,20 +906,21 @@ $(function() {
 	// Delete item confirmation
 	$('a[class*="-delete"]').live('click', function(e) {
 		e.preventDefault();
-		var action = $(this);
-		if (action.data('action')) {
-			Anqh.confirm_delete(action.data('confirm') ? action.data('confirm') : action.text(), function() { action.data('action')(); });
-		} else if (action.is('a')) {
-			Anqh.confirm_delete(action.data('confirm') ? action.data('confirm') : action.text(), function() { window.location = action.attr('href'); });
+
+		var $this = $(this);
+		if ($this.data('action')) {
+			Anqh.confirm_delete($this.data('confirm') ? $this.data('confirm') : $this.text(), function() { $this.data('action')(); });
+		} else if ($this.is('a')) {
+			Anqh.confirm_delete($this.data('confirm') ? $this.data('confirm') : $this.text(), function() { window.location = $this.attr('href'); });
 		} else {
-			Anqh.confirm_delete(action.data('confirm') ? action.data('confirm') : action.text(), function() { action.parent('form').submit(); });
+			Anqh.confirm_delete($this.data('confirm') ? $this.data('confirm') : $this.text(), function() { $this.parent('form').submit(); });
 		}
 	});
 
 
 	// Ajaxify actions
 	$('a.ajaxify').live('click', function() {
-		$(this).closest('section.mod').ajaxify($(this).attr('href'));
+		$(this).closest('section.mod, article.row').ajaxify($(this).attr('href'));
 
 		return false;
 	});
@@ -902,6 +953,22 @@ $(function() {
 	// Slideshows, scrollables
 	$('div.scrollable').scrollable();
 	$('div.slideshow').slideshow();
+
+
+	// Sticky elements
+	$('.sticky').each(function sticky() {
+		var $this      = $(this)
+		  , $container = $this.parent()
+			, limit      = $container.offset().top + $container.outerHeight() - $this.outerHeight();
+
+		$this.scrollToFixed({
+			marginTop: $('#header').outerHeight(),
+			limit:     limit,
+			preFixed:  function sticked() { $this.addClass('sticked'); },
+			postFixed: function unsticked() { $this.removeClass('sticked'); }
+		});
+
+	});
 
 
 	// User default picture

@@ -1,0 +1,148 @@
+body                                   { padding-top: 60px; }
+
+.navbar .nav > li.menuitem-profile     { width: 30px;
+  a                                    { height: auto; margin: 0; padding: 5px 0 0; width: auto; }
+}
+
+#title                                 { margin-bottom: 10px; }
+#side > section + section,
+#side > section + article,
+#side > article + section,
+#side > article + article              { margin-top: @gridGutterWidth; }
+
+section > header                       { position: relative;
+  .nav                                 { position: absolute; right: 0; top: 0; }
+}
+
+article header                         { margin-bottom: 10px;
+  ul li                                { display: inline; }
+  h4 small                             { float: right; }
+}
+
+#footer                                {
+  nav                                  { text-align: center; }
+  nav .nav                             { display: inline-block; }
+  [role=contentinfo]                   { text-align: center; }
+}
+
+.ui-dialog                             { background: @white; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); .border-radius(6px); .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
+  &.fade                               { .transition(e('opacity .3s linear, top .3s ease-out')); top: -25%; }
+  &.fade.in                            { top: 50%; }
+  .ui-dialog-titlebar                  { border-bottom: 1px solid #eee; cursor: move; padding: 9px 15px;
+    .ui-dialog-titlebar-close          { float: right; }
+  }
+  .ui-dialog-content                   { padding: 15px; }
+  .ui-dialog-buttonpane                { background-color: #f5f5f5; .border-radius(0 0 6px 6px); border-top: 1px solid #ddd; .box-shadow(inset 0 1px 0 @white); margin-bottom: 0; padding: 14px 15px 15px; .clearfix();
+    button                             { float: right; margin-left: 5px; margin-bottom: 0; }
+  }
+}
+
+header.sticked                         { background: @white; }
+footer.meta                            { color: @grayLight; }
+
+p.cut,
+.cut li                                { overflow: hidden; -o-text-overflow: ellipsis; text-overflow: ellipsis; white-space: nowrap; }
+
+.avatar                                { display: inline-block; float: left; height: 50px; margin: 5px 10px 5px 0; text-align: center; width: 50px;
+  img                                  { max-height: 100%; max-width: 100%; }
+}
+
+// BBCode
+.markItUpHeader                        { height: 28px; position: relative;
+  & > ul                               { left: 0; margin: 0; position: absolute; top: 0; }
+  ul ul                                { display: none; list-style-type: none; margin: 0; }
+}
+
+#map                                   { height: 200px; width: 100%; }
+
+.newsfeed .ago                         { color: @grayLight; float: right; }
+
+
+/**
+ * Loaned from Foundation by ZURB, http://foundation.zurb.com
+ */
+.block-grid                            { display: block; overflow: hidden;
+  & > li                               { display: block; float: left; height: auto; }
+  &.two-up                             { margin-left: -4% }
+  &.two-up > li                        { margin-left: 4%; width: 46%; }
+/* 	&.two-up > li:nth-child(2n+1)        { clear: left; } */
+  &.three-up                           { margin-left: -2% }
+  &.three-up > li                      { margin-left: 2%; width: 31.3%; }
+/* 	&.three-up > li:nth-child(3n+1)      { clear: left; } */
+  &.four-up                            { margin-left: -2% }
+  &.four-up > li                       { margin-left: 2%; width: 23%; }
+/*  &.four-up > li:nth-child(4n+1)       { clear: left; } */
+  &.five-up                            { margin-left: -1.5% }
+  &.five-up > li                       { margin-left: 1.5%; width: 18.5%; }
+/*  &.five-up > li:nth-child(5n+1)       { clear: left; } */
+}
+
+
+/***** Responsive styles *****/
+
+.hide-on-phones                        { display: block !important; }
+.hide-on-tablets                       { display: block !important; }
+.hide-on-desktops                      { display: none !important; }
+.show-on-phones                        { display: none !important; }
+.show-on-tablets                       { display: none !important; }
+.show-on-desktops                      { display: block !important; }
+table.hide-on-phones,
+table.hide-on-tablets,
+table.show-on-desktops                 { display: table !important; }
+
+/* Phones */
+@media only screen and (max-width: 767px) {
+  .hide-on-phones                      { display: none !important; }
+  .hide-on-tablets                     { display: block !important; }
+  .hide-on-desktops                    { display: block !important; }
+  .show-on-phones                      { display: block !important; }
+  .show-on-tablets                     { display: none !important; }
+  .show-on-desktops                    { display: none !important; }
+  table.show-on-phones,
+  table.hide-on-tablets,
+  table.hide-on-desktops               { display: table !important; }
+}
+
+
+/* Portrait phones */
+@media only screen and (max-width: 479px) {
+}
+
+
+/* Landscape phones */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+}
+
+
+/* Tablets */
+@media only screen and (min-width: 768px) and (max-width: 980px) {
+  .hide-on-phones                      { display: block !important; }
+  .hide-on-tablets                     { display: none !important; }
+  .hide-on-desktops                    { display: block !important; }
+  .show-on-phones                      { display: none !important; }
+  .show-on-tablets                     { display: block !important; }
+  .show-on-desktops                    { display: none !important; }
+  table.hide-on-phones,
+  table.show-on-tablets,
+  table.hide-on-desktops               { display: table !important; }
+}
+
+
+/* Phones and tablets */
+@media only screen and (max-width: 980px) {
+  body {
+    padding-top: 0;
+  }
+  .navbar .nav {
+    margin-bottom: 0 !important;
+  }
+  .navbar .nav > li.menuitem-profile {
+    display: none;
+  }
+}
+
+
+/* Large desktop */
+@media only screen and (min-width: 1200px) {
+
+}
