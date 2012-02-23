@@ -96,7 +96,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	 * @var  integer  Current request type
 	 * @see  REQUEST_*
 	 */
-	protected $_request_type;
+	protected $_request_type = self::REQUEST_INITIAL;
 
 	/**
 	 * @var  string  Response format for request
@@ -136,17 +136,11 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	public function before() {
 		if ($this->request->is_ajax()) {
 			$this->_request_type = self::REQUEST_AJAX;
-		} else if ($this->request->is_initial()) {
-			$this->_request_type = self::REQUEST_INITIAL;
-		} else {
+			$this->ajax          = true;
+		} else if (!$this->request->is_initial()) {
 			$this->_request_type = self::REQUEST_INTERNAL;
+			$this->internal      = true;
 		}
-
-		// Check if this was an internal request or direct
-		$this->internal = $this->_request_type === self::REQUEST_INTERNAL;
-
-		// Ajax request?
-		$this->ajax = $this->_request_type === self::REQUEST_AJAX;
 
 		// Update history (and breadcrumbs)?
 		$this->history = $this->history && !$this->ajax;
@@ -156,7 +150,15 @@ abstract class Anqh_Controller extends Kohana_Controller {
 
 		// Load current user, null if none
 		if (self::$user === false) {
-			Controller::$user = Visitor::instance()->get_user();
+			$visitor = Visitor::instance();
+			Controller::$user = $visitor->get_user();
+
+			// If still no user, try auto login
+			if (!Controller::$user && $visitor->auto_login()) {
+				Controller::$user = $visitor->get_user();
+			}
+
+			unset($visitor);
 		}
 
 		// Update current online user for initial and ajax requests

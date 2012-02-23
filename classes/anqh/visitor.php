@@ -335,7 +335,7 @@ class Anqh_Visitor {
 	/**
 	 * Attempt to log in a user by using an ORM object and plain-text password.
 	 *
-	 * @param   string|User_Model  $user
+	 * @param   string|Model_User  $user
 	 * @param   string             $password  plain text
 	 * @param   boolean            $remember  auto-login
 	 * @return  boolean
@@ -364,7 +364,7 @@ class Anqh_Visitor {
 				$token->create();
 
 				// Set the autologin cookie
-				Cookie::set($this->config['cookie_name'], $token->token, $this->_config['lifetime']);
+				Cookie::set($this->_config['cookie_name'], $token->token, $this->_config['lifetime']);
 			}
 
 			// Finish the login
