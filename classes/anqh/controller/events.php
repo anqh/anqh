@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Events extends Controller_Page {
@@ -31,6 +31,16 @@ class Anqh_Controller_Events extends Controller_Page {
 	 */
 	public $stamp_end = null;
 
+	/**
+	 * @var  integer  Next page
+	 */
+	public $stamp_next;
+
+	/**
+	 * @var  integer  Previous page
+	 */
+	public $stamp_previous;
+
 
 	/**
 	 * Construct controller
@@ -39,10 +49,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		parent::before();
 
 		$this->date = new DateTime;
-
-		if (Permission::has(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user)) {
-			$this->page_actions[] = array('link' => Route::url('events', array('action' => 'flyers')), 'text' => __('Import flyers'));
-		}
 	}
 
 
@@ -119,26 +125,43 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 		Permission::required($event, Model_Event::PERMISSION_READ, self::$user);
 
-		$this->view->event = $event;
+		// Build page
+		$this->view = View_Page::factory($event->name);
 
 		// Set actions
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($event, 'edit'), 'text' => __('Edit event'), 'class' => 'event-edit');
+			$this->page_actions[] = array(
+				'link'  => Route::model($event, 'edit'),
+				'text'  => '<i class="icon-edit"></i> ' . __('Edit event'),
+				'class' => 'event-edit',
+			);
 		}
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
 			if ($event->is_favorite(self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(), 'text' => __('Remove favorite'), 'class' => 'favorite-delete');
+				$this->page_actions[] = array(
+					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
+					'text'  => '<i class="icon-star-empty"></i> ' . __('Remove favorite'),
+					'class' => 'favorite-delete',
+				);
 			} else {
-				$this->page_actions[] = array('link' => Route::model($event, 'favorite') . '?token=' . Security::csrf(), 'text' => __('Add to favorites'), 'class' => 'favorite-add');
+				$this->page_actions[] = array(
+					'link'  => Route::model($event, 'favorite') . '?token=' . Security::csrf(),
+					'text'  => '<i class="icon-star icon-white"></i> ' . __('Add to favorites'),
+					'class' => 'btn-primary favorite-add',
+				);
 			}
 		}
+		$this->page_actions[] = array(
+			'link'  => Route::get('gallery_event')->uri(array('id' => $event->id)),
+			'text'  => '<i class="icon-camera"></i> ' . __('Gallery') . ' &raquo;',
+		);
+		$this->page_actions[] = array(
+			'link'  => Route::get('forum_event')->uri(array('id' => $event->id)),
+			'text'  => '<i class="icon-comment"></i> ' . __('Forum') . ' &raquo;',
+		);
 
-		$this->view->title = $event->name;
-		// $this->page_subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
-		$this->view->subtitle  = HTML::anchor(Route::get('forum_event')->uri(array('id' => $event->id)), __('Go to discussion'));
-		$this->view->subtitle .= ' | ' . HTML::anchor(Route::get('gallery_event')->uri(array('id' => $event->id)), __('Go to gallery'));
 
-		// Facebook
+		// Share
 		if (Kohana::config('site.facebook')) {
 			Anqh::open_graph('type', 'activity');
 			Anqh::open_graph('title', $event->name);
@@ -150,10 +173,10 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 		Anqh::share(true);
 
-		// Event performers and extra info
-		Widget::add('main', View_Module::factory('events/event', array('event' => $event)));
+		// Event main info
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_event_main($event));
 
-		Widget::add('side', $this->section_share());
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 
 		// Event flyers
 		if (count($flyers = $event->flyers()) > 1) {
@@ -165,23 +188,20 @@ class Anqh_Controller_Events extends Controller_Page {
 			$classes = array();
 			$event->flyer_front_image_id and $classes[$event->flyer_front_image_id] = 'front default active ';
 			$event->flyer_back_image_id and $classes[$event->flyer_back_image_id] = 'back ';
-			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
+			$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory('generic/image_slideshow', array(
 				'images'  => array_reverse($images),
 				'classes' => $classes,
 			)));
 		}
 
-		Widget::add('side', $this->_get_mod_image($event));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_image($event));
 
-		// Event quick info
-		Widget::add('side', View_Module::factory('events/event_info', array(
-			//'mod_title' => __('Event information'),
-			'event'     => $event
-		)));
+		// Event side info
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
 
 		// Favorites
 		if ($event->favorite_count) {
-			Widget::add('side', View_Module::factory('generic/users', array(
+			$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory('generic/users', array(
 				'mod_title' => _('Favorites'),
 				'viewer'    => self::$user,
 				'users'     => $event->find_favorites()
@@ -444,7 +464,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
 			if ($this->_request_type === Controller::REQUEST_AJAX) {
-				$this->response->body($this->_get_mod_image($event));
+				$this->response->body($this->section_event_image($event));
 
 				return;
 			}
@@ -504,7 +524,8 @@ class Anqh_Controller_Events extends Controller_Page {
 				NewsfeedItem_Events::event_edit(self::$user, $event);
 
 				if ($this->_request_type === Controller::REQUEST_AJAX) {
-					$this->response->body($this->_get_mod_image($event));
+					$this->response->body($this->section_event_image($event));
+
 					return;
 				}
 
@@ -517,20 +538,12 @@ class Anqh_Controller_Events extends Controller_Page {
 			}
 		}
 
-		$view = View_Module::factory('events/flyer_upload', array(
-			'mod_title' => __('Add flyer'),
-			'ajaxify'   => $this->ajax,
-			'errors'    => $errors,
-			'cancel'    => $this->ajax ? Route::model($event, 'image') . '?cancel' : Route::model($event),
-		));
-
 		$this->view->errors = &$errors;
 		$this->view->event  = &$event;
 
+		$view = $this->section_flyer_upload($this->_request_type === Controller::REQUEST_AJAX ? Route::model($event, 'image') . '?cancel' : Route::model($event), $errors);
 		if ($this->_request_type === Controller::REQUEST_AJAX) {
-			echo $view;
-
-			exit;
+			$this->response->body($view);
 		}
 	}
 
@@ -554,8 +567,8 @@ class Anqh_Controller_Events extends Controller_Page {
 				$this->stamp_end = strtotime('+1 week', $this->stamp_end);
 			}
 
-			$previous = strtotime('last monday', $this->stamp_begin);
-			$next     = $this->stamp_end;
+			$this->stamp_previous = strtotime('last monday', $this->stamp_begin);
+			$this->stamp_next     = $this->stamp_end;
 		} else {
 			$year = $year ? $year : date('Y');
 			if ($week) {
@@ -565,14 +578,17 @@ class Anqh_Controller_Events extends Controller_Page {
 				$month = $month ? $month : date('n');
 				$this->stamp_begin = mktime(0, 0, 0, $month, $day, $year);
 			}
-			$this->stamp_end = strtotime('+1 week', $this->stamp_begin);
-			$previous        = strtotime('-1 week', $this->stamp_begin);
-			$next            = $this->stamp_end;
+			$this->stamp_end      = strtotime('+1 week', $this->stamp_begin);
+			$this->stamp_previous = strtotime('-1 week', $this->stamp_begin);
+			$this->stamp_next     = $this->stamp_end;
 		}
 
 
 		// Build page
 		$this->view = View_Page::factory(__('Events'));
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_pagination());
 
 		// Filters
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters());
@@ -593,10 +609,18 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_updated());
 
 		// Set actions
-		$this->page_actions[] = array('link' => Route::url('events_ymd', array('year' => date('Y', $previous), 'month' => date('m', $previous), 'day' => date('d', $previous))), 'text' => __('Previous'));
-		$this->page_actions[] = array('link' => Route::url('events_ymd', array('year' => date('Y', $next),     'month' => date('m', $next),     'day' => date('d', $next))),     'text' => __('Next'));
+		if (Permission::has(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user)) {
+			$this->page_actions[] = array(
+				'link' => Route::url('events', array('action' => 'flyers')),
+				'text' => '<i class="icon-download-alt"></i> ' . __('Import flyers'),
+			);
+		}
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::get('events')->uri(array('action' => 'add')), 'text' => __('Add event'), 'class' => 'event-add');
+			$this->page_actions[] = array(
+				'link'  => Route::get('events')->uri(array('action' => 'add')),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add event'),
+				'class' => 'btn-primary event-add',
+			);
 		}
 
 		// Load events
@@ -644,11 +668,15 @@ class Anqh_Controller_Events extends Controller_Page {
 			Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
 			$cancel = Request::back(Route::model($event), true);
 
-			$this->page_title = HTML::chars($event->name);
+			$this->view = View_Page::factory(HTML::chars($event->name));
 
 			// Set actions
 			if (Permission::has($event, Model_Event::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($event, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete event'), 'class' => 'event-delete');
+				$this->page_actions[] = array(
+					'link' => Route::model($event, 'delete') . '?token=' . Security::csrf(),
+					'text' => '<i class="icon-trash icon-white"></i> ' . __('Delete event'),
+					'class' => 'btn-danger event-delete'
+				);
 			}
 			$edit = true;
 
@@ -660,7 +688,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			Permission::required($event, Model_Event::PERMISSION_CREATE, self::$user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
-			$this->page_title = __('New event');
+			$this->view = View_Page::factory(__('New event'));
 
 			$event->author_id = self::$user->id;
 			$event->created   = time();
@@ -777,7 +805,15 @@ class Anqh_Controller_Events extends Controller_Page {
 			}
 		}
 
-		Widget::add('top', View_Module::factory('events/edit', array(
+		Form::$bootsrap = true;
+		$section = $this->section_event_edit($event);
+		$section->event_errors = isset($event_validation) ? $event_validation->array->errors('validation') : null;
+		$section->venue        = isset($venue) ? $venue : $event->venue;
+		$section->venue_errors = isset($venue_validation) ? $venue_validation->array->errors('validation') : null;
+		$section->cancel       = $cancel;
+		$this->view->add(View_Page::COLUMN_TOP, $section);
+
+		Widget::add('topp', View_Module::factory('events/edit', array(
 			'event'        => $event,
 			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
 			'tags'         => $tags,
@@ -824,6 +860,87 @@ class Anqh_Controller_Events extends Controller_Page {
 		$section->url_month = Route::url('events') . '/:year/:month';
 
 		return $section;
+	}
+
+
+	/**
+	 * Get event edit form.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Event_Edit
+	 */
+	public function section_event_edit(Model_Event $event) {
+		return new View_Event_Edit($event);
+	}
+
+
+	/**
+	 * Get side image.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Generic_SideImage
+	 */
+	protected function section_event_image(Model_Event $event) {
+
+		// Display front flyer by default
+		if ($image = $event->flyer_front()) {
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
+			$link  = Route::model($flyer);
+		} else if ($image = $event->flyer_back()) {
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
+			$link  = Route::model($flyer);
+		} else if (count($flyers = $event->flyers())) {
+			$flyer = $flyers[0];
+			$image = $flyer->image();
+			$link  = Route::model($flyer);
+		} else {
+			$image = null;
+			$link  = null;
+		}
+
+		if (Permission::has($event, Model_User::PERMISSION_UPDATE, self::$user)) {
+			$uri     = Route::model($event, 'image');
+			$actions = array();
+			$actions[] = HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' . __('Add flyer'), array('class' => 'btn btn-small btn-primary image-add ajaxify'));
+			if ($image) {
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&front=' . $image->id,  __('As front'), array('class' => 'btn btn-small image-change' . ($event->flyer_front_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'front'));
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&back=' . $image->id,   __('As back'),  array('class' => 'btn btn-small image-change' . ($event->flyer_back_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'back'));
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-small image-delete'));
+			}
+		} else {
+			$actions = null;
+		}
+
+		$section = new View_Generic_SideImage($image, $link);
+		$section->actions = $actions;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get event side info.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Event_Info
+	 */
+	public function section_event_info(Model_Event $event) {
+		return new View_Event_Info($event);
+	}
+
+
+	/**
+	 * Get event main info.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Event_Main
+	 */
+	public function section_event_main(Model_Event $event) {
+		if ($event->dj || $event->info) {
+			return new View_Event_Main($event);
+		} else {
+			return new View_Alert('No performer info available.', null, View_Alert::INFO);
+		}
 	}
 
 
@@ -883,11 +1000,53 @@ class Anqh_Controller_Events extends Controller_Page {
 
 
 	/**
+	 * Get flyer upload.
+	 *
+	 * @param   string  $cancel  URL
+	 * @param   array   $errors
+	 * @return  View_Event_FlyerUpload
+	 */
+	public function section_flyer_upload($cancel = null, $errors = null) {
+		$section = new View_Event_FlyerUpload();
+		$section->title  = __('Add flyer');
+		$section->cancel = $cancel;
+		$section->errors = $errors;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get pagination.
+	 *
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_pagination() {
+		return new View_Generic_Pagination(array(
+			'previous_text' => '&laquo; ' . __('Previous events'),
+			'next_text'     => __('Next events') . ' &raquo;',
+			'previous_url'  => Route::url('events_ymd', array(
+					'year'  => date('Y', $this->stamp_previous),
+					'month' => date('m', $this->stamp_previous),
+					'day'   => date('d', $this->stamp_previous))),
+			'next_url'      => Route::url('events_ymd', array(
+					'year'  => date('Y', $this->stamp_next),
+					'month' => date('m', $this->stamp_next),
+					'day'   => date('d', $this->stamp_next))),
+		));
+	}
+
+
+	/**
 	 * Get events.
 	 *
 	 * @return  View_Events_Day[]
 	 */
 	public function sections_events() {
+		if (!$this->_events()) {
+			return new View_Alert(__('There be no events for selected period, period.'), null, View_Alert::INFO);
+		}
+
 		$days = array();
 		foreach ($this->_events() as $date => $cities) {
 			$section = new View_Events_Day();
@@ -946,49 +1105,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 
 		return $filters;
-	}
-
-
-	/**
-	 * Get image mod
-	 *
-	 * @param   Model_Event  $event
-	 * @return  View_Module
-	 */
-	protected function _get_mod_image(Model_Event $event) {
-
-		// Display front flyer by default
-		if ($image = $event->flyer_front()) {
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
-			$link  = Route::model($flyer);
-		} else if ($image = $event->flyer_back()) {
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
-			$link  = Route::model($flyer);
-		} else if (count($flyers = $event->flyers())) {
-			$flyer = $flyers[0];
-			$image = $flyer->image();
-			$link  = Route::model($flyer);
-		} else {
-			$image = null;
-			$link  = null;
-		}
-
-		if (Permission::has($event, Model_User::PERMISSION_UPDATE, self::$user)) {
-			$actions = array();
-			$actions[] = array('link' => Route::model($event, 'image'), 'text' => __('Add flyer'), 'class' => 'image-add ajaxify');
-			if ($image) {
-				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&front=' . $image->id,  'text' => __('As front'), 'class' => 'image-change' . ($event->flyer_front_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'front');
-				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&back=' . $image->id,   'text' => __('As back'), 'class' => 'image-change' . ($event->flyer_back_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'back');
-				$actions[] = array('link' => Route::model($event, 'image') . '?token=' . Security::csrf() . '&delete=' . $image->id, 'text' => __('Delete'), 'class' => 'image-delete');
-			}
-		} else {
-			$actions = null;
-		}
-		return View_Module::factory('generic/side_image', array(
-			'mod_actions2' => $actions,
-			'image'        => $image,
-			'link'         => $link,
-		));
 	}
 
 }

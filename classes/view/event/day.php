@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Event_Day extends View_Article {
@@ -19,6 +19,11 @@ class View_Event_Day extends View_Article {
 	 */
 	public $event;
 
+	/**
+	 * @var  boolean  Prefix content
+	 */
+	public $prefixed = true;
+
 
 	/**
 	 * Create new view.
@@ -30,9 +35,8 @@ class View_Event_Day extends View_Article {
 
 		$this->event = $event;
 
-		$this->id        = 'event-' . $event->id;
-		$this->title     = HTML::anchor(Route::model($event), $event->name);
-		$this->actions[] = HTML::chars($event->city_name);
+		$this->id    = 'event-' . $event->id;
+		$this->title = HTML::anchor(Route::model($event), $event->name) . ' <small>' . HTML::chars($event->city_name) . '</small>';
 
 		// Flyer
 		if ($image = $event->flyer_front()) {

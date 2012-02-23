@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Events_Day extends View_Section {
@@ -24,13 +24,18 @@ class View_Events_Day extends View_Section {
 	 */
 	public $events = null;
 
+	/**
+	 * @var  boolean  Sticky dates
+	 */
+	public $title_sticky = true;
+
 
 	/**
 	 * Executed before rendering.
 	 */
 	public function before() {
 
-		// Generate section title of none set
+		// Generate section title if none set
 		if (is_null($this->title) && $this->date) {
 			if ($this->date == date('Y-m-d')) {
 				$this->title  = __('Today');
@@ -44,8 +49,8 @@ class View_Events_Day extends View_Section {
 		// Add articles
 		foreach ((array)$this->events as $city => $events) {
 			foreach ($events as $event) {
-				$article        = new View_Event_Day($event);
-				$article->class = 'event city-' . URL::title($city);
+				$article         = new View_Event_Day($event);
+				$article->class .= ' city-' . URL::title($city);
 
 				$this->articles[] = $article;
 			}

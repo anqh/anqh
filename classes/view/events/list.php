@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Events_List extends View_Section {
@@ -34,7 +34,7 @@ class View_Events_List extends View_Section {
 
 ?>
 
-<ul>
+<ul class="unstyled">
 
 	<?php foreach ($this->events as $event) { ?>
 	<li>
