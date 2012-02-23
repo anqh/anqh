@@ -34,7 +34,7 @@
 	<?php /*echo HTML::script_source("
 head
 	.js(
-		{ 'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js' },
+		{ 'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js' },
 		{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js' },
 		{ 'jquery-tools': '" . URL::base() . "js/jquery.tools.min.js' }
 	)
@@ -201,12 +201,15 @@ head
 
 <?php echo HTML::script_source("
 head.js(
-	{ 'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js' },
+	{ 'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js' },
 	{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js' },
 	{ 'jquery-tools': '" . URL::base() . "js/jquery.tools.min.js' },
 	{ 'jquery-form': '" . URL::base() . "js/jquery.form.js' },
 	{ 'jquery-overflow': '" . URL::base() . "js/jquery.text-overflow.js' },
 	{ 'jquery-imgarea': '" . URL::base() . "js/jquery.imgareaselect.js' },
+	{ 'jquery-scroll': '" . URL::base() . "js/jquery-scrolltofixed-min.js' },
+	{ 'jquery-markitup': '" . URL::base() . "js/jquery.markitup.pack.js' },
+	{ 'jquery-bbcode': '" . URL::base() . "js/markitup.bbcode.js' },
 	{ 'anqh': '" . URL::base() . "js/anqh.js?2' },
 	function() {
 		Anqh.geoNamesURL = '" . Kohana::config('geo.base_url') . "';
