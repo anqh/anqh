@@ -36,7 +36,7 @@ class View_Event_Day extends View_Article {
 		$this->event = $event;
 
 		$this->id    = 'event-' . $event->id;
-		$this->title = HTML::anchor(Route::model($event), $event->name) . ' <small>' . HTML::chars($event->city_name) . '</small>';
+		$this->title = HTML::anchor(Route::model($event), HTML::chars($event->name)) . ' <small>' . HTML::chars($event->city_name) . '</small>';
 
 		// Flyer
 		if ($image = $event->flyer_front()) {
@@ -75,7 +75,7 @@ class View_Event_Day extends View_Article {
 		if ($this->event->venue_hidden) {
 			$venue = __('Underground');
 		} else if ($venue  = $this->event->venue()) {
-			$venue = HTML::anchor(Route::model($venue), $venue->name);
+			$venue = HTML::anchor(Route::model($venue), HTML::chars($venue->name));
 		} else {
 			$venue = HTML::chars($this->event->venue_name);
 		}
