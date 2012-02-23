@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Article extends View_Base {
@@ -23,6 +23,16 @@ class Anqh_View_Article extends View_Base {
 	 * @var  string  Article prefix
 	 */
 	public $prefix;
+
+	/**
+	 * @var  boolean  Prefix content with empty if $prefix not set
+	 */
+	public $prefixed = false;
+
+	/**
+	 * @var  integer  Article grid width
+	 */
+	public $span = 8;
 
 	/**
 	 * @var  string  Article title
@@ -63,9 +73,7 @@ class Anqh_View_Article extends View_Base {
 ?>
 
 <footer class="meta">
-
 	<?php echo $meta ?>
-
 </footer>
 
 <?php
@@ -93,7 +101,7 @@ class Anqh_View_Article extends View_Base {
 <header>
 
 	<?php if ($actions) { ?>
-	<ul><li><?php echo implode('</li><li>', $actions) ?></li></ul>
+	<div class="btn-group"><?php echo implode(' ', $actions) ?></div>
 	<?php } ?>
 
 	<?php if ($title) { ?>
@@ -132,7 +140,7 @@ class Anqh_View_Article extends View_Base {
 
 ?>
 
-<div class="prefix">
+<div class="span1 prefix">
 
 	<?php echo $this->prefix ?>
 
@@ -164,22 +172,33 @@ class Anqh_View_Article extends View_Base {
 		// Section attributes
 		$attributes = array(
 			'id'    => $this->id,
-			'class' => $this->class,
+			'class' => 'row ' . $this->class,
 		);
+
+		// Get prefix
+		$prefix = $this->prefix();
+
+		// Grid elements
+		$content_grid = 'span' . ($prefix || $this->prefixed ? $this->span - 1 : $this->span);
+
+		// Offset content if prefix wanted but not given
+		if ($this->prefixed && !$prefix) {
+			$content_grid .= ' offset1';
+		}
+
 ?>
 
 <article<?php echo HTML::attributes($attributes) ?>>
 
-	<?php echo $this->prefix() ?>
+	<?php echo $prefix ?>
 
-	<div class="content">
+	<div class="<?php echo $content_grid ?> content">
 		<?php echo $this->header() ?>
 
 		<?php echo $this->content() ?>
+
+		<?php echo $this->footer() ?>
 	</div>
-
-	<?php echo $this->footer() ?>
-
 </article>
 
 <?php

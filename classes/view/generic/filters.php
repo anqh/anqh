@@ -32,97 +32,85 @@ class View_Generic_Filters extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		ob_start();
+		if (!$this->filters) {
+			return '';
+		}
 
-		echo Form::open(null, array('class' => 'filters pills'));
+		ob_start();
 
 		foreach ($this->filters as $type => $filter) {
 ?>
 
-<fieldset>
-	<!-- <legend><?php echo HTML::chars($filter['name']) ?>:</legend>-->
-	<ul>
-		<li>
-			<?php echo Form::checkbox('filter[]', 'all', true, array('id' => 'all-' . $type)) ?>
-			<?php echo Form::label('all-' . $type, __('All')) ?>
-		</li>
+<div class="btn-toolbar filters">
+	<div class="btn-group" data-toggle="buttons-checkbox">
+		<a data-filter="all" class="btn btn-small active"><?php echo __('All') ?></a>
+	</div>
+
+	<div class="btn-group" data-toggle="buttons-checkbox">
+
 		<?php foreach ($filter['filters'] as $key => $name) { ?>
-		<li>
-			<?php echo Form::checkbox('filter[]', $type . '-' . $key, false, array('id' => $type . '-' . $key)) ?>
-			<?php echo Form::label($type . '-' . $key, $name) ?>
-		</li>
+		<a data-filter="<?php echo $type . '-' . $key ?>" class="btn btn-small"><?php echo HTML::chars($name) ?></a>
 		<?php } ?>
-	</ul>
-</fieldset>
 
-<?php
-		}
+	</div>
+</div>
 
-		echo form::close();
+<?php } ?>
 
-		Widget::add('footer', html::script_source('
-		function filters(all) {
-			if (all) {
+<script>
+(function() {
 
-				// Open all
-				$("form.filters input").each(function() {
-					$("." + this.id + ":hidden").slideDown("normal");
-				});
+	// Hook clicks
+	head.ready('jquery-ui', function hookFilters() {
+		$('.btn-toolbar.filters a').on('click', function filterClick() {
+			var activated = !$(this).hasClass('active'); // Class is toggled after this
+			var filter = $(this).data('filter');
 
-			} else {
+			if (filter === 'all' && activated) {
 
-				// Filter individually
-				$("form.filters input").each(function() {
-					if ($(this).is(":checked")) {
-						$("." + this.id + ":hidden").slideDown("normal");
-					} else {
-						$("." + this.id + ":visible").slideUp("normal");
-					}
-				});
+				// Show all
+				$('.btn-toolbar.filters a[data-filter!=all]').removeClass('active');
+
+			} else if (filter !== 'all') {
+
+				// Individual filters, uncheck 'All'
+				$('.btn-toolbar.filters a[data-filter=all]').removeClass('active');
 
 			}
-		}
 
-		head.ready("jquery-ui", function() {
+			// Show/hide filtered items
+			$('.btn-toolbar.filters a').each(function filterToggle() {
+				var filtering = $(this).data('filter');
+				var active    = $(this).hasClass('active');
 
-			// Hook clicks
-			$("form.filters :checkbox").click(function() {
-
-				var checked = $(this).is(":checked");
-
-				if ($(this).val() != "all") {
-
-					// Individual filters
-					if (checked) {
-
-						// Uncheck "all"
-						$("form.filters input[value=all]").attr("checked", false);
-
-					}
-
-					// Check "all" if no other filters
-					if ($("form.filters input[value!=all]").is(":checked") == false) {
-						$("form.filters input[value=all]").attr("checked", "checked");
-						filters(true);
-					} else {
-						filters();
-					}
-
+				if (
+					(filter === 'all' && activated) ||     // All selected
+					(filtering === filter && activated) || // Current filter selected
+					(filtering !== filter && active)       // Other filter already selected
+				) {
+					$('.' + filtering + ':hidden').slideDown('normal');
 				} else {
-
-					// All filters
-					if (!checked) {
-						return false;
-					}
-
-					$("form.filters input[value!=all]").attr("checked", false);
-					filters(checked);
-
+					$('.' + filtering + ':visible').slideUp('normal');
 				}
-
 			});
+
 		});
-		'));
+	});
+
+	/** @todo  Disabled, using filters loses current position
+	// Hook sticky filters
+	head.ready('jquery-fixedscroll', function stickyFilters() {
+		$('#filters').scrollToFixed({
+			marginTop: $('#header').outerHeight(), // Show below header
+			limit:     $(this).parent().outerHeight()
+		});
+	});
+	*/
+
+})();
+</script>
+
+<?php
 
 		return ob_get_clean();
 	}

@@ -14,12 +14,16 @@ class Anqh_HTML extends Kohana_HTML {
 	 *
 	 * @param   string  $avatar
 	 * @param   string  $title
-	 * @param   bool    $mini
+	 * @param   string  $class
 	 * @return  string
 	 */
-	public static function avatar($avatar, $title = '', $mini = false) {
+	public static function avatar($avatar, $title = '', $class = null) {
 		if (empty($avatar) || /*strpos($avatar, ':') ||*/ strpos($avatar, '/') === false) $avatar = 'avatar/unknown.png';
-		$class = $mini ? 'avatar small' : 'avatar';
+		if (!$class) {
+			$class = 'avatar';
+		} else {
+			$class = 'avatar ' . ($class === true ? ' small' : $class);
+		}
 
 		if (empty($title)) {
 			return '<span class="' . $class . '">' . HTML::image($avatar, array('alt' => __('Avatar'))) . '</span>';

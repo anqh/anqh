@@ -120,11 +120,18 @@ class Anqh_View_Page extends View_Base {
 		if (!empty($this->_content[$column])) {
 			ob_start();
 
+			switch ($column) {
+				case self::COLUMN_MAIN: $class = 'span8'; break;
+				case self::COLUMN_SIDE: $class = 'span4'; break;
+				case self::COLUMN_TOP:  $class = 'span12'; break;
+				default:                $class = '';
+			}
+
 ?>
 
-			<div id="<?php echo $column ?>">
+			<div id="<?php echo $column ?>" class="<?php echo $class ?>">
 
-				<?php echo implode("\n\n", $this->_content[$column]) ?>
+				<?php echo implode("\n<!--<br />\n-->", $this->_content[$column]) ?>
 
 			</div><!-- #<?php echo $column ?> -->
 
@@ -147,15 +154,23 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<div id="content">
+	<div id="content" class="container">
 
 		<?php echo $this->_title() ?>
 
-		<?php echo $this->content(self::COLUMN_TOP) ?>
+		<div class="row">
 
-		<?php echo $this->content(self::COLUMN_MAIN) ?>
+			<?php echo $this->content(self::COLUMN_TOP) ?>
 
-		<?php echo $this->content(self::COLUMN_SIDE) ?>
+		</div>
+
+		<div class="row">
+
+			<?php echo $this->content(self::COLUMN_MAIN) ?>
+
+			<?php echo $this->content(self::COLUMN_SIDE) ?>
+
+		</div>
 
 	</div><!-- #content -->
 
@@ -200,15 +215,17 @@ class Anqh_View_Page extends View_Base {
 
 	<script>
 		head.js(
-			{ 'google-maps':     'http://maps.google.com/maps/api/js?sensor=false&callback=isNaN' }, // Use callback hack to initialize correctly
-			{ 'jquery':          'http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js' },
-			{ 'jquery-ui':       'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js' },
-			{ 'jquery-markitup': '<?php echo $this->base ?>js/jquery.markitup.js' },
-			{ 'bbcode':          '<?php echo $this->base ?>js/markitup.bbcode.js' },
-			{ 'jquery-tools':    '<?php echo $this->base ?>js/jquery.tools.min.js' },
-			{ 'jquery-form':     '<?php echo $this->base ?>js/jquery.form.js' },
-			{ 'jquery-imgarea':  '<?php echo $this->base ?>js/jquery.imgareaselect.js' },
-			{ 'anqh':            '<?php echo $this->base ?>js/anqh.js?2' },
+			{ 'google-maps':        'http://maps.google.com/maps/api/js?sensor=false&callback=isNaN' }, // Use callback hack to initialize correctly
+			{ 'jquery':             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js' },
+			{ 'jquery-ui':          'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js' },
+			{ 'bootstrap':          '<?php echo $this->base ?>static/js/bootstrap.js' },
+			{ 'jquery-markitup':    '<?php echo $this->base ?>js/jquery.markitup.js' },
+			{ 'bbcode':             '<?php echo $this->base ?>js/markitup.bbcode.js' },
+			{ 'jquery-tools':       '<?php echo $this->base ?>js/jquery.tools.min.js' },
+			{ 'jquery-form':        '<?php echo $this->base ?>js/jquery.form.js' },
+			{ 'jquery-imgarea':     '<?php echo $this->base ?>js/jquery.imgareaselect.js' },
+			{ 'jquery-fixedscroll': '<?php echo $this->base ?>js/jquery-scrolltofixed.js' },
+			{ 'anqh':               '<?php echo $this->base ?>js/anqh.js?2' },
 			function() {
 				<!-- GeoNames {{#geo}}-->
 				Anqh.geoNamesURL  = '{{url}}';
@@ -246,12 +263,12 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<footer id="footer">
+	<footer id="footer" class="container">
 
 		<section role="complementary">
 
 			<nav role="navigation">
-				<ul role="menubar">
+				<ul role="menubar" class="nav nav-pills">
 					<li role="menuitem"><a href="<?php echo $this->base ?>"><?php echo __('Front page') ?></a></li>
 					<?php foreach (Kohana::config('site.menu') as $id => $item) { ?>
 					<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
@@ -259,9 +276,15 @@ class Anqh_View_Page extends View_Base {
 				</ul>
 			</nav>
 
-			<?php echo $this->footer() ?>
+			<div class="row">
+
+				<?php echo $this->footer() ?>
+
+			</div>
 
 		</section>
+
+		<hr />
 
 		<section role="contentinfo">
 			<?php echo $this->_statistics() ?><br />
@@ -334,7 +357,9 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<header id="header">
+	<header id="header" class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
 
 		<?php echo $this->_notifications() ?>
 
@@ -342,6 +367,8 @@ class Anqh_View_Page extends View_Base {
 
 		<?php echo $this->_visitor() ?>
 
+			</div>
+		</div>
 	</header><!-- #header -->
 
 <?php
@@ -361,8 +388,13 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 	<nav id="mainmenu" role="navigation">
-		<ul role="menubar">
-			<li role="menuitem"><h1><a href="<?php echo $this->base ?>"><?php echo Kohana::config('site.site_name') ?></a></h1></li>
+		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</a>
+		<a class="brand" href="<?php echo $this->base ?>"><?php echo Kohana::config('site.site_name') ?></a>
+		<ul class="nav nav-collapse" role="menubar">
 			<?php foreach (Kohana::config('site.menu') as $id => $item) { ?>
 			<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
 			<?php } ?>
@@ -533,7 +565,7 @@ class Anqh_View_Page extends View_Base {
 			<header id="title">
 
 				<?php if ($this->title) { ?>
-				<h2><?php echo HTML::chars($this->title) ?></h2>
+				<h1><?php echo HTML::chars($this->title) ?></h1>
 				<?php } ?>
 
 				<?php if ($this->subtitle) { ?>
@@ -549,7 +581,7 @@ class Anqh_View_Page extends View_Base {
 							// Action is a link
 							$attributes = $action;
 							unset($attributes['link'], $attributes['text']);
-							$attributes['class'] = isset($attributes['class']) ? 'action ' . $attributes['class'] : 'action';
+							$attributes['class'] = isset($attributes['class']) ? 'btn ' . $attributes['class'] : 'btn';
 							echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
 
 						} else {
@@ -582,6 +614,7 @@ class Anqh_View_Page extends View_Base {
 	protected function _visitor() {
 		ob_start();
 
+		/*
 		// Sunrise
 		if (self::$_user && self::$_user->latitude && self::$_user->longitude) {
 			$latitude  = self::$_user->latitude;
@@ -597,49 +630,39 @@ class Anqh_View_Page extends View_Base {
 			':sunrise' => Date::format(Date::TIME, $sun['sunrise']),
 			':sunset'  => Date::format(Date::TIME, $sun['sunset'])
 		));
+		*/
 
 		if (self::$_user_id) {
 
 			// Authenticated user
 ?>
 
-	<nav id="visitor">
-		<ul role="menubar">
+	<nav id="visitor" class="nav-collapse navbar-text pull-right">
+		<ul class="nav" role="menubar">
 
 			<?php foreach (Anqh::notifications(self::$_user) as $class => $link) { ?>
-			<li role="menuitem" class="menu-notification <?php echo $class ?>"><?php echo $link ?></li>
+			<li role="menuitem" class="<?php echo $class ?>"><?php echo $link ?></li>
 			<?php } ?>
 
-			<li role="menuitem" aria-haspopup="true" class="menu-profile">
-				<?php echo HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?>
-				<?php echo HTML::user(self::$_user) ?>
-				<var>[#<?php echo self::$_user_id ?>]</var>
-				<a href="#" class="toggler" onclick="$('#visitor ul[role=menu]').toggleClass('toggled'); return false;">&#9660;</a>
-				<ul role="menu">
-					<li role="menuitem" class="menu-messages"><?php echo HTML::anchor(Forum::private_messages_url(), __('Private messages'), array('class' => 'icon private-message')) ?></li>
-					<li role="menuitem" class="menu-friends"><?php echo HTML::anchor(URL::user(self::$_user, 'friends'), __('Friends'), array('class' => 'icon friends')) ?></li>
-					<li role="menuitem" class="menu-ignores"><?php echo HTML::anchor(URL::user(self::$_user, 'ignores'), __('Ignores'), array('class' => 'icon ignores')) ?></li>
-					<li role="menuitem" class="menu-settings"><?php echo HTML::anchor(URL::user(self::$_user, 'settings'), __('Settings'), array('class' => 'icon settings')) ?></li>
+			<li role="menuitem" class="menuitem-profile"><?php echo HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?></li>
+
+			<li class="dropdown menu-me" role="menuitem" aria-haspopup="true">
+				<a class="dropdown-toggle" href="#" data-toggle="dropdown"><?php echo HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
+				<ul class="dropdown-menu" role="menu">
+					<li role="menuitem"><a href="<?php echo URL::user(self::$_user->username) ?>"><i class="icon-home"></i> <?php echo __('Profile') ?></a><li>
+					<li role="menuitem"><a href="<?php echo Forum::private_messages_url() ?>"><i class="icon-envelope"></i> <?php echo __('Private messages') ?></a></li>
+					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'friends') ?>"><i class="icon-user"></i> <?php echo  __('Friends') ?></a></li>
+					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'ignores') ?>"><i class="icon-ban-circle"></i> <?php echo __('Ignores') ?></a></li>
+					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'settings') ?>"><i class="icon-cog"></i> <?php echo __('Settings') ?></a></li>
 					<?php if (self::$_user->has_role('admin')) { ?>
-					<li role="menuitem" class="menu-roles admin"><?php echo HTML::anchor(Route::url('roles'), __('Roles'), array('class' => 'icon role')) ?></li>
-					<li role="menuitem" class="menu-roles admin"><?php echo HTML::anchor(Route::url('tags'), __('Tags'), array('class' => 'icon tag')) ?></li>
-					<li role="menuitem" class="menu-roles admin"><?php echo HTML::anchor('#debug', __('Profiler'), array('class' => 'icon profiler', 'onclick' => "\$('div.kohana').toggle();")) ?></li>
+					<li role="menuitem" class="admin"><a href="<?php echo Route::url('roles') ?>"><i class="icon-asterisk"></i> <?php echo __('Roles') ?></a></li>
+					<li role="menuitem" class="admin"><a href="<?php echo Route::url('tags') ?>"><i class="icon-tags"></i> <?php echo __('Tags') ?></a></li>
+					<li role="menuitem" class="admin"><a href="#debug" onclick="$('div.kohana').toggle();"> <i class="icon-signal"></i> <?php echo __('Profiler') ?></a></li>
 					<?php } ?>
 				</ul>
 			</li>
 
 			<li role="menuitem" class="menu-signout"><?php echo HTML::anchor(Route::url('sign', array('action' => 'out')), __('Sign out')) ?></li>
-
-<!--			<li class="menu-theme">
-				Theme: {{#skins}} {{{.}}}{{/skins}}
-			</li>-->
-
-			<li class="menu-clock">
-				<time class="clock">
-					<span class="time"><?php echo Date::format(Date::TIME) ?></span>
-					<span class="icon date" title="<?php echo HTML::chars($sunrise) ?>"><?php echo Date::format(Date::DMY_MEDIUM) ?></span>
-				</time>
-			</li>
 		</ul>
 	</nav><!-- #visitor -->
 
@@ -652,25 +675,13 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="visitor">
-		<form action="<?php echo Route::url('sign', array('action' => 'in')) ?>" method="post">
-			<ul>
-				<li class="input"><?php echo Form::input('username', null, array('placeholder' => __('Username'))) ?></li>
-				<li class="input"><?php echo Form::password('password', null, array('placeholder' => __('Password'))) ?></li>
-				<li class="input"><?php echo Form::submit('signin', __('Sign in')) ?></li>
-				<li><?php echo HTML::anchor(Route::url('sign', array('action' => 'up')), __('Sign up!')) ?></li>
-
-<!--				<li class="menu-theme">
-					Theme: {{#skins}} {{{.}}}{{/skins}}
-				</li>-->
-
-				<li class="menu-clock">
-					<time class="clock">
-						<span class="time"><?php echo Date::format(Date::TIME) ?></span>
-						<span class="icon date" title="<?php echo HTML::chars($sunrise) ?>"><?php echo Date::format(Date::DMY_MEDIUM) ?></span>
-					</time>
-				</li>
-			</ul>
+	<nav id="visitor" class="nav-collapse navbar-text pull-right">
+		<form class="nav form-inline" action="<?php echo Route::url('sign', array('action' => 'in')) ?>" method="post">
+			<?php echo HTML::anchor(Route::url('sign', array('action' => 'up')), __('Sign up!')) ?>
+			<input class="input-small" name="username" type="text" placeholder="<?php echo __('Username') ?>" />
+			<input class="input-small" name="password" type="password" placeholder="<?php echo __('Password') ?>" />
+			<button class="btn-small" type="submit"><?php echo __('Sign in') ?></button>
+			<label class="checkbox"><input type="checkbox" name="remember" value="true" /> <?php echo __('Remember') ?></label>
 		</form>
 	</nav>
 

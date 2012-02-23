@@ -84,7 +84,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	/**
 	 * Get shouts.
 	 *
-	 * @return  View_Shouts
+	 * @return  View_Index_Shouts
 	 */
 	public function section_shouts() {
 		$section = new View_Index_Shouts();

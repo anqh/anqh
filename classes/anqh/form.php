@@ -10,6 +10,11 @@
 class Anqh_Form extends Kohana_Form {
 
 	/**
+	 * @var  boolean  User Twitter bootstrap styles
+	 */
+	public static $bootsrap = false;
+
+	/**
 	 * @var  array  Form errors
 	 */
 	public $errors = null;
@@ -68,11 +73,20 @@ class Anqh_Form extends Kohana_Form {
 		}
 		$checked    = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
-		$label      = $label ? array($attributes['id'] => $label) : '';
 
-		$input = Form::checkbox($name, $value, $checked, $attributes);
+		if (self::$bootsrap) {
+			$input = Form::checkbox($name, $value, $checked, $attributes);
+			$label = is_array($label)
+				? Form::label(null, $input . current($label), array('class' => 'checkbox'))
+				: Form::label(null, $input . $label, array('class' => 'checkbox'));
 
-		return Form::wrap($input, $name, $label, $error, $tip, true);
+			return Form::wrap(null, $name, $label, $error, $tip);
+		} else {
+			$label = $label ? array($attributes['id'] => $label) : '';
+			$input = Form::checkbox($name, $value, $checked, $attributes);
+
+			return Form::wrap($input, $name, $label, $error, $tip, true);
+		}
 	}
 
 
@@ -90,6 +104,16 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
+		if (self::$bootsrap) {
+			$input = $class ? '<ul class="unstyled ' . $class . "\">\n" : "<ul>\n";
+			foreach ($values as $checkbox_value => $checkbox_title) {
+				$id = self::input_id($name) . '-' . $checkbox_value;
+				$input .= '<li>';
+				$input .= Form::checkbox_wrap($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id), $checkbox_title);
+				$input .= "</li>\n";
+			}
+			$input .= "</ul>\n";
+		} else {
 			$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
 			foreach ($values as $checkbox_value => $checkbox_title) {
 				$id = self::input_id($name) . '-' . $checkbox_value;
@@ -99,8 +123,52 @@ class Anqh_Form extends Kohana_Form {
 				$input .= "</li>\n";
 			}
 			$input .= "</ul>\n";
+		}
 
-			return Form::wrap($input, $name, $label, $error, $tip);
+		return Form::wrap($input, $name, $label, $error, $tip);
+	}
+
+
+	/**
+	 * Create Twitter bootstrap styled control group.
+	 *
+	 * @param   string        $input  Input string to be wrapped
+	 * @param   string        $label
+	 * @param   string|array  $label  'Label' or 'input-id' => 'Label'
+	 * @param   string|array  $error  'Fail' or 'error' => 'Fail', 'success' => 'Yay'
+	 * @param   string        $help
+	 * @return  string
+	 */
+	public static function control_group($input, $label = null, $error = null, $help = null) {
+
+		// Wrapper basic class
+		$class = 'control-group ';
+
+		// Extra classes
+		if ($error) {
+			if (is_array($error)) {
+				$class .= implode(' ', array_keys($error));
+				$error  = implode('<br />', $error);
+			} else {
+				$class .= 'error';
+			}
+		}
+
+		// Label
+		if ($label) {
+			$label = Form::label(
+				is_array($label) ? key($label) : null,
+				is_array($label) ? current($label) : $label,
+				array('class' => 'control-label')
+			);
+		}
+
+		// Error / help messages
+		if ($error || $help) {
+			$help = '<p class="help-block">' . $error . ($error && $help ? '<br />' : '') . $help . '</p>';
+		}
+
+		return '<div class="' . $class . '">' . $label . '<div class="controls">' . $input . $help . '</div></div>';
 	}
 
 
@@ -203,9 +271,10 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
+	 * @param   string        $append
 	 * @return  string
 	 */
-	public static function input_wrap($name, $value = null, array $attributes = null, $label = null, $error = null, $tip = null) {
+	public static function input_wrap($name, $value = null, array $attributes = null, $label = null, $error = null, $tip = null, $append = null) {
 		if (is_array($value)) {
 			$value = Arr::get($value, $name);
 		} else if (is_object($value)) {
@@ -214,6 +283,9 @@ class Anqh_Form extends Kohana_Form {
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$label      = $label ? array($attributes['id'] => $label) : '';
 		$input      = Form::input($name, $value, $attributes);
+		if ($append) {
+			$input = '<div class="input-append">' . $input . '<span class="add-on">' . $append . '</span></div>';
+		}
 
 		return Form::wrap($input, $name, $label, $error, $tip);
 	}
@@ -381,6 +453,32 @@ class Anqh_Form extends Kohana_Form {
 
 
 	/**
+	 * Creates a textarea form input with BBCode editor.
+	 *
+	 * @param   string   $name           textarea name
+	 * @param   string   $body           textarea body
+	 * @param   array    $attributes     html attributes
+	 * @param   boolean  $double_encode  encode existing HTML characters
+	 * @return  string
+	 *
+	 * @uses    HTML::attributes
+	 * @uses    HTML::chars
+	 */
+	public static function textarea_editor($name, $body = '', array $attributes = null, $double_encode = true) {
+
+		// Get DOM element
+		if ($element = Arr::get($attributes, 'id')) {
+			$element = '#' . $element;
+		} else {
+			$element = 'textarea[name=' . $name . ']';
+		}
+
+		return Form::textarea($name, $body, $attributes, $double_encode)
+			. HTML::script_source('head.ready("bbcode", function initMarkItUp() { $("' . $element . '").markItUp(bbCodeSettings); });');
+	}
+
+
+	/**
 	 * Creates a textarea form input.
 	 *
 	 * @param   string        $name           textarea name
@@ -406,7 +504,7 @@ class Anqh_Form extends Kohana_Form {
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
 		if ($bbcode) {
 			$input .= HTML::script_source('
-head.ready("bbcode", function() {
+head.ready("bbcode", function initMarkItUp() {
 	$("#' . $attributes['id'] . '").markItUp(bbCodeSettings);
 });
 ');
@@ -459,19 +557,44 @@ head.ready("bbcode", function() {
 		if (!empty($error)) {
 			$attributes['class'] = trim('error ' . Arr::get($attributes, 'class'));
 		}
-		$wrap = '<li' . HTML::attributes($attributes) . '>';
 
-		// Input label if any
-		if ($label) {
-			$label = is_array($label) ? Form::label(key($label), current($label)) : Form::label($name, $label);
+		if (self::$bootsrap) {
+
+			// Twitter bootstrap styles
+			$attributes['class'] .= ' control-group';
+
+			// Label
+			if ($label) {
+				$label = is_array($label)
+					? Form::label(key($label), current($label), array('class' => 'control_label'))
+					: Form::label($name, $label, array('class' => 'control-label'));
+			}
+
+			// Tip
+			if ($tip) {
+				$tip = '<p class="help-block">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
+			}
+
+			return '<div' . HTML::attributes($attributes) . '>' . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</div>\n";
+
+		} else {
+
+			// Errors
+			$wrap = '<li' . HTML::attributes($attributes) . '>';
+
+			// Input label if any
+			if ($label) {
+				$label = is_array($label) ? Form::label(key($label), current($label)) : Form::label($name, $label);
+			}
+
+			// Input tip if any
+			if ($tip) {
+				$tip = '<p class="tip">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
+			}
+
+			return $wrap . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</li>\n";
+
 		}
-
-		// Input tip if any
-		if ($tip) {
-			$tip = '<p class="tip">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
-		}
-
-		return $wrap . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</li>\n";
 	}
 
 }

@@ -64,13 +64,13 @@ class View_Users_Online extends View_Section {
 
 ?>
 
-<ul>
+<ul class="unstyled">
 	<?php foreach ($this->_friends as $user) { ?>
 	<li><?php echo $user ?></li>
 	<?php } ?>
 </ul>
 
-<ul>
+<ul class="unstyled">
 	<?php foreach ($this->_users as $user) { ?>
 	<li><?php echo $user ?></li>
 	<?php } ?>

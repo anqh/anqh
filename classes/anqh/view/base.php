@@ -30,6 +30,11 @@ abstract class Anqh_View_Base {
 	protected $_render = '';
 
 	/**
+	 * @var  integer  Request type
+	 */
+	protected static $_request_type = Controller::REQUEST_INITIAL;
+
+	/**
 	 * @var  Model_User  Current authenticated user, if any
 	 */
 	protected static $_user = null;
@@ -47,6 +52,13 @@ abstract class Anqh_View_Base {
 
 		// Initialize static variables
 		if (!self::$_initialized) {
+
+			// Request type
+			if (Request::current()->is_ajax()) {
+				self::$_request_type = Controller::REQUEST_AJAX;
+			} else if (!Request::current()->is_initial()) {
+				self::$_request_type = Controller::REQUEST_INTERNAL;
+			}
 
 			// Viewing user
 			if (self::$_user = Visitor::instance()->get_user()) {

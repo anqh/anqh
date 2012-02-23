@@ -57,12 +57,12 @@ class View_Newsfeed extends View_Section {
 
 ?>
 
-<ul>
+<ul class="unstyled">
 
 	<?php foreach ($items as $item) { ?>
-	<li>
-		<?php echo $item['avatar'] ?>
-		<?php echo $item['user'] ?> <small class="ago"><?php echo $item['stamp'] ?></small>
+	<li class="row-fluid">
+		<?php echo HTML::avatar($item['user']['avatar'], $item['user']['username'], $this->mini) ?>
+		<?php echo HTML::user($item['user']) ?> <small class="ago"><?php echo  HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
 		<?php echo $item['text'] ?>
 	</li>
 	<?php } ?>
@@ -101,20 +101,7 @@ class View_Newsfeed extends View_Section {
 		}
 		$newsfeed->max_items = $this->limit;
 
-		// Build array
-		$items = array();
-		if ($newsfeed) {
-			foreach ($newsfeed->as_array() as $item) {
-				$items[] = array(
-					'user'   => HTML::user($item['user']),
-					'avatar' => HTML::avatar($item['user']['avatar'], $item['user']['username'], $this->mini),
-					'stamp'  => HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']),
-					'text'   => $item['text'],
-				);
-			}
-		}
-
-		return $items;
+		return (array)$newsfeed->as_array();
 	}
 
 

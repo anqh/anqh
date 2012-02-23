@@ -150,7 +150,7 @@ class View_Users_Birthdays extends View_Section {
 	<?php foreach ($birthdays as $birthday) { ?>
 	<dt><?php echo Arr::get($birthday, 'date') ?> <?php echo Arr::get($birthday, 'link') ?></dt>
 	<dd>
-		<ul>
+		<ul class="unstyled">
 			<?php foreach ($birthday['users'] as $user) { ?>
 			<li><?php echo __($user['age'] == 1 ? ':age year' : ':age years', array(':age' => $user['age'])) ?> <?php echo $user['user'] ?></li>
 			<?php } ?>

@@ -53,7 +53,7 @@ class View_Index_Shouts extends View_Section {
 
 ?>
 
-<ul>
+<ul class="unstyled">
 
 	<?php foreach (array_reverse($shouts) as $shout) { ?>
 	<li>
@@ -66,14 +66,10 @@ class View_Index_Shouts extends View_Section {
 </ul>
 
 <?php if ($this->_can_shout) { ?>
-<form action="<?php echo Route::url('shouts', array('action' => 'shout')) ?>" method="post" class="ajaxify">
-	<fieldset class="horizontal">
-		<ul>
-			<li><input type="text" name="shout" maxlength="300" /></li>
-			<li><input type="submit" name="submit" value="Shout" /></li>
-		</ul>
-		<?php echo Form::CSRF() ?>
-	</fieldset>
+<form class="form-inline ajaxify" action="<?php echo Route::url('shouts', array('action' => 'shout')) ?>" method="post">
+	<input type="text" name="shout" maxlength="300" placeholder="<?php echo __('Shout, and ye shall be heard..') ?>" />
+	<button class="btn" type="submit" name="submit"><?php echo __('Shout') ?></button>
+	<?php echo Form::CSRF() ?>
 </form>
 <?php
 			}

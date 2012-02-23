@@ -29,6 +29,11 @@ class Anqh_View_Section extends View_Base {
 	 */
 	public $title;
 
+	/**
+	 * @var  boolean  Sticky title
+	 */
+	public $title_sticky = false;
+
 
 	/**
 	 * Get section articles.
@@ -65,18 +70,22 @@ class Anqh_View_Section extends View_Base {
 		if ($title || $tabs) {
 			ob_start();
 
+			$attributes = array();
+			if ($this->title_sticky) {
+				$attributes['class'] = 'sticky';
+			}
 ?>
 
-<header>
+<header<?php echo HTML::attributes($attributes) ?>>
 
 	<?php if ($title) { ?>
 	<h3><?php echo HTML::chars($title) ?></h3>
 	<?php } ?>
 
 	<?php if ($tabs) { ?>
-	<ul>
+	<ul class="nav nav-pills">
 		<?php foreach ($tabs as $tab) { ?>
-		<li<?php echo !empty($tab['selected']) ? ' class="selected"' : ''?>><?php echo $tab['tab'] ?></li>
+		<li<?php echo !empty($tab['selected']) ? ' class="active"' : ''?>><?php echo $tab['tab'] ?></li>
 		<?php } ?>
 	</ul>
 	<?php } ?>
