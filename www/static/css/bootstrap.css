@@ -3500,6 +3500,9 @@ a.thumbnail:hover {
 body {
   padding-top: 60px;
 }
+.navbar .btn {
+  margin-top: 0;
+}
 .navbar .nav > li.menuitem-profile {
   width: 30px;
 }
