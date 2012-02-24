@@ -680,8 +680,8 @@ class Anqh_View_Page extends View_Base {
 			<?php echo HTML::anchor(Route::url('sign', array('action' => 'up')), __('Sign up!')) ?>
 			<input class="input-small" name="username" type="text" placeholder="<?php echo __('Username') ?>" />
 			<input class="input-small" name="password" type="password" placeholder="<?php echo __('Password') ?>" />
-			<button class="btn-small" type="submit"><?php echo __('Sign in') ?></button>
-			<label class="checkbox"><input type="checkbox" name="remember" value="true" /> <?php echo __('Remember') ?></label>
+			<button class="btn btn-small btn-primary" type="submit" title="<?php echo __('Automatically sign out if idle') ?>"><?php echo __('Sign in') ?></button>
+			<button class="btn btn-small btn-inverse" type="submit" name="remember" value="true" title="<?php echo __('Remember your sign in on this browser') ?>"><?php echo __('Stay in') ?></button>
 		</form>
 	</nav>
 
