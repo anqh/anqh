@@ -60,10 +60,11 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 <?php echo HTML::script_source('
 head.ready("jquery", function() {
 	head.js(
-		{ "jquery-upload": "' . URL::base() . 'js/jquery.html5_upload.js" },
-		function() {
+		{ "jquery-upload": "' . URL::base() . 'js/jquery.html5_upload.js?3" },
+		function upload_loaded() {
+			var $field = $("#' . $field_id . '");
 
-			$("#' . $field_id . '")
+			$field
 				.html5_upload({
 					url: $("#form-multiple-upload").attr("action"),
 					autostart: false,
@@ -113,7 +114,7 @@ head.ready("jquery", function() {
 						$("#progress-report .progress-bar div").css("width", Math.ceil(val * 100) + "%");
 					}
 				})
-			.bind("change", function() {
+			.on("change", function addFiles() {
 				$("#progress-files").show();
 				var files = this.files;
 				var total = files.length;
@@ -126,9 +127,12 @@ head.ready("jquery", function() {
 				$("#progress-files tfoot").html("<tr><th>" + total + " file(s)</th><th colspan=\"2\">" + Math.round(size / 1024) + "kB</th></tr>");
 			});
 
-			$("#form-multiple-upload").bind("submit", function() {
+			$("#form-multiple-upload").on("submit", function uploadFiles(event) {
+				event.preventDefault();
+
 				$("#progress-report").show();
-				$("#' . $field_id . '").trigger("html5_upload.start");
+				$field.trigger("html5_upload.start");
+
 				return false;
 			});
 
