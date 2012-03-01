@@ -1209,7 +1209,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			),
 		);
 
-		Widget::add('head', HTML::script('js/jquery.html5_upload.js'));
 		Widget::add('main', View_Module::factory('form/multiple_upload', array(
 			'mod_title' => __('Upload images'),
 			'form'      => $form,
