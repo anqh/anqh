@@ -1,23 +1,18 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Event_HoverCard
+ * Event HoverCard
  *
  * @package    Events
  * @author     Antti Qvickström
  * @copyright  (c) 2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class View_Event_HoverCard extends View_Base {
+class View_Event_HoverCard extends View_Article {
 
 	/**
 	 * @var  Model_Event
 	 */
 	public $event;
-
-	/**
-	 * @var  integer  Article grid width
-	 */
-	public $span = 3;
 
 
 	/**
@@ -29,26 +24,17 @@ class View_Event_HoverCard extends View_Base {
 		parent::__construct();
 
 		$this->event = $event;
+		$this->title = HTML::chars($this->event->name);
 	}
 
 
 	/**
-	 * Render view.
+	 * Render content.
 	 *
 	 * @return  string
 	 */
-	public function render() {
+	public function content() {
 		ob_start();
-
-?>
-
-<article>
-
-	<header>
-		<h4><?php echo HTML::chars($this->event->name) ?></h4>
-	</header>
-
-<?php
 
 		// Stamp
 		echo HTML::time(Date('l ', $this->event->stamp_begin) . Date::format('DDMMYYYY', $this->event->stamp_begin), $this->event->stamp_begin, true);
@@ -70,12 +56,6 @@ class View_Event_HoverCard extends View_Base {
 		elseif (Valid::url($this->event->flyer_front_url)):
 			echo '<br />', HTML::image($this->event->flyer_front_url, array('width' => 160));
 		endif;
-
-?>
-
-</article>
-
-<?php
 
 		return ob_get_clean();
 	}

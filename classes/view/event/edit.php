@@ -25,11 +25,6 @@ class View_Event_Edit extends View_Article {
 	public $event_errors;
 
 	/**
-	 * @var  integer  Grid span
-	 */
-	public $span = 12;
-
-	/**
 	 * @var  Model_Venue
 	 */
 	public $venue;

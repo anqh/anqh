@@ -19,11 +19,6 @@ class View_Event_Day extends View_Article {
 	 */
 	public $event;
 
-	/**
-	 * @var  boolean  Prefix content
-	 */
-	public $prefixed = true;
-
 
 	/**
 	 * Create new view.
@@ -37,22 +32,6 @@ class View_Event_Day extends View_Article {
 
 		$this->id    = 'event-' . $event->id;
 		$this->title = HTML::anchor(Route::model($event), HTML::chars($event->name)) . ' <small>' . HTML::chars($event->city_name) . '</small>';
-
-		// Flyer
-		if ($image = $event->flyer_front()) {
-			$icon = $image->get_url($image::SIZE_ICON);
-		} else if ($image = $event->flyer_back()) {
-			$icon = $image->get_url($image::SIZE_ICON);
-		} else if (count($flyers = $event->flyers())) {
-			$image = $flyers[0]->image();
-			$icon  = $image->get_url($image::SIZE_ICON);
-		} else {
-			$icon = null;
-		}
-		if ($icon) {
-			$this->prefix = HTML::anchor(Route::model($event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar'));
-		}
-
 
 		// Meta
 		if ($tags = $event->tags()) {
@@ -95,6 +74,80 @@ class View_Event_Day extends View_Article {
 <?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Render flyer.
+	 *
+	 * @return  string
+	 */
+	public function flyer() {
+		if ($image = $this->event->flyer_front()) {
+			$icon = $image->get_url($image::SIZE_ICON);
+		} else if ($image = $this->event->flyer_back()) {
+			$icon = $image->get_url($image::SIZE_ICON);
+		} else if (count($flyers = $this->event->flyers())) {
+			$image = $flyers[0]->image();
+			$icon  = $image->get_url($image::SIZE_ICON);
+		} else {
+			$icon = null;
+		}
+
+		return $icon ? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar')) : '&nbsp;';
+	}
+
+
+	/**
+	 * Render article.
+	 *
+	 * @return  string
+	 */
+	public function render() {
+
+		// Start benchmark
+		if (Kohana::$profiling === true and class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('View', __METHOD__ . '(' . get_called_class() . ')');
+		}
+
+		ob_start();
+
+		// Section attributes
+		$attributes = array(
+			'id'    => $this->id,
+			'class' => 'row ' . $this->class,
+		);
+
+?>
+
+<article<?php echo HTML::attributes($attributes) ?>>
+	<div class="span1">
+
+		<?php echo $this->flyer() ?>
+
+	</div>
+
+	<div class="span7">
+
+		<?php echo $this->header() ?>
+
+		<?php echo $this->content() ?>
+
+		<?php echo $this->footer() ?>
+
+	</div>
+</article>
+
+<?php
+
+		$render = ob_get_clean();
+
+		// Stop benchmark
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
+		}
+
+		return $render;
 	}
 
 }

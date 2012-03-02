@@ -7,7 +7,7 @@
  * @copyright  (c) 2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class View_Event_Info extends View_Article {
+class View_Event_Info extends View_Section {
 
 	/**
 	 * @var  Model_Event
@@ -19,10 +19,6 @@ class View_Event_Info extends View_Article {
 	 */
 	public $id = 'event-info';
 
-	/**
-	 * @var  integer  View grid span
-	 */
-	public $span = 4;
 
 	/**
 	 * Create new article.
@@ -35,12 +31,6 @@ class View_Event_Info extends View_Article {
 		$this->event = $event;
 
 		$this->title = HTML::time(Date('l ', $this->event->stamp_begin) . ', ' . Date::format(Date::DMY_LONG, $this->event->stamp_begin), $this->event->stamp_begin, true);
-
-		$this->meta = __('Added') .  ' ' . HTML::time(Date::format(Date::DMY_SHORT, $this->event->created), $this->event->created);
-		if ($this->event->modified) {
-			$this->meta .= ', ' . __('last modified') . ' ' . HTML::time(Date::short_span($this->event->modified, false), $this->event->modified);
-		}
-
 	}
 
 
@@ -145,6 +135,15 @@ head.ready("anqh", function() {
 		}
 		echo '</address>';
 		echo $info;
+
+
+		// Meta
+		echo '<footer class="meta">';
+		echo __('Added'),  ' ', HTML::time(Date::format(Date::DMY_SHORT, $this->event->created), $this->event->created);
+		if ($this->event->modified) {
+			echo ', ', __('last modified'), ' ', HTML::time(Date::short_span($this->event->modified, false), $this->event->modified);
+		}
+		echo '</footer>';
 
 
 		return ob_get_clean();
