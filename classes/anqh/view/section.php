@@ -79,7 +79,7 @@ class Anqh_View_Section extends View_Base {
 <header<?php echo HTML::attributes($attributes) ?>>
 
 	<?php if ($title) { ?>
-	<h3><?php echo HTML::chars($title) ?></h3>
+	<h3><?php echo $title ?></h3>
 	<?php } ?>
 
 	<?php if ($tabs) { ?>
