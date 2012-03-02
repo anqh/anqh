@@ -29,7 +29,6 @@ class View_Generic_SideImage extends View_Article {
 	public function __construct($image = null, $link = null) {
 		parent::__construct();
 
-		$this->span  = 4;
 		$this->image = $image;
 		$this->link  = $link;
 	}
@@ -41,11 +40,6 @@ class View_Generic_SideImage extends View_Article {
 	 * @return  string
 	 */
 	public function content() {
-
-		// Parse image element
-		if ($this->image) {
-		}
-
 		ob_start();
 
 		if ($this->image):
