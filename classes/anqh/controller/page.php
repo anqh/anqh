@@ -82,18 +82,17 @@ abstract class Anqh_Controller_Page extends Controller {
 			$section->events = Model_Event::factory()->find_new(10);
 			Widget::add('footer', $section);
 
-			Widget::add('footer', View_Module::factory('forum/topiclist', array(
-				'mod_id'    => 'footer-topics-active',
-				'mod_class' => 'span4 cut topics',
-				'mod_title' => __('New posts'),
-				'topics'    => Model_Forum_Topic::factory()->find_by_latest_post(10)
-			)));
-			Widget::add('footer', View_Module::factory('blog/entry_list', array(
-				'mod_id'    => 'footer-blog-entries',
-				'mod_class' => 'span4 cut blogentries',
-				'mod_title' => __('New blogs'),
-				'entries'   => Model_Blog_Entry::factory()->find_new(10),
-			)));
+			$section = new View_Topics_List();
+			$section->class .= ' span4';
+			$section->title  = __('New posts');
+			$section->topics = Model_Forum_Topic::factory()->find_by_latest_post(10);
+			Widget::add('footer', $section);
+
+			$section = new View_Blogs_List();
+			$section->class       .= ' span4';
+			$section->title        = __('New blogs');
+			$section->blog_entries = Model_Blog_Entry::factory()->find_new(10);
+			Widget::add('footer', $section);
 
 
 			// Open Graph
