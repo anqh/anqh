@@ -82,15 +82,15 @@ class View_Event_Info extends View_Article {
 
 		// Homepage
 		if (!empty($this->event->homepage)) {
-			echo '<i class="icon-home"></i> ', HTML::anchor($this->event->homepage);
+			echo '<i class="icon-home"></i> ', HTML::anchor($this->event->homepage), '<br />';
 		}
 
 
 		// Tags
 		if ($tags = $this->event->tags()) {
-			echo '<i class="icon-music"></i> ', implode(', ', $tags);
+			echo '<i class="icon-music"></i> ', implode(', ', $tags), '<br />';
 		} else if (!empty($this->event->music)) {
-			echo '<i class="icon-music"></i> ', $this->event->music;
+			echo '<i class="icon-music"></i> ', $this->event->music, '<br />';
 		}
 
 
