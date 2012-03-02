@@ -20,21 +20,6 @@ class Anqh_View_Article extends View_Base {
 	public $meta;
 
 	/**
-	 * @var  string  Article prefix
-	 */
-	public $prefix;
-
-	/**
-	 * @var  boolean  Prefix content with empty if $prefix not set
-	 */
-	public $prefixed = false;
-
-	/**
-	 * @var  integer  Article grid width
-	 */
-	public $span = 8;
-
-	/**
 	 * @var  string  Article title
 	 */
 	public $title;
@@ -130,32 +115,6 @@ class Anqh_View_Article extends View_Base {
 
 
 	/**
-	 * Render prefix.
-	 *
-	 * @return  string
-	 */
-	public function prefix() {
-		if ($this->prefix) {
-			ob_start();
-
-?>
-
-<div class="span1 prefix">
-
-	<?php echo $this->prefix ?>
-
-</div>
-
-<?php
-
-			return ob_get_clean();
-		}
-
-		return '';
-	}
-
-
-	/**
 	 * Render article.
 	 *
 	 * @return  string
@@ -172,33 +131,19 @@ class Anqh_View_Article extends View_Base {
 		// Section attributes
 		$attributes = array(
 			'id'    => $this->id,
-			'class' => 'row ' . $this->class,
+			'class' => $this->class,
 		);
-
-		// Get prefix
-		$prefix = $this->prefix();
-
-		// Grid elements
-		$content_grid = 'span' . ($prefix || $this->prefixed ? $this->span - 1 : $this->span);
-
-		// Offset content if prefix wanted but not given
-		if ($this->prefixed && !$prefix) {
-			$content_grid .= ' offset1';
-		}
 
 ?>
 
 <article<?php echo HTML::attributes($attributes) ?>>
 
-	<?php echo $prefix ?>
+	<?php echo $this->header() ?>
 
-	<div class="<?php echo $content_grid ?> content">
-		<?php echo $this->header() ?>
+	<?php echo $this->content() ?>
 
-		<?php echo $this->content() ?>
+	<?php echo $this->footer() ?>
 
-		<?php echo $this->footer() ?>
-	</div>
 </article>
 
 <?php
