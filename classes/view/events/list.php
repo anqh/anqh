@@ -39,7 +39,7 @@ class View_Events_List extends View_Section {
 	<?php foreach ($this->events as $event) { ?>
 	<li>
 		<time title="<?php echo Date::format(Date::DATETIME, $event->stamp_begin) . ($event->stamp_end ? ' - ' . Date::format(Date::TIME, $event->stamp_end) : '') ?>"><?php echo Date::format(Date::DM_PADDED, $event->stamp_begin) ?></time>
-		<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('title' => HTML::chars($event->name))) ?>
+		<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable', 'title' => HTML::chars($event->name))) ?>
 	</li>
 	<?php } ?>
 
