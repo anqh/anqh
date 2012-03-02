@@ -920,7 +920,7 @@ $(function() {
 
 	// Ajaxify actions
 	$('a.ajaxify').live('click', function() {
-		$(this).closest('section.mod, article.row').ajaxify($(this).attr('href'));
+		$(this).closest('section, article').ajaxify($(this).attr('href'));
 
 		return false;
 	});
