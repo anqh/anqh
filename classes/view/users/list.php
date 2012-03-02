@@ -1,13 +1,13 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Users_List
+ * Users list.
  *
  * @package    Anqh
  * @author     Antti Qvickström
  * @copyright  (c) 2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class View_Users_List extends View_Article {
+class View_Users_List extends View_Section {
 
 	/**
 	 * @var  array
@@ -63,12 +63,17 @@ class View_Users_List extends View_Article {
 		if (count($short)) echo implode(', ', $short);
 
 		if (count($long)):
-			echo __('and'), ' ', HTML::anchor(
-				'#users',
-				__(count($long) == 1 ? ':count other' : ':count others', array(':count' => count($long))),
-				array('class' => 'expander', 'title' => __('Show all'), 'onclick' => '$(this).next(".long").toggle("fast"); return false;')
+			echo ' ', __('and'), ' ', HTML::anchor(
+				'#long',
+				__(count($long) == 1 ? ':count other &hellip;' : ':count others &hellip;', array(':count' => count($long))),
+				array(
+					'title'       => __('Show all'),
+					'data-toggle' => 'collapse',
+					'data-target' => '#long',
+					'onclick'     => 'return false;',
+				)
 			);
-			echo '<div class="long">', implode(', ', $long), '</div>';
+			echo '<div id="long" class="collapse">', implode(', ', $long), '</div>';
 		endif;
 
 		return ob_get_clean();
