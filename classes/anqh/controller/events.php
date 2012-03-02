@@ -201,11 +201,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Favorites
 		if ($event->favorite_count) {
-			$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory('generic/users', array(
-				'mod_title' => _('Favorites'),
-				'viewer'    => self::$user,
-				'users'     => $event->find_favorites()
-			)));
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_favorites($event));
 		}
 
 	}
@@ -867,6 +863,20 @@ class Anqh_Controller_Events extends Controller_Page {
 	 */
 	public function section_event_edit(Model_Event $event) {
 		return new View_Event_Edit($event);
+	}
+
+
+	/**
+	 * Get event favorites.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Users_List
+	 */
+	public function section_event_favorites(Model_Event $event) {
+		$section = new View_Users_List($event->find_favorites());
+		$section->title = __('Favorites');
+
+		return $section;
 	}
 
 
