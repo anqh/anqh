@@ -829,7 +829,10 @@ $(function() {
 						$this.popover({
 							title:   $card.find('header').remove().text(),
 							content: $card.html(),
-							delay:   { show: 500, hide: 500 }
+							delay:   { show: 500, hide: 500 },
+							placement: function() {
+								return $this.offset().left > window.innerWidth / 2 ? 'left' : 'right';
+							}
 						});
 
 						// Ajax done
