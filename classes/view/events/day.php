@@ -40,6 +40,9 @@ class View_Events_Day extends View_Section {
 			if ($this->date == date('Y-m-d')) {
 				$this->title  = __('Today');
 				$this->class .= ' today';
+			} else if ($this->date == date('Y-m-d', strtotime('tomorrow'))) {
+				$this->title  = __('Tomorrow');
+				$this->class .= ' tomorrow';
 			} else {
 				$date = Date::split($this->date);
 				$this->title = $date['weekday_short'] . ' '. $date['day'] . ' ' . $date['month_short'];
