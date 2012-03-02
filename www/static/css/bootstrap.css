@@ -3609,6 +3609,52 @@ article header h4 small {
   margin-left: 5px;
   margin-bottom: 0;
 }
+.ui-widget {
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  margin-top: 2px;
+  max-width: 300px;
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 1000;
+}
+.ui-autocomplete a {
+  clear: both;
+  color: #555555;
+  display: block;
+  font-weight: normal;
+  line-height: 18px;
+  padding: 3px 15px;
+  white-space: nowrap;
+}
+.ui-autocomplete a.ui-state-hover {
+  background-color: #0088cc;
+  color: #ffffff;
+  text-decoration: none;
+}
+.ui-autocomplete.geocoded {
+  min-height: 110px;
+}
+.ui-autocomplete li.geocoded a {
+  margin-right: 115px;
+}
+.ui-autocomplete li.geocoded img {
+  display: none;
+  margin-top: -50px;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+}
+.ui-autocomplete a.ui-state-hover + img {
+  display: block;
+}
 header.sticked {
   background: #ffffff;
 }
@@ -3624,10 +3670,10 @@ p.cut, .cut li {
 .avatar {
   display: inline-block;
   float: left;
-  height: 50px;
   margin: 5px 10px 5px 0;
-  text-align: center;
   width: 50px;
+  height: 50px;
+  text-align: center;
 }
 .avatar img {
   max-height: 100%;
@@ -3649,8 +3695,8 @@ p.cut, .cut li {
   margin: 0;
 }
 #map {
-  height: 200px;
-  width: 100%;
+  width: 200px;
+  height: 100%;
 }
 .newsfeed .ago {
   color: #999999;
