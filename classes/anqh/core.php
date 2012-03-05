@@ -100,7 +100,7 @@ class Anqh_Core {
 		if ($user->new_comment_count) {
 			$new['new-comments'] = HTML::anchor(
 				URL::user($user),
-				'<span class="label label-info">' . $user->new_comment_count . '</span>',
+				'<span class="label label-info"><i class="icon-comment icon-white"></i> ' . $user->new_comment_count . '</span>',
 				array('title' => __('New comments'))
 			);
 		}
@@ -114,7 +114,7 @@ class Anqh_Core {
 			}
 			$new['new-private-messages'] = HTML::anchor(
 				Route::model($private_message->topic()) . '?page=last#last',
-				'<span class="label label-info">' . $new_messages . '</span>',
+				'<span class="label label-info"><i class="icon-comment icon-white"></i> ' . $new_messages . '</span>',
 				array('title' => __('New private messages'))
 			);
 		}
@@ -129,7 +129,7 @@ class Anqh_Core {
 			}
 			$new['new-blog-comments'] = HTML::anchor(
 				Route::model($blog_entry),
-				'<span class="label label-info">' . $new_comments . '</span>',
+				'<span class="label label-info"><i class="icon-comment icon-white"></i> ' . $new_comments . '</span>',
 				array('title' => __('New blog comments'))
 			);
 		}
@@ -142,7 +142,7 @@ class Anqh_Core {
 			$quote = $forum_quotes->current();
 			$new['new-forum-quotes'] = HTML::anchor(
 				Route::get('forum_post')->uri(array('topic_id' => $quote->forum_topic_id, 'id' => $quote->forum_post_id)) . '#post-' . $quote->forum_post_id,
-				'<span class="label label-info">' . $new_quotes . '</span>',
+				'<span class="label label-info"><i class="icon-comment icon-white"></i> ' . $new_quotes . '</span>',
 				array('title' => __('Forum quotes'))
 			);
 		}
@@ -154,7 +154,7 @@ class Anqh_Core {
 				$new_approvals = count($gallery_approvals);
 				$new['new-gallery-approvals'] = HTML::anchor(
 					Route::get('galleries')->uri(array('action' => 'approval')),
-					'<span class="label label-info">' . $new_approvals . '</span>',
+					'<span class="label label-important"><i class="icon-exclamation-sign icon-white"></i> ' . $new_approvals . '</span>',
 					array('title' => __('Galleries waiting for approval'))
 				);
 			}
@@ -171,7 +171,7 @@ class Anqh_Core {
 			}
 			$new['new-flyer-comments'] = HTML::anchor(
 				Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')),
-				'<span class="label label-info">' . $new_comments . '</span>',
+				'<span class="label label-info"><i class="icon-picture icon-white"></i> ' . $new_comments . '</span>',
 				array('title' => __('New flyer comments'))
 			);
 		}
@@ -200,7 +200,7 @@ class Anqh_Core {
 			if ($new_comments) {
 				$new['new-image-comments'] = HTML::anchor(
 					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_image_id)), 'id' => $new_image_id, 'action' => '')),
-					'<span class="label label-info">' . $new_comments . '</span>',
+					'<span class="label label-info"><i class="icon-camera icon-white"></i> ' . $new_comments . '</span>',
 					array('title' => __('New image comments'))
 				);
 			}
@@ -222,7 +222,7 @@ class Anqh_Core {
 			if ($new_notes) {
 				$new['new-image-notes'] = HTML::anchor(
 					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_note_image_id)), 'id' => $new_note_image_id, 'action' => '')),
-					'<span class="label label-info">' . $new_notes . '</span>',
+					'<span class="label label-info"><i class="icon-tag icon-white"></i> ' . $new_notes . '</span>',
 					array('title' => __('New image tags'))
 				);
 			}

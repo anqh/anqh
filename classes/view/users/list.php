@@ -65,7 +65,7 @@ class View_Users_List extends View_Section {
 		if (count($long)):
 			echo ' ', __('and'), ' ', HTML::anchor(
 				'#long',
-				__(count($long) == 1 ? ':count other &hellip;' : ':count others &hellip;', array(':count' => count($long))),
+				__(count($long) == 1 ? ':count other &#9662;' : ':count others &#9662;', array(':count' => count($long))),
 				array(
 					'title'       => __('Show all'),
 					'data-toggle' => 'collapse',
