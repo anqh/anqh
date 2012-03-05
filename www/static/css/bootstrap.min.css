@@ -663,11 +663,12 @@ p.cut,.cut li{overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;w
 a.user:hover{color:#005580;}
 a.friend{font-weight:bold;}
 .avatar{display:inline-block;float:left;margin:5px 10px 5px 0;width:50px;height:50px;text-align:center;}.avatar img{max-height:100%;max-width:100%;}
-.popover figure{margin:0;padding:0;text-align:center;}
+.popover figure{text-align:center;}
 .popover .favorites{position:absolute;right:17px;top:17px;}
 .markItUpHeader{height:28px;position:relative;}.markItUpHeader >ul{left:0;margin:0;position:absolute;top:0;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
 #map{width:200px;height:100%;}
+.share .addthis_32x32_style{height:32px;}
 .newsfeed .ago{color:#eeeeee;float:right;}
 .block-grid{display:block;overflow:hidden;}.block-grid >li{display:block;float:left;height:auto;}
 .block-grid.two-up{margin-left:-4%;}

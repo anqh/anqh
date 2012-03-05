@@ -3692,8 +3692,6 @@ a.friend {
   max-width: 100%;
 }
 .popover figure {
-  margin: 0;
-  padding: 0;
   text-align: center;
 }
 .popover .favorites {
@@ -3719,6 +3717,9 @@ a.friend {
 #map {
   width: 200px;
   height: 100%;
+}
+.share .addthis_32x32_style {
+  height: 32px;
 }
 .newsfeed .ago {
   color: #eeeeee;
