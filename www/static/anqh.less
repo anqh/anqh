@@ -1,5 +1,7 @@
 body                                   { padding-top: 60px; }
 
+
+// Main menu
 .navbar                                {
   .btn                                 { margin-top: 0; }
   .nav > li.menuitem-profile           { width: 30px;
@@ -7,6 +9,8 @@ body                                   { padding-top: 60px; }
   }
 }
 
+
+// Containers
 #title                                 { margin-bottom: 10px; }
 #side > section + section,
 #side > section + article,
@@ -22,12 +26,19 @@ article header                         { margin-bottom: 10px;
   h4 small                             { float: right; }
 }
 
+header.sticked                         { background: @white; }
+footer.meta                            { color: @grayLight; }
+
+
+// Footer
 #footer                                {
   nav                                  { text-align: center; }
   nav .nav                             { display: inline-block; }
   [role=contentinfo]                   { text-align: center; }
 }
 
+
+// jQuery UI
 .ui-dialog                             { background: @white; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); .border-radius(6px); .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
   &.fade                               { .transition(e('opacity .3s linear, top .3s ease-out')); top: -25%; }
   &.fade.in                            { top: 50%; }
@@ -40,7 +51,7 @@ article header                         { margin-bottom: 10px;
   }
 }
 
-.ui-widget                             { background: @white; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); .border-radius(4px); .box-shadow(0 5px 10px rgba(0,0,0,.2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; z-index: @zindexDropdown; }
+.ui-widget:not(.ui-datepicker-inline)  { background: @white; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); .border-radius(4px); .box-shadow(0 5px 10px rgba(0,0,0,.2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; z-index: @zindexDropdown; }
 .ui-autocomplete                       {
   a                                    { clear: both; color: @gray; display: block; font-weight: normal; line-height: @baseLineHeight; padding: 3px 15px; white-space: nowrap; }
   a.ui-state-hover                     { background-color: @linkColor; color: @white; text-decoration: none; }
@@ -52,14 +63,24 @@ article header                         { margin-bottom: 10px;
   a.ui-state-hover + img               { display: block; }
 }
 
-header.sticked                         { background: @white; }
-footer.meta                            { color: @grayLight; }
 
+// Miscellaneous
 p.cut,
 .cut li                                { overflow: hidden; -o-text-overflow: ellipsis; text-overflow: ellipsis; white-space: nowrap; }
 
+.male,
+a.male                                 { color: @blueDark; }
+.female,
+a.female                               { color: @pink; }
+a.user:hover                           { color: @linkColorHover; }
+a.friend                               { font-weight: bold; }
 .avatar                                { display: inline-block; float: left; margin: 5px 10px 5px 0; .square(50px); text-align: center;
   img                                  { max-height: 100%; max-width: 100%; }
+}
+
+.popover                               {
+  figure                               { text-align: center; }
+  .favorites                           { position: absolute; right: 17px; top: 17px; }
 }
 
 // BBCode
@@ -70,7 +91,10 @@ p.cut,
 
 #map                                   { .size(100%, 200px); }
 
-.newsfeed .ago                         { color: @grayLight; float: right; }
+
+// Page specific
+.newsfeed .ago                         { color: @grayLighter; float: right; }
+
 
 
 /**

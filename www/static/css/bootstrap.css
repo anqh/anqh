@@ -3538,6 +3538,12 @@ article header ul li {
 article header h4 small {
   float: right;
 }
+header.sticked {
+  background: #ffffff;
+}
+footer.meta {
+  color: #999999;
+}
 #footer nav {
   text-align: center;
 }
@@ -3609,7 +3615,7 @@ article header h4 small {
   margin-left: 5px;
   margin-bottom: 0;
 }
-.ui-widget {
+.ui-widget:not(.ui-datepicker-inline) {
   background: #ffffff;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -3655,17 +3661,23 @@ article header h4 small {
 .ui-autocomplete a.ui-state-hover + img {
   display: block;
 }
-header.sticked {
-  background: #ffffff;
-}
-footer.meta {
-  color: #999999;
-}
 p.cut, .cut li {
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.male, a.male {
+  color: #0064cd;
+}
+.female, a.female {
+  color: #c3325f;
+}
+a.user:hover {
+  color: #005580;
+}
+a.friend {
+  font-weight: bold;
 }
 .avatar {
   display: inline-block;
@@ -3678,6 +3690,16 @@ p.cut, .cut li {
 .avatar img {
   max-height: 100%;
   max-width: 100%;
+}
+.popover figure {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+.popover .favorites {
+  position: absolute;
+  right: 17px;
+  top: 17px;
 }
 .markItUpHeader {
   height: 28px;
@@ -3699,7 +3721,7 @@ p.cut, .cut li {
   height: 100%;
 }
 .newsfeed .ago {
-  color: #999999;
+  color: #eeeeee;
   float: right;
 }
 /**
