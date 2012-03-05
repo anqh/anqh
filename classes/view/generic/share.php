@@ -66,7 +66,7 @@ class View_Generic_Share extends View_Section {
 <div class="addthis_toolbox addthis_default_style addthis_32x32_style"<?php echo HTML::attributes($attributes) ?>>
 	<a class="addthis_button_facebook"></a>
 	<a class="addthis_button_twitter"></a>
-	<a class="addthis_button_google_plusone" g:plusone:count="false" g:plusone:size="standard"></a>
+	<a class="addthis_button_google"><?php echo HTML::image('static/img/google-plus.png', array('alt' => 'Google +1', 'width' => 32, 'height' => 32)) ?></a>
 	<a class="addthis_button_email"></a>
 	<a class="addthis_button_compact"></a>
 	<a class="addthis_counter addthis_bubble_style"></a>
