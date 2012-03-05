@@ -49,12 +49,18 @@ class View_Event_HoverCard extends View_Article {
 			echo ' @ ', HTML::chars($this->event->city_name);
 		endif;
 
+		// Flyer
 		if ($this->event->flyer_front):
-			echo '<br />', HTML::image($this->event->flyer_front->get_url('thumbnail'));
+			echo '<figure>', HTML::image($this->event->flyer_front->get_url('thumbnail')), '</figure>';
 		elseif ($this->event->flyer_back):
-			echo '<br />', HTML::image($this->event->flyer_back->get_url('thumbnail'));
+			echo '<figure>', HTML::image($this->event->flyer_back->get_url('thumbnail')), '</figure>';
 		elseif (Valid::url($this->event->flyer_front_url)):
-			echo '<br />', HTML::image($this->event->flyer_front_url, array('width' => 160));
+			echo '<br /><figure>', HTML::image($this->event->flyer_front_url, array('width' => 160)), '</figure>';
+		endif;
+
+		// Favorites
+		if ($this->event->favorite_count):
+			echo '<span class="favorites"><i class="icon-heart"></i> ' . $this->event->favorite_count . '</span>';
 		endif;
 
 		return ob_get_clean();

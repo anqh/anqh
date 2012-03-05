@@ -49,8 +49,8 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 					$text = __('added new event<br />:event', array(
 						':event' => HTML::anchor(
 							Route::model($event),
-							HTML::chars($event->name),
-							array('class' => 'icon event hoverable')
+							'<i class="icon-calendar"></i> ' . HTML::chars($event->name),
+							array('class' => 'hoverable')
 						)
 					));
 				}
@@ -62,8 +62,8 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 					$text = __('updated event<br />:event', array(
 						':event' => HTML::anchor(
 							Route::model($event),
-							HTML::chars($event->name),
-							array('class' => 'icon event hoverable')
+							'<i class="icon-calendar"></i> ' . HTML::chars($event->name),
+							array('class' => 'hoverable')
 						)
 					));
 				}
@@ -75,8 +75,8 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 					$text = __('added event to favorites<br />:event', array(
 						':event' => HTML::anchor(
 							Route::model($event),
-							HTML::chars($event->name),
-							array('class' => 'icon event hoverable')
+							'<i class="icon-calendar"></i> ' . HTML::chars($event->name),
+							array('class' => 'hoverable')
 						)
 					));
 				}

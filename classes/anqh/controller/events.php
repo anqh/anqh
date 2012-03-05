@@ -140,13 +140,13 @@ class Anqh_Controller_Events extends Controller_Page {
 			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-star-empty"></i> ' . __('Remove favorite'),
+					'text'  => '<i class="icon-heart"></i> ' . __('Remove favorite'),
 					'class' => 'favorite-delete',
 				);
 			} else {
 				$this->page_actions[] = array(
 					'link'  => Route::model($event, 'favorite') . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-star icon-white"></i> ' . __('Add to favorites'),
+					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to favorites'),
 					'class' => 'btn-primary favorite-add',
 				);
 			}
@@ -874,7 +874,7 @@ class Anqh_Controller_Events extends Controller_Page {
 	 */
 	public function section_event_favorites(Model_Event $event) {
 		$section = new View_Users_List($favorites = $event->find_favorites());
-		$section->title = __('Favorites') . ' <small>(' . count($favorites) . ')</small>';
+		$section->title = __('Favorites') . ' <small><i class="icon-heart"></i> ' . count($favorites) . '</small>';
 
 		return $section;
 	}
