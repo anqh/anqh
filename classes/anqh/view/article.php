@@ -85,12 +85,12 @@ class Anqh_View_Article extends View_Base {
 
 <header>
 
-	<?php if ($actions) { ?>
-	<div class="btn-group"><?php echo implode(' ', $actions) ?></div>
-	<?php } ?>
-
 	<?php if ($title) { ?>
 	<h4><?php echo $title ?></h4>
+	<?php } ?>
+
+	<?php if ($actions) { ?>
+	<div class="btn-group"><?php echo implode(' ', $actions) ?></div>
 	<?php } ?>
 
 </header>
