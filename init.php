@@ -23,10 +23,11 @@ Route::set('flyer_comment', 'flyer/comment/<id>/<commentaction>', array('comment
 		'controller' => 'galleries',
 		'action'     => 'comment_flyer',
 	));
-Route::set('flyer', 'flyer/<id>')
+Route::set('flyer', 'flyer/<id>(/<action>)', array('action' => 'hover', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
-		'action'     => 'flyer'
+		'action'     => 'flyer',
+		'type'       => 'flyer',
 	));
 Route::set('flyers', 'flyers(/<year>(/<month>))', array('year' => '\d{4}', 'month' => '\d{1,2}'))
 	->defaults(array(
@@ -42,6 +43,7 @@ Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('actio
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'image',
+		'type'       => 'image',
 	));
 Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|upload|pending'))
 	->defaults(array(

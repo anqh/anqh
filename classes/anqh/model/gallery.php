@@ -195,7 +195,7 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 	 * Find galleries with latest images
 	 *
 	 * @param   integer  $limit
-	 * @return  Database_Result
+	 * @return  Model_Gallery[]
 	 */
 	public function find_latest($limit = 15) {
 		return $this->load(

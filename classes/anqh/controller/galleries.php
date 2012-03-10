@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Galleries extends Controller_Template {
+class Anqh_Controller_Galleries extends Controller_Page {
 
 	/**
 	 * Construct controller
@@ -49,12 +49,11 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Load galleries we have access to
 		$galleries = Model_Gallery::factory()->find_pending($approve ? null : self::$user);
 
+		// Build page
+		$this->view = View_Page::factory(__('Galleries waiting for approval'));
+
 		if (count($galleries)) {
-			Widget::add('wide', View_Module::factory('galleries/galleries', array(
-				'galleries' => $galleries,
-				'approval'  => $approve,
-				'user'      => self::$user,
-			)));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries, true, $approve));
 		}
 	}
 
@@ -63,8 +62,8 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 * Action: browse
 	 */
 	public function action_browse() {
-		$this->tab_id = 'browse';
 
+		// Build available months
 		$months = Model_Gallery::factory()->find_months();
 
 		// Default to last month
@@ -80,24 +79,22 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$year  = min($year, date('Y'));
 		$month = min(12, max(1, $month));
 
-		$this->page_title .= ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year)));
-		$this->_set_random_actions();
+
+		// Build page
+		$this->view = View_Page::factory(__('Galleries') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_flyer_actions();
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_month_pagination($months, 'galleries', 'browse', $year, $month));
 
 		// Month browser
-		Widget::add('side', View_Module::factory('galleries/month_browser', array(
-			'route'  => 'galleries',
-			'action' => 'browse',
-			'year'   => $year,
-			'month'  => $month,
-			'months' => $months
-		)));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'galleries', 'browse', $year, $month));
 
 		// Galleries
 		$galleries = Model_Gallery::factory()->find_by_month($year, $month);
 		if (count($galleries)) {
-			Widget::add('main', View_Module::factory('galleries/galleries', array(
-				'galleries' => $galleries
-			)));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries));
 		}
 
 	}
@@ -247,18 +244,27 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		Permission::required($image, Model_Image::PERMISSION_DELETE, self::$user);
 
+		$success = 0;
 		if (Security::csrf_valid()) {
-			foreach ($gallery->images() as $image) {
+			$pending = $image->status === Model_Image::NOT_ACCEPTED;
+			foreach (($pending ? $gallery->find_images_pending() : $gallery->images()) as $image) {
 				if ($image->id == $image_id) {
-					$gallery->image_count--;
-					$gallery->save();
+					if (!$pending) {
+						$gallery->image_count--;
+						$gallery->save();
+					}
 					$image->delete();
+					$success = 1;
 					break;
 				}
 			}
 		}
 
-		$this->request->redirect(Route::model($gallery));
+		if ($this->_request_type === Controller::REQUEST_INITIAL) {
+			$this->request->redirect(Route::model($gallery));
+		} else if ($this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body($success);
+		}
 	}
 
 
@@ -273,12 +279,26 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			throw new Model_Exception($event, $event_id);
 		}
 
-		// Redirect
 		$gallery = Model_Gallery::factory()->find_by_event($event->id);
-		if ($gallery->loaded()) {
+		if ($gallery->loaded() && count($gallery->images())) {
+
+			// Redirect to existing gallery
 			$this->request->redirect(Route::model($gallery));
+
 		} else {
-			$this->request->redirect(Route::get('galleries')->uri(array('action' => 'upload')) . '?event=' . $event->id);
+
+			// Show empty gallery
+			$this->view = new View_Page($event->name);
+
+			// Set actions
+			$this->page_actions[] = array(
+				'link' => Route::model($event),
+				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
+			);
+
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_empty($event));
+			//$this->request->redirect(Route::get('galleries')->uri(array('action' => 'upload')) . '?event=' . $event->id);
+
 		}
 	}
 
@@ -322,7 +342,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			Permission::required($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user);
 
 			try {
-
 				if ($event_id = (int)Arr::get($_POST, 'event_id')) {
 
 					// Event given?
@@ -355,59 +374,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				$errors = $e->array->errors('validation');
 			}
 		}
-
-
-		// Set title
-		if ($event) {
-
-			// Flyer is linked to an event
-			$this->page_title = HTML::chars($event->name);
-			$this->page_subtitle = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
-			$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($event),  __('Go to event'));
-
-			// Facebook
-			if (Kohana::config('site.facebook')) {
-				Anqh::open_graph('title', __('Flyer') . ': ' . $event->name);
-				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
-				Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
-				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
-			}
-
-		} else {
-
-			// Flyer is not linked to an event
-			$this->page_title = HTML::chars($flyer->name);
-			$this->page_subtitle = $flyer->has_full_date()
-				? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true)
-				: __('Date unknown');
-
-			// Facebook
-			if (Kohana::config('site.facebook')) {
-				Anqh::open_graph('title', __('Flyer') . ': ' . $flyer->name);
-				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
-				$flyer->has_full_date() and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
-				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
-			}
-
-		}
-
-		$this->_set_random_actions();
-
-		if ($flyer->stamp_begin) {
-			if (!$flyer->has_full_date()) {
-				$this->page_subtitle .= ' | ' . HTML::anchor(
-					Route::get('flyers')->uri(array('year' => date('Y', $flyer->stamp_begin))),
-					__('Back to :date', array(':date' => strftime('%Y', $flyer->stamp_begin)))
-				);
-			} else {
-				$this->page_subtitle .= ' | ' . HTML::anchor(
-					Route::get('flyers')->uri(array('year' => date('Y', $flyer->stamp_begin), 'month' => date('n', $flyer->stamp_begin))),
-					__('Back to :date', array(':date' => strftime('%B %Y', $flyer->stamp_begin)))
-				);
-			}
-		}
-
-	  Anqh::share(true);
 
 
 		// Comments section
@@ -448,53 +414,82 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			}
 
-			$view = View_Module::factory('generic/comments', array(
-				'mod_title'  => __('Comments'),
-				'delete'     => Route::get('flyer_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
-				'private'    => false,
-				'comments'   => $image->comments(),
-				'errors'     => $errors,
-				'values'     => $values,
-				'pagination' => null,
-				'user'       => self::$user,
-			));
-
-			if ($this->ajax) {
-				$this->response->body($view);
-				return;
-			}
-			Widget::add('main', $view);
+			// Get view
+			$section_comments = $this->section_image_comments($image, 'flyer_comment');
+			$section_comments->errors = $errors;
+			$section_comments->values = $values;
 
 		} else if (!self::$user) {
 
 			// Guest user
-			$view = View_Module::factory('generic/comments_guest', array(
-				'mod_title'  => __('Comments'),
-				'comments'   => $image->comment_count,
-			));
-			if ($this->ajax) {
-				$this->response->body($view);
-				return;
-			}
-			Widget::add('main', $view);
+			$section_comments = $this->section_image_comments_teaser($image->comment_count);
 
 		}
+		if (isset($section_comments) && $this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body($section_comments);
+
+			return;
+		}
+
+
+		// Build page
+		$this->view = View_Page::factory(__('Flyer'));
+		$this->_set_page_actions();
+		$this->_set_flyer_actions($flyer);
+
+
+		// Set title
+		if ($event) {
+
+			// Flyer is linked to an event
+			$this->view->title     = $event->name;
+			$this->view->subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
+
+			// Facebook
+			if (Kohana::config('site.facebook')) {
+				Anqh::open_graph('title', __('Flyer') . ': ' . $event->name);
+				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+				Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
+				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
+			}
+
+		} else {
+
+			// Flyer is not linked to an event
+			$this->view->title    = $flyer->name;
+			$this->view->subtitle = $flyer->has_full_date()
+				? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true)
+				: __('Date unknown');
+
+			// Facebook
+			if (Kohana::config('site.facebook')) {
+				Anqh::open_graph('title', __('Flyer') . ': ' . $flyer->name);
+				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+				$flyer->has_full_date() and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
+				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
+			}
+
+		}
+		Anqh::share(true);
+
 
 		// Edit flyer
 		if (Permission::has($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user)) {
-			Widget::add('wide', View_Module::factory('galleries/flyer_edit', array(
-				'mod_title' => __('Edit flyer'),
-				'flyer'     => $flyer,
-				'errors'    => $errors,
-			)));
+			$section = $this->section_flyer_edit($flyer);
+			$section->error = $errors;
+			$this->view->add(View_Page::COLUMN_TOP, $section);
 		}
 
+
 		// Flyer
-		Widget::add('wide', View_Module::factory('galleries/flyer', array(
-			'mod_id'    => 'image',
-			'mod_class' => 'gallery-image',
-			'flyer'     => $image,
-		)));
+		$image->view_count++;
+		$image->save();
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_flyer($image));
+
+		// Comments
+		if (isset($section_comments)) {
+			$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+		}
 
 	}
 
@@ -503,8 +498,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 * Action: browse flyers
 	 */
 	public function action_flyers() {
-		$this->tab_id = 'flyers';
-
 		$months = Model_Flyer::find_months();
 
 		// Default to current month
@@ -532,24 +525,25 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		$year  = min($year, max(array_keys($months)));
 		$month = min(12, max(0, $month));
 
-		$this->page_title = __('Flyers') . ' - ' . ($month ? HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) : (__('Date unknown') . ($year == 1970 ? '' : ' ' . $year)));
-		$this->_set_random_actions();
+		// Build page
+		$this->view = View_Page::factory(
+			__('Flyers') .
+				' - ' .
+				($month ? HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) : (__('Date unknown') . ($year == 1970 ? '' : ' ' . $year)))
+		);
+		$this->_set_page_actions();
+		$this->_set_flyer_actions();
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_month_pagination($months, 'flyers', '', $year, $month));
 
 		// Month browser
-		Widget::add('side', View_Module::factory('galleries/month_browser', array(
-			'route'  => 'flyers',
-			'action' => '',
-			'year'   => $year,
-			'month'  => $month,
-			'months' => $months
-		)));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'flyers', '', $year, $month));
 
 		// Latest flyers
 		$flyers = Model_Flyer::factory()->find_by_month($year, $month);
 		if (count($flyers)) {
-			Widget::add('main', View_Module::factory('galleries/flyers', array(
-				'flyers' => $flyers,
-			)));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_flyers($flyers));
 		}
 
 	}
@@ -569,6 +563,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		// Are we approving pending images?
 		if ($this->request->action() == 'pending') {
+			Form::$bootsrap = true;
 
 			// Can we see galleries with un-approved images?
 			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
@@ -634,45 +629,45 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 		}
 
-		// Event info
-		if ($event = $gallery->event()) {
 
-			// Event flyers
-			if ($event->flyer_front_image_id || $event->flyer_back_image_id || $event->flyer_front_url || $event->flyer_back_url) {
-				Widget::add('side', View_Module::factory('events/flyers', array(
-					'event' => $event,
-				)), Widget::TOP);
-			}
-
-			Widget::add('side', View_Module::factory('events/event_info', array(
-				'event' => $event,
-				'user'  => self::$user,
-			)), Widget::TOP);
+		// Build page
+		$this->view = View_Page::factory(__('Gallery'));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_gallery($gallery);
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array(
+				'link'  => Route::model($gallery, 'update'),
+				'text'  => '<i class="icon-refresh"></i> ' . __('Update gallery'),
+			);
 		}
 
-		// Facebook
+		// Share
 		if ($this->request->action() !== 'pending' && Kohana::config('site.facebook')) {
 			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
 			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
 			Anqh::open_graph('description', __($gallery->image_count == 1 ? ':images image' : ':images images', array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
-			if ($event && $event->flyer_front_image_id) {
-				Anqh::open_graph('image', URL::site($event->flyer_front()->get_url('thumbnail'), true));
-			} else if ($default_image = $gallery->default_image()) {
-				Anqh::open_graph('image', URL::site($default_image->get_url('thumbnail'), true));
+			if ($event && $image = $event->flyer_front()) {
+				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
+			} else if ($image = $gallery->default_image()) {
+				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
 			}
 		}
 		Anqh::share(true);
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 
-		// Set title and tabs
-		$this->_set_gallery($gallery);
+		// Event info
+		if ($event = $gallery->event()) {
+
+			// Event flyer
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_image($event));
+
+			// Event info
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
+
+		}
 
 		// Pictures
-		Widget::add('main', View_Module::factory('galleries/gallery', array(
-			'gallery' => $gallery,
-			'pending' => $this->request->action() == 'pending',
-			'approve' => isset($approve) ? $approve : null,
-			'user'    => self::$user,
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_thumbs($gallery, $this->request->action() == 'pending', isset($approve) ? $approve : null));
 
 	}
 
@@ -683,26 +678,36 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	public function action_hover() {
 		$this->history = false;
 
-		// Hover card works only with ajax
-		if (!$this->ajax) {
-			return $this->action_image();
-		}
+		if ($this->request->param('type') === 'flyer') {
 
-		$gallery_id = (int)$this->request->param('gallery_id');
-		$image_id   = (int)$this->request->param('id');
-
-		/** @var  Model_Gallery  $gallery */
-		$gallery = Model_Gallery::factory($gallery_id);
-		if ($gallery->loaded()) {
-			/** @var  Model_Image  $image */
-			$image = Model_Image::factory($image_id);
-			if ($image->loaded()) {
-				echo View_Module::factory('galleries/hovercard', array(
-					'mod_title' => HTML::chars($gallery->name),
-					'gallery'   => $gallery,
-					'image'     => $image,
-				));
+			// Flyer hover card, ajax only
+			if ($this->_request_type !== Controller::REQUEST_AJAX) {
+				return $this->action_flyer();
 			}
+
+			$flyer_id = (int)$this->request->param('id');
+			$flyer    = new Model_Flyer((int)$flyer_id);
+			if ($flyer->loaded()) {
+				$this->response->body($this->section_flyer_hovercard($flyer));
+			}
+
+		} else {
+
+			// Image hover card, ajax only
+			if ($this->_request_type !== Controller::REQUEST_AJAX) {
+				return $this->action_image();
+			}
+
+			$gallery_id = (int)$this->request->param('gallery_id');
+			$image_id   = (int)$this->request->param('id');
+			$gallery    = Model_Gallery::factory($gallery_id);
+			if ($gallery->loaded()) {
+				$image = Model_Image::factory($image_id);
+				if ($image->loaded()) {
+					$this->response->body($this->section_image_hovercard($image, $gallery));
+				}
+			}
+
 		}
 	}
 
@@ -728,7 +733,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 			// Can we see all of them and approve?
 			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
-			$images = $gallery->find_images_pending($approve ? null : self::$user);
+			$images  = $gallery->find_images_pending($approve ? null : self::$user);
 
 		} else {
 
@@ -740,9 +745,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 		// Find current, previous and next images
 		$i = 0;
 
-		/** @var  Model_Image $next */
-		/** @var  Model_Image $previous */
-		/** @var  Model_Image $current */
+		/** @var  Model_Image  $next */
+		/** @var  Model_Image  $previous */
+		/** @var  Model_Image  $current */
 		$previous = $next = $current = null;
 		foreach ($images as $image) {
 			$i++;
@@ -769,21 +774,9 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			}
 		}
 
-		// Set title and tabs
-		$this->_set_gallery($gallery);
-		$this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery),  __('Back to Gallery'));
 
 		// Show image
 		if (!is_null($current)) {
-
-			// Facebook
-			if (Kohana::config('site.facebook')) {
-				Anqh::open_graph('title', __('Image') . ': ' . $gallery->name);
-				Anqh::open_graph('url', URL::site(Route::get('gallery_image')->uri(array('id' => $current->id, 'gallery_id' => $gallery->id, 'action' => '')), true));
-				$current->description and Anqh::open_graph('description', $current->description);
-				Anqh::open_graph('image', URL::site($current->get_url('thumbnail'), true));
-			}
-			Anqh::share(true);
 
 			// Comments section
 			if (!isset($approve) && Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
@@ -801,6 +794,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 							$current->new_comment_count++;
 						}
 						$current->save();
+
 						$gallery->comment_count++;
 						$gallery->save();
 
@@ -818,9 +812,13 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 						}
 
-						if (!$this->ajax) {
-							$this->request->redirect(Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')));
+						// Redirect back to image if not ajax
+						if ($this->_request_type !== Controller::REQUEST_AJAX) {
+							$this->request->redirect(Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => '')));
+
+							return;
 						}
+
 					} catch (Validation_Exception $e) {
 						$errors = $e->array->errors('validation');
 						$values = $comment;
@@ -853,73 +851,85 @@ class Anqh_Controller_Galleries extends Controller_Template {
 
 				}
 
-				$view = View_Module::factory('generic/comments', array(
-					'mod_title'  => __('Comments'),
-					'delete'     => Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf(),
-					'private'    => false, //Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf(),
-					'comments'   => $current->comments(self::$user),
-					'errors'     => $errors,
-					'values'     => $values,
-					'pagination' => null,
-					'user'       => self::$user,
-				));
-
-				if ($this->ajax) {
-					$this->response->body($view);
-					return;
-				}
-				Widget::add('main', $view);
+				// Get view
+				$section_comments = $this->section_image_comments($current);
+				$section_comments->errors = $errors;
+				$section_comments->values = $values;
 
 			} else if (!self::$user) {
 
 				// Guest user
-				$view = View_Module::factory('generic/comments_guest', array(
-					'mod_title'  => __('Comments'),
-					'comments'   => $current->comment_count,
-				));
-				if ($this->ajax) {
-					echo $view;
-					return;
-				}
-				Widget::add('main', $view);
+				$section_comments = $this->section_image_comments_teaser($current->comment_count);
 
 			}
 
+			if (isset($section_comments) && $this->_request_type === Controller::REQUEST_AJAX) {
+				$this->response->body($section_comments);
+
+				return;
+			}
+
+
+
+			// Build page
+			$this->view = View_Page::factory(__('Gallery'));
+
+			// Image actions
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+				$this->page_actions[] = array(
+					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(),
+					'text'  => '<i class="icon-home"></i> ' . __('Set default'),
+					'class' => 'image-default'
+				);
+			}
+			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
+				$this->page_actions[] = array(
+					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(),
+					'text'  => '<i class="icon-trash"></i> ' . __('Delete'),
+					'class' => 'image-delete'
+				);
+			}
+
+			// Gallery actions
+			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+			$this->_set_gallery($gallery);
+			array_unshift($this->page_actions, array(
+				'link' => Route::model($gallery),
+				'text' => '&laquo; ' . __('Gallery')
+			));
+
+
+			// Pagination
+			$previous_url = $previous ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
+			$next_url     = $next     ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_image_pagination($previous_url, $next_url, $i, count($images)));
 
 			// Image
 			if (!isset($approve)) {
 				$current->view_count++;
 				$current->save();
 			}
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_image($current, $gallery, $next_url, (bool)$approve));
 
-			// Image actions
-			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(), 'text' => __('Default'), 'class' => 'image-default');
-			}
-			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(), 'text' => __('Delete'), 'class' => 'image-delete');
+			// Comments
+			if (isset($section_comments)) {
+				$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
 			}
 
-			Widget::add('wide', View_Module::factory('galleries/image', array(
-				'mod_id'    => 'image',
-				'mod_class' => 'gallery-image',
-				'gallery'   => $gallery,
-				'images'    => count($images),
-				'current'   => $i,
-				'image'     => $current,
-				'next'      => $next,
-				'previous'  => $previous,
-				'approve'   => isset($approve) ? $approve : null,
-				'notes'     => $current->notes(),
-				'note'      => Permission::has($current, Model_Image::PERMISSION_NOTE, self::$user),
-				'user'      => self::$user,
-			)));
+			// Share
+			if (Kohana::config('site.facebook')) {
+				Anqh::open_graph('title', __('Image') . ': ' . $gallery->name);
+				Anqh::open_graph('url', URL::site(Route::url('gallery_image', array('id' => $current->id, 'gallery_id' => $gallery->id, 'action' => '')), true));
+				if ($current->description) {
+					Anqh::open_graph('description', $current->description);
+				}
+				Anqh::open_graph('image', URL::site($current->get_url('thumbnail'), true));
+			}
+			Anqh::share(true);
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 
 			// Image info
-			Widget::add('side', View_Module::factory('galleries/image_info', array(
-				'mod_title' => __('Picture info'),
-				'image'     => $current,
-			)));
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_image_info($current));
 
 		}
 
@@ -930,29 +940,22 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
-		$this->tab_id = 'latest';
 
-		// Set actions
-		$this->_set_random_actions();
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::get('galleries')->uri(array('action' => 'upload')), 'text' => __('Upload images'), 'class' => 'images-add');
-		}
+		// Build page
+		$this->view = View_Page::factory(__('Galleries'));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_flyer_actions();
 
 		// Galleries with latest images
 		$galleries = Model_Gallery::factory()->find_latest(16);
 		if (count($galleries)) {
-			Widget::add('main', View_Module::factory('galleries/galleries', array(
-				'galleries' => $galleries,
-			)));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries));
 		}
 
 		// Latest flyers
 		$flyers = Model_Flyer::factory()->find_latest(6);
 		if (count($flyers)) {
-			Widget::add('side', View_Module::factory('galleries/flyers', array(
-				'mod_title' => __('Latest flyers'),
-				'flyers'    => $flyers,
-			)));
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_flyers_latest($flyers));
 		}
 
 	}
@@ -1084,10 +1087,6 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 * Action: upload
 	 */
 	public function action_upload() {
-		Widget::add('side', View_Module::factory('galleries/help_upload', array(
-			'mod_title' => __('Instructions'),
-			'mod_class' => 'help',
-		)));
 
 		// Load existing gallery if any
 		$gallery_id = (int)$this->request->param('gallery_id');
@@ -1095,14 +1094,18 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			$gallery_id = (int)$this->request->param('id');
 		}
 		if ($gallery_id) {
+
+			// Existing gallery
 			$gallery = Model_Gallery::factory($gallery_id);
 			if (!$gallery->loaded()) {
 				throw new Model_Exception($gallery, $gallery_id);
 			}
-		} else {
-			$this->page_title = __('Upload images');
 
+		} else {
+
+			// New gallery
 			return $this->_edit_gallery(null, Arr::get($_REQUEST, 'event'));
+
 		}
 
 		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user);
@@ -1118,6 +1121,16 @@ class Anqh_Controller_Galleries extends Controller_Template {
 				foreach ($file as $key => $value) {
 					is_array($value) and $file[$key] = $value[0];
 				}
+
+				// Needed for IE response
+				if ($multiple = Arr::get($_REQUEST, 'multiple', false)) {
+					$this->auto_render = false;
+				}
+
+				// Upload info for JSON
+				$info = new stdClass();
+				$info->name = HTML::chars($file['name']);
+				$info->size = intval($file['size']);
 
 				// Save image
 				try {
@@ -1165,18 +1178,23 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					}
 
 					// Show image if uploaded with ajax
-					if ($this->ajax) {
-						$this->response->body(json_encode(array(
-							'ok'        => true,
-							'thumbnail' => HTML::anchor(
-								Route::get('gallery_image')->uri(array(
-									'gallery_id' => Route::model_id($gallery),
-									'id'         => $image->id,
-									'action'     => 'approve',
-								)),
-								HTML::image($image->get_url('thumbnail'))
-							)
-						)));
+					if ($this->ajax || $multiple) {
+						$info->url           = $image->get_url();
+						$info->thumbnail_url = $image->get_url(Model_Image::SIZE_THUMBNAIL);
+						$info->gallery_url   = Route::url('gallery_image', array(
+							'gallery_id' => Route::model_id($gallery),
+							'id'         => $image->id,
+							'action'     => 'approve',
+						));
+						$info->delete_url    = Route::url('gallery_image', array(
+							'gallery_id' => Route::model_id($gallery),
+							'id'         => $image->id,
+							'action'     => 'delete',
+						)) . '?token=' . Security::csrf();
+						$info->delete_type   = 'GET';
+
+						$this->response->body(json_encode(array($info)));
+
 						return;
 					}
 
@@ -1188,31 +1206,29 @@ class Anqh_Controller_Galleries extends Controller_Template {
 					$errors = array('file' => $e->getMessage());
 				}
 
+				// Show errors if uploading with ajax, skip form
+				if (($this->ajax || $multiple) && !empty($errors)) {
+					$info->error = Arr::get($errors, 'file');
+					$this->response->body(json_encode(array($info)));
+
+					return;
+				}
+
 			}
 		}
 
-		// Show errors if uploading with ajax, skip form
-		if ($this->ajax && !empty($errors)) {
-			$this->response->body(json_encode(array('error' => Arr::get($errors, 'file'))));
-			return;
-		}
 
-		$this->_set_gallery($gallery);
+		// Build page
+		$this->view = View_Page::factory($gallery->name);
+		$images = count($gallery->images());
+		$this->view->subtitle = __($images == 1 ? ':images image' : ':images images', array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
-		// Build simplified form
-		$form = array(
-			'ajaxify' => $this->ajax,
-			'errors'  => $errors,
-			'cancel'  => Request::back(Route::get('galleries')->uri(), true),
-			'field' => array(
-				'name' => 'file'
-			),
-		);
+		// Upload
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_upload());
 
-		Widget::add('main', View_Module::factory('form/multiple_upload', array(
-			'mod_title' => __('Upload images'),
-			'form'      => $form,
-		)));
+		// Help
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_upload_help());
+
 	}
 
 
@@ -1242,7 +1258,7 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			// Creating new
 			$gallery = Model_Gallery::factory();
 			Permission::required($gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
-			$cancel = Request::back(Route::get('galleries')->uri(), true);
+			$cancel = Request::back(Route::url('galleries'), true);
 			$save   = __('Continue');
 			$upload = true;
 
@@ -1286,48 +1302,110 @@ class Anqh_Controller_Galleries extends Controller_Template {
 			}
 		}
 
-		Widget::add('main', View_Module::factory('galleries/gallery_edit', array(
-			'errors'  => $errors,
-			'gallery' => $gallery,
-			'cancel'  => $cancel,
-		)));
 
-		$data = (isset($event) && $event->loaded())
-			? array(
-				'mod_title'    => HTML::chars($event->name),
-				'mod_subtitle' => HTML::time(Date('l ', $event->stamp_begin) . Date::format('DDMMYYYY', $event->stamp_begin), $event->stamp_begin, true),
-				'event'        => $event,
-			)
-			: array();
-		Widget::add('main', View_Module::factory('galleries/event', $data));
+		// Build page
+		$this->view = View_Page::factory(__('Upload images'));
 
+		// Gallery edit form
+		$section = $this->section_gallery_edit(isset($event) ? $event : null);
+		$section->errors = $errors;
+		$this->view->add(View_Page::COLUMN_MAIN, $section);
+
+		// Gallery event info
+		if (isset($event) && $event->loaded()) {
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_event_info($event));
+		}
+
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_upload_help());
 	}
 
 
 	/**
-	 * Set gallery specific title and tabs
+	 * Set flyer page actions.
+	 *
+	 * @param  Model_Flyer  $flyer
+	 */
+	protected function _set_flyer_actions(Model_Flyer $flyer = null) {
+		$this->page_actions[] = array(
+			'link' => Route::get('flyer')->uri(array('id' => 'undated')),
+			'text' => '<i class="icon-random"></i> ' . __('Random undated flyer'),
+		);
+		$this->page_actions[] = array(
+			'link' => Route::get('flyer')->uri(array('id' => 'random')),
+			'text' => '<i class="icon-random"></i> ' . __('Random flyer'),
+		);
+
+		if ($flyer) {
+
+			// Set browse flyers to
+			if ($flyer->stamp_begin) {
+				$this->page_actions['flyers']['link'] = $flyer->has_full_date()
+					? Route::url('flyers', array('year' => date('Y', $flyer->stamp_begin), 'month' => date('n', $flyer->stamp_begin)))
+					: Route::url('flyers', array('year' => date('Y', $flyer->stamp_begin)));
+			}
+
+			Route::url('flyers', array(
+				'action' => '',
+				'year'   => date('Y', $flyer->stamp_begin),
+				'month'  => date('m', $flyer->stamp_begin)
+			));
+
+			if ($event = $flyer->event()) {
+				$this->page_actions[] = array(
+					'link'  => Route::model($event),
+					'text'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
+				);
+			}
+		}
+	}
+
+
+	/**
+	 * Set main level page actions.
+	 *
+	 * @param  boolean  $upload
+	 */
+	protected function _set_page_actions($upload = false) {
+		if ($upload) {
+			$this->page_actions['upload'] = array(
+				'link' => Route::url('galleries', array('action' => 'upload')),
+				'text' => '<i class="icon-upload icon-white"></i> ' . __('Upload images'),
+				'class' => 'btn-primary images-add'
+			);
+		}
+		$this->page_actions['browse'] = array(
+			'link' => Route::url('galleries', array('action' => 'browse')),
+			'text' => '<i class="icon-camera"></i> ' . __('Browse galleries')
+		);
+		$this->page_actions['flyers'] = array(
+			'link' => Route::url('flyers', array('action' => '')),
+			'text' => '<i class="icon-picture"></i> ' . __('Browse flyers')
+		);
+	}
+
+
+	/**
+	 * Set gallery specific title and actions.
 	 *
 	 * @param  Model_Gallery  $gallery
 	 */
-	protected function _set_gallery($gallery) {
-
-		// Add new tab
-		$this->tab_id = 'gallery';
-		$this->tabs['browse']['url'] = Route::get('galleries')->uri(array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
-		$this->tabs['gallery'] = array('url' => Route::model($gallery), 'text' => __('Gallery'));
+	protected function _set_gallery(Model_Gallery $gallery) {
 
 		// Set title
 		$images = count($gallery->images());
-		$this->page_title = HTML::chars($gallery->name);
-		$this->page_subtitle  = __($images == 1 ? ':images image' : ':images images', array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
-	  $this->page_subtitle .= ' | ' . HTML::anchor(Route::model($gallery->event),  __('Go to event'));
+		$this->view->title    = $gallery->name;
+		$this->view->subtitle = __($images == 1 ? ':images image' : ':images images', array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
 		// Set actions
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($gallery, 'upload'), 'text' => __('Upload images'), 'class' => 'images-add');
+		$this->page_actions['browse']['link'] = Route::url('galleries', array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
+		if ($this->page_actions['upload'] && Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
+			$this->page_actions['upload']['link'] = Route::model($gallery, 'upload');
 		}
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($gallery, 'update'), 'text' => __('Update gallery'), 'class' => 'gallery-update');
+		if ($event = $gallery->event()) {
+			$this->page_actions[] = array(
+				'link' => Route::model($event),
+				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
+			);
 		}
 
 	}
@@ -1337,8 +1415,394 @@ class Anqh_Controller_Galleries extends Controller_Template {
 	 * DRY helper for random flyer actions
 	 */
 	protected function _set_random_actions() {
-		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'undated')), 'text' => __('Random undated flyer'));
-		$this->page_actions[] = array('link' => Route::get('flyer')->uri(array('id' => 'random')), 'text' => __('Random flyer'));
+		$this->page_actions[] = array(
+			'link' => Route::url('flyer', array('id' => 'undated')),
+			'text' => '<i class="icon-random"></i> ' . __('Random undated flyer')
+		);
+		$this->page_actions[] = array(
+			'link' => Route::url('flyer', array('id' => 'random')),
+			'text' => '<i class="icon-random"></i> ' . __('Random flyer')
+		);
+	}
+
+
+/**
+	 * Get side image.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Generic_SideImage
+	 */
+	protected function section_event_image(Model_Event $event) {
+
+		// Display front flyer by default
+		if ($image = $event->flyer_front()) {
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
+			$link  = Route::model($flyer);
+		} else if ($image = $event->flyer_back()) {
+			$flyer = Model_Flyer::factory()->find_by_image($image->id);
+			$link  = Route::model($flyer);
+		} else if (count($flyers = $event->flyers())) {
+			$flyer = $flyers[0];
+			$image = $flyer->image();
+			$link  = Route::model($flyer);
+		} else {
+			$image = null;
+			$link  = null;
+		}
+
+		return new View_Generic_SideImage($image, $link);
+	}
+
+
+	/**
+	 * Get event side info.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Event_Info
+	 */
+	public function section_event_info(Model_Event $event) {
+		return new View_Event_Info($event);
+	}
+
+
+	/**
+	 * Get flyer view.
+	 *
+	 * @param   Model_Image  $image
+	 * @return  View_Flyer_Full
+	 */
+	public function section_flyer(Model_Image $image) {
+		return new View_Flyer_Full($image);
+	}
+
+
+	/**
+	 * Get flyer edit view.
+	 *
+	 * @param   Model_Flyer  $flyer
+	 * @return  View_Flyer_Edit
+	 */
+	public function section_flyer_edit(Model_Flyer $flyer) {
+		return new View_Flyer_Edit($flyer);
+	}
+
+
+	/**
+	 * Get flyer hover card.
+	 *
+	 * @param   Model_Flyer  $flyer
+	 * @return  View_Flyer_HoverCard
+	 */
+	public function section_flyer_hovercard(Model_Flyer $flyer) {
+		return new View_Flyer_HoverCard($flyer);
+	}
+
+
+	/**
+	 * Get flyers' thumb view.
+	 *
+	 * @param   Model_Flyer[]  $flyers
+	 * @return  View_Flyers_Thumbs
+	 */
+	public function section_flyers($flyers) {
+		$section = new View_Flyers_Thumbs($flyers);
+
+		return $section;
+	}
+
+
+	/**
+	 * Get latest flyers.
+	 *
+	 * @param   Model_Flyer[]  $flyers
+	 * @return  View_Flyers_Latest
+	 */
+	public function section_flyers_latest($flyers) {
+		$section = new View_Flyers_Latest($flyers);
+		$section->title = __('Latest flyers');
+
+		return $section;
+	}
+
+
+	/**
+	 * Get galleries' thumb view.
+	 *
+	 * @param   Model_Gallery[]  $galleries
+	 * @param   boolean          $pending    List pending thumbs
+	 * @param   boolean          $approve    Permission to approve
+	 * @return  View_Galleries_Thumbs
+	 */
+	public function section_galleries_thumbs($galleries, $pending = false, $approve = false) {
+		$section = new View_Galleries_Thumbs($galleries);
+		$section->show_pending = $pending;
+		$section->can_approve  = $approve;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get gallery edit form.
+	 *
+	 * @param   Model_Event  $event  Bound event, if any
+	 * @return  View_Gallery_Edit
+	 */
+	public function section_gallery_edit(Model_Event $event = null) {
+		$section = new View_Gallery_Edit($event);
+
+		// Add suggestions if creating new
+		if (!$event) {
+			$events = Model_Event::factory()->find_favorites_past(self::$user, 10);
+			if ($events && count($events)) {
+				$section->events = $events;
+			}
+		}
+
+		return $section;
+	}
+
+
+	/**
+	 * Get empty event gallery.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Alert
+	 */
+	public function section_gallery_empty(Model_Event $event) {
+		$can_upload = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
+
+		$section = new View_Alert(
+			__('.. this event seems to be lacking in the image department.')
+			. ($can_upload
+				? '<br /><br />' . HTML::anchor(
+						Route::url('galleries', array('action' => 'upload')) . '?from=' . $event->id,
+						'<i class="icon-upload icon-white"></i> ' . __('Upload images'),
+						array('class' => 'btn btn-primary')
+					)
+				: ''),
+			__('Uh oh..'),
+			View_Alert::INFO
+		);
+
+		return $section;
+	}
+
+
+	/**
+	 * Get gallery upload event info.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Gallery_Event
+	 */
+	public function gallery_event(Model_Event $event) {
+		return new View_Gallery_Event($event);
+	}
+
+
+	/**
+	 * Get gallery thumb view.
+	 *
+	 * @param   Model_Gallery  $gallery
+	 * @param   boolean        $pending  List pending thumbs
+	 * @param   boolean        $approve  Permission to approve
+	 * @return  View_Gallery_Thumbs
+	 */
+	public function section_gallery_thumbs(Model_Gallery $gallery, $pending = false, $approve = false) {
+		$section = new View_Gallery_Thumbs($gallery);
+		$section->show_pending = $pending;
+		$section->can_approve  = $approve;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get image view.
+	 *
+	 * @param   Model_Image    $image
+	 * @param   Model_Gallery  $gallery
+	 * @param   string         $url
+	 * @param   boolean        $show_pending
+	 * @return  View_Image_Full
+	 */
+	public function section_image(Model_Image $image, Model_Gallery $gallery, $url = null, $show_pending = false) {
+		$section = new View_Image_Full($image, $gallery);
+		$section->url          = $url;
+		$section->show_pending = $show_pending;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get image comments section.
+	 *
+	 * @param   Model_Image  $image
+	 * @param   string       $route
+	 * @return  View_Generic_Comments
+	 */
+	public function section_image_comments(Model_Image $image, $route = 'gallery_image_comment') {
+		$section = new View_Generic_Comments($image->comments(self::$user));
+		$section->delete  = Route::get($route)->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
+		$section->private = false; //Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf();
+
+		return $section;
+	}
+
+
+	/**
+	 * Get comment section teaser.
+	 *
+	 * @param   integer  $comment_count
+	 * @return  View_Generic_CommentsTeaser
+	 */
+	public function section_image_comments_teaser($comment_count = 0) {
+		return new View_Generic_CommentsTeaser($comment_count);
+	}
+
+
+	/**
+	 * Get image hover card.
+	 *
+	 * @param   Model_Image    $image
+	 * @param   Model_Gallery  $gallery
+	 * @return  View_Image_HoverCard
+	 */
+	public function section_image_hovercard(Model_Image $image, Model_Gallery $gallery) {
+		return new View_Image_HoverCard($image, $gallery);
+	}
+
+
+	/**
+	 * Get image info view.
+	 *
+	 * @param   Model_Image  $image
+	 * @return  View_Image_Info
+	 */
+	public function section_image_info(Model_Image $image) {
+		return new View_Image_Info($image);
+	}
+
+
+	/**
+	 * Get image pagination.
+	 *
+	 * @param   string   $previous_url
+	 * @param   string   $next_url
+	 * @param   integer  $current
+	 * @param   integer  $total
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_image_pagination($previous_url, $next_url, $current = null, $total = null) {
+		$section = new View_Generic_Pagination(array(
+			'previous_text' => '&laquo; ' . __('Previous'),
+			'next_text'     => __('Next') . ' &raquo;',
+			'previous_url'  => $previous_url,
+			'next_url'      => $next_url,
+			'current_page'  => $current,
+			'total_pages'   => $total,
+		));
+		$section->class = 'sticky';
+
+		return $section;
+	}
+
+
+
+	/**
+	 * Get months browser.
+	 *
+	 * @param   array    $months
+	 * @param   string   $route
+	 * @param   string   $action
+	 * @param   integer  $year
+	 * @param   integer  $month
+	 * @return  View_Galleries_Months
+	 */
+	public function section_month_browser(array $months, $route = 'galleries', $action = 'browse', $year = null, $month = null) {
+		$section = new View_Galleries_Months($months, $route, $action);
+		$section->year  = $year;
+		$section->month = $month;
+
+		return $section;
+	}
+
+	/**
+	 * Get pagination.
+	 *
+	 * @param   array    $months
+	 * @param   string   $route
+	 * @param   string   $action
+	 * @param   integer  $year
+	 * @param   integer  $month
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_month_pagination(array $months, $route, $action, $year, $month) {
+
+		// Previous
+		if (isset($months[$year][$month - 1])) {
+			$previous_year  = $year;
+			$previous_month = $month - 1;
+		} else if (isset($months[$year - 1])) {
+			$previous_year  = $year - 1;
+			$previous_month = reset(array_keys($months[$previous_year]));
+		} else {
+			$previous_year  = $previous_month = null;
+		}
+
+		// Next
+		if (isset($months[$year][$month + 1])) {
+			$next_year  = $year;
+			$next_month = $month + 1;
+		} else if (isset($months[$year + 1])) {
+			$next_year  = $year + 1;
+			$next_month = array_keys($months[$next_year]);
+			$next_month = $next_month[count($next_month) - 1];
+		} else {
+			$next_year  = $next_month = null;
+		}
+
+		return new View_Generic_Pagination(array(
+			'previous_text' => '&laquo; ' . __('Previous month'),
+			'next_text'     => __('Next month') . ' &raquo;',
+			'previous_url'  => $previous_month
+				? Route::url($route, array(
+						'action' => $action,
+						'year'   => $previous_year,
+						'month'  => $previous_month,
+					))
+				: false,
+			'next_url'      => $next_month
+				? Route::url($route, array(
+						'action' => $action,
+						'year'   => $next_year,
+						'month'  => $next_month,
+					))
+				: false,
+		));
+	}
+
+
+	/**
+	 * Get upload view.
+	 *
+	 * @return  View_Image_Upload
+	 */
+	public function section_upload() {
+		$section = new View_Image_Upload();
+
+		return $section;
+	}
+
+
+	/**
+	 * Get upload help.
+	 *
+	 * @return  View_Image_UploadHelp
+	 */
+	public function section_upload_help() {
+		return new View_Image_UploadHelp();
 	}
 
 }

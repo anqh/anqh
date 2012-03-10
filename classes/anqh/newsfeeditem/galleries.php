@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
@@ -55,9 +55,9 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($gallery->loaded() && $image->loaded()) {
 					$text = __('commented to an image<br />:gallery', array(
 						':gallery' => HTML::anchor(
-							Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-							HTML::chars($gallery->name),
-							array('class' => 'icon image hoverable')
+							Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
+							'<i class="icon-camera"></i> ' . HTML::chars($gallery->name),
+							array('class' => 'hoverable')
 						)
 					));
 				}
@@ -68,9 +68,9 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($flyer->loaded()) {
 					$text = __('commented to a flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
-							Route::get('flyer')->uri(array('id' => $flyer->id)),
-							$flyer->name ? HTML::chars($flyer->name) : __('flyer'),
-							array('class' => 'icon flyer')
+							Route::url('flyer', array('id' => $flyer->id)),
+							'<i class="icon-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+							array('class' => 'hoverable')
 						)
 					));
 				}
@@ -81,9 +81,9 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($flyer->loaded()) {
 					$text = __('updated flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
-							Route::get('flyer')->uri(array('id' => $flyer->id)),
-							$flyer->name ? HTML::chars($flyer->name) : __('flyer'),
-							array('class' => 'icon flyer')
+							Route::url('flyer', array('id' => $flyer->id)),
+							'<i class="icon-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+							array('class' => 'hoverable')
 						)
 					));
 				}
@@ -97,9 +97,9 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 					$text = __('tagged :user to an image<br />:gallery', array(
 						':user' => HTML::user($user),
 						':gallery' => HTML::anchor(
-							Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-							HTML::chars($gallery->name),
-							array('class' => 'icon tag hoverable')
+							Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
+							'<i class="icon-tag"></i> ' . HTML::chars($gallery->name),
+							array('class' => 'hoverable')
 						)
 					));
 				}
