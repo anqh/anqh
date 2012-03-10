@@ -120,13 +120,15 @@ class View_Generic_Pagination extends View_Base {
 ?>
 
 <ul <?php echo HTML::attributes($attributes) ?>>
-	<li class="previous">
-		<?php echo $this->previous_url ? HTML::anchor($this->previous_url, $this->previous_text) : $this->previous_text ?>
-	</li>
 
-	<li class="next">
-		<?php echo $this->next_url ? HTML::anchor($this->next_url, $this->next_text) : $this->next_text ?>
-	</li>
+	<?php if ($this->previous_url): ?>
+	<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
+	<?php endif; ?>
+
+	<?php if ($this->next_url): ?>
+	<li class="next"><?= HTML::anchor($this->next_url, $this->next_text) ?></li>
+	<?php endif; ?>
+	
 </ul>
 
 <?php
