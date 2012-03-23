@@ -11,6 +11,32 @@
 abstract class Anqh_Text extends Kohana_Text {
 
 	/**
+	 * Callback for anchoring http/https/ftp/ftps links.
+	 *
+	 * @param   array  $matches
+	 * @return  string
+	 */
+	protected static function _auto_link_urls_callback1($matches) {
+		$url = Text::limit_url($matches[0], 50);
+
+		return HTML::anchor($matches[0], $url, array('title' => HTML::chars($matches[0])));
+	}
+
+
+	/**
+	 * Callback for anchoring naked links without http/https/ftp/ftps.
+	 *
+	 * @param   array  $matches
+	 * @return  string
+	 */
+	protected static function _auto_link_urls_callback2($matches) {
+		$url = Text::limit_url($matches[0], 50);
+
+		return HTML::anchor('http://' . $matches[0], $url, array('title' => HTML::chars($matches[0])));
+	}
+
+
+	/**
 	 * Capitalize initials
 	 *
 	 * @static
@@ -50,9 +76,65 @@ abstract class Anqh_Text extends Kohana_Text {
 
 
 	/**
-	 * Return text with smileys
+	 * Limit URL to maximum length, cutting from the middle.
 	 *
-	 * @param  string  $text
+	 * @static
+	 * @param   string   $url
+	 * @param   integer  $limit
+	 * @return  string
+	 */
+	public static function limit_url($url, $limit = 100) {
+		if (mb_strlen($url) <= $limit) {
+			return $url;
+		}
+
+		$components = parse_url($url);
+		if (!empty($components['query'])) {
+			$components['query'] = '?' . $components['query'];
+		}
+		if (!empty($components['fragment'])) {
+			$components['fragment'] = '#' . $components['fragment'];
+		}
+
+		// Strip protocol, port, user, pass
+		$url = $components['host'] . $components['path'] . $components['query'] . $components['fragment'];
+		if (mb_strlen($url) <= $limit) {
+			return $url;
+		}
+
+		// Strip fragment
+		$url = $components['host'] . $components['path'] . $components['query'];
+		if (mb_strlen($url) <= $limit) {
+			return $url;
+		}
+
+		// Trim path?
+		if (mb_strlen($components['host'] . $components['query']) < $limit) {
+
+			// Trim path
+			$path = array_filter((array)explode('/', $components['path']));
+			if ($path) {
+				$components['path'] = '/…/' . array_pop($path);
+			}
+
+		} else {
+
+			// Strip path and trim query string
+			$components['path'] = '/…';
+
+		}
+
+		$url = $components['host'] . $components['path'] . $components['query'];
+
+		return $url;
+	}
+
+
+	/**
+	 * Return text with smileys.
+	 *
+	 * @param   string  $text
+	 * @return  string
 	 */
 	public static function smileys($text) {
 		static $smileys;
