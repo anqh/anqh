@@ -134,9 +134,14 @@ class Anqh_BB extends BBCode {
 	/**
 	 * Return BBCode parsed to HTML
 	 *
+	 * @param   string  $text
 	 * @return  string
 	 */
-	public function render() {
+	public function render($text = null) {
+		if ($text) {
+			$this->text = $text;
+		}
+
 		if (is_null($this->text)) {
 			return '';
 		}
@@ -144,7 +149,10 @@ class Anqh_BB extends BBCode {
 		// Convert old system tags to BBCode
 		$this->text = str_replace(array('[link', '[/link]', '[q]', '[/q]'), array('[url', '[/url]', '[quote]', '[/quote]'), $this->text);
 
-		return text::auto_p($this->Parse($this->text));
+		// Parse BBCode
+		$parsed = $this->Parse($this->text);
+
+		return $this->GetPlainMode() ? $parsed : Text::auto_p($parsed);
 	}
 
 }
