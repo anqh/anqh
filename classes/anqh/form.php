@@ -105,16 +105,15 @@ class Anqh_Form extends Kohana_Form {
 	 */
 	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
 		if (self::$bootsrap) {
-			$input = $class ? '<ul class="unstyled ' . $class . "\">\n" : "<ul>\n";
+			$input = ($class ? '<ul class="unstyled ' . $class . '">' : '<ul class="unstyled">') . "\n";
 			foreach ($values as $checkbox_value => $checkbox_title) {
 				$id = self::input_id($name) . '-' . $checkbox_value;
 				$input .= '<li>';
 				$input .= Form::checkbox_wrap($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id), $checkbox_title);
 				$input .= "</li>\n";
 			}
-			$input .= "</ul>\n";
 		} else {
-			$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
+			$input = ($class ? '<ul class="' . $class . '">' : '<ul>') . "\n";
 			foreach ($values as $checkbox_value => $checkbox_title) {
 				$id = self::input_id($name) . '-' . $checkbox_value;
 				$input .= '<li>';
@@ -122,8 +121,8 @@ class Anqh_Form extends Kohana_Form {
 				$input .= Form::label($id, $checkbox_title);
 				$input .= "</li>\n";
 			}
-			$input .= "</ul>\n";
 		}
+		$input .= "</ul>\n";
 
 		return Form::wrap($input, $name, $label, $error, $tip);
 	}
@@ -377,17 +376,28 @@ class Anqh_Form extends Kohana_Form {
 			$checked = Arr::get($checked, $name);
 		}
 
-		$input = $class ? '<ul class="' . $class . "\">\n" : "<ul>\n";
-		foreach ($values as $radio_value => $radio_title) {
-			$id = self::input_id($name) . '-' . $radio_value;
-			$input .= '<li' . HTML::attributes($attributes) . '>';
-			$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $id));
-			$input .= Form::label($id, $radio_title);
-			$input .= "</li>\n";
-		}
-		$input .= "</ul>\n";
+		if (self::$bootsrap) {
+			$input = '';
+			foreach ($values as $radio_value => $radio_title) {
+				$id = self::input_id($name) . '-' . $radio_value;
+				$radio  = Form::radio($name, $radio_value, $checked === $radio_value, array('id' => $id));
+				$input .= Form::label(null, $radio . $radio_title, array('class' => 'radio ' . $class));
+			}
 
-		return Form::wrap($input, $name, $label, $error, $tip);
+			return Form::wrap($label ? '<div class="controls">' . $input . '</div>' : $input, $name, $label, $error, $tip);
+		} else {
+			$input = ($class ? '<ul class="' . $class . '">' : '<ul>') . "\n";
+			foreach ($values as $radio_value => $radio_title) {
+				$id = self::input_id($name) . '-' . $radio_value;
+				$input .= '<li' . HTML::attributes($attributes) . '>';
+				$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $id));
+				$input .= Form::label($id, $radio_title);
+				$input .= "</li>\n";
+			}
+			$input .= "</ul>\n";
+
+			return Form::wrap($input, $name, $label, $error, $tip);
+		}
 	}
 
 
@@ -566,7 +576,7 @@ head.ready("bbcode", function initMarkItUp() {
 			// Label
 			if ($label) {
 				$label = is_array($label)
-					? Form::label(key($label), current($label), array('class' => 'control_label'))
+					? Form::label(key($label), current($label), array('class' => 'control-label'))
 					: Form::label($name, $label, array('class' => 'control-label'));
 			}
 
