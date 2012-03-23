@@ -32,7 +32,7 @@ class View_Generic_Pagination extends View_Base {
 	/**
 	 * @var  string  Text for next page
 	 */
-	public $next_text = '&raquo;raquo;';
+	public $next_text = '&raquo;';
 
 	/**
 	 * @var  string  Next page URL
@@ -47,7 +47,7 @@ class View_Generic_Pagination extends View_Base {
 	/**
 	 * @var  string  Text for previous page
 	 */
-	public $previous_text = 'laquo;laquo;';
+	public $previous_text = '&laquo;';
 
 	/**
 	 * @var  string  Previous page URL
@@ -112,23 +112,27 @@ class View_Generic_Pagination extends View_Base {
 		$this->setup();
 
 		$attributes = array(
-			'class' => $this->current_page ? 'pagination pagination-centered' : 'pager'
+			'class' => 'pager' //$this->current_page ? 'pagination pagination-centered' : 'pager'
 		);
 
 		ob_start();
 
 ?>
 
-<ul <?php echo HTML::attributes($attributes) ?>>
+<ul <?= HTML::attributes($attributes) ?>>
 
 	<?php if ($this->previous_url): ?>
 	<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
 	<?php endif; ?>
 
+	<?php if ($this->current_page): ?>
+	<li class="disabled"><a><?= $this->current_page . ($this->total_pages ? ' / ' . $this->total_pages : '') ?></a></li>
+	<?php endif; ?>
+
 	<?php if ($this->next_url): ?>
 	<li class="next"><?= HTML::anchor($this->next_url, $this->next_text) ?></li>
 	<?php endif; ?>
-	
+
 </ul>
 
 <?php
