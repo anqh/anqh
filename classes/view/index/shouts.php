@@ -57,19 +57,19 @@ class View_Index_Shouts extends View_Section {
 
 	<?php foreach (array_reverse($shouts) as $shout) { ?>
 	<li>
-		<?php echo HTML::time(Date::format('HHMM', $shout['created']), $shout['created']) ?>
-		<?php echo HTML::user($shout['user_id']) ?>:
-		<?php echo Text::smileys(HTML::chars($shout['shout'])) ?>
+		<?= HTML::time(Date::format('HHMM', $shout['created']), $shout['created']) ?>
+		<?= HTML::user($shout['user_id']) ?>:
+		<?= Text::smileys(Text::auto_link_urls($shout['shout'])) ?>
 	</li>
 	<?php } ?>
 
 </ul>
 
 <?php if ($this->_can_shout) { ?>
-<form class="form-inline ajaxify" action="<?php echo Route::url('shouts', array('action' => 'shout')) ?>" method="post">
-	<input type="text" name="shout" maxlength="300" placeholder="<?php echo __('Shout, and ye shall be heard..') ?>" />
-	<button class="btn" type="submit" name="submit"><?php echo __('Shout') ?></button>
-	<?php echo Form::CSRF() ?>
+<form class="form-inline ajaxify" action="<?= Route::url('shouts', array('action' => 'shout')) ?>" method="post">
+	<input type="text" name="shout" maxlength="300" placeholder="<?= __('Shout, and ye shall be heard..') ?>" />
+	<button class="btn" type="submit" name="submit"><?= __('Shout') ?></button>
+	<?= Form::CSRF() ?>
 </form>
 <?php
 			}
