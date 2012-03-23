@@ -756,7 +756,7 @@ $.fn.notes = function(n) {
 			'width': note_data.width + 'px',
 			'height': note_data.height + 'px'
 		});
-		var text = $('<div class="notet"></div>');
+		var text = $('<div class="notet label label-inverse"></div>');
 		if (note_data.url) {
 			text.append($('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>'));
 		} else {
@@ -971,6 +971,23 @@ $(function() {
 			postFixed: function unsticked() { $this.removeClass('sticked'); }
 		});
 
+	});
+
+
+	// Keyboard pagination navigation
+	$(document).on('keydown', function onKeydown(event) {
+		if (event.target.type === undefined) {
+			var link;
+			switch (event.which) {
+				case $.ui.keyCode.LEFT:  link = $('.pager .previous:not(.disabled) a').first().attr('href'); break;
+				case $.ui.keyCode.RIGHT: link = $('.pager .next:not(.disabled) a').first().attr('href'); break;
+			}
+			if (link) {
+				event.preventDefault();
+
+				window.location = link;
+			}
+		}
 	});
 
 
