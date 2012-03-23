@@ -112,7 +112,7 @@ class View_Generic_Pagination extends View_Base {
 		$this->setup();
 
 		$attributes = array(
-			'class' => 'pager' //$this->current_page ? 'pagination pagination-centered' : 'pager'
+			'class' => $this->class . ' pager' //$this->current_page ? 'pagination pagination-centered' : 'pager'
 		);
 
 		ob_start();
