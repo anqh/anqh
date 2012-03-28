@@ -17,8 +17,12 @@ body                                   { padding-top: 60px; }
 #side > article + section,
 #side > article + article              { margin-top: @gridGutterWidth; }
 
-section > header                       { position: relative;
-  .nav                                 { position: absolute; right: 0; top: 0; }
+section                                { overflow: hidden;
+  & > header                           { position: relative;
+    .nav                               { position: absolute; right: 0; top: 0; }
+  }
+  li .transparent                      { .opacity(10); }
+  li:hover .transparent                { .opacity(100); }
 }
 
 article header                         { margin-bottom: 10px;
@@ -26,7 +30,7 @@ article header                         { margin-bottom: 10px;
   h4 small                             { float: right; }
 }
 
-header.sticked                         { background: @white; }
+header.sticked                         { background: @bodyBackground; }
 footer.meta                            { color: @grayLight; }
 
 
@@ -39,7 +43,7 @@ footer.meta                            { color: @grayLight; }
 
 
 // jQuery UI
-.ui-dialog                             { background: @white; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); .border-radius(6px); .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
+.ui-dialog                             { background: @bodyBackground; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); .border-radius(6px); .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
   &.fade                               { .transition(e('opacity .3s linear, top .3s ease-out')); top: -25%; }
   &.fade.in                            { top: 50%; }
   .ui-dialog-titlebar                  { border-bottom: 1px solid #eee; cursor: move; padding: 9px 15px;
@@ -51,7 +55,7 @@ footer.meta                            { color: @grayLight; }
   }
 }
 
-#ui-widget                             { background: @white; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); .border-radius(4px); .box-shadow(0 5px 10px rgba(0,0,0,.2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; }
+#ui-widget                             { background: @bodyBackground; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); .border-radius(4px); .box-shadow(0 5px 10px rgba(0,0,0,.2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; }
 .ui-widget:not(.ui-datepicker-inline)  { #ui-widget; z-index: @zindexDropdown; }
 .ui-autocomplete                       {
   a                                    { clear: both; color: @gray; display: block; font-weight: normal; line-height: @baseLineHeight; padding: 3px 15px; white-space: nowrap; }
@@ -69,6 +73,7 @@ footer.meta                            { color: @grayLight; }
 p.cut,
 .cut li                                { overflow: hidden; -o-text-overflow: ellipsis; text-overflow: ellipsis; white-space: nowrap; }
 
+a.user                                 { color: @gray; }
 .male,
 a.male                                 { color: @blueDark; }
 .female,
@@ -81,7 +86,7 @@ a.friend                               { font-weight: bold; }
 
 .popover                               {
   figure                               { text-align: center; }
-  .favorites                           { position: absolute; right: 17px; top: 17px; }
+  .stats                               { position: absolute; right: 17px; top: 17px; }
 }
 
 // BBCode
@@ -95,7 +100,8 @@ a.friend                               { font-weight: bold; }
 .share .addthis_32x32_style            { height: 32px; }
 
 // Page specific
-.newsfeed .ago                         { color: @grayLighter; float: right; }
+.comments .ago,
+.newsfeed .ago                         { color: @grayLight; float: right; }
 
 
 // Galleries
@@ -164,30 +170,6 @@ div.image                              { text-align: center;
 
 
 /***** Responsive styles *****/
-
-.hide-on-phones                        { display: block !important; }
-.hide-on-tablets                       { display: block !important; }
-.hide-on-desktops                      { display: none !important; }
-.show-on-phones                        { display: none !important; }
-.show-on-tablets                       { display: none !important; }
-.show-on-desktops                      { display: block !important; }
-table.hide-on-phones,
-table.hide-on-tablets,
-table.show-on-desktops                 { display: table !important; }
-
-/* Phones */
-@media only screen and (max-width: 767px) {
-  .hide-on-phones                      { display: none !important; }
-  .hide-on-tablets                     { display: block !important; }
-  .hide-on-desktops                    { display: block !important; }
-  .show-on-phones                      { display: block !important; }
-  .show-on-tablets                     { display: none !important; }
-  .show-on-desktops                    { display: none !important; }
-  table.show-on-phones,
-  table.hide-on-tablets,
-  table.hide-on-desktops               { display: table !important; }
-}
-
 
 /* Portrait phones */
 @media only screen and (max-width: 479px) {

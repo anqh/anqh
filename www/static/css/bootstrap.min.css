@@ -692,7 +692,9 @@ body{padding-top:60px;}
 .navbar .nav>li.menuitem-profile{width:30px;}.navbar .nav>li.menuitem-profile a{height:auto;margin:0;padding:5px 0 0;width:auto;}
 #title{margin-bottom:10px;}
 #side>section+section,#side>section+article,#side>article+section,#side>article+article{margin-top:20px;}
-section>header{position:relative;}section>header .nav{position:absolute;right:0;top:0;}
+section{overflow:hidden;}section >header{position:relative;}section >header .nav{position:absolute;right:0;top:0;}
+section li .transparent{opacity:0.1;filter:alpha(opacity=10);}
+section li:hover .transparent{opacity:1;filter:alpha(opacity=100);}
 article header{margin-bottom:10px;}article header ul li{display:inline;}
 article header h4 small{float:right;}
 header.sticked{background:#ffffff;}
@@ -716,18 +718,19 @@ footer.meta{color:#999999;}
 .ui-autocomplete li.geocoded img{display:none;margin-top:-50px;position:absolute;right:5px;top:50%;}
 .ui-autocomplete a.ui-state-hover+img{display:block;}
 p.cut,.cut li{overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap;}
+a.user{color:#555555;}
 .male,a.male{color:#0064cd;}
 .female,a.female{color:#c3325f;}
 a.user:hover{color:#005580;}
 a.friend{font-weight:bold;}
 .avatar{display:inline-block;float:left;margin:5px 10px 5px 0;width:50px;height:50px;text-align:center;}.avatar img{max-height:100%;max-width:100%;}
 .popover figure{text-align:center;}
-.popover .favorites{position:absolute;right:17px;top:17px;}
+.popover .stats{position:absolute;right:17px;top:17px;}
 .markItUpHeader{height:28px;position:relative;}.markItUpHeader >ul{left:0;margin:0;position:absolute;top:0;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
 #map{width:200px;height:100%;}
 .share .addthis_32x32_style{height:32px;}
-.newsfeed .ago{color:#eeeeee;float:right;}
+.comments .ago,.newsfeed .ago{color:#999999;float:right;}
 .thumbnails h4{height:36px;overflow:hidden;}
 .thumbnails i+i{margin-left:10px;}
 .thumbnails i.icon-star+i.icon-star,.thumbnails i.icon-star+i.icon-star-empty,.thumbnails i.icon-star-empty+i.icon-star,.thumbnails i.icon-star-empty+i.icon-star-empty{margin-left:0;}
@@ -755,11 +758,4 @@ div.image #form-note{background:#ffffff;border:1px solid #ccc;border:1px solid r
 .block-grid.four-up>li{margin-left:2%;width:23%;}
 .block-grid.five-up{margin-left:-1.5%;}
 .block-grid.five-up>li{margin-left:1.5%;width:18.5%;}
-.hide-on-phones{display:block !important;}
-.hide-on-tablets{display:block !important;}
-.hide-on-desktops{display:none !important;}
-.show-on-phones{display:none !important;}
-.show-on-tablets{display:none !important;}
-.show-on-desktops{display:block !important;}
-table.hide-on-phones,table.hide-on-tablets,table.show-on-desktops{display:table !important;}
-@media only screen and (max-width:767px){.hide-on-phones{display:none !important;} .hide-on-tablets{display:block !important;} .hide-on-desktops{display:block !important;} .show-on-phones{display:block !important;} .show-on-tablets{display:none !important;} .show-on-desktops{display:none !important;} table.show-on-phones,table.hide-on-tablets,table.hide-on-desktops{display:table !important;}}@media only screen and (max-width:479px){}@media only screen and (min-width:480px) and (max-width:767px){}@media only screen and (min-width:768px) and (max-width:980px){.hide-on-phones{display:block !important;} .hide-on-tablets{display:none !important;} .hide-on-desktops{display:block !important;} .show-on-phones{display:none !important;} .show-on-tablets{display:block !important;} .show-on-desktops{display:none !important;} table.hide-on-phones,table.show-on-tablets,table.hide-on-desktops{display:table !important;}}@media only screen and (max-width:980px){body{padding-top:0;} .navbar .nav{margin-bottom:0 !important;} .navbar .nav>li.menuitem-profile{display:none;}}@media only screen and (min-width:1200px){}
+@media only screen and (max-width:479px){}@media only screen and (min-width:480px) and (max-width:767px){}@media only screen and (min-width:768px) and (max-width:980px){.hide-on-phones{display:block !important;} .hide-on-tablets{display:none !important;} .hide-on-desktops{display:block !important;} .show-on-phones{display:none !important;} .show-on-tablets{display:block !important;} .show-on-desktops{display:none !important;} table.hide-on-phones,table.show-on-tablets,table.hide-on-desktops{display:table !important;}}@media only screen and (max-width:980px){body{padding-top:0;} .navbar .nav{margin-bottom:0 !important;} .navbar .nav>li.menuitem-profile{display:none;}}@media only screen and (min-width:1200px){}

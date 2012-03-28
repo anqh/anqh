@@ -827,7 +827,7 @@ $(function() {
 
 						// Create the popover when we have the contents
 						$this.popover({
-							title:   $card.find('header').remove().text(),
+							title:   $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
 							content: $card.html(),
 							delay:   { show: 500, hide: 500 },
 							placement: function() {
@@ -865,14 +865,15 @@ $(function() {
 	// Theme
 	$('#dock a.theme, .menu-theme a').skinswitcher();
 
+
 	// Delete comment
-	$("a.comment-delete").each(function(i) {
-		var action = $(this);
-		action.data("action", function() {
-			var comment = action.attr("href").match(/([0-9]*)\/delete/);
+	$('a.comment-delete').each(function deleteComment() {
+		var $this = $(this);
+		$this.data('action', function deleteAction() {
+			var comment = $this.attr('href').match(/([0-9]*)\/delete/);
 			if (comment) {
-				$.get(action.attr("href"), function() {
-					$("#comment-" + comment[1]).slideUp();
+				$.get($this.attr('href'), function deleted() {
+					$('#comment-' + comment[1]).slideUp();
 				});
 			}
 		});
@@ -880,25 +881,28 @@ $(function() {
 
 
 	// Set comment as private
-	$("a.comment-private").live("click", function(e) {
+	$(document).delegate('a.comment-private', 'click', function privateComment(e) {
 		e.preventDefault();
-		var href = $(this).attr("href");
+
+		var href    = $(this).attr('href');
 		var comment = href.match(/([0-9]*)\/private/);
-		$(this).fadeOut();
 		if (comment) {
 			$.get(href, function() {
-				$("#comment-" + comment[1]).addClass("private");
+				$('#comment-' + comment[1]).addClass('private');
 			});
+			$(this).fadeOut();
 		}
+
 		return false;
 	});
 
 
 	// Submit comment with ajax
-	$("section.comments form").live("submit", function(e) {
+	$(document).delegate('section.comments form', 'submit', function sendComment(e) {
 		e.preventDefault();
-		var comment = $(this).closest("section.comments");
-		$.post($(this).attr("action"), $(this).serialize(), function(data) {
+
+		var comment = $(this).closest('section.comments');
+		$.post($(this).attr('action'), $(this).serialize(), function onSend(data) {
 			comment.replaceWith(data);
 		});
 

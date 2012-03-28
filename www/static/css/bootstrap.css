@@ -4014,13 +4014,24 @@ body {
 #side > article + article {
   margin-top: 20px;
 }
-section > header {
+section {
+  overflow: hidden;
+}
+section  > header {
   position: relative;
 }
-section > header .nav {
+section  > header .nav {
   position: absolute;
   right: 0;
   top: 0;
+}
+section li .transparent {
+  opacity: 0.1;
+  filter: alpha(opacity=10);
+}
+section li:hover .transparent {
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
 article header {
   margin-bottom: 10px;
@@ -4177,6 +4188,9 @@ p.cut,
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+a.user {
+  color: #555555;
+}
 .male,
 a.male {
   color: #0064cd;
@@ -4206,7 +4220,7 @@ a.friend {
 .popover figure {
   text-align: center;
 }
-.popover .favorites {
+.popover .stats {
   position: absolute;
   right: 17px;
   top: 17px;
@@ -4233,8 +4247,9 @@ a.friend {
 .share .addthis_32x32_style {
   height: 32px;
 }
+.comments .ago,
 .newsfeed .ago {
-  color: #eeeeee;
+  color: #999999;
   float: right;
 }
 .thumbnails h4 {
@@ -4398,55 +4413,6 @@ div.image #form-note {
   width: 18.5%;
 }
 /***** Responsive styles *****/
-.hide-on-phones {
-  display: block !important;
-}
-.hide-on-tablets {
-  display: block !important;
-}
-.hide-on-desktops {
-  display: none !important;
-}
-.show-on-phones {
-  display: none !important;
-}
-.show-on-tablets {
-  display: none !important;
-}
-.show-on-desktops {
-  display: block !important;
-}
-table.hide-on-phones,
-table.hide-on-tablets,
-table.show-on-desktops {
-  display: table !important;
-}
-/* Phones */
-@media only screen and (max-width: 767px) {
-  .hide-on-phones {
-    display: none !important;
-  }
-  .hide-on-tablets {
-    display: block !important;
-  }
-  .hide-on-desktops {
-    display: block !important;
-  }
-  .show-on-phones {
-    display: block !important;
-  }
-  .show-on-tablets {
-    display: none !important;
-  }
-  .show-on-desktops {
-    display: none !important;
-  }
-  table.show-on-phones,
-  table.hide-on-tablets,
-  table.hide-on-desktops {
-    display: table !important;
-  }
-}
 /* Portrait phones */
 @media only screen and (max-width: 479px) {
   
