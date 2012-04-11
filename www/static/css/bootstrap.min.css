@@ -717,6 +717,13 @@ footer.meta{color:#999999;}
 .ui-autocomplete li.geocoded a{margin-right:115px;}
 .ui-autocomplete li.geocoded img{display:none;margin-top:-50px;position:absolute;right:5px;top:50%;}
 .ui-autocomplete a.ui-state-hover+img{display:block;}
+.fileinput-button{overflow:hidden;position:relative;}
+.fileinput-button input{cursor:pointer;margin:0;opacity:0;filter:alpha(opacity=0);position:absolute;right:0;top:0;}
+.files .progress{width:100px;}
+.files .start,.files .cancel,.files .delete{white-space:nowrap;}
+.progress-animated .bar{background:url(../img/progressbar.gif) !important;filter:none;}
+.fileupload-loading{background:url(../img/loading.gif);display:none;height:128px;left:50%;position:absolute;width:128px;}
+.droparea{border:1px dashed #555555;cursor:default;font-size:15px;text-align:center;}
 p.cut,.cut li{overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap;}
 a.user{color:#555555;}
 .male,a.male{color:#0064cd;}
