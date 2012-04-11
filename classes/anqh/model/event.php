@@ -219,6 +219,46 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Get user's past favorites.
+	 *
+	 * @param   Model_User  $user
+	 * @param   integer     $limit
+	 * @return  Model_Event[]
+	 */
+	public function find_favorites_past(Model_User $user, $limit = 5) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->join('favorites', 'INNER')
+				->on('favorites.event_id', '=', 'events.id')
+				->where('favorites.user_id', '=', $user->id)
+				->and_where('events.stamp_begin', '<', strtotime('today'))
+				->order_by('stamp_begin', 'DESC'),
+			$limit
+		);
+	}
+
+
+	/**
+	 * Get user's upcoming favorites.
+	 *
+	 * @param   Model_User  $user
+	 * @param   integer     $limit
+	 * @return  Model_Event[]
+	 */
+	public function find_favorites_upcoming(Model_User $user, $limit = 5) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->join('favorites', 'INNER')
+				->on('favorites.event_id', '=', 'events.id')
+				->where('favorites.user_id', '=', $user->id)
+				->and_where('events.stamp_begin', '>', strtotime('today'))
+				->order_by('stamp_begin', 'ASC'),
+			$limit
+		);
+	}
+
+
+	/**
 	 * Find events between given time period, return grouped by date
 	 *
 	 * @param   integer  $stamp_begin
