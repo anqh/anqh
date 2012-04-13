@@ -870,7 +870,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			}
 
 
-
 			// Build page
 			$this->view = View_Page::factory(__('Gallery'));
 
@@ -1644,8 +1643,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 */
 	public function section_image_comments(Model_Image $image, $route = 'gallery_image_comment') {
 		$section = new View_Generic_Comments($image->comments(self::$user));
-		$section->delete  = Route::get($route)->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
-		$section->private = false; //Route::get('gallery_image_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf();
+		$section->delete  = Route::url($route, array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
+		$section->private = false;
 
 		return $section;
 	}
