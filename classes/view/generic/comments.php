@@ -110,7 +110,7 @@ class View_Generic_Comments extends View_Section {
 <?php
 
 			if ($this->private && !$comment->private):
-				echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'btn btn-mini comment-private'));
+				echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'btn btn-special btn-mini comment-private'));
 			endif;
 
 			if ($this->delete):
@@ -123,7 +123,7 @@ class View_Generic_Comments extends View_Section {
 		<?php endif; ?>
 
 		<p>
-			<?= $comment->private ? '<abbr title="' . __('Private comment') . '">' . __('Priv') . '</abbr>: ' : '' ?>
+			<?= $comment->private ? '<span class="label label-special" title="' . __('Private comment') . '">' . __('Priv') . '</span>: ' : '' ?>
 			<?= Text::smileys(Text::auto_link_urls(HTML::chars($comment->comment))) ?>
 		</p>
 	</li>
@@ -150,12 +150,19 @@ class View_Generic_Comments extends View_Section {
 
 		// Private message?
 		if ($this->private) {
-			echo Form::checkbox_wrap(
+			$input = Form::checkbox(
 				'private',
 				1,
-				$this->values,
-				array('onchange' => "\$('input[name=comment]').toggleClass('private', this.checked);"),
-				'<abbr class="private" title="' . __('Private comment') . '">' . __('Priv') . '</abbr>'
+				Arr::get($this->values, 'private'),
+				array(
+					'id'       => 'field-private',
+					'onchange' => "\$('input[name=comment]').toggleClass('private', this.checked);")
+			);
+
+			echo Form::label(
+				'field-private',
+				$input . ' <span class="label label-special private" title="' . __('Private comment') . '">' . __('Priv') . '</span> ',
+				array('class' => 'checkbox')
 			);
 		}
 
