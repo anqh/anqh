@@ -4005,6 +4005,10 @@ body {
   padding: 5px 0 0;
   width: auto;
 }
+.navbar .nav > li.menu-me .dropdown-menu {
+  left: 0;
+  right: auto;
+}
 #title {
   margin-bottom: 10px;
 }
@@ -4194,12 +4198,25 @@ footer.meta {
   right: 0;
   top: 0;
 }
+.files .preview img {
+  width: 80px;
+}
+.files .name span,
+.files .name a {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100px;
+}
 .files .progress {
   width: 100px;
 }
+.files .size,
 .files .start,
 .files .cancel,
 .files .delete {
+  text-align: right;
   white-space: nowrap;
 }
 .progress-animated .bar {
@@ -4219,6 +4236,9 @@ footer.meta {
   cursor: default;
   font-size: 15px;
   text-align: center;
+}
+.ie .droparea {
+  display: none;
 }
 p.cut,
 .cut li {
