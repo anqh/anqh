@@ -7,7 +7,7 @@
  * @copyright  (c) 2010-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Blog extends Controller_Template {
+class Anqh_Controller_Blog extends Controller_Page {
 
 	/**
 	 * Action: add new blog entry
@@ -80,22 +80,6 @@ class Anqh_Controller_Blog extends Controller_Template {
 		}
 		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ, self::$user);
 
-		// Set title
-		$this->page_title    = HTML::chars($entry->name);
-		$this->page_subtitle = __('By :user :ago', array(
-			':user'  => HTML::user($entry->author()),
-			':ago'   => HTML::time(Date::fuzzy_span($entry->created), $entry->created)
-		));
-
-		// Set actions
-		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($entry, 'edit'), 'text' => __('Edit blog entry'), 'class' => 'blog-edit');
-		}
-
-		// Content
-		Widget::add('main', View_Module::factory('blog/entry', array(
-			'entry' => $entry
-		)));
 
 		// Comments section
 		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, self::$user)) {
@@ -107,7 +91,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 				// Handle comment
 				try {
 					$comment = Model_Blog_Comment::factory()->
-						add(self::$user->id, $entry, Arr::get($_POST, 'comment') ,Arr::get($_POST, 'private'));
+						add(self::$user->id, $entry, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
 
 					$entry->comment_count++;
 					$entry->new_comment_count++;
@@ -118,7 +102,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 						NewsfeedItem_Blog::comment(self::$user, $entry);
 					}
 
-					if (!$this->ajax) {
+					if ($this->_request_type !== Controller::REQUEST_AJAX) {
 						$this->request->redirect(Route::model($entry));
 					}
 				} catch (Validation_Exception $e) {
@@ -128,22 +112,47 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 			}
 
-			$view = View_Module::factory('generic/comments', array(
-				'mod_title'  => __('Comments'),
-				'delete'     => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'delete')) . '?' . Security::csrf_query(),
-				'private'    => Route::get('blog_comment')->uri(array('id' => '%d', 'commentaction' => 'private')) . '?' . Security::csrf_query(),
-				'comments'   => $entry->comments(self::$user),
-				'errors'     => $errors,
-				'values'     => $values,
-				'pagination' => null,
-				'user'       => self::$user,
-			));
+			// Get view
+			$section_comments = $this->section_comments($entry);
+			$section_comments->errors = $errors;
+			$section_comments->values = $values;
 
-			if ($this->ajax) {
-				echo $view;
-				return;
-			}
-			Widget::add('main', $view);
+		} else if (!self::$user) {
+
+			// Guest user
+			$section_comments = $this->section_comments_teaser($entry->comment_count);
+
+		}
+
+		if (isset($section_comments) && $this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body($section_comments);
+
+			return;
+		}
+
+
+		// Build page
+		$this->view           = new View_Page($entry->name);
+		$this->view->subtitle = __('By :user :ago', array(
+			':user'  => HTML::user($entry->author()),
+			':ago'   => HTML::time(Date::fuzzy_span($entry->created), $entry->created)
+		));
+
+		// Set actions
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array(
+				'link'  => Route::model($entry, 'edit'),
+				'text'  => '<i class="icon-edit"></i> ' . __('Edit blog entry'),
+				'class' => 'btn blog-edit'
+			);
+		}
+
+		// Content
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_entry($entry));
+
+		// Comments
+		if (isset($section_comments)) {
+			$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
 		}
 
 		// Update counts
@@ -167,17 +176,20 @@ class Anqh_Controller_Blog extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
-		$this->page_title = __('Blogs');
+
+		$this->view = new View_Page(__('Blogs'));
 
 		// Set actions
 		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::get('blogs')->uri(array('action' => 'add')), 'text' => __('Add blog entry'), 'class' => 'blog-add');
+			$this->page_actions[] = array(
+				'link'  => Route::url('blogs', array('action' => 'add')),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Write new blog entry'),
+				'class' => 'btn btn-primary blog-add'
+			);
 		}
 
-		Widget::add('main', View_Module::factory('blog/entries', array(
-			'mod_class' => 'blog_entries',
-			'entries'   => Model_Blog_Entry::factory()->find_new(20),
-		)));
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_blogs(Model_Blog_Entry::factory()->find_new(20)));
 	}
 
 
@@ -200,7 +212,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 
 			$cancel = Route::model($entry);
 
-			$this->page_title = HTML::chars($entry->name);
+			$this->view = new View_Page(HTML::chars($entry->name));
 			$entry->modified  = time();
 			$entry->modify_count++;
 
@@ -213,7 +225,7 @@ class Anqh_Controller_Blog extends Controller_Template {
 			$cancel   = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;
 
-			$this->page_title = __('New blog entry');
+			$this->view = new View_Page(__('New blog entry'));
 			$entry->author_id = self::$user->id;
 			$entry->created   = time();
 
@@ -238,9 +250,71 @@ class Anqh_Controller_Blog extends Controller_Template {
 			}
 		}
 
-		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
-		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
-		Widget::add('main', View_Module::factory('blog/edit', array('entry' => $entry, 'errors' => $errors, 'cancel' => $cancel)));
+		// Form
+		$section = $this->section_entry_edit($entry);
+		$section->cancel = $cancel;
+		$section->errors = $errors;
+		$this->view->add(View_Page::COLUMN_MAIN, $section);
+	}
+
+
+	/**
+	 * Get blog entries index listing.
+	 *
+	 * @param   Model_Blog_Entry[]  $blog_entries
+	 * @return  View_Blogs_Index
+	 */
+	public function section_blogs($blog_entries) {
+		return new View_Blogs_Index($blog_entries);
+	}
+
+
+	/**
+	 * Get blog entry view.
+	 *
+	 * @param   Model_Blog_Entry  $blog_entry
+	 * @return  View_Blog_Entry
+	 */
+	public function section_entry(Model_Blog_Entry $blog_entry) {
+		return new View_Blog_Entry($blog_entry);
+	}
+
+
+	/**
+	 * Get blog entry edit view.
+	 *
+	 * @param   Model_Blog_Entry  $blog_entry
+	 * @return  View_Blog_Edit
+	 */
+	public function section_entry_edit(Model_Blog_Entry $blog_entry) {
+		return new View_Blog_Edit($blog_entry);
+	}
+
+
+	/**
+	 * Get comments section.
+	 *
+	 * @param   Model_Blog_Entry  $blog_entry
+	 * @param   string            $route
+	 * @return  View_Generic_Comments
+	 */
+	public function section_comments(Model_Blog_Entry $blog_entry, $route = 'blog_comment') {
+		$section = new View_Generic_Comments($blog_entry->comments(self::$user));
+		$section->delete  = Route::url($route, array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
+		$section->private = Route::url($route, array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf();
+
+		return $section;
+	}
+
+
+	/**
+	 * Get comment section teaser.
+	 *
+	 * @param   integer  $comment_count
+	 * @return  View_Generic_CommentsTeaser
+	 */
+	public function section_comments_teaser($comment_count = 0) {
+		return new View_Generic_CommentsTeaser($comment_count);
 	}
 
 }
