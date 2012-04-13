@@ -216,8 +216,8 @@ class Anqh_View_Page extends View_Base {
 	<script>
 		head.js(
 			{ 'google-maps':        'http://maps.google.com/maps/api/js?sensor=false&callback=isNaN' }, // Use callback hack to initialize correctly
-			{ 'jquery':             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js' },
-			{ 'jquery-ui':          'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js' },
+			{ 'jquery':             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
+			{ 'jquery-ui':          'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
 			{ 'bootstrap':          '<?php echo $this->base ?>static/js/bootstrap.js' },
 			{ 'jquery-markitup':    '<?php echo $this->base ?>js/jquery.markitup.js' },
 			{ 'bbcode':             '<?php echo $this->base ?>js/markitup.bbcode.js' },
