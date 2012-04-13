@@ -4240,10 +4240,53 @@ footer.meta {
 .ie .droparea {
   display: none;
 }
-p.cut,
+.label-special {
+  background-color: #7a43b6;
+}
+.label-special:hover {
+  background-color: #613591;
+}
+.btn-special {
+  background-color: #9163c4;
+  background-image: -moz-linear-gradient(top, #a178cd, #7a43b6);
+  background-image: -ms-linear-gradient(top, #a178cd, #7a43b6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#a178cd), to(#7a43b6));
+  background-image: -webkit-linear-gradient(top, #a178cd, #7a43b6);
+  background-image: -o-linear-gradient(top, #a178cd, #7a43b6);
+  background-image: linear-gradient(top, #a178cd, #7a43b6);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a178cd', endColorstr='#7a43b6', GradientType=0);
+  border-color: #7a43b6 #7a43b6 #552e7e;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+}
+.btn-special:hover,
+.btn-special:active,
+.btn-special.active,
+.btn-special.disabled,
+.btn-special[disabled] {
+  background-color: #7a43b6;
+}
+.btn-special:active,
+.btn-special.active {
+  background-color: #613591 \9;
+}
+.btn-special,
+.btn-special:hover {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.btn-special.active {
+  color: rgba(255, 255, 255, 0.75);
+}
+input.private {
+  border-color: #7a43b6;
+}
+.private p {
+  color: #7a43b6;
+}
 .cut li {
   overflow: hidden;
-  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

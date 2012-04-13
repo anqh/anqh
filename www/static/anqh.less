@@ -89,8 +89,18 @@ footer.meta                            { color: @grayLight; }
 .ie .droparea                          { display: none; }
 
 // Miscellaneous
-p.cut,
-.cut li                                { overflow: hidden; -o-text-overflow: ellipsis; text-overflow: ellipsis; white-space: nowrap; }
+.label-special                         { background-color: @purple; }
+.label-special:hover                   { background-color: darken(@purple, 10%); }
+.btn-special                           { .buttonBackground(lighten(@purple, 15%), @purple); }
+.btn-special,
+.btn-special:hover                     { color: @white; text-shadow: 0 -1px 0 rgba(0,0,0,.25); }
+.btn-special.active                    { color: rgba(255, 255, 255, .75); }
+
+input.private                          { border-color: @purple; }
+.private p                             { color: @purple; }
+
+//p.cut,
+.cut li                                { .text-overflow; }
 
 a.user                                 { color: @gray; }
 .male,
