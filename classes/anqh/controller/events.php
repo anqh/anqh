@@ -797,6 +797,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			}
 		}
 
+		// Form
 		Form::$bootsrap = true;
 		$section = $this->section_event_edit($event);
 		$section->event_errors = isset($event_validation) ? $event_validation->array->errors('validation') : null;
@@ -804,22 +805,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		$section->venue_errors = isset($venue_validation) ? $venue_validation->array->errors('validation') : null;
 		$section->cancel       = $cancel;
 		$this->view->add(View_Page::COLUMN_TOP, $section);
-
-		Widget::add('topp', View_Module::factory('events/edit', array(
-			'event'        => $event,
-			'event_errors' => isset($event_validation) ? $event_validation->array->errors('validation') : null,
-			'tags'         => $tags,
-
-			'flyer_front'  => $event->flyer_front ? $event->flyer_front : null,
-			'flyer_back'   => $event->flyer_back ? $event->flyer_back : null,
-
-			'venue'        => isset($venue) ? $venue : $event->venue,
-			'venue_errors' => isset($venue_validation) ? $venue_validation->array->errors('validation') : null,
-			'venues'       => Model_Venue::factory()->find_all(),
-			'city'         => $event->city() ? $event->city() : (isset($venue) && $venue->city() ? $venue->city() : null),
-
-			'cancel'       => $cancel,
-		)));
 	}
 
 
