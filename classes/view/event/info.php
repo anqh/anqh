@@ -59,8 +59,8 @@ class View_Event_Info extends View_Section {
 		if ($this->event->price == 0) {
 			echo '<i class="icon-tag"></i> ', __('Free entry'), '<br />';
 		} else if ($this->event->price > 0) {
-			echo '<i class="icon-tag"></i> ', __('Tickets :price', array(':price' => '<var>' . Num::format($this->event->price, 2, true) . '&euro;</var>'));
-			echo $this->event->price2 !== null ? ', ' . __('presale :price', array(':price' => '<var>' . Num::format($this->event->price2, 2, true) . '&euro;</var>')) : '', '<br />';
+			echo '<i class="icon-tag"></i> ', __('Tickets :price', array(':price' => '<var>' . Num::currency($this->event->price, $this->event->stamp_begin) . '</var>'));
+			echo $this->event->price2 !== null ? ', ' . __('presale :price', array(':price' => '<var>' . Num::currency($this->event->price2, $this->event->stamp_begin) . '</var>')) : '', '<br />';
 		}
 
 

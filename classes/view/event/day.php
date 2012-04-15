@@ -62,7 +62,7 @@ class View_Event_Day extends View_Article {
 		// Price
 		$price = $this->event->price !== null && $this->event->price == 0 ?
 			__('Free!') :
-			($this->event->price > 0 ? Num::format($this->event->price, 2, true) . '€' : '');
+			($this->event->price > 0 ? Num::currency($this->event->price, $this->event->stamp_begin) : '');
 
 		ob_start();
 
