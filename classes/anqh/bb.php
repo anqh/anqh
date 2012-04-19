@@ -44,7 +44,7 @@ class Anqh_BB extends BBCode {
 		}
 
 		// We handle newlines with Kohana
-		$this->SetIgnoreNewlines(true);
+		//$this->SetIgnoreNewlines(true);
 		$this->SetPreTrim('a');
 		$this->SetPostTrim('a');
 
@@ -152,7 +152,7 @@ class Anqh_BB extends BBCode {
 		// Parse BBCode
 		$parsed = $this->Parse($this->text);
 
-		return $this->GetPlainMode() ? $parsed : Text::auto_p($parsed);
+		return $parsed; //$this->GetPlainMode() ? $parsed : Text::auto_p($parsed);
 	}
 
 }
