@@ -4375,6 +4375,7 @@ div.image {
 }
 div.image figure {
   display: inline-block;
+  margin: 0;
   position: relative;
   /*.notea:before                      { border: 1px solid black; .border-radius(3px); content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
 

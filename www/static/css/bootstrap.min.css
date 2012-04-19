@@ -754,7 +754,7 @@ a.friend{font-weight:bold;}
 .thumbnails i+i{margin-left:10px;}
 .thumbnails i.icon-star+i.icon-star,.thumbnails i.icon-star+i.icon-star-empty,.thumbnails i.icon-star-empty+i.icon-star,.thumbnails i.icon-star-empty+i.icon-star-empty{margin-left:0;}
 .months li.selected li.selected{font-weight:bold;}
-div.image{text-align:center;}div.image figure{display:inline-block;position:relative;}div.image figure a.image{display:inline-block;}
+div.image{text-align:center;}div.image figure{display:inline-block;margin:0;position:relative;}div.image figure a.image{display:inline-block;}
 div.image figure .note{cursor:help;position:absolute;}
 div.image figure .notea{border:1px solid rgba(255, 255, 255, 0.75);-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;-webkit-box-shadow:0 5px 10px rgba(0, 0, 0, 0.75);-moz-box-shadow:0 5px 10px rgba(0, 0, 0, 0.75);box-shadow:0 5px 10px rgba(0, 0, 0, 0.75);position:relative;visibility:hidden;}
 div.image figure .notet{opacity:0;filter:alpha(opacity=0);margin-top:20px;-webkit-transition:opacity 0.25s ease-in-out;-moz-transition:opacity 0.25s ease-in-out;-ms-transition:opacity 0.25s ease-in-out;-o-transition:opacity 0.25s ease-in-out;transition:opacity 0.25s ease-in-out;}
