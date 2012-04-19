@@ -25,7 +25,7 @@ return array(
 	'quality' => 95,
 
 	// Maximum filesize
-	'filesize' => '1M',
+	'filesize' => '2M',
 
 	// Allowed file types
 	'filetypes' => array('jpg', 'jpeg', 'gif', 'png'),
@@ -35,9 +35,9 @@ return array(
 
 		// Max width image, default for gallery
 		Model_Image::SIZE_WIDE => array(
-			'width'  => 760,
-			'height' => 550,
-			'resize' => array(760, 570), // Wide column
+			'width'  => 940,
+			'height' => 680,
+			'resize' => array(940, 680), // Wide column
 		),
 
 		// Main column
