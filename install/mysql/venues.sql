@@ -34,4 +34,4 @@ CREATE TABLE `venues` (
   CONSTRAINT `venues_default_image_id` FOREIGN KEY (`default_image_id`) REFERENCES `images` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `venues_forum_topic_id` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_topics` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `venues_geo_city_id` FOREIGN KEY (`geo_city_id`) REFERENCES `geo_cities` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
