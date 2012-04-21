@@ -660,31 +660,33 @@ $.fn.autocompleteUser = function(options) {
 // Foursquare autocomplete
 $.fn.foursquareVenue = function(options) {
 	var defaults = {
-		address: 'address',
-		latitudeSearch: 'city_latitude',
+		address:         'address',
+		latitudeSearch:  'city_latitude',
 		longitudeSearch: 'city_longitude',
-		latitude: 'latitude',
-		longitude: 'longitude',
-		venueId: 'venue_id',
-		categoryId: 'category_id',
-		map: 'map',
-		limit: 10
+		latitude:        'latitude',
+		longitude:       'longitude',
+		venueId:         'venue_id',
+		categoryId:      'category_id',
+		map:             'map',
+		limit:           10
 	};
 
 	options = $.extend(defaults, options || {});
+
 	$(this)
 		.autocomplete({
-			source: function(request, response) {
+			minLength: 2,
+			source:    function(request, response) {
 				$.ajax({
-					url: '/api/v1/venues/foursquare',
+					url:      '/api/v1/venues/foursquare',
 					dataType: 'jsonp',
-					type: 'get',
-					data: {
-						method: 'venues',
-						geolat: $('input[name=' + options.latitudeSearch + ']').val(),
-						geolong: $('input[name=' + options.longitudeSearch + ']').val(),
-						l: options.limit,
-						q: request.term
+					type:     'get',
+					data:     {
+						method:  'venues',
+						ll:      $('input[name=' + options.latitudeSearch + ']').val() + ',' + $('input[name=' + options.longitudeSearch + ']').val(),
+						limit:   options.limit,
+						intent:  'match',
+						query:   request.term
 					},
 					success: function(data) {
 						if (!data.venues) {
@@ -692,23 +694,21 @@ $.fn.foursquareVenue = function(options) {
 						}
 
 						response($.map(data.venues.groups[0].venues, function(item) {
-							console.debug(item);
 							return {
-								id: item.id,
-								label: item.name + ', ' + item.address,
-								value: item.name,
-								address: item.address,
-								city: item.city,
-								zip: item.zip,
-								lat: item.geolat,
-								long: item.geolong,
-								category: item.primarycategory ? item.primarycategory.id : 0
+								'id':       item.id,
+								'label':    item.name + ', ' + item.address,
+								'value':    item.name,
+								'address':  item.address,
+								'city':     item.city,
+								'zip':      item.zip,
+								'lat':      item.geolat,
+								'long':     item.geolong,
+								'category': item.primarycategory ? item.primarycategory.id : 0
 							}
 						}));
 					}
-				})
+				});
 			},
-			minLength: 2,
 			select: function(event, ui) {
 				$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
 				ui.item.category && $('input[name=' + options.categoryId + ']') && $('input[name=' + options.categoryId + ']').val(ui.item.category);

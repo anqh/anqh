@@ -747,7 +747,7 @@ a.friend{font-weight:bold;}
 .popover .stats{position:absolute;right:17px;top:17px;}
 .markItUpHeader{height:28px;position:relative;}.markItUpHeader >ul{left:0;margin:0;position:absolute;top:0;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
-#map{width:200px;height:100%;}
+#map{width:200px;height:150px;}
 .share .addthis_32x32_style{height:32px;}
 .comments .ago,.newsfeed .ago{color:#999999;float:right;}
 .thumbnails h4{height:36px;overflow:hidden;}
