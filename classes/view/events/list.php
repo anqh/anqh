@@ -21,6 +21,18 @@ class View_Events_List extends View_Section {
 
 
 	/**
+	 * Create new view.
+	 *
+	 * @param  Model_Event[]  $events
+	 */
+	public function __construct($events = null) {
+		parent::__construct();
+
+		$this->events = $events;
+	}
+
+
+	/**
 	 * Render content.
 	 *
 	 * @return  string
