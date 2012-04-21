@@ -995,10 +995,10 @@ class Anqh_Controller_Events extends Controller_Page {
 	 *
 	 * @param   string  $cancel  URL
 	 * @param   array   $errors
-	 * @return  View_Event_FlyerUpload
+	 * @return  View_Generic_Upload
 	 */
 	public function section_flyer_upload($cancel = null, $errors = null) {
-		$section = new View_Event_FlyerUpload();
+		$section = new View_Generic_Upload();
 		$section->title  = __('Add flyer');
 		$section->cancel = $cancel;
 		$section->errors = $errors;
