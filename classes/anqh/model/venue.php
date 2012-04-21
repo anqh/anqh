@@ -65,6 +65,10 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 		'author_id'              => array('digit'),
 	);
 
+	protected $_has_many = array(
+		'images'
+	);
+
 	/**
 	 * @var  array  User editable fields
 	 */

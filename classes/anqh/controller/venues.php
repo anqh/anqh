@@ -4,10 +4,10 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Venues extends Controller_Template {
+class Anqh_Controller_Venues extends Controller_Page {
 
 	/**
 	 * Construct controller
@@ -140,31 +140,30 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Load venue
 		$venue_id = (int)$this->request->param('id');
-		$venue = Model_Venue::factory($venue_id);
+		$venue    = Model_Venue::factory($venue_id);
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
 		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
 
-		if (!$this->ajax) {
-			$this->page_title    = HTML::chars($venue->name);
-		}
-
 		// Change existing
-		if (isset($_REQUEST['default'])) {
-			$image = Model_Image::factory((int)$_REQUEST['default']);
-			if (Security::csrf_valid() && $image->loaded() && $venue->has('images', $image)) {
-				$venue->default_image = $image;
+		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
+			$image = Model_Image::factory($image_id);
+			if (Security::csrf_valid() && $image->loaded() && $venue->has('images', $image->id)) {
+				$venue->default_image_id = $image->id;
 				$venue->save();
 			}
 			$cancel = true;
 		}
 
 		// Delete existing
-		if (isset($_REQUEST['delete'])) {
-			$image = Model_Image::factory((int)$_REQUEST['delete']);
-			if (Security::csrf_valid() && $image->loaded() && $image->id != $venue->default_image->id && $venue->has('images', $image)) {
-				$venue->remove('images', $image);
+		if ($image_id = (int)Arr::get($_REQUEST, 'delete')) {
+			$image = Model_Image::factory($image_id);
+			if (Security::csrf_valid() && $image->loaded() && $venue->has('images', $image->id)) {
+				if ($venue->default_image_id == $image->id) {
+					$venue->default_image_id = null;
+				}
+				$venue->remove('image', $image->id);
 				$venue->save();
 				$image->delete();
 			}
@@ -173,38 +172,39 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
-			if ($this->ajax) {
-				$this->response->body($this->_get_mod_image($venue));
+			if ($this->_request_type === Controller::REQUEST_AJAX) {
+				$this->response->body($this->section_venue_image($venue));
+
 				return;
 			}
 
 			$this->request->redirect(Route::model($venue));
 		}
 
-		$image = Model_Image::factory();
-		$image->author_id = self::$user->id;
-
 		// Handle post
 		$errors = array();
 		if ($_POST && $_FILES && Security::csrf_valid()) {
-			$image->file = Arr::get($_FILES, 'file');
+			$image = new Model_Image();
+			$image->author_id = self::$user->id;
+			$image->file      = Arr::get($_FILES, 'file');
 			try {
 				$image->save();
 
 				// Add exif, silently continue if failed - not critical
 				try {
-					$exif = Model_Image_Exif::factory();
+					$exif = new Model_Image_Exif();
 					$exif->image_id = $image->id;
 					$exif->save();
 				} catch (Kohana_Exception $e) { }
 
 				// Set the image as venue image
-				$venue->relate('images', $image->id);
+				$venue->relate('images', array($image->id));
 				$venue->default_image_id = $image->id;
 				$venue->save();
 
-				if ($this->ajax) {
-					$this->response->body($this->_get_mod_image($venue));
+				if ($this->_request_type === Controller::REQUEST_AJAX) {
+					$this->response->body($this->section_venue_image($venue));
+
 					return;
 				}
 
@@ -217,34 +217,15 @@ class Anqh_Controller_Venues extends Controller_Template {
 			}
 		}
 
-		// Build form
-		// @todo Fix to use custom view!
-		$form = array(
-			'ajaxify'    => $this->ajax,
-			'values'     => $image,
-			'errors'     => $errors,
-			'attributes' => array('enctype' => 'multipart/form-data'),
-			'cancel'     => $this->ajax ? Route::model($venue, 'image') . '?cancel' : Route::model($venue),
-			'groups'     => array(
-				array(
-					'fields' => array(
-						'file' => array(),
-					),
-				),
-			)
-		);
-
-		$view = View_Module::factory('form/anqh', array(
-			'mod_title' => __('Add image'),
-			'form'      => $form
-		));
-
-		if ($this->ajax) {
+		$view = $this->section_image_upload($this->_request_type === Controller::REQUEST_AJAX ? Route::model($venue, 'image') . '?cancel' : Route::model($venue), $errors);
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
 			$this->response->body($view);
+
 			return;
 		}
 
-		Widget::add('main', $view);
+		$this->view = new View_Page($venue->name);
+		$this->view->add(View_Page::COLUMN_MAIN, $view);
 	}
 
 
@@ -255,14 +236,20 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 		// Set actions
 		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::get('venue_add')->uri(), 'text' => __('Add venue'), 'class' => 'venue-add');
+			$this->page_actions[] = array(
+				'link'  => Route::get('venue_add')->uri(),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add venue'),
+				'class' => 'btn btn-primary venue-add'
+			);
 		}
 
-		Widget::add('main', View_Module::factory('venues/cities', array(
-			'venues' => Model_Venue::factory()->find_all(),
-		)));
 
-		$this->_tabs();
+		// Build page
+		$this->view = new View_Page(__('Venues'));
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_venues());
+
+		$this->_side_views();
 	}
 
 
@@ -279,34 +266,48 @@ class Anqh_Controller_Venues extends Controller_Template {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		$this->page_title = HTML::chars($venue->name);
-		$this->page_subtitle = HTML::anchor(Route::get('venues')->uri(), __('Back to Venues'));
+
+		// Build page
+		$this->view = new View_Page($venue->name);
+		$this->page_actions[] = array(
+			'link'  => Route::url('venues'),
+			'text'  => '&laquo; ' . __('Back to Venues'),
+			'class' => 'btn'
+		);
 
 		// Set actions
 		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($venue, 'edit'), 'text' => __('Edit venue'), 'class' => 'venue-edit');
+			$this->page_actions[] = array(
+				'link'  => Route::model($venue, 'edit'),
+				'text'  => '<i class="icon-edit"></i> ' . __('Edit venue'),
+				'class' => 'btn venue-edit');
 		}
 
 		// Events
+		$has_events = false;
+
 		$events = $venue->find_events_upcoming(10);
 		if (count($events)) {
-			Widget::add('main', View_Module::factory('events/event_list', array(
-				'mod_id'    => 'venue-upcoming-events',
-				'mod_title' => __('Upcoming events'),
-				'events'    => $events,
-			)));
+			$has_events = true;
+			$section = $this->section_events_list($events);
+			$section->title = __('Upcoming events');
+			$this->view->add(View_Page::COLUMN_MAIN, $section);
 		}
 
 		$events = $venue->find_events_past(10);
 		if (count($events)) {
-			Widget::add('main', View_Module::factory('events/event_list', array(
-				'mod_id'    => 'venue-past-events',
-				'mod_title' => __('Past events'),
-				'events'    => $events,
-			)));
+			$has_events = true;
+			$section = $this->section_events_list($events);
+			$section->title = __('Past events');
+			$this->view->add(View_Page::COLUMN_MAIN, $section);
+		}
+
+		if (!$has_events) {
+			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(__('Nothing has happened here yet.'), null, View_Alert::INFO));
 		}
 
 		// Similar venues
+		/* @todo  Better UI
 		$similar = Model_Venue::factory()->find_by_name($venue->name);
 		if (count($similar) > 1) {
 			Widget::add('main', View_Module::factory('venues/similar', array(
@@ -316,6 +317,7 @@ class Anqh_Controller_Venues extends Controller_Template {
 				'admin'     => Permission::has($venue, Model_Venue::PERMISSION_COMBINE, self::$user)
 			)));
 		}
+		*/
 
 		// Slideshow
 		if (count($venue->images) > 1) {
@@ -328,14 +330,15 @@ class Anqh_Controller_Venues extends Controller_Template {
 		}
 
 		// Default image
-		Widget::add('side', $this->_get_mod_image($venue));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_image($venue));
 
 		// Venue info
-		Widget::add('side', View_Module::factory('venues/info', array(
-			'admin' => Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user),
-			'venue' => $venue,
-			'foursquare' => $venue->foursquare(),
-		)));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_info($venue));
+
+		/* @todo Needs a decent OAuth2 module
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_foursquare($venue));
+		 */
+
 	}
 
 
@@ -358,11 +361,15 @@ class Anqh_Controller_Venues extends Controller_Template {
 			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
 			$cancel = Route::model($venue);
 
-			$this->page_title = HTML::chars($venue->name);
+			$this->view = View_Page::factory($venue->name);
 
 			// Set actions
 			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($venue, 'delete') . '?' . Security::csrf_query(), 'text' => __('Delete venue'), 'class' => 'venue-delete');
+				$this->page_actions[] = array(
+					'link'  => Route::model($venue, 'delete') . '?' . Security::csrf_query(),
+					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete venue'),
+					'class' => 'btn btn-danger venue-delete'
+				);
 			}
 
 		} else {
@@ -371,7 +378,9 @@ class Anqh_Controller_Venues extends Controller_Template {
 			$edit = false;
 			$venue = Model_Venue::factory();
 			$venue->author_id = self::$user->id;
-			$cancel = Route::get('venues')->uri();
+			$cancel = Route::url('venues');
+
+			$this->view = View_Page::factory(__('New venue'));
 
 		}
 
@@ -379,11 +388,6 @@ class Anqh_Controller_Venues extends Controller_Template {
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
 			$venue->set_fields(Arr::intersect($_POST, Model_Venue::$editable_fields));
-
-			// GeoNames
-			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
-				$venue->geo_city_id = $city->id;
-			}
 
 			try {
 				$venue->save();
@@ -396,7 +400,10 @@ class Anqh_Controller_Venues extends Controller_Template {
 			}
 		}
 
-		Widget::add('wide', View_Module::factory('venues/edit', array('venue' => $venue, 'errors' => $errors, 'cancel' => $cancel)));
+		$section = $this->section_venue_edit($venue);
+		$section->errors = $errors;
+		$section->cancel = $cancel;
+		$this->view->add(View_Page::COLUMN_TOP, $section);
 	}
 
 
@@ -411,22 +418,132 @@ class Anqh_Controller_Venues extends Controller_Template {
 
 
 	/**
-	 * Get image mod
+	 * Get events.
+	 *
+	 * @param   Model_Event[]  $events
+	 * @return  View_Events_List
+	 */
+	public function section_events_list($events) {
+		return new View_Events_List($events);
+	}
+
+
+	/**
+	 * Get image upload.
+	 *
+	 * @param   string  $cancel  URL
+	 * @param   array   $errors
+	 * @return  View_Generic_Upload
+	 */
+	public function section_image_upload($cancel = null, $errors = null) {
+		$section = new View_Generic_Upload();
+		$section->title  = __('Add image');
+		$section->cancel = $cancel;
+		$section->errors = $errors;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get venue image.
 	 *
 	 * @param   Model_Venue  $venue
-	 * @return  View_Module
+	 * @return  View_Generic_SideImage
 	 */
-	protected function _get_mod_image(Model_Venue $venue) {
-		return View_Module::factory('generic/side_image', array(
-			'mod_actions2' => Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)
-				? array(
-						array('link' => Route::model($venue, 'image') . '?' . Security::csrf_query() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
-						array('link' => Route::model($venue, 'image') . '?' . Security::csrf_query() . '&default', 'text' => __('Set as default'), 'class' => 'image-default disabled'),
-						array('link' => Route::model($venue, 'image'), 'text' => __('Add image'), 'class' => 'image-add ajaxify')
-					)
-				: null,
-			'image' => $venue->default_image_id ? $venue->default_image_id : null,
-		));
+	public function section_venue_image($venue) {
+		$section = new View_Generic_SideImage($venue->default_image_id ? Model_Image::factory($venue->default_image_id) : null);
+
+		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
+			$uri = Route::model($venue, 'image');
+			$actions = array(
+				HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' .__('Add image'), array('class' => 'btn btn-mini btn-primary image-add ajaxify')),
+			);
+
+			if ($venue->default_image_id) {
+				$actions[] = HTML::anchor(
+					$uri . '?' . Security::csrf_query() . '&delete=' . $venue->default_image_id,
+					'<i class="icon-trash"></i> ' .__('Delete'),
+					array('class' => 'btn btn-mini image-delete')
+				);
+			}
+
+
+			$section->actions = $actions;
+		}
+
+		return $section;
+	}
+
+
+	/**
+	 * Get venue edit form.
+	 *
+	 * @param   Model_Venue  $venue
+	 * @return  View_Venue_Edit
+	 */
+	public function section_venue_edit($venue) {
+		return new View_Venue_Edit($venue);
+	}
+
+
+	/**
+	 * Get venue Foursquare info.
+	 *
+	 * @param   Model_Venue  $venue
+	 * @return  View_Venue_Foursquare
+	 */
+	public function section_venue_foursquare($venue) {
+		return new View_Venue_Foursquare($venue);
+	}
+
+
+	/**
+	 * Get venue info.
+	 *
+	 * @param   Model_Venue  $venue
+	 * @return  View_Venue_Info
+	 */
+	public function section_venue_info($venue) {
+		return new View_Venue_Info($venue);
+	}
+
+
+	/**
+	 * Get simple venue list.
+	 *
+	 * @param  Model_Venue[]  $venues
+	 */
+	public function section_venue_list($venues) {
+		return new View_Venues_List($venues);
+	}
+
+
+	/**
+	 * Get venues listing.
+	 *
+	 * @return  View_Venues_Index
+	 */
+	public function section_venues() {
+		return new View_Venues_Index(Model_Venue::factory()->find_all());
+	}
+
+
+	/**
+	 * Add side views.
+	 */
+	protected function _side_views() {
+
+		// New venues
+		$section = $this->section_venue_list(Model_Venue::factory()->find_new(10));
+		$section->title = __('New venues');
+		$this->view->add(View_Page::COLUMN_SIDE, $section);
+
+		// Updated venues
+		$section = $this->section_venue_list(Model_Venue::factory()->find_updated(10));
+		$section->title = __('Updated venues');
+		$this->view->add(View_Page::COLUMN_SIDE, $section);
+
 	}
 
 
