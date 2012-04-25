@@ -546,28 +546,4 @@ class Anqh_Controller_Venues extends Controller_Page {
 
 	}
 
-
-	/**
-	 * New and updated venues
-	 */
-	protected function _tabs() {
-		$tabs = array(
-			'new' => array('href' => '#venues-new', 'title' => __('New venues'), 'tab' => View_Module::factory('venues/list', array(
-				'mod_id'    => 'venues-new',
-				'mod_class' => 'cut tab venues',
-				'title'     => __('New Venues'),
-				'venues'    => Model_Venue::factory()->find_new(20),
-			))),
-			'updated' => array('href' => '#venues-updated', 'title' => __('Updated venues'), 'tab' => View_Module::factory('venues/list', array(
-				'mod_id'    => 'venues-updated',
-				'mod_class' => 'cut tab venues',
-				'title'     => __('Updated Venues'),
-				'venues'    => Model_Venue::factory()->find_updated(20),
-			))),
-		);
-
-		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'venues-tab', 'tabs' => $tabs)));
-	}
-
-
 }

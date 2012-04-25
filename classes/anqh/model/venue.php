@@ -109,6 +109,30 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Find all venues in autocomplete friend array.
+	 *
+	 * @return  array
+	 */
+	public function find_all_autocomplete() {
+		$venues = array();
+
+		foreach ($this->find_all() as $venue) {
+			$venues[] = array(
+				'id'        => $venue->id,
+				'label'     => $venue->name,
+				'value'     => $venue->name,
+				'city'      => $venue->city_name,
+				'latitude'  => $venue->latitude,
+				'longitude' => $venue->longitude,
+				'url'       => URL::site(Route::model($venue), true),
+			);
+		}
+
+		return $venues;
+	}
+
+
+	/**
 	 * Find past events at venue.
 	 *
 	 * @param   integer  $limit
