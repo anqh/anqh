@@ -696,7 +696,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 				// Hidden events require only city
 
-			} else if ($venue_id = (int)Arr::get_once($_POST, 'venue')) {
+			} else if ($venue_id = (int)Arr::get_once($_POST, 'venue_id')) {
 
 				// Old venue
 				$venue = Model_Venue::factory($venue_id);

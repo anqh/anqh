@@ -105,6 +105,7 @@ class View_Event_Edit extends View_Article {
 					<?php echo Form::csrf() ?>
 					<?php echo Form::hidden('latitude', $this->venue->latitude) ?>
 					<?php echo Form::hidden('longitude', $this->venue->longitude) ?>
+					<?php echo Form::hidden('venue_id', $this->venue->id) ?>
 				</fieldset>
 			</div>
 
@@ -208,7 +209,7 @@ class View_Event_Edit extends View_Article {
 	public function javascript() {
 
 		// Date picker options
-		$options = array(
+		$datepicker = array(
 			'changeMonth'     => true,
 			'changeYear'      => true,
 			'dateFormat'      => 'd.m.yy',
@@ -234,14 +235,21 @@ class View_Event_Edit extends View_Article {
 			'weekHeader'      => __('Wk'),
 		);
 
+		$venues = Model_Venue::factory()->find_all_autocomplete();
+
 		// Venues, Maps and tickets
 		return HTML::script_source('
 head.ready("anqh", function() {
 
 	// Datepicker
-	$("input.date").datepicker(' . json_encode($options) . ');
+	$("input.date").datepicker(' . json_encode($datepicker) . ');
 
+	// City autocomplete
 	$("input[name=city_name]").autocompleteGeo();
+
+	// Venue autocomplete
+	var venues = ' . json_encode($venues) . ';
+	$("input[name=venue_name]").autocompleteVenue({ source: venues });
 
 	// Tickets
 	$("#field-free").change(function() {
