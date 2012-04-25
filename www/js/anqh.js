@@ -657,6 +657,62 @@ $.fn.autocompleteUser = function(options) {
 };
 
 
+$.fn.autocompleteVenue = function(options) {
+	var $field = $(this);
+
+	var defaults = {
+		venueId:   'venue_id',
+		cityName:  'city_name',
+		latitude:  'latitude',
+		longitude: 'longitude',
+		limit:     25,
+		minLength: 1,
+		action:    'form',
+		source:    []
+	};
+	options = $.extend(defaults, options || {});
+
+	$(this)
+		.autocomplete({
+			minLength: options.minLength,
+			source:    options.source,
+
+			select: function(event, ui) {
+				switch (options.action) {
+
+					// Fill form
+					case 'form':
+						$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
+						$('input[name=' + options.cityName + ']') && $('input[name=' + options.cityName + ']').val(ui.item.city);
+						$('input[name=' + options.latitude + ']') && $('input[name=' + options.latitude + ']').val(ui.item.latitude);
+						$('input[name=' + options.longitude + ']') && $('input[name=' + options.longitude + ']').val(ui.item.longitude);
+						$field.val(ui.item.value);
+						break;
+
+					// Navigate URL
+					case 'redirect':
+						window.location = ui.item.url;
+						break;
+
+					// Execute action
+					default:
+						if (typeof options.action == 'function') {
+							options.action(event, ui);
+						}
+
+				}
+			}
+
+		})
+		.data('autocomplete')._renderItem = function(ul, item) {
+			return $("<li></li>")
+				.data('item.autocomplete', item)
+				.append('<a>' + item.label + ', ' + item.city + '</a>')
+				.appendTo(ul);
+		};
+};
+
+
 // Foursquare autocomplete
 $.fn.foursquareVenue = function(options) {
 	var defaults = {
