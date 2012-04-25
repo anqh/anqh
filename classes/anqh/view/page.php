@@ -225,13 +225,7 @@ class Anqh_View_Page extends View_Base {
 			{ 'jquery-form':        '<?php echo $this->base ?>js/jquery.form.js' },
 			{ 'jquery-imgarea':     '<?php echo $this->base ?>js/jquery.imgareaselect.js' },
 			{ 'jquery-fixedscroll': '<?php echo $this->base ?>js/jquery-scrolltofixed.js' },
-			{ 'anqh':               '<?php echo $this->base ?>js/anqh.js?2' },
-			function() {
-				<!-- GeoNames {{#geo}}-->
-				Anqh.geoNamesURL  = '{{url}}';
-				Anqh.geoNamesUser = '{{user}}';
-				<!-- /GeoNames {{/geo}}-->
-			}
+			{ 'anqh':               '<?php echo $this->base ?>js/anqh.js?2' }
 		);
 	</script>
 

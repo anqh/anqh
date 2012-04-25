@@ -41,6 +41,12 @@ return array(
 	'facebook' => false, // Facebook App id
 
 	/**
+	 * Foursquare configs
+	 */
+	'foursquare_client_id'     => null,
+	'foursquare_client_secret' => null,
+
+	/**
 	 * 3rd party share id
 	 */
 	'share' => false,
