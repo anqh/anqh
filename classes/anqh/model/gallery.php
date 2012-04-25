@@ -317,7 +317,7 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 			DB::select_array(Model_Image::factory()->fields())
 				->join('users', 'LEFT')
 				->on('users.id', '=', 'images.author_id')
-				->where('images.status', '=', Model_Image::VISIBLE)
+				->where('images.status', 'IN', array(Model_Image::VISIBLE, Model_Image::NOT_ACCEPTED))
 				->order_by('users.username', 'ASC')
 				->order_by('images.id', 'ASC'),
 			null
