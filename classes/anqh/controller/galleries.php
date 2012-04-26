@@ -584,7 +584,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 							case 'approve':
 								if ($approve) {
 									$author = $image->author();
-									$gallery->image_count++;
+									//$gallery->image_count++;
 									$authors[$author['id']] = $author['username'];
 									$image->state(AutoModeler::STATE_LOADED);
 									$image->status = Model_Image::VISIBLE;
@@ -594,6 +594,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 							case 'deny':
 								$gallery->remove('image', $image->id);
+								$gallery->image_count--;
 						    $image->delete();
 						    break;
 
@@ -1165,6 +1166,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 					// Set the image as gallery image
 					$gallery->relate('images', array($image->id));
+					$gallery->image_count++;
 					$gallery->save();
 
 					// Mark filename as uploaded for current gallery
