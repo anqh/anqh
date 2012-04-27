@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Group extends Controller_Forum {
@@ -61,18 +61,20 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			}
 		}
 
-		// Set title
-		$this->page_title = __('Forum group') . ($group->name ? ': ' . HTML::chars($group->name) : '');
+
+		// Build page
+		$this->view = new View_Page(__('Forum group') . ($group->name ? ': ' . HTML::chars($group->name) : ''));
 
 		// Set actions
 		if ($group->loaded() && Permission::has($group, Model_Forum_Group::PERMISSION_DELETE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($group, 'delete'), 'text' => __('Delete group'), 'class' => 'group-delete');
+			$this->page_actions[] = array(
+				'link'  => Route::model($group, 'delete'),
+				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete group'),
+				'class' => 'btn btn-danger group-delete',
+			);
 		}
 
-		Widget::add('main', View_Module::factory('forum/group_edit', array(
-			'errors' => $errors,
-			'group'  => $group,
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_edit($group, $errors));
 	}
 
 
@@ -80,7 +82,6 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 	 * Action: index
 	 */
 	public function action_index() {
-		$this->tab_id = 'areas';
 
 		// Load group(s)
 		$group_id = (int)$this->request->param('id');
@@ -89,7 +90,10 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			// All groups
 			$groups = Model_Forum_Group::factory()->find_all();
 			if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::get('forum_group_add')->uri(), 'text' => __('New group'), 'class' => 'group-add');
+				$this->page_actions[] = array(
+					'link'  => Route::url('forum_group_add'),
+					'text'  => '<i class="icon-plus-sign"></i> ' . __('New group'),
+				);
 			}
 
 		} else {
@@ -102,21 +106,54 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			Permission::required($group, Model_Forum_Group::PERMISSION_READ, self::$user);
 
 			if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($group, 'edit'), 'text' => __('Edit group'), 'class' => 'group-edit');
+				$this->page_actions[] = array(
+					'link'  => Route::model($group, 'edit'),
+					'text'  => '<i class="icon-edit"></i> ' . __('Edit group'),
+					'class' => 'group-edit'
+				);
 			}
 			if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($group, 'add'), 'text' => __('New area'), 'class' => 'area-add');
+				$this->page_actions[] = array(
+					'link'  => Route::model($group, 'add'),
+					'text'  => '<i class="icon-plus-sign"></i> ' . __('New area'),
+					'class' => 'area-add');
 			}
 			$groups = array($group);
 		}
 
-		$this->page_title = count($groups) > 1 ? __('Forum areas') : $groups[0]->name;
+
+		// Build page
+		$this->view = new View_Page(count($groups) > 1 ? __('Forum areas') : $groups[0]->name);
+
 		foreach ($groups as $group) {
-			Widget::add('main', View_Module::factory('forum/group', array('group' => $group, 'user' => self::$user)));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_group($group));
 		}
 
-		$this->side_views();
+		$this->_side_views();
 	}
 
+
+	/**
+	 * Get group edit form.
+	 *
+	 * @param  Model_Forum_Group  $group
+	 * @param  array              $errors
+	 */
+	public function section_edit($group, $errors = null) {
+		$section = new View_Forum_GroupEdit($group);
+		$section->errors = $errors;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get forum group view.
+	 *
+	 * @param  Model_Forum_Group  $group
+	 */
+	public function section_group($group) {
+		return new View_Forum_Group($group);
+	}
 
 }

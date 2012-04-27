@@ -23,6 +23,12 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	/** Sunk topic, don't update last posted */
 	const STATUS_SINK = 2;
 
+	/** Normal topic */
+	const STICKY_NORMAL = 0;
+
+	/** Sticky topic */
+	const STICKY_STICKY = 1;
+
 	protected $_table_name = 'forum_topics';
 
 	protected $_data = array(
@@ -32,7 +38,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 		'type'          => null,
 		'status'        => self::STATUS_NORMAL,
-		'sticky'        => 0,
+		'sticky'        => self::STATUS_NORMAL,
 		'read_only'     => null,
 		'votes'         => null,
 		'points'        => null,
@@ -46,8 +52,8 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		'last_post_id'  => null,
 		'last_posted'   => null,
 		'last_poster'   => null,
-		'read_count'    => null,
-		'post_count'    => null,
+		'read_count'    => 0,
+		'post_count'    => 0,
 	);
 
 	protected $_has_many = array(
@@ -58,6 +64,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		'forum_area_id' => array('not_empty', 'digit'),
 
 		'status'        => array('in_array' => array(':value', array(self::STATUS_LOCKED, self::STATUS_SINK, self::STATUS_NORMAL))),
+		'sticky'        => array('in_array' => array(':value', array(self::STICKY_NORMAL, self::STICKY_STICKY))),
 
 		'name'          => array('not_empty', 'max_length' => array(':value', 128)),
 
@@ -254,20 +261,21 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
-	 * Find topic posts by page
+	 * Find topic posts by page.
 	 *
-	 * @param   Pagination  $pagination
+	 * @param   integer  $offset
+	 * @param   integer  $limit
 	 * @return  Model_Forum_Post[]
 	 */
-	public function posts(Pagination $pagination = null) {
+	public function posts($offset, $limit) {
 		$post = Model_Forum_Post::factory();
 
 		$query = DB::select_array($post->fields())
 			->where('forum_topic_id', '=', $this->id)
 			->order_by('created', 'ASC');
 
-		if ($pagination) {
-			return $post->load($query->offset($pagination->offset), $pagination->items_per_page);
+		if ($offset || $limit) {
+			return $post->load($query->offset($offset), $limit);
 		} else {
 			return $post->load($query, null);
 		}

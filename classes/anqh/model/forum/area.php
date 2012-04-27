@@ -53,7 +53,7 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		'access_read'    => self::READ_NORMAL,
 		'access_write'   => self::WRITE_NORMAL,
 		'status'         => self::STATUS_NORMAL,
-		'type'           => self::TYPE_NORMAL,
+		'area_type'      => self::TYPE_NORMAL,
 		'bind'           => null,
 
 		'post_count'     => null,
@@ -73,31 +73,32 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		'access_read'    => array('not_empty', 'in_array' => array(':value', array(self::READ_MEMBERS, self::READ_NORMAL))),
 		'access_write'   => array('not_empty', 'in_array' => array(':value', array(self::WRITE_ADMINS, self::WRITE_NORMAL))),
 		'status'         => array('not_empty', 'in_array' => array(':value', array(self::STATUS_HIDDEN, self::STATUS_NORMAL))),
-		'type'           => array('not_empty', 'in_array' => array(':value', array(self::TYPE_PRIVATE, self::TYPE_BIND, self::TYPE_NORMAL))),
+		'area_type'      => array('not_empty', 'in_array' => array(':value', array(self::TYPE_PRIVATE, self::TYPE_BIND, self::TYPE_NORMAL))),
 	);
 
 	/** @var  array  User editable fields */
 	public static $editable_fields = array(
-		'group', 'name', 'description', 'sort', 'access_read', 'access_write', 'status', 'type', 'bind'
+		'group', 'name', 'description', 'sort', 'access_read', 'access_write', 'status', 'area_type', 'bind'
 	);
 
 
 	/**
 	 * Find area's paginated active topics
 	 *
-	 * @param   Pagination $pagination
+	 * @param   integer  $offset
+	 * @param   integer  $limit
 	 * @return  Model_Forum_Topic[]
 	 */
-	public function find_active_topics(Pagination $pagination) {
-		$topic = Model_Forum_Topic::factory();
+	public function find_active_topics($offset = 0, $limit = 10) {
+		$topic = new Model_Forum_Topic();
 
 		return $topic->load(
 			DB::select_array($topic->fields())
 				->where('forum_area_id', '=', $this->id)
 				->order_by('sticky', 'DESC')
 				->order_by('last_posted', 'DESC')
-				->offset($pagination->offset),
-			$pagination->items_per_page
+				->offset(max(0, $offset)),
+			$limit
 		);
 	}
 
@@ -165,14 +166,14 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 			case self::PERMISSION_POST:
 		    return $user
 			    && ($this->access_write != self::WRITE_ADMINS
-				    && $this->type != self::TYPE_BIND
+				    && $this->area_type != self::TYPE_BIND
 				    && $this->status != self::STATUS_HIDDEN
 				    || $user->has_role('admin')
 			    );
 
 			case self::PERMISSION_READ:
 				return $this->status == self::STATUS_NORMAL
-					&& $this->type != self::TYPE_PRIVATE
+					&& $this->area_type != self::TYPE_PRIVATE
 					&& ($this->access_read == self::READ_NORMAL || $user);
 
 		}

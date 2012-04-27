@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Area extends Controller_Forum {
@@ -23,7 +23,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	 * Action: add
 	 */
 	public function action_add() {
-		return $this->action_edit();
+		$this->action_edit();
 	}
 
 
@@ -62,7 +62,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			}
 			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user);
 		} else {
-			$area = Model_Forum_Area::factory();
+			$area = new Model_Forum_Area();
 			$area->author_id = self::$user->id;
 			$area->created   = time();
 		}
@@ -91,24 +91,20 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			}
 		}
 
-		// Set title
-		$this->page_title = __('Forum area') . ($area->name ? ': ' . HTML::chars($area->name) : '');
+
+		// Build page
+		$this->view = new View_Page(__('Forum area') . ($area->name ? ': ' . HTML::chars($area->name) : ''));
 
 		// Set actions
 		if ($area->loaded() && Permission::has($area, Model_Forum_Area::PERMISSION_DELETE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($area, 'delete'), 'text' => __('Delete area'), 'class' => 'area-delete');
+			$this->page_actions[] = array(
+				'link'  => Route::model($area, 'delete'),
+				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete area'),
+				'class' => 'btn btn-danger area-delete',
+			);
 		}
 
-		// Create group list
-		$groups = array();
-		foreach (Model_Forum_Group::factory()->find_all() as $_group) {
-			$groups[$_group->id] = $_group->name;
-		}
-		Widget::add('main', View_Module::factory('forum/area_edit', array(
-			'errors' => $errors,
-			'groups' => $groups,
-			'area'   => $area,
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_edit($area, $errors));
 	}
 
 
@@ -132,36 +128,38 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		}
 		Permission::required($area, Model_Forum_Area::PERMISSION_READ, self::$user);
 
-		// Set title
-		$this->page_title = HTML::chars($area->name);
-		$this->page_subtitle = $area->description;
-		$this->page_subtitle .= ' | ' . HTML::anchor(
-			Route::get('forum_group')->uri(array('action' => '')),
-			__('Back to forum groups')
-		);
+
+		// Build page
+		$this->view = new View_Page($area->name);
+		$this->view->subtitle  = $area->description;
 
 		// Set actions
-		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($area, 'edit', false), 'text' => __('Edit area'), 'class' => 'area-edit');
-		}
 		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($area, 'post'), 'text' => __('New topic'), 'class' => 'topic-add');
+			$this->page_actions[] = array(
+				'link'  => Route::model($area, 'post'),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New topic'),
+				'class' => 'btn btn-primary topic-add'
+			);
+		}
+		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array(
+				'link'  => Route::model($area, 'edit', false),
+				'text'  => '<i class="icon-edit"></i> ' . __('Edit area'),
+				'class' => 'btn area-edit',
+			);
 		}
 
 		// Pagination
-		$pagination = Pagination::factory(array(
-			'items_per_page' => Kohana::config('forum.topics_per_page'),
-			'total_items'    => $area->topic_count,
-		));
+		$pagination = $this->section_pagination($area->topic_count);
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
 		// Posts
-		Widget::add('main', View_Module::factory('forum/topics', array(
-			'mod_class'  => 'topics articles',
-			'topics'     => $area->find_active_topics($pagination),
-			'pagination' => $pagination
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics($area->find_active_topics($pagination->offset, $pagination->items_per_page)));
 
-		$this->side_views();
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+
+		$this->_side_views();
 	}
 
 
@@ -171,40 +169,74 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	public function action_messages() {
 		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, self::$user);
 
-		$this->tab_id = 'private';
-
-		// Set title
-		$this->page_title     = HTML::chars(__('Private messages'));
-		$this->page_subtitle  = __('Personal and group messages');
-		$this->page_subtitle .= ' | ' . HTML::anchor(
-			Route::url('forum_group', array('action' => '')),
-			__('Back to forum groups')
-		);
+		// Build page
+		$this->view = new View_Page(__('Private messages'));
+		$this->view->subtitle  = __('Personal and group messages');
 
 		// Set actions
 		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST, self::$user)) {
 			$this->page_actions[] = array(
 				'link'  => Route::url('forum_private_topic_add', array('action' => 'post')),
-				'text'  => __('New message'),
-				'class' => 'topic-add'
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New message'),
+				'class' => 'btn btn-primary topic-add'
 			);
 		}
 
 		// Pagination
-		$pagination = Pagination::factory(array(
-			'url'            => Route::url('forum_private_area'),
-			'items_per_page' => Kohana::config('forum.topics_per_page'),
-			'total_items'    => Model_Forum_Private_Topic::factory()->get_count(self::$user),
-		));
+		$pagination = $this->section_pagination(Model_Forum_Private_Topic::factory()->get_count(self::$user));
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
 		// Posts
-		Widget::add('main', View_Module::factory('forum/private_topics', array(
-			'mod_class'  => 'topics messages',
-			'topics'     => Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination),
-			'pagination' => $pagination
-		)));
+		$this->view->add(
+			View_Page::COLUMN_MAIN,
+			$this->section_topics_private(Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination->offset, $pagination->items_per_page))
+		);
 
-		$this->side_views();
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+
+		$this->_side_views();
+	}
+
+
+	/**
+	 * Get forum area edit form.
+	 *
+	 * @param  Model_Forum_Area  $area
+	 * @param  array             $errors
+	 */
+	public function section_edit($area, $errors) {
+		$section = new View_Forum_AreaEdit($area);
+		$section->errors = $errors;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get pagination.
+	 *
+	 * @param   integer  $topics
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_pagination($topics = 0) {
+		return new View_Generic_Pagination(array(
+			'previous_text'  => '&laquo; ' . __('Previous page'),
+			'next_text'      => __('Next page') . ' &raquo;',
+			'items_per_page' => Kohana::config('forum.topics_per_page'),
+			'total_items'    => $topics,
+		));
+	}
+
+
+	/**
+	 * Get bigger private topic list view.
+	 *
+	 * @param   Model_Forum_Private_Topic[]  $topics
+	 * @return  View_Topics_Private
+	 */
+	public function section_topics_private($topics) {
+		return new View_Topics_Private($topics);
 	}
 
 }

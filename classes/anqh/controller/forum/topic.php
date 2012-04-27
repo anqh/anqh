@@ -32,7 +32,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			return $this->_delete_post($topic_id, $id);
 		}
 
-		return $this->_delete_topic($id);
+		$this->_delete_topic($id);
 	}
 
 
@@ -45,10 +45,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Are we editing a post, if so we have a topic_id
 		$topic_id = (int)$this->request->param('topic_id');
 		if ($topic_id) {
-			return $this->_edit_post($topic_id, $id);
+			$this->_edit_post($topic_id, $id);
+
+			return;
 		}
 
-		return $this->_edit_topic(null, $id);
+		$this->_edit_topic(null, $id);
 	}
 
 
@@ -116,34 +118,28 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			// Permission is already checked by the topic, no need to check for post
 
-			$this->response->body(View::factory('forum/post', array(
-				'topic'   => $topic,
-				'post'    => $post,
-				'number'  => $topic->get_post_number($post->id) + 1,
-				'user'    => self::$user,
-				'private' => $this->private
-			)));
+			$this->response->body($this->section_post($topic, $post));
 
 			return;
 		}
 
 		// Add new tab
 		if ($this->private) {
-			$this->tab_id = 'private';
 			$topic->mark_as_read(self::$user);
 		} else {
-			$this->tab_id = 'area';
 			$this->tabs['area'] = array('url' => Route::model($topic->area()), 'text' => __('Area'));
 		}
-
-		// Set title
-		$this->_set_title($topic);
 
 		// Update counts
 		if (!self::$user || $topic->author_id != self::$user->id) {
 			$topic->read_count++;
 			$topic->save();
 		}
+
+
+		// Build page
+		$this->view = new View_Page($topic->name);
+		$this->view->subtitle = __($topic->post_count == 1 ? ':posts post' : ':posts posts', array(':posts' => Num::format($topic->post_count, 0)));
 
 		// Public topic extras
 		if (!$this->private) {
@@ -164,7 +160,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			// Facebook
 			if (Kohana::config('site.facebook')) {
 				Anqh::open_graph('title', $topic->name);
-				Anqh::open_graph('url', URL::site(Route::get('forum_topic')->uri(array('id' => $topic->id, 'action' => '')), true));
+				Anqh::open_graph('url', URL::site(Route::url('forum_topic', array('id' => $topic->id, 'action' => '')), true));
 			}
 			Anqh::share(true);
 
@@ -180,7 +176,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 						// Set views
 						foreach ((array)$bind['view'] as $view) {
-							Widget::add('side', View_Module::factory($view, array(
+							$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory($view, array(
 								$bind['model'] => $model,
 							)), Widget::TOP);
 						}
@@ -193,71 +189,49 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Set actions
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
-			$this->page_actions[] = array('link' => '#reply', 'text' => __('Reply to topic'), 'class' => 'topic-post');
+			$this->page_actions[] = array(
+				'link'  => Request::current_uri() . '#reply',
+				'text'  => '<i class="icon-comment icon-white"></i> ' . __('Reply to topic'),
+				'class' => 'btn btn-primary topic-post'
+			);
 		}
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($topic, 'edit'), 'text' => __('Edit topic'), 'class' => 'topic-edit');
+			$this->page_actions[] = array(
+				'link'  => Route::model($topic, 'edit'),
+				'text'  => '<i class="icon-edit"></i> ' . __('Edit topic'),
+				'class' => 'topic-edit'
+			);
 		}
 
 		// Pagination
-		$pagination = Pagination::factory(array(
-			'url'            => Route::model($topic),
-			'items_per_page' => Kohana::config('forum.posts_per_page'),
-			'total_items'    => max(1, $topic->post_count),
-		));
-		if (Arr::get($_GET, 'page') == 'last') {
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($topic));
+		$this->view->subtitle .= ', ' . __($pagination->total_pages == 1 ? ':pages page' : ':pages pages', array(':pages' => Num::format($pagination->total_pages, 0)));
+		$this->view->subtitle .= ', ' . __($topic->read_count == 1 ? ':views view' : ':views views', array(':views' => Num::format($topic->read_count, 0)));
 
-			// Go to last page
-			$pagination->last();
-
-		} else if (isset($post_id)) {
-
-			// Go to post
+		// Go to post?
+		if (isset($post_id)) {
 			$pagination->item($topic->get_post_number($post_id));
-			/*
-			Widget::add('foot', HTML::script_source('
-$(function() {
-	var post = $("#post-' . $post_id . '");
-	if (post) {
-	 var position = post.offset();
-		window.scrollTo(0, position.top);
-	}
-});
-'));
-			 */
-
 		}
 
 		// Recipients
 		if ($this->private) {
-			Widget::add('main', View_Module::factory('generic/users', array(
-				'mod_title' => __('Recipients'),
-				'users'     => $topic->recipients(),
-				'viewer'    => self::$user
-			)));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_recipients($topic));
+			$this->view->add(View_Page::COLUMN_MAIN, '<hr />');
 		}
 
 		// Posts
-		Widget::add('main', View_Module::factory('forum/topic', array(
-			'mod_class'  => 'topic articles topic-' . $topic->id,
-			'user'       => self::$user,
-			'topic'      => $topic,
-			'posts'      => $topic->posts($pagination),
-			'first'      => $pagination->current_first_item,
-			'pagination' => $pagination,
-			'private'    => $this->private,
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topic($topic, $pagination));
 
 		// Reply
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
-			Widget::add('main', View_Module::factory('forum/reply', array(
-				'mod_id'  => 'reply',
-				'user'    => self::$user,
-				'topic'   => $topic,
-				'post'    => $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory(),
-				'private' => $this->private
-			)));
+			$section = $this->section_post_edit(View_Forum_PostEdit::REPLY, $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory());
+			$section->forum_topic = $topic;
+
+			$this->view->add(View_Page::COLUMN_MAIN, $section);
 		}
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($topic));
 
 		//$this->side_views();
 	}
@@ -267,7 +241,7 @@ $(function() {
 	 * Action: post new topic
 	 */
 	public function action_post() {
-		return $this->_edit_topic((int)$this->request->param('id'));
+		$this->_edit_topic((int)$this->request->param('id'));
 	}
 
 
@@ -359,9 +333,11 @@ $(function() {
 	/**
 	 * Edit forum post
 	 *
-	 * @param  integer  $topic_id   When replying to a topic
-	 * @param  integer  $post_id    When editing a post
-	 * @param  integer  $quote_id   When quoting a post
+	 * @param  integer  $topic_id  When replying to a topic
+	 * @param  integer  $post_id   When editing a post
+	 * @param  integer  $quote_id  When quoting a post
+	 *
+	 * @throws  Model_Exception  missing topic, missing post
 	 */
 	protected function _edit_post($topic_id, $post_id = null, $quote_id = null) {
 		$this->history = false;
@@ -403,13 +379,11 @@ $(function() {
 			$post->parent_id = $quote_id;
 		}
 
-		$this->_set_title($topic);
-
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
 
-			$post->post        = $_POST['post'];
+			$post->post        = Arr::get($_POST, 'post');
 			$post->author_ip   = Request::$client_ip;
 			$post->author_host = Request::host_name();
 			if (!$post->loaded()) {
@@ -501,7 +475,23 @@ $(function() {
 		}
 
 		// Common attributes
-		$form = array(
+		if ($quote_id) {
+			$mode = View_Forum_PostEdit::QUOTE;
+		} else if ($post_id) {
+			$mode = View_Forum_PostEdit::EDIT_POST;
+		} else {
+			$mode = View_Forum_PostEdit::REPLY;
+		}
+		$section = $this->section_post_edit($mode, $post);
+		$section->forum_topic = $topic;
+		$section->errors      = $errors;
+		$section->cancel      = $this->ajax
+			? Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+					'topic_id' => Route::model_id($topic),
+					'id'       => $quote_id ? $quote_id : $post->id,
+				))
+			: Request::back(Route::model($topic), true);
+/*		$form = array(
 			'errors'  => $errors,
 			'ajax'    => $this->ajax ? true : null,
 			'topic'   => $topic,
@@ -515,30 +505,24 @@ $(function() {
 							'id'       => $quote_id ? $quote_id : $post->id,
 						))
 				: Request::back(Route::model($topic), true),
-		);
+		);*/
 
 		if ($this->ajax) {
-			if ($quote_id) {
+			$this->response->body($mode == View_Forum_PostEdit::EDIT_POST ? $section->content() : $section);
 
-				// Quote
-				$this->response->body(View_Module::factory('forum/reply', array(
-					'mod_id'    => 'quote',
-					'mod_class' => 'quote first',
-					'form_id'   => 'quote',
-				) + $form));
-
-			} else {
-
-				// Edit post
-				$this->response->body(View_Module::factory('forum/post_edit', $form));
-
-			}
 			return;
 		}
 
+
+		// Build page
+		$this->view = new View_Page(Forum::topic($topic));
+
+		$this->view->add(View_Page::COLUMN_MAIN, $section);
+
+/*
 		Widget::add('main', View_Module::factory('forum/reply', array(
 			'mod_id'  => 'reply',
-		) + $form));
+		) + $form));*/
 	}
 
 
@@ -547,13 +531,20 @@ $(function() {
 	 *
 	 * @param  integer  $area_id
 	 * @param  integer  $topic_id
+	 *
+	 * @throws  Model_Exception           invalid area, invalid topic
+	 * @throws  InvalidArgumentException  missing area and topic
 	 */
 	protected function _edit_topic($area_id = null, $topic_id = null) {
 		$this->history = false;
 
+		$this->view = new View_Page();
+
 		if ($area_id && !$topic_id) {
 
 			// Start new topic
+			$mode = View_Forum_PostEdit::NEW_TOPIC;
+
 			/** @var  Model_Forum_Private_Area|Model_Forum_Area  $area */
 			$area = $this->private ? Model_Forum_Private_Area::factory($area_id) : Model_Forum_Area::factory($area_id);
 			if (!$area->loaded()) {
@@ -561,7 +552,7 @@ $(function() {
 			}
 			Permission::required($area, Model_Forum_Area::PERMISSION_POST, self::$user);
 
-			$this->page_title = HTML::chars($area->name);
+			$this->view->title = HTML::chars($area->name);
 			if ($this->private) {
 
 				$topic  = new Model_Forum_Private_Topic();
@@ -580,6 +571,8 @@ $(function() {
 		} else if ($topic_id) {
 
 			// Edit old topic
+			$mode = View_Forum_PostEdit::EDIT_TOPIC;
+
 			/** @var  Model_Forum_Private_Topic|Model_Forum_Topic  $topic */
 			$topic = $this->private ? Model_Forum_Private_Topic::factory($topic_id) : Model_Forum_Topic::factory($topic_id);
 			if (!$topic->loaded()) {
@@ -597,7 +590,10 @@ $(function() {
 
 			// Set actions
 			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array('link' => Route::model($topic, 'delete') . '?' . Security::csrf_query(), 'text' => __('Delete topic'), 'class' => 'topic-delete');
+				$this->page_actions[] = array(
+					'link'  => Route::model($topic, 'delete') . '?' . Security::csrf_query(),
+					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete topic'),
+					'class' => 'btn btn-danger topic-delete');
 			}
 
 		} else {
@@ -712,16 +708,86 @@ $(function() {
 		}
 		$form['errors'] = $errors;
 
-		Widget::add('main', View_Module::factory('forum/edit_topic', array(
-			'private'    => $this->private,
-			'topic'      => $topic,
-			'recipients' => isset($recipients) ? implode(', ', $recipients) : null,
-			'post'       => isset($post) ? $post : null,
-			'errors'     => $errors,
-			'cancel'     => $cancel,
-			'user'       => self::$user,
-			'admin'      => self::$user->has_role(array('admin', 'moderator', 'forum moderator')),
-		)));
+		$section = $this->section_post_edit($mode, isset($post) ? $post : null);
+		$section->forum_topic = $topic;
+		$section->errors      = $errors;
+		$section->cancel      = $cancel;
+		$section->recipients  = isset($recipients) ? implode(', ', $recipients) : null;
+
+		$this->view->add(View_Page::COLUMN_MAIN, $section);
+	}
+
+
+	/**
+	 * Get pagination view.
+	 *
+	 * @param   Model_Forum_Topic  $topic
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_pagination(Model_Forum_Topic $topic) {
+		return new View_Generic_Pagination(array(
+			'base_url'       => Route::model($topic),
+			'items_per_page' => Kohana::config('forum.posts_per_page'),
+			'total_items'    => max(1, $topic->post_count),
+		));
+	}
+
+
+	/**
+	 * Get post view.
+	 *
+	 * @param  Model_Forum_Topic  $topic
+	 * @param  Model_Forum_Post   $post
+	 */
+	public function section_post(Model_Forum_Topic $topic, Model_Forum_Post $post) {
+		$section = new View_Forum_Post($post, $topic);
+		$section->nth     = $topic->get_post_number($post->id) + 1;
+		$section->private = $this->private;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get post edit view.
+	 *
+	 * @param   string            $mode
+	 * @param   Model_Forum_Post  $forum_post
+	 * @return  View_Forum_PostEdit
+	 */
+	public function section_post_edit($mode, Model_Forum_Post $forum_post = null) {
+		$section = new View_Forum_PostEdit($mode, $forum_post);
+		$section->private = $this->private;
+		if ($mode === View_Forum_PostEdit::REPLY) {
+			$section->id = 'reply';
+		}
+
+		return $section;
+	}
+
+
+	/**
+	 * Get private topic recipients.
+	 *
+	 * @param   Model_Forum_Private_Topic  $topic
+	 * @return  View_Users_List
+	 */
+	public function section_recipients(Model_Forum_Private_Topic $topic) {
+		$section = new View_Users_List($recipients = $topic->recipients());
+		$section->title = __('Recipients') . ' <small><i class="icon-user"></i> ' . count($recipients) . '</small>';
+
+		return $section;
+	}
+
+
+ 	/**
+	 * Get topic view.
+	 *
+	 * @param  Model_Forum_Topic        $topic
+	 * @param  View_Generic_Pagination  $pagination
+	 */
+	public function section_topic(Model_Forum_Topic $topic, View_Generic_Pagination $pagination = null) {
+		return new View_Forum_Topic($topic, $pagination, $this->private);
 	}
 
 
@@ -734,7 +800,7 @@ $(function() {
 		$this->page_title     = Forum::topic($topic);
 		$this->page_subtitle  = HTML::icon_value(array(':views' => (int)$topic->read_count), ':views view', ':views views', 'views');
 		$this->page_subtitle .= HTML::icon_value(array(':replies' => $topic->post_count - 1), ':replies reply', ':replies replies', 'posts');
-
+/*
 		$area = $topic->area();
 		if ($this->private) {
 			$this->page_subtitle .= ' | ' . HTML::anchor(
@@ -748,7 +814,7 @@ $(function() {
 				__('Back to :area', array(':area' => HTML::chars($area->name))),
 				array('title' => strip_tags($area->description))
 			);
-		}
+		}*/
 	}
 
 }

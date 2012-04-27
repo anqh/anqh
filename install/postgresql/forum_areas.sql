@@ -1,9 +1,9 @@
 CREATE TABLE "public"."forum_areas" (
   "id" SERIAL,
   "name" VARCHAR(150) NOT NULL,
-  "description" VARCHAR(250) NOT NULL,
+  "description" VARCHAR(250),
   "type" SMALLINT DEFAULT 1 NOT NULL,
-  "sort" SMALLINT DEFAULT 0 NOT NULL,
+  "sort" SMALLINT DEFAULT 0,
   "post_count" INTEGER DEFAULT 0,
   "topic_count" INTEGER DEFAULT 0,
   "forum_group_id" INTEGER,

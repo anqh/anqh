@@ -3,7 +3,7 @@ CREATE TABLE `forum_areas` (
   `name` varchar(150) collate utf8_swedish_ci NOT NULL,
   `description` varchar(250) collate utf8_swedish_ci default NULL,
   `type` smallint(6) unsigned NOT NULL default '1',
-  `sort` smallint(6) NOT NULL default '0',
+  `sort` smallint(6) default '0',
   `post_count` int(11) unsigned default NULL,
   `topic_count` int(11) unsigned default NULL,
   `forum_group_id` int(11) unsigned default NULL,

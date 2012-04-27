@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Forum_Group extends AutoModeler_ORM implements Permission_Interface {
@@ -50,6 +50,7 @@ class Anqh_Model_Forum_Group extends AutoModeler_ORM implements Permission_Inter
 			'forum_areas',
 			DB::select_array(Model_Forum_Area::factory()->fields())
 				->where('status', '<>', Model_Forum_Area::STATUS_HIDDEN)
+				->order_by('sort', 'ASC')
 		);
 	}
 

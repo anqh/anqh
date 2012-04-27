@@ -47,12 +47,12 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 	 *
 	 * @static
 	 * @param   Model_User  $user
-	 * @param   Pagination  $pagination
-	 * @param   string      $type
+	 * @param   integer     $offset
+	 * @param   integer     $limit
 	 * @return  Model_Forum_Private_Topic[]
 	 */
-	public static function find_topics(Model_User $user, Pagination $pagination, $type = null) {
-		$topic = Model_Forum_Private_Topic::factory();
+	public static function find_topics(Model_User $user, $offset = 0, $limit = 10) {
+		$topic = new Model_Forum_Private_Topic();
 
 		return $topic->load(
 			DB::select_array($topic->fields())
@@ -60,8 +60,8 @@ class Anqh_Model_Forum_Private_Area extends Model_Forum_Area {
 				->on('forum_private_topics.id', '=', 'forum_private_recipients.forum_topic_id')
 				->where('user_id', '=', $user->id)
 				->order_by('last_post_id', 'DESC')
-				->offset($pagination->offset),
-			$pagination->items_per_page
+				->offset($offset),
+			$limit
 		);
 	}
 

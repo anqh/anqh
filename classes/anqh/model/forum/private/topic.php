@@ -206,19 +206,21 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 
 
 	/**
-	 * Find topic posts by page
+	 * Find topic posts by page.
 	 *
-	 * @param   Pagination  $pagination
+	 * @param   integer  $offset
+	 * @param   integer  $limit
 	 * @return  Model_Forum_Post[]
 	 */
-	public function posts(Pagination $pagination = null) {
+	public function posts($offset, $limit) {
 		$post = Model_Forum_Private_Post::factory();
 
 		$query = DB::select_array($post->fields())
-			->where('forum_topic_id', '=', $this->id);
+			->where('forum_topic_id', '=', $this->id)
+			->order_by('created', 'ASC');
 
-		if ($pagination) {
-			return $post->load($query->offset($pagination->offset), $pagination->items_per_page);
+		if ($offset || $limit) {
+			return $post->load($query->offset($offset), $limit);
 		} else {
 			return $post->load($query, null);
 		}

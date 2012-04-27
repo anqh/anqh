@@ -60,7 +60,7 @@ class Anqh_Forum {
 		}
 
 		if ($topic->sticky) {
-			$prefix = '<span class="sticky">[' . __('Sticky') . ']</span> ' . $prefix;
+			$prefix = '<span class="stick">[' . __('Sticky') . ']</span> ' . $prefix;
 		}
 
 		return $prefix . HTML::chars($topic->name());

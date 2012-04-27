@@ -4,10 +4,10 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Forum extends Controller_Template {
+class Anqh_Controller_Forum extends Controller_Page {
 
 	protected $_config;
 
@@ -23,6 +23,15 @@ class Anqh_Controller_Forum extends Controller_Template {
 	public function before() {
 		parent::before();
 
+		// Generic page actions
+		$this->page_actions[] = array(
+			'link'  => Route::url('forum'),
+			'text'  => '<i class="icon-comment"></i> ' . __('New posts'),
+		);
+		$this->page_actions[] = array(
+			'link'  => Route::url('forum_group'),
+			'text'  => '<i class="icon-folder-open"></i> ' . __('Areas'),
+		);
 		$this->page_id = 'forum';
 		$this->page_title = __('Forum');
 		$this->tabs = array(
@@ -31,6 +40,10 @@ class Anqh_Controller_Forum extends Controller_Template {
 		);
 
 		if (self::$user) {
+			$this->page_actions[] = array(
+				'link'  => Forum::private_messages_url(),
+				'text'  => '<i class="icon-envelope"></i> ' . __('Private messages'),
+			);
 			$this->tabs['private'] = array('url' => Forum::private_messages_url(), 'text' => __('Private messages'));
 		}
 	}
@@ -40,14 +53,33 @@ class Anqh_Controller_Forum extends Controller_Template {
 	 * Action: latest posts
 	 */
 	public function action_index() {
-		$this->tab_id = 'index';
+		$this->view = new View_Page(__('Forum'));
 
-		Widget::add('main', View_Module::factory('forum/topics', array(
-			'mod_class' => 'topics articles',
-			'topics'    => Model_Forum_Topic::factory()->find_active(20)
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(20)));
 
-		$this->side_views();
+		$this->_side_views();
+	}
+
+
+	/**
+	 * Get topic list view.
+	 *
+	 * @param   Model_Forum_Topic[]  $topics
+	 * @return  View_Topics_List
+	 */
+	public function section_topic_list($topics) {
+		return new View_Topics_List($topics);
+	}
+
+
+	/**
+	 * Get bigger topic list view.
+	 *
+	 * @param   Model_Forum_Topic[]  $topics
+	 * @return  View_Topics_Index
+	 */
+	public function section_topics($topics) {
+		return new View_Topics_Index($topics);
 	}
 
 
@@ -66,7 +98,7 @@ class Anqh_Controller_Forum extends Controller_Template {
 				'mod_id'    => 'topics-new',
 				'mod_class' => 'cut tab topics',
 				'title'     => __('New topics'),
-				'topics'    => Model_Forum_Topic::factory()->find_new(20),
+				'topics'    => Model_Forum_Topic::factory()->find_new(10),
 			))),
 			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => $this->tab_id == 'index', 'tab' => View_Module::factory('forum/grouplist', array(
 				'mod_id'    => 'forum-areas',
@@ -78,6 +110,25 @@ class Anqh_Controller_Forum extends Controller_Template {
 		);
 
 		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'topics-tab', 'tabs' => $tabs)));
+	}
+
+
+	/**
+	 * Side views.
+	 */
+	public function _side_views() {
+
+		// New posts
+		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_active(20));
+		$section->title = __('New posts');
+		$this->view->add(View_Page::COLUMN_SIDE, $section);
+
+		// New topics
+		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_new(20));
+		$section->title = __('New topics');
+		$this->view->add(View_Page::COLUMN_SIDE, $section);
+
+		// Areas
 	}
 
 }

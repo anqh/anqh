@@ -21,6 +21,18 @@ class View_Topics_List extends View_Section {
 
 
 	/**
+	 * Create new view.
+	 *
+	 * @param  Model_Forum_Topic[]  $topics
+	 */
+	public function __construct($topics = null) {
+		parent::__construct();
+
+		$this->topics = $topics;
+	}
+
+
+	/**
 	 * Render view.
 	 *
 	 * @return  string
