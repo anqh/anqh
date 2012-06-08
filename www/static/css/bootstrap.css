@@ -4279,6 +4279,9 @@ footer.meta {
 .btn-special.active {
   color: rgba(255, 255, 255, 0.75);
 }
+.input-max {
+  width: 100%;
+}
 input.private {
   border-color: #7a43b6;
 }
@@ -4349,10 +4352,27 @@ a.friend {
 .share .addthis_32x32_style {
   height: 32px;
 }
-.comments .ago,
-.newsfeed .ago {
-  color: #999999;
+.ago {
   float: right;
+  color: #999999;
+}
+/*
+.forum-group                           {
+  tr td:last-child                     { .text-overflow; }
+}
+*/
+blockquote {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
+}
+blockquote p {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: inherit;
+  line-height: inherit;
+}
+.post footer {
+  font: 0.75em/1.5 monospace;
+  color: #999999;
 }
 .thumbnails h4 {
   height: 36px;

@@ -12,8 +12,8 @@ bbCodeSettings = {
 //				{ name: 'Normal', text: '<i class="icon-font"></i>', className: 'button-normal', openWith: '[size=100]', closeWith: '[/size]' },
 //				{ name: 'Big', text: '<i class="icon-zoom-out"></i>', className: 'button-big', openWith: '[size=200]', closeWith: '[/size]' }
 //			]},
-		{ name: 'Small', text: '<i class="icon-zoom-in"></i>', className: 'btn btn-small button-small', openWith: '[size=50]', closeWith: '[/size]' },
-		{ name: 'Big', text: '<i class="icon-zoom-out"></i>', className: 'btn btn-small button-big', openWith: '[size=200]', closeWith: '[/size]' },
+		{ name: 'Small', text: '<i class="icon-minus"></i>', className: 'btn btn-small button-small', openWith: '[size=50]', closeWith: '[/size]' },
+		{ name: 'Big', text: '<i class="icon-plus"></i>', className: 'btn btn-small button-big', openWith: '[size=200]', closeWith: '[/size]' },
 //		{ separator: '&bull;' },
 		{ name: 'Picture', text: '<i class="icon-picture"></i>', className: 'btn btn-small button-picture', key: 'P', replaceWith: '[img][![URL]!][/img]' },
 		{ name: 'Link', text: '<i class="icon-bookmark"></i>', className: 'btn btn-small button-link', key: 'L', openWith: '[url=[![URL]!]]', closeWith: '[/url]', placeHolder: 'http://' },

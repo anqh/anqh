@@ -734,6 +734,7 @@ footer.meta{color:#999999;}
 .btn-special:active,.btn-special.active{background-color:#613591 \9;}
 .btn-special,.btn-special:hover{color:#ffffff;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);}
 .btn-special.active{color:rgba(255, 255, 255, 0.75);}
+.input-max{width:100%;}
 input.private{border-color:#7a43b6;}
 .private p{color:#7a43b6;}
 .cut li{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -749,7 +750,9 @@ a.friend{font-weight:bold;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
 #map{width:200px;height:150px;}
 .share .addthis_32x32_style{height:32px;}
-.comments .ago,.newsfeed .ago{color:#999999;float:right;}
+.ago{float:right;color:#999999;}
+blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
+.post footer{font:0.75em/1.5 monospace;color:#999999;}
 .thumbnails h4{height:36px;overflow:hidden;}
 .thumbnails i+i{margin-left:10px;}
 .thumbnails i.icon-star+i.icon-star,.thumbnails i.icon-star+i.icon-star-empty,.thumbnails i.icon-star-empty+i.icon-star,.thumbnails i.icon-star-empty+i.icon-star-empty{margin-left:0;}

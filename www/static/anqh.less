@@ -96,6 +96,7 @@ footer.meta                            { color: @grayLight; }
 .btn-special:hover                     { color: @white; text-shadow: 0 -1px 0 rgba(0,0,0,.25); }
 .btn-special.active                    { color: rgba(255, 255, 255, .75); }
 
+.input-max                             { width: 100%; }
 input.private                          { border-color: @purple; }
 .private p                             { color: @purple; }
 
@@ -129,9 +130,18 @@ a.friend                               { font-weight: bold; }
 .share .addthis_32x32_style            { height: 32px; }
 
 // Page specific
-.comments .ago,
-.newsfeed .ago                         { color: @grayLight; float: right; }
+.ago                                   { float: right; .muted; }
 
+// Forum
+/*
+.forum-group                           {
+  tr td:last-child                     { .text-overflow; }
+}
+*/
+blockquote                             { font-family: @altFontFamily; font-style: italic;
+  p                                    { font-family: @altFontFamily; font-size: inherit; line-height: inherit; }
+}
+.post footer                           { font: .75em/1.5 monospace; .muted; }
 
 // Galleries
 .thumbnails                            {
