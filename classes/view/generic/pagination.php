@@ -40,6 +40,11 @@ class View_Generic_Pagination extends View_Base {
 	public $next_url;
 
 	/**
+	 * @var  integer  Pagination offset for SQL
+	 */
+	public $offset;
+
+	/**
 	 * @var  string  Query string parameter
 	 */
 	public $parameter = 'page';
@@ -78,28 +83,33 @@ class View_Generic_Pagination extends View_Base {
 				$this->{$key} = $value;
 			}
 		}
+
+		$this->setup();
 	}
 
 
 	/**
-	 * Setup pagination.
+	 * Go to page with item.
+	 *
+	 * @param   integer  $item
+	 * @return  View_Generic_Pagination
 	 */
-	public function setup() {
-		if ($this->total_pages === null && $this->total_items && $this->items_per_page) {
-			$this->total_pages = (int)ceil($this->total_items / $this->items_per_page);
-		}
+	public function item($item) {
+		$this->current_page = ceil((int)$item / $this->items_per_page);
 
-		if ($this->current_page === null && $this->total_pages) {
-			$this->current_page = (int)Request::current()->param($this->parameter, 1);
-		}
+		return $this->setup();
+	}
 
-		if ($this->previous_url === null && $this->current_page > 1) {
-			$this->previous_url = $this->url($this->current_page - 1);
-		}
 
-		if ($this->next_url === null && $this->current_page < $this->total_pages) {
-			$this->next_url = $this->url($this->next_url + 1);
-		}
+	/**
+	 * Go to last page.
+	 *
+	 * @return  View_Generic_Pagination
+	 */
+	public function last() {
+		$this->current_page = $this->total_pages;
+
+		return $this->setup();
 	}
 
 
@@ -142,6 +152,37 @@ class View_Generic_Pagination extends View_Base {
 
 
 	/**
+	 * Setup pagination.
+	 *
+	 * @return  View_Generic_Pagination
+	 */
+	public function setup() {
+		if ($this->total_pages === null && $this->total_items && $this->items_per_page) {
+			$this->total_pages = (int)ceil($this->total_items / $this->items_per_page);
+		}
+
+		if ($this->current_page === null && $this->total_pages) {
+			$page = Arr::get($_GET, $this->parameter, 1);
+			$this->current_page = $page == 'last' ? $this->total_pages : (int)$page;
+		}
+
+		if ($this->previous_url === null && $this->current_page > 1) {
+			$this->previous_url = $this->url($this->current_page - 1);
+		}
+
+		if ($this->next_url === null && $this->current_page < $this->total_pages) {
+			$this->next_url = $this->url($this->current_page + 1);
+		}
+
+		if ($this->offset === null && $this->items_per_page) {
+			$this->offset = max(0, $this->current_page - 1) * $this->items_per_page;
+		}
+
+		return $this;
+	}
+
+
+	/**
 	 * Generates the full URL for a certain page.
 	 *
 	 * @param   integer  $page
@@ -157,7 +198,11 @@ class View_Generic_Pagination extends View_Base {
 			$page = null;
 		}
 
-		return URL::site(Request::current()->uri) . URL::query(array($this->parameter => $page));
+		list($uri) = explode('?', Request::current()->current_uri());
+		$query     = $_GET;
+		$query[$this->parameter] = $page;
+
+		return URL::site($uri) . URL::query($query);
 	}
 
 }
