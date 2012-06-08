@@ -280,7 +280,7 @@ class Anqh_View_Page extends View_Base {
 
 		<hr />
 
-		<section role="contentinfo">
+		<section>
 			<?php echo $this->_statistics() ?><br />
 			Copyright &copy; 2000&ndash;<?php echo date('Y')?> <?php echo Kohana::config('site.site_name') ?> -
 			Powered by Anqh v<?php echo Anqh::VERSION ?> and Kohana v<?php echo Kohana::VERSION ?>
