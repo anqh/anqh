@@ -47,8 +47,7 @@ abstract class Anqh_Request extends Kohana_Request {
 	 * @param   string   $filename   new filename
 	 * @param   string   $directory  new directory
 	 * @param   integer  $chmod      chmod mask
-	 * @return  array    on success, upload style file array
-	 * @return  false    on failure
+	 * @return  mixed    array on success, upload style file array, false on failure
 	 */
 	public function download($filename = null, $directory = null, $chmod = 0644) {
 

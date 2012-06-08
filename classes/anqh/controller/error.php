@@ -1,19 +1,13 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Anqh Error controller
+ * Anqh Error controller.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Error extends Controller_Template {
-
-	/**
-	 * @var  string  Error page template
-	 */
-	public $template = 'generic/error';
-
+class Anqh_Controller_Error extends Controller_Page {
 
 	/**
 	 * Construct controller
@@ -21,22 +15,31 @@ class Anqh_Controller_Error extends Controller_Template {
 	public function before() {
 		parent::before();
 
-		// Always render template
-		$this->template = View::factory($this->template);
+		$this->history = false;
 
-		// Internal requests only
-		if (!$this->request->is_initial()) {
-			if ($message = rawurldecode($this->request->param('message'))) {
-				$this->template->message = $message;
-			}
-		} else {
+		// Always render page
+		$this->view = new View_ErrorPage(__('Something wonky just happened'));
+
+		// Show always 404 for now
+		return $this->request->action(404);
+
+		/*
+		if ($this->_request_type !== Controller::REQUEST_AJAX) {
 
 			// External requests show always 404
-			$this->request->action(404);
+			return $this->request->action(404);
+
+		} else {
+
+			// Internal requests only
+			if ($message = rawurldecode($this->request->param('message'))) {
+				$this->view->add(View_Page::COLUMN_TOP, $message);
+			}
 
 		}
 
 		$this->response->status((int)$this->request->action());
+		*/
 	}
 
 
@@ -44,7 +47,7 @@ class Anqh_Controller_Error extends Controller_Template {
 	 * Destroy controller
 	 */
 	public function after() {
-		$this->response->body($this->template);
+		$this->response->body($this->view);
 	}
 
 
@@ -59,7 +62,7 @@ class Anqh_Controller_Error extends Controller_Template {
 			Kohana::$log->add(Log::INFO, 'Broken link at ' . $_SERVER['HTTP_REFERER']);
 		}
 
-		$this->template->title = __('404 - le fu.');
+		$this->view->title = __('404 - le fu.');
 	}
 
 
@@ -68,15 +71,15 @@ class Anqh_Controller_Error extends Controller_Template {
 	 */
 	public function action_500() {
 		$this->response->status(200);
-		$this->template->title = __('Internal Server Fu.');
+		$this->view->title = __('Internal Server Fu.');
 	}
 
 
 	/**
-	 * Action: 500
+	 * Action: 503
 	 */
 	public function action_503() {
-		$this->template->title = __('Maintenance Mode');
+		$this->view->title = __('Maintenance Mode');
 	}
 
 }
