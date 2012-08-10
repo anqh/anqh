@@ -211,6 +211,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Go to post?
 		if (isset($post_id)) {
 			$pagination->item($topic->get_post_number($post_id));
+
+			// We need to set pagination urls manually if jumped to a post
+			$pagination->base_url = Route::model($topic);
+
 		}
 
 		// Recipients
@@ -231,7 +235,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($topic));
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
 		//$this->side_views();
 	}
