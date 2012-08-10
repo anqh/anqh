@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Newsfeed extends View_Section {
@@ -14,6 +14,9 @@ class View_Newsfeed extends View_Section {
 
 	/** Newsfeed from friends only */
 	const TYPE_FRIENDS = 'friends';
+
+	/** Newsfeed from single user only */
+	const TYPE_PERSONAL = 'personal';
 
 	public $class = 'newsfeed';
 	public $id    = 'newsfeed';
@@ -32,8 +35,14 @@ class View_Newsfeed extends View_Section {
 	 * @var  string  Newsfeed type
 	 * @see  TYPE_ALL
 	 * @see  TYPE_FRIENDS
+	 * @see  TYPE_PERSONAL
 	 */
 	public $type = self::TYPE_ALL;
+
+	/**
+	 * @var  Model_User  For personal
+	 */
+	public $user;
 
 
 	/**
@@ -91,6 +100,11 @@ class View_Newsfeed extends View_Section {
 				$newsfeed = new Newsfeed(self::$_user, Newsfeed::USERS);
 				$newsfeed->users = self::$_user->find_friends(0, 0);
 		    break;
+
+			// Single user newsfeed
+			case self::TYPE_PERSONAL:
+				$newsfeed = new NewsFeed($this->user, Newsfeed::PERSONAL);
+				break;
 
 			// All users
 			case self::TYPE_ALL:

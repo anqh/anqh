@@ -25,6 +25,16 @@ class View_Generic_Comments extends View_Section {
 	public $delete = null;
 
 	/**
+	 * @var  integer  New comments indicator
+	 */
+	public $new_comments;
+
+	/**
+	 * @var  View_Generic_Pagination
+	 */
+	public $pagination;
+
+	/**
 	 * @var  string  Private comment url template
 	 */
 	public $private = null;
@@ -60,6 +70,11 @@ class View_Generic_Comments extends View_Section {
 
 		// Comment form
 		echo $this->form();
+
+		// Pagination
+		if ($this->pagination) {
+			echo $this->pagination->render();
+		}
 
 ?>
 
@@ -133,6 +148,11 @@ class View_Generic_Comments extends View_Section {
 </ul>
 
 <?php
+
+		// Pagination
+		if ($this->pagination) {
+			echo $this->pagination->render();
+		}
 
 		return ob_get_clean();
 	}

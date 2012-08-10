@@ -250,17 +250,21 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * Get image comments
 	 *
 	 * @param   Model_User  $viewer
-	 * @param   Pagination  $pagination
+	 * @param   View_Generic_Pagination  $pagination
 	 * @return  Model_User_Comment[]
 	 */
-	public function comments(Model_User $viewer = null, Pagination $pagination = null) {
-		$comment = Model_User_Comment::factory();
-		$query   = Model_Comment::query_viewer(DB::select_array($comment->fields())->where('user_id', '=', $this->id), $viewer);
+	public function comments(Model_User $viewer = null, View_Generic_Pagination $pagination = null) {
+		$query = Model_Comment::query_viewer(DB::select_array(Model_User_Comment::factory()->fields()), $viewer)
+			->order_by('id', 'DESC');
 
-		return $comment->load(
-			$query->offset($pagination ? $pagination->offset : 0),
-			$pagination ? $pagination->items_per_page : null
-		);
+		if ($pagination) {
+			$query = $query
+				->offset($pagination->offset)
+				->limit($pagination->items_per_page);
+		}
+
+		return $this->find_related('user_comments', $query);
+
 	}
 
 

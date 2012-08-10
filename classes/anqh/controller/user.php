@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_User extends Controller_Template {
+class Anqh_Controller_User extends Controller_Page {
 
 	/**
 	 * Action: comment
@@ -279,9 +279,6 @@ class Anqh_Controller_User extends Controller_Template {
 	public function action_index() {
 		$user = $this->_get_user();
 
-		// Set generic page parameters
-		$this->_set_page($user);
-
 		// Helper variables
 		$owner = (self::$user && self::$user->id == $user->id);
 
@@ -290,18 +287,11 @@ class Anqh_Controller_User extends Controller_Template {
 			$errors = array();
 			$values = array();
 
-			// Mark own comments read
-			$owner and $user->mark_comments_read();
-
 			// Handle comment
 			if (Permission::has($user, Model_User::PERMISSION_COMMENT, self::$user) && $_POST) {
-				$comment = Model_User_Comment::factory();
-				$comment->set_fields(Arr::intersect($_POST, Model_User_Comment::$editable_fields));
-				$comment->user_id   = $user->id;
-				$comment->author_id = self::$user->id;
-				$comment->created   = time();
 				try {
-					$comment->save();
+					$comment = Model_User_Comment::factory()
+						->add(self::$user->id, $user->id, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
 
 					// Receiver
 					$user->comment_count++;
@@ -314,9 +304,12 @@ class Anqh_Controller_User extends Controller_Template {
 					self::$user->left_comment_count++;
 					self::$user->save();
 
-					if (!$this->ajax) {
+					if ($this->_request_type !== Controller::REQUEST_AJAX) {
 						$this->request->redirect(Route::url('user', array('username' => urlencode($user->username))));
+
+						return;
 					}
+
 				} catch (Validation_Exception $e) {
 					$errors = $e->array->errors('validation');
 					$values = $comment;
@@ -324,40 +317,37 @@ class Anqh_Controller_User extends Controller_Template {
 
 			}
 
-			// Pagination
-			$per_page = 25;
-			$pagination = Pagination::factory(array(
-				'url'            => URL::user($user),
-				'items_per_page' => $per_page,
-				'total_items'    => max(1, count($user->comments(self::$user, null))),
-			));
-
-			$view = View_Module::factory('generic/comments', array(
-				'mod_title'    => __('Comments'),
-				'delete'       => Route::url('user_comment', array('id' => '%d', 'commentaction' => 'delete')) . '?' . Security::csrf_query(),
-				'private'      => Route::url('user_comment', array('id' => '%d', 'commentaction' => 'private')) . '?' . Security::csrf_query(),
-				'comments'     => $user->comments(self::$user, $pagination),
-				'new_comments' => $owner ? $user->new_comment_count : null,
-				'errors'       => $errors,
-				'values'       => $values,
-				'pagination'   => $pagination,
-				'user'         => self::$user,
-			));
-
-			if ($this->ajax) {
-				$this->response->body($view);
-				return;
+			// Mark own comments read
+			if ($owner) {
+				$user->mark_comments_read();
 			}
-			Widget::add('main', $view, Widget::BOTTOM);
+
+			$section_comments = $this->section_comments($user, 'user_comment');
+			$section_comments->errors = $errors;
+			$section_comments->values = $values;
+
+		} else {
+
+			// Teaser for guests
+			$section_comments = $this->section_comments_teaser($user->comment_count);
+
 		}
 
-		// Display news feed
-		$newsfeed = new NewsFeed($user, Newsfeed::PERSONAL);
-		$newsfeed->max_items = 5;
-		Widget::add('main', View_Module::factory('generic/newsfeed', array(
-			'newsfeed' => $newsfeed->as_array(),
-			'mini'     => true
-		)), Widget::TOP);
+		if (isset($section_comments) && $this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body($section_comments);
+
+			return;
+		}
+
+
+		// Build page
+		$this->_set_page($user);
+
+		// Newsfeed
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed($user));
+
+		// Comments
+		$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
 
 		// Slideshow
 		if (count($user_images = $user->images()) > 1) {
@@ -365,19 +355,17 @@ class Anqh_Controller_User extends Controller_Template {
 			foreach ($user_images as $image) {
 				$images[] = $image;
 			}
-			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
+			$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory('generic/image_slideshow', array(
 				'images'     => array_reverse($images),
 				'classes'    => array($user->default_image_id => 'default active'),
 			)));
 		}
 
 		// Portrait
-		Widget::add('side', $this->_get_mod_image($user));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_image($user));
 
 		// Info
-		Widget::add('side', View_Module::factory('user/info', array(
-			'user' => $user,
-		)));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_info($user));
 
 	}
 
@@ -506,38 +494,152 @@ class Anqh_Controller_User extends Controller_Template {
 	 */
 	protected function _set_page(Model_User $user) {
 
-		// Set page title
-		$this->page_title = HTML::chars($user->username);
+		// Build page
+		$this->view = new View_Page($user->name);
 		if ($user->title) {
-			$this->page_subtitle = HTML::chars($user->title);
+			$this->view->subtitle = HTML::chars($user->title);
 		}
 
 		// Set actions
 		if (self::$user) {
 			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array('link' => URL::user($user, 'settings'), 'text' => __('Settings'), 'class' => 'settings');
+				$this->page_actions[] = array(
+					'link'  =>  URL::user($user, 'settings'),
+					'text'  => '<i class="icon-cog"></i> ' . __('Settings'),
+					'class' => 'btn'
+				);
 			}
 
 			// Friend actions
 			if (Permission::has($user, Model_User::PERMISSION_FRIEND, self::$user)) {
 				if (self::$user->is_friend($user)) {
-					$this->page_actions[] = array('link' => URL::user($user, 'unfriend') . '?token=' . Security::csrf(), 'text' => __('Remove friend'), 'class' => 'friend-delete');
+					$this->page_actions[] = array(
+						'link'  => URL::user($user, 'unfriend') . '?token=' . Security::csrf(),
+						'text'  => '<i class="icon-heart"></i> ' . __('Remove friend'),
+						'class' => 'btn friend-delete'
+					);
 				} else {
-					$this->page_actions[] = array('link' => URL::user($user, 'friend') . '?token=' . Security::csrf(), 'text' => __('Add to friends'), 'class' => 'friend-add');
+					$this->page_actions[] = array(
+						'link'  => URL::user($user, 'friend') . '?token=' . Security::csrf(),
+						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to friends'),
+						'class' => 'btn btn-primary friend-add'
+					);
 				}
 			}
 
 			// Ignore actions
 			if (Permission::has($user, Model_User::PERMISSION_IGNORE, self::$user)) {
 				if (self::$user->is_ignored($user)) {
-					$this->page_actions[] = array('link' => URL::user($user, 'unignore') . '?token=' . Security::csrf(), 'text' => __('Unignore'), 'class' => 'ignore-delete');
+					$this->page_actions[] = array(
+						'link'  => URL::user($user, 'unignore') . '?token=' . Security::csrf(),
+						'text'  => '<i class="icon-ban-circle"></i> ' . __('Unignore'),
+						'class' => 'btn ignore-delete'
+					);
 				} else {
-					$this->page_actions[] = array('link' => URL::user($user, 'ignore') . '?token=' . Security::csrf(), 'text' => __('Ignore'), 'class' => 'ignore-add');
+					$this->page_actions[] = array(
+						'link'  => URL::user($user, 'ignore') . '?token=' . Security::csrf(),
+						'text'  => '<i class="icon-ban-circle"></i> ' . __('Ignore'),
+						'class' => 'btn ignore-add'
+					);
 				}
 			}
 
 		}
 
+	}
+
+
+	/**
+	 * Get comments section.
+	 *
+	 * @param   Model_User   $user
+	 * @param   string       $route
+	 * @return  View_Generic_Comments
+	 */
+	public function section_comments(Model_User $user, $route = 'user_comment') {
+
+		// Pagination
+		$per_page = 25;
+		$pagination = new View_Generic_Pagination(array(
+			'base_url'       => URL::user($user),
+			'items_per_page' => $per_page,
+			'total_items'    => max(1, count($user->comments(self::$user, null))),
+		));
+
+		$section = new View_Generic_Comments($user->comments(self::$user, $pagination));
+		$section->delete       = Route::url($route, array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
+		$section->private      = Route::url($route, array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf();
+		$section->new_comments = self::$user && self::$user->id === $user->id ? $user->new_comment_count : null;
+		$section->pagination   = $pagination;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get comment section teaser.
+	 *
+	 * @param   integer  $comment_count
+	 * @return  View_Generic_CommentsTeaser
+	 */
+	public function section_comments_teaser($comment_count = 0) {
+		return new View_Generic_CommentsTeaser($comment_count);
+	}
+
+
+	/**
+	 * Get side image.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Generic_SideImage
+	 */
+	public function section_image(Model_User $user) {
+		$image = $user->get_image_url();
+
+		if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
+			$uri     = URL::user($user, 'image');
+			$actions = array();
+			$actions[] = HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' . __('Add image'), array('class' => 'btn btn-small btn-primary image-add ajaxify'));
+			if ($image) {
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&default=' . $image->id, '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn image-change disabled', 'data-change' => 'default'));
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-small image-delete'));
+			}
+		} else {
+			$actions = null;
+		}
+
+		$section = new View_Generic_SideImage($image);
+		$section->actions = $actions;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get user info.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_User_Info
+	 */
+	public function section_info(Model_User $user) {
+		return new View_User_Info($user);
+	}
+
+
+	/**
+	 * Get newsfeed.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Newsfeed
+	 */
+	public function section_newsfeed(Model_User $user) {
+		$section = new View_Newsfeed();
+		$section->type  = View_Newsfeed::TYPE_PERSONAL;
+		$section->user  = $user;
+		$section->mini  = true;
+		$section->limit = 5;
+
+		return $section;
 	}
 
 }
