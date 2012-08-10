@@ -95,7 +95,12 @@ class View_Generic_Pagination extends View_Base {
 	 * @return  View_Generic_Pagination
 	 */
 	public function item($item) {
+
+		// Calculate new page
 		$this->current_page = ceil((int)$item / $this->items_per_page);
+		$this->previous_url = null;
+		$this->next_url     = null;
+		$this->offset       = null;
 
 		return $this->setup();
 	}
@@ -198,7 +203,7 @@ class View_Generic_Pagination extends View_Base {
 			$page = null;
 		}
 
-		list($uri) = explode('?', Request::current()->current_uri());
+		list($uri) = $this->base_url ? array($this->base_url) : explode('?', Request::current()->current_uri());
 		$query     = $_GET;
 		$query[$this->parameter] = $page;
 
