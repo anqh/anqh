@@ -1071,4 +1071,8 @@ $(function() {
 		}
 	});
 
+
+	// Carousels
+	$('.carousel').carousel({ interval: false });
+
 });
