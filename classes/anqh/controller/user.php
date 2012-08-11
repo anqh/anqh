@@ -319,19 +319,10 @@ class Anqh_Controller_User extends Controller_Page {
 		$user = $this->_get_user();
 		Permission::required($user, Model_User::PERMISSION_UPDATE, self::$user);
 
-		// Set generic page parameters
-		$this->_set_page($user);
-
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
 			$user->set_fields(Arr::intersect($_POST, Model_User::$editable_fields));
-
-			// GeoNames
-			if ($_POST['city_id'] && $city = Geo::find_city((int)$_POST['city_id'])) {
-				$user->geo_city_id = $city->id;
-			}
-
 			$user->modified = time();
 
 			try {
@@ -342,11 +333,11 @@ class Anqh_Controller_User extends Controller_Page {
 			}
 		}
 
-		Widget::add('main', View_Module::factory('user/settings', array(
-			'user'   => $user,
-			'errors' => $errors,
-		)));
 
+		// Build page
+		$this->_set_page($user);
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_settings($user, $errors));
 	}
 
 
@@ -583,6 +574,18 @@ class Anqh_Controller_User extends Controller_Page {
 		$section->limit = 5;
 
 		return $section;
+	}
+
+
+	/**
+	 * Get settings.
+	 *
+	 * @param   Model_User $user
+	 * @param   array      $errors
+	 * @return  View_User_Settings
+	 */
+	public function section_settings(Model_User $user, array $errors = null) {
+		return new View_User_Settings($user, $errors);
 	}
 
 
