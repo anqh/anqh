@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2011 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Users extends Controller_page {
+class Anqh_Controller_Users extends Controller_Page {
 
 	/**
 	 * @var  string
@@ -54,9 +54,7 @@ class Anqh_Controller_Users extends Controller_page {
 	 * @return  View_Users_New
 	 */
 	public function section_new_users() {
-		$section = new View_Users_New();
-
-		return $section;
+		return new View_Users_New();
 	}
 
 
@@ -66,9 +64,7 @@ class Anqh_Controller_Users extends Controller_page {
 	 * @return  View_Users_Online
 	 */
 	public function section_online() {
-		$section = new View_Users_Online();
-
-		return $section;
+		return new View_Users_Online();
 	}
 
 }
