@@ -59,6 +59,11 @@ class Anqh_View_Page extends View_Base {
 	public $title;
 
 	/**
+	 * @var  string  Page title with HTML
+	 */
+	public $title_html;
+
+	/**
 	 * @var  string  Page subtitle
 	 */
 	public $subtitle;
@@ -558,12 +563,12 @@ class Anqh_View_Page extends View_Base {
 
 			<header id="title">
 
-				<?php if ($this->title) { ?>
-				<h1><?php echo HTML::chars($this->title) ?></h1>
+				<?php if ($this->title_html || $this->title) { ?>
+				<h1><?= $this->title_html ? $this->title_html : HTML::chars($this->title) ?></h1>
 				<?php } ?>
 
 				<?php if ($this->subtitle) { ?>
-				<p><?php echo $this->subtitle ?></p>
+				<p><?= $this->subtitle ?></p>
 				<?php } ?>
 
 				<?php if ($this->actions) { ?>
