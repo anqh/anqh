@@ -195,8 +195,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * Validate callback wrapper for checking password match
 	 *
 	 * @static
-	 * @param  Validate  $array
-	 * @param  string    $field
+	 * @param  Validation  $array
+	 * @param  string      $field
 	 */
 	public static function _check_password_matches(Validation $array, $field) {
 		if (empty($array['password']) || $array['password'] !== $array[$field]) {
@@ -473,6 +473,18 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public function delete_ignore(Model_User $ignore) {
 		return $this->loaded() && Model_Ignore::unignore($this->id, $ignore->id);
+	}
+
+
+	/**
+	 * Expire user caches.
+	 *
+	 * @static
+	 * @param  integer  $user_id
+	 */
+	public static function expire_caches($user_id) {
+		Anqh::cache_delete('user_' . (int)$user_id);
+		Anqh::cache_delete('user_light_' . (int)$user_id);
 	}
 
 
@@ -934,6 +946,21 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		return $this->_roles;
+	}
+
+
+	/**
+	 * Save model and expire caches.
+	 *
+	 * @param   mixed  $validation
+	 * @return  integer
+	 */
+	public function save($validation = null) {
+		if ($result = parent::save($validation)) {
+			self::expire_caches($this->id);
+		}
+
+		return $result;
 	}
 
 }

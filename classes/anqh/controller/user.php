@@ -181,10 +181,10 @@ class Anqh_Controller_User extends Controller_Page {
 			$this->_set_page($user);
 		}
 
-		// Change existing
-		if (isset($_REQUEST['default'])) {
+		// Change default image
+		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
 			/** @var  Model_Image  $image */
-			$image = Model_Image::factory((int)$_REQUEST['default']);
+			$image = Model_Image::factory($image_id);
 			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image->id)) {
 				$user->default_image_id = $image->id;
 				$user->picture          = $image->get_url();
@@ -194,11 +194,11 @@ class Anqh_Controller_User extends Controller_Page {
 		}
 
 		// Delete existing
-		if (isset($_REQUEST['delete'])) {
+		if ($image_id = (int)Arr::get($_REQUEST, 'delete')) {
 			/** @var  Model_Image  $image */
-			$image = Model_Image::factory((int)$_REQUEST['delete']);
+			$image = Model_Image::factory($image_id);
 			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image_id && $user->has('images', $image->id)) {
-				$user->remove('images', $image->id);
+				$user->remove('image', $image->id);
 				$user->picture = null;
 				$user->save();
 				$image->delete();
@@ -208,11 +208,6 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
-			if ($this->ajax) {
-				$this->response->body($this->_get_mod_image($user));
-				return;
-			}
-
 			$this->request->redirect(URL::user($user));
 		}
 
@@ -349,20 +344,8 @@ class Anqh_Controller_User extends Controller_Page {
 		// Comments
 		$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
 
-		// Slideshow
-		if (count($user_images = $user->images()) > 1) {
-			$images = array();
-			foreach ($user_images as $image) {
-				$images[] = $image;
-			}
-			$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory('generic/image_slideshow', array(
-				'images'     => array_reverse($images),
-				'classes'    => array($user->default_image_id => 'default active'),
-			)));
-		}
-
 		// Portrait
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_image($user));
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_carousel($user));
 
 		// Info
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_info($user));
@@ -508,6 +491,11 @@ class Anqh_Controller_User extends Controller_Page {
 					'text'  => '<i class="icon-cog"></i> ' . __('Settings'),
 					'class' => 'btn'
 				);
+				$this->page_actions[] = array(
+					'link'  => URL::user($user, 'image'),
+					'text'  => '<i class="icon-picture"></i> ' . __('Add image'),
+					'class' => 'btn'
+				);
 			}
 
 			// Friend actions
@@ -550,6 +538,17 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
+	 * Get image slideshow.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Generic_Carousel
+	 */
+	public function section_carousel(Model_User $user) {
+		return new View_User_Carousel($user);
+	}
+
+
+	/**
 	 * Get comments section.
 	 *
 	 * @param   Model_User   $user
@@ -584,34 +583,6 @@ class Anqh_Controller_User extends Controller_Page {
 	 */
 	public function section_comments_teaser($comment_count = 0) {
 		return new View_Generic_CommentsTeaser($comment_count);
-	}
-
-
-	/**
-	 * Get side image.
-	 *
-	 * @param   Model_User  $user
-	 * @return  View_Generic_SideImage
-	 */
-	public function section_image(Model_User $user) {
-		$image = $user->get_image_url();
-
-		if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-			$uri     = URL::user($user, 'image');
-			$actions = array();
-			$actions[] = HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' . __('Add image'), array('class' => 'btn btn-small btn-primary image-add ajaxify'));
-			if ($image) {
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&default=' . $image->id, '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn image-change disabled', 'data-change' => 'default'));
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-small image-delete'));
-			}
-		} else {
-			$actions = null;
-		}
-
-		$section = new View_Generic_SideImage($image);
-		$section->actions = $actions;
-
-		return $section;
 	}
 
 
