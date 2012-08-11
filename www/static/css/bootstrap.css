@@ -4203,6 +4203,9 @@ a.badge:hover {
 body {
   padding-top: 60px;
 }
+legend {
+  margin-bottom: 0;
+}
 .navbar .btn {
   margin-top: 0;
 }
@@ -4578,6 +4581,9 @@ a.friend {
   left: 5px;
   position: absolute;
 }
+#user textarea[name=signature] {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
 /*
 .forum-group                           {
   tr td:last-child                     { .text-overflow; }
@@ -4593,7 +4599,7 @@ blockquote p {
   line-height: inherit;
 }
 .post footer {
-  font: 0.75em/1.5 monospace;
+  font: 0.75em/1.5 Menlo, Monaco, Consolas, "Courier New", monospace;
   color: #999999;
 }
 .thumbnails h4 {

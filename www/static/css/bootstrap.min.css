@@ -712,6 +712,7 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .show{display:block;}
 .invisible{visibility:hidden;}
 body{padding-top:60px;}
+legend{margin-bottom:0;}
 .navbar .btn{margin-top:0;}
 .navbar .nav>li.menuitem-profile{width:30px;}.navbar .nav>li.menuitem-profile a{height:auto;margin:0;padding:5px 0 0;width:auto;}
 .navbar .nav>li.menu-me .dropdown-menu{left:0;right:auto;}
@@ -777,8 +778,9 @@ a.friend{font-weight:bold;}
 .ago{float:right;color:#999999;}
 #user #carousel .carousel-control{top:35px;}
 #user #carousel .btn-group{bottom:5px;left:5px;position:absolute;}
+#user textarea[name=signature]{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;}
 blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
-.post footer{font:0.75em/1.5 monospace;color:#999999;}
+.post footer{font:0.75em/1.5 Menlo,Monaco,Consolas,"Courier New",monospace;color:#999999;}
 .thumbnails h4{height:36px;overflow:hidden;}
 .thumbnails i+i{margin-left:10px;}
 .thumbnails i.icon-star+i.icon-star,.thumbnails i.icon-star+i.icon-star-empty,.thumbnails i.icon-star-empty+i.icon-star,.thumbnails i.icon-star-empty+i.icon-star-empty{margin-left:0;}

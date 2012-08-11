@@ -420,10 +420,8 @@ $.fn.autocompleteEvent = function(options) {
 $.fn.autocompleteGeo = function(options) {
 	var defaults = {
 		map:       'map',
-		cityId:    'city_id',
 		country:   'FI',
 		lang:      'en',
-		address:   'address',
 		latitude:  'latitude',
 		longitude: 'longitude',
 		limit:     10,

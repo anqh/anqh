@@ -1,5 +1,5 @@
 body                                   { padding-top: 60px; }
-
+legend                                 { margin-bottom: 0; }
 
 // Main menu
 .navbar                                {
@@ -8,7 +8,6 @@ body                                   { padding-top: 60px; }
     a                                  { height: auto; margin: 0; padding: 5px 0 0; width: auto; }
   }
   .nav > li.menu-me .dropdown-menu     { left: 0; right: auto; }
-
 }
 
 
@@ -136,6 +135,8 @@ a.friend                               { font-weight: bold; }
 #user                                  {
   #carousel .carousel-control          { top: 35px; }
   #carousel .btn-group                 { bottom: 5px; left: 5px; position: absolute; }
+
+  textarea[name=signature]             { font-family: @monoFontFamily; }
 }
 
 // Forum
@@ -147,7 +148,7 @@ a.friend                               { font-weight: bold; }
 blockquote                             { font-family: @altFontFamily; font-style: italic;
   p                                    { font-family: @altFontFamily; font-size: inherit; line-height: inherit; }
 }
-.post footer                           { font: .75em/1.5 monospace; .muted; }
+.post footer                           { font: .75em/1.5 @monoFontFamily; .muted; }
 
 // Galleries
 .thumbnails                            {
