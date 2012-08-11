@@ -45,27 +45,35 @@ class View_User_Carousel extends View_Section {
 	public function content() {
 		ob_start();
 
-		if (count($this->user->images())):
+		$images = $this->user->images();
+		if (count($images)):
 
 			// Check for actions
 			if (Permission::has($this->user, Model_User::PERMISSION_UPDATE, self::$_user)):
 				$action_uri = URL::user($this->user, 'image');
 			endif;
 
+			// Check for missing default image
+			$active_id = $this->user->default_image_id;
+			if (!$active_id):
+				$image = $images->current();
+				$active_id = $image->id;
+			endif;
+
 ?>
 
 	<div class="carousel-inner">
 
-		<?php foreach ($this->user->images() as $image): $default = $image->id == $this->user->default_image_id; ?>
+		<?php foreach ($images as $image): ?>
 
-		<div class="item<?= $default ? ' active' : '' ?>">
+		<div class="item<?= $image->id == $active_id ? ' active' : '' ?>">
 
 			<?= HTML::image($image->get_url(), array('width' => 290)) ?>
 
 			<?php if (isset($action_uri)): ?>
 
 			<div class="btn-group">
-				<?php if ($default):
+				<?php if ($image->id == $this->user->default_image_id):
 					echo HTML::anchor('#', '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn btn-mini image-change disabled'));
 				else:
 					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $image->id, '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn btn-mini image-change'));

@@ -177,10 +177,6 @@ class Anqh_Controller_User extends Controller_Page {
 		$user = $this->_get_user();
 		Permission::required($user, Model_User::PERMISSION_UPDATE, self::$user);
 
-		if (!$this->ajax) {
-			$this->_set_page($user);
-		}
-
 		// Change default image
 		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
 			/** @var  Model_Image  $image */
@@ -197,9 +193,12 @@ class Anqh_Controller_User extends Controller_Page {
 		if ($image_id = (int)Arr::get($_REQUEST, 'delete')) {
 			/** @var  Model_Image  $image */
 			$image = Model_Image::factory($image_id);
-			if (Security::csrf_valid() && $image->loaded() && $image->id != $user->default_image_id && $user->has('images', $image->id)) {
+			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image->id)) {
 				$user->remove('image', $image->id);
-				$user->picture = null;
+				if ($image->id === $user->default_image_id) {
+					$user->default_image_id = null;
+					$user->picture          = null;
+				}
 				$user->save();
 				$image->delete();
 			}
@@ -238,11 +237,6 @@ class Anqh_Controller_User extends Controller_Page {
 				// Newsfeed
 				NewsfeedItem_User::default_image($user, $image);
 
-				if ($this->ajax) {
-					$this->response->body($this->_get_mod_image($user));
-					return;
-				}
-
 				$this->request->redirect(URL::user($user));
 
 			} catch (Validation_Exception $e) {
@@ -252,19 +246,11 @@ class Anqh_Controller_User extends Controller_Page {
 			}
 		}
 
-		$view = View_Module::factory('user/image_upload', array(
-			'mod_title' => __('Add image'),
-			'ajaxify'   => $this->ajax,
-			'errors'    => $errors,
-			'cancel'     => $this->ajax ? URL::user($user, 'image') . '?cancel' : URL::user($user),
-		));
 
-		if ($this->ajax) {
-			echo $view;
-			return;
-		}
+		// Build page
+		$this->_set_page($user);
 
-		Widget::add('main', $view);
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_upload(URL::user($user), $errors));
 	}
 
 
@@ -609,6 +595,23 @@ class Anqh_Controller_User extends Controller_Page {
 		$section->user  = $user;
 		$section->mini  = true;
 		$section->limit = 5;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get image upload.
+	 *
+	 * @param   string  $cancel  URL
+	 * @param   array   $errors
+	 * @return  View_Generic_Upload
+	 */
+	public function section_upload($cancel = null, $errors = null) {
+		$section = new View_Generic_Upload();
+		$section->title  = __('Add profile image');
+		$section->cancel = $cancel;
+		$section->errors = $errors;
 
 		return $section;
 	}
