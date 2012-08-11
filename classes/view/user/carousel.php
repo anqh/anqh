@@ -45,7 +45,14 @@ class View_User_Carousel extends View_Section {
 	public function content() {
 		ob_start();
 
+		// Load images
 		$images = $this->user->images();
+
+		// Legacy support
+		if (!count($images) && $this->user->picture):
+			echo HTML::image($this->user->picture, array('width' => 290));
+		endif;
+
 		if (count($images)):
 
 			// Check for actions
@@ -91,7 +98,6 @@ class View_User_Carousel extends View_Section {
 
 <a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev">&lsaquo;</a>
 <a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next">&rsaquo;</a>
-
 
 <?php
 
