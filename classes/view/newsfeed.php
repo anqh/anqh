@@ -126,7 +126,7 @@ class View_Newsfeed extends View_Section {
 	 */
 	public function tabs() {
 		$tabs = array();
-		if (self::$_user_id) {
+		if (self::$_user_id && $this->type !== self::TYPE_PERSONAL) {
 			$tabs[] = array(
 				'selected' => $this->type === self::TYPE_ALL,
 				'tab'      => HTML::anchor(Route::url('default') . '?newsfeed=' . self::TYPE_ALL, __('All')),
