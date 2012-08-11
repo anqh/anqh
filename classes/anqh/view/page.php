@@ -650,7 +650,7 @@ class Anqh_View_Page extends View_Base {
 				<ul class="dropdown-menu" role="menu">
 					<li role="menuitem"><a href="<?php echo URL::user(self::$_user->username) ?>"><i class="icon-home"></i> <?php echo __('Profile') ?></a><li>
 					<li role="menuitem"><a href="<?php echo Forum::private_messages_url() ?>"><i class="icon-envelope"></i> <?php echo __('Private messages') ?></a></li>
-					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'friends') ?>"><i class="icon-user"></i> <?php echo  __('Friends') ?></a></li>
+					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'friends') ?>"><i class="icon-heart"></i> <?php echo  __('Friends') ?></a></li>
 					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'ignores') ?>"><i class="icon-ban-circle"></i> <?php echo __('Ignores') ?></a></li>
 					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'settings') ?>"><i class="icon-cog"></i> <?php echo __('Settings') ?></a></li>
 					<?php if (self::$_user->has_role('admin')) { ?>

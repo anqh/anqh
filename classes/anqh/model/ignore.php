@@ -9,7 +9,7 @@
  */
 class Anqh_Model_Ignore extends AutoModeler {
 
-	protected $_table_name = 'friends';
+	protected $_table_name = 'ignores';
 
 	protected $_data = array(
 		'id'        => null,
@@ -29,7 +29,7 @@ class Anqh_Model_Ignore extends AutoModeler {
 	 */
 	public static function add($user_id, $ignore_id) {
 		try {
-			$ignore = new Model_Friend();
+			$ignore = new Model_Ignore();
 			$ignore->set_fields(array(
 				'user_id'   => $user_id,
 				'ignore_id' => $ignore_id,
@@ -51,7 +51,7 @@ class Anqh_Model_Ignore extends AutoModeler {
 	 * Find ids of users who have ignored the user.
 	 *
 	 * @static
-	 * @param   integr  $friend_id
+	 * @param   integer  $ignore_id
 	 * @return  array
 	 */
 	public static function find_by_ignorer($ignore_id) {
@@ -80,7 +80,7 @@ class Anqh_Model_Ignore extends AutoModeler {
 	 * Find ids of users the user has ignored.
 	 *
 	 * @static
-	 * @param   integr  $user_id
+	 * @param   integer  $user_id
 	 * @return  array
 	 */
 	public static function find_by_user($user_id) {
@@ -120,7 +120,7 @@ class Anqh_Model_Ignore extends AutoModeler {
 			->execute();
 
 		Anqh::cache_delete('ignores_' . $user_id);
-		Anqh::cache_delete('ignored_by_' . $ignore_id);
+		Anqh::cache_delete('ignorers_' . $ignore_id);
 
 		return (bool)$deleted;
 	}

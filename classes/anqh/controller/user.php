@@ -79,25 +79,10 @@ class Anqh_Controller_User extends Controller_Page {
 	public function action_friends() {
 		$user = $this->_get_user();
 
-		// Set generic page parameters
+		// Build page
 		$this->_set_page($user);
 
-		// Helper variables
-		$owner = (self::$user && self::$user->id == $user->id);
-
-		// Get friends and order by nick
-		// @todo: needs serious optimization
-		$friends = array();
-	  foreach ($user->find_friends() as $friend_id) {
-		  $friend = Model_User::find_user_light($friend_id);
-		  $friends[$friend['username']] = $friend;
-	  }
-	  ksort($friends, SORT_LOCALE_STRING);
-
-	  Widget::add('main', View_Module::factory('user/friends', array(
-			'mod_title' => __('Friends'),
-			'friends'   => $friends,
-	  )));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, __('Friends')));
 	}
 
 
@@ -146,25 +131,11 @@ class Anqh_Controller_User extends Controller_Page {
 	public function action_ignores() {
 		$user = $this->_get_user();
 
-		// Set generic page parameters
+		// Build page
 		$this->_set_page($user);
 
-		// Helper variables
-		$owner = (self::$user && self::$user->id == $user->id);
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_ignores($user));
 
-		// Get friends and order by nick
-		// @todo: needs serious optimization
-		$ignores = array();
-	  foreach ($user->find_ignores() as $ignore_id) {
-		  $ignore = Model_User::find_user_light($ignore_id);
-		  $ignores[$ignore['username']] = $ignore;
-	  }
-	  ksort($ignores, SORT_LOCALE_STRING);
-
-	  Widget::add('main', View_Module::factory('user/ignores', array(
-			'mod_title' => __('Ignores'),
-			'ignores'   => $ignores,
-	  )));
 	}
 
 
@@ -307,7 +278,7 @@ class Anqh_Controller_User extends Controller_Page {
 			$section_comments->errors = $errors;
 			$section_comments->values = $values;
 
-		} else {
+		} else if (!self::$user) {
 
 			// Teaser for guests
 			$section_comments = $this->section_comments_teaser($user->comment_count);
@@ -416,28 +387,6 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
-	 * Get image mod
-	 *
-	 * @param   Model_User  $user
-	 * @return  View_Module
-	 */
-	protected function _get_mod_image(Model_User $user) {
-		$image = $user->get_image_url();
-
-		return View_Module::factory('generic/side_image', array(
-			'mod_actions2' => Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)
-				? array(
-						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&delete', 'text' => __('Delete'), 'class' => 'image-delete disabled'),
-						array('link' => URL::user($user, 'image') . '?token=' . Security::csrf() . '&default', 'text' => __('Set as default'), 'class' => 'image-change disabled', 'data-change' => 'default'),
-						array('link' => URL::user($user, 'image'), 'text' => __('Add image'), 'class' => 'image-add ajaxify')
-					)
-				: null,
-			'image' => $image,
-		));
-	}
-
-
-	/**
 	 * Get user or redirect to user list
 	 *
 	 * @param   boolean  $redirect
@@ -474,18 +423,6 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Set actions
 		if (self::$user) {
-			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array(
-					'link'  =>  URL::user($user, 'settings'),
-					'text'  => '<i class="icon-cog"></i> ' . __('Settings'),
-					'class' => 'btn'
-				);
-				$this->page_actions[] = array(
-					'link'  => URL::user($user, 'image'),
-					'text'  => '<i class="icon-picture"></i> ' . __('Add image'),
-					'class' => 'btn'
-				);
-			}
 
 			// Friend actions
 			if (Permission::has($user, Model_User::PERMISSION_FRIEND, self::$user)) {
@@ -519,6 +456,30 @@ class Anqh_Controller_User extends Controller_Page {
 						'class' => 'btn ignore-add'
 					);
 				}
+			}
+
+			// Owner / admin actions
+			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
+				$this->page_actions[] = array(
+					'link'  =>  URL::user($user, 'friends'),
+					'text'  => '<i class="icon-heart"></i> ' . __('Friends'),
+					'class' => 'btn'
+				);
+				$this->page_actions[] = array(
+					'link'  =>  URL::user($user, 'ignores'),
+					'text'  => '<i class="icon-ban-circle"></i> ' . __('Ingores'),
+					'class' => 'btn'
+				);
+				$this->page_actions[] = array(
+					'link'  =>  URL::user($user, 'settings'),
+					'text'  => '<i class="icon-cog"></i> ' . __('Settings'),
+					'class' => 'btn'
+				);
+				$this->page_actions[] = array(
+					'link'  => URL::user($user, 'image'),
+					'text'  => '<i class="icon-picture"></i> ' . __('Add image'),
+					'class' => 'btn'
+				);
 			}
 
 		}
@@ -572,6 +533,28 @@ class Anqh_Controller_User extends Controller_Page {
 	 */
 	public function section_comments_teaser($comment_count = 0) {
 		return new View_Generic_CommentsTeaser($comment_count);
+	}
+
+
+	/**
+	 * Get friends list.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Users_Friends
+	 */
+	public function section_friends(Model_User $user) {
+		return new View_Users_Friends($user);
+	}
+
+
+	/**
+	 * Get ignore list.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Users_Ignores
+	 */
+	public function section_ignores(Model_User $user) {
+		return new View_Users_Ignores($user);
 	}
 
 

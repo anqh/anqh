@@ -80,7 +80,7 @@ class Anqh_Model_Friend extends AutoModeler {
 	 * Find ids of users the user has added as a friend.
 	 *
 	 * @static
-	 * @param   integr  $user_id
+	 * @param   integer  $user_id
 	 * @return  array
 	 */
 	public static function find_by_user($user_id) {

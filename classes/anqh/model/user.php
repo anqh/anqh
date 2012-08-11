@@ -512,8 +512,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 				->execute()
 				->as_array('id', 'dob');
 			asort($birthdays);
-			Anqh::cache_set('birthday_' . $date, $birthdays, Date::HOUR);
 
+			Anqh::cache_set('birthday_' . $date, $birthdays, Date::HOUR);
 		}
 
 		return $birthdays;
@@ -537,7 +537,9 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_ignores($ignorers = false) {
-		return $ignorers ? Model_Ignore::find_by_ignorer($this->id) : Model_Ignore::find_by_user($this->id);
+		return $ignorers
+			? Model_Ignore::find_by_ignorer($this->id)
+			: Model_Ignore::find_by_user($this->id);
 	}
 
 
