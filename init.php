@@ -64,12 +64,7 @@ Route::set('role', 'role(/<id>(/<action>))', array('action' => 'delete|edit'))
 		'controller' => 'roles',
 		'action'     => 'edit',
 	));
-Route::set('tag_group_add', 'tags/addgroup')
-	->defaults(array(
-		'controller' => 'tags',
-		'action'     => 'addgroup',
-	));
-Route::set('tag_group', 'tags/<id>(/<action>)', array('action' => 'group|add|deletegroup|editgroup'))
+Route::set('tag_group', 'tags/<id>(/<action>)', array('action' => 'add|group|deletegroup'))
 	->defaults(array(
 		'controller' => 'tags',
 		'action'     => 'group',

@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Tags extends Controller_Template {
+class Anqh_Controller_Tags extends Controller_Page {
 
 	/**
 	 * Construct controller
@@ -19,7 +19,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 			throw new Permission_Exception(new Model_Tag);
 		}
 
-		$this->page_title = __('Tags');
+		$this->view = View_Page::factory(__('Tags'));
 	}
 
 
@@ -27,7 +27,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 * Action: add tag
 	 */
 	public function action_add() {
-		return $this->_edit_tag((int)$this->request->param('id'));
+		$this->action_tag((int)$this->request->param('id'));
 	}
 
 
@@ -35,7 +35,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 * Action: add group
 	 */
 	public function action_addgroup() {
-		return $this->_edit_group();
+		$this->action_group();
 	}
 
 
@@ -72,23 +72,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 
 		$group->delete();
 
-		$this->request->redirect(Route::get('tags')->uri());
-	}
-
-
-	/**
-	 * Action: edit tag
-	 */
-	public function action_edit() {
-		return $this->_edit_tag(null, (int)$this->request->param('id'));
-	}
-
-
-	/**
-	 * Action: edit group
-	 */
-	public function action_editgroup() {
-		return $this->_edit_group((int)$this->request->param('id'));
+		$this->request->redirect(Route::url('tags'));
 	}
 
 
@@ -96,11 +80,13 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 * Controller default action
 	 */
 	public function action_index() {
-		$this->page_actions[] = array('link' => Route::get('tag_group_add')->uri(), 'text' => __('Add group'), 'class' => 'group-add');
+		$this->page_actions[] = array(
+			'link'  => Route::url('tag_group', array('id' => 'add')),
+			'text'  => '<i class="icon-plus-sign icon-white"></i> ' .__('Add new group'),
+			'class' => 'btn btn-primary group-add'
+		);
 
-		Widget::add('main', View_Module::factory('tags/groups', array(
-			'groups' => Model_Tag_Group::factory()->find_all(),
-		)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_groups());
 	}
 
 
@@ -108,49 +94,9 @@ class Anqh_Controller_Tags extends Controller_Template {
 	 * Action: group
 	 */
 	public function action_group() {
-		$group_id = (int)$this->request->param('id');
-		$group = Model_Tag_Group::factory($group_id);
-		if (!$group->loaded()) {
-			throw new Model_Exception($group, $group_id);
-		}
-
-		$this->page_title    = HTML::chars($group->name);
-		$this->page_subtitle = HTML::chars($group->description);
-
-		$this->page_actions[] = array('link' => Route::model($group, 'editgroup'), 'text' => __('Edit group'), 'class' => 'group-edit');
-		$this->page_actions[] = array('link' => Route::model($group, 'add'),  'text' => __('Add tag'),    'class' => 'tag-add');
-
-		Widget::add('main', View_Module::factory('tags/tags', array(
-			'tags' => $group->tags(),
-		)));
-	}
-
-
-	/**
-	 * Action: tag
-	 */
-	public function action_tag() {
-		$tag_id = (int)$this->request->param('id');
-		$tag = Model_Tag::factory($tag_id);
-		if (!$tag->loaded()) {
-			throw new Model_Exception($tag, $tag_id);
-		}
-
-		$this->page_title     = HTML::chars($tag->name);
-		$this->page_subtitle  = HTML::chars($tag->description);
-		$this->page_actions[] = array('link' => Route::model($tag, 'edit'),   'text' => __('Edit tag'),  'class' => 'tag-edit');
-		$this->page_actions[] = array('link' => Route::model($tag, 'delete') . '?' . Security::csrf_query(), 'text' => __('Delete tag'),'class' => 'tag-delete');
-	}
-
-
-	/**
-	 * Edit tag group
-	 *
-	 * @param  integer  $group_id
-	 */
-	protected function _edit_group($group_id = null) {
 		$this->history = false;
 
+		$group_id = (int)$this->request->param('id');
 		if ($group_id) {
 
 			// Edit group
@@ -159,9 +105,19 @@ class Anqh_Controller_Tags extends Controller_Template {
 				throw new Model_Exception($group, $group_id);
 			}
 
-			$this->page_title     = HTML::chars($group->name);
-			$this->page_subtitle  = HTML::chars($group->description);
-			$this->page_actions[] = array('link' => Route::model($group, 'deletegroup') . '?' . Security::csrf_query(), 'text' => __('Delete group'), 'class' => 'group-delete');
+			$this->view = View_Page::factory($group->name);
+			$this->view->subtitle = HTML::chars($group->description);
+
+			$this->page_actions[] = array(
+				'link'  => Route::model($group, 'deletegroup') . '?' . Security::csrf_query(),
+				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete group'),
+				'class' => 'btn btn-danger group-delete'
+			);
+			$this->page_actions[] = array(
+				'link'  => Route::model($group, 'add'),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new tag'),
+				'class' => 'btn btn-primary tag-add'
+			);
 
 		} else {
 
@@ -170,7 +126,7 @@ class Anqh_Controller_Tags extends Controller_Template {
 			$group->author_id = self::$user->id;
 			$group->created   = time();
 
-			$this->page_title = __('Tag group');
+			$this->view = View_Page::factory(__('Tag group'));
 
 		}
 
@@ -180,26 +136,25 @@ class Anqh_Controller_Tags extends Controller_Template {
 			$group->description = Arr::get($_POST, 'description');
 			try {
 				$group->save();
-				$this->request->redirect(Route::model($group));
+				$this->request->redirect(Route::url('tags'));
 			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
 
-		Widget::add('main', View_Module::factory('tags/edit_group', array('group' => $group, 'errors' => $errors)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_group($group, $errors));
 	}
 
 
 	/**
-	 * Edit tag
+	 * Action: tag
 	 *
 	 * @param  integer  $group_id
-	 * @param  integer  $tag_id
 	 */
-	protected function _edit_tag($group_id = null, $tag_id = null) {
+	public function action_tag($group_id = null) {
 		$this->history = false;
 
-		if ($group_id) {
+		if ($group_id && $this->request->action() !== 'tag') {
 
 			// Add new tag
 			$group = Model_Tag_Group::factory($group_id);
@@ -211,10 +166,10 @@ class Anqh_Controller_Tags extends Controller_Template {
 			$tag->author_id    = self::$user->id;
 			$tag->created      = time();
 
-			$this->page_title    = HTML::chars($group->name);
-			$this->page_subtitle = HTML::chars($group->description);
+			$this->view           = View_Page::factory($group->name);
+			$this->view->subtitle = HTML::chars($group->description);
 
-		} else if ($tag_id) {
+		} else if ($tag_id = (int)$this->request->param('id')) {
 
 			// Edit old tag
 			$tag = Model_Tag::factory($tag_id);
@@ -222,11 +177,16 @@ class Anqh_Controller_Tags extends Controller_Template {
 				throw new Model_Exception($tag, $tag_id);
 			}
 
-			$this->page_title    = HTML::chars($tag->name);
-			$this->page_subtitle = HTML::chars($tag->description);
+			$this->view           = View_Page::factory($tag->name);
+			$this->view->subtitle = HTML::chars($tag->description);
+			$this->page_actions[] = array(
+				'link'  => Route::model($tag, 'delete') . '?' . Security::csrf_query(),
+				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete tag'),
+				'class' => 'btn btn-danger tag-delete'
+			);
 
 		} else {
-			Request::back(Route::get('tags')->uri());
+			Request::back(Route::url('tags'));
 		}
 
 		$errors = array();
@@ -241,7 +201,47 @@ class Anqh_Controller_Tags extends Controller_Template {
 			}
 		}
 
-		Widget::add('main', View_Module::factory('tags/edit', array('tag' => $tag, 'errors' => $errors)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_tag($tag, $errors));
+	}
+
+
+	/**
+	 * Get tag group.
+	 *
+	 * @param   Model_Tag_Group  $group
+	 * @param   array            $errors
+	 * @return  View_Admin_TagGroup
+	 */
+	public function section_group(Model_Tag_Group $group, array $errors = null) {
+		$section = new View_Admin_TagGroup($group);
+		$section->errors = $errors;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get tag groups.
+	 *
+	 * @return  View_Admin_TagGroups
+	 */
+	public function section_groups() {
+		return new View_Admin_TagGroups();
+	}
+
+
+	/**
+	 * Get tag.
+	 *
+	 * @param   Model_Tag  $tag
+	 * @param   array      $errors
+	 * @return  View_Admin_Tag
+	 */
+	public function section_tag(Model_Tag $tag, array $errors = null) {
+		$section = new View_Admin_Tag($tag);
+		$section->errors = $errors;
+
+		return $section;
 	}
 
 }
