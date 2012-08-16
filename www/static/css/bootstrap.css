@@ -4274,6 +4274,9 @@ footer.meta {
 #footer [role=contentinfo] {
   text-align: center;
 }
+.kohana {
+  display: none;
+}
 .ui-dialog {
   background: #ffffff;
   -webkit-background-clip: padding-box;

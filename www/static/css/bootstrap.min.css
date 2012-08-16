@@ -728,6 +728,7 @@ footer.meta{color:#999999;}
 #footer nav{text-align:center;}
 #footer nav .nav{display:inline-block;}
 #footer [role=contentinfo]{text-align:center;}
+.kohana{display:none;}
 .ui-dialog{background:#ffffff;-webkit-background-clip:padding-box;-moz-background-clip:padding-box;background-clip:padding-box;border:1px solid #999;border:1px solid rgba(0, 0, 0, 0.3);-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px;-webkit-box-shadow:0 3px 7px rgba(0, 0, 0, 0.3);-moz-box-shadow:0 3px 7px rgba(0, 0, 0, 0.3);box-shadow:0 3px 7px rgba(0, 0, 0, 0.3);z-index:1050;}.ui-dialog.fade{-webkit-transition:opacity .3s linear, top .3s ease-out;-moz-transition:opacity .3s linear, top .3s ease-out;-ms-transition:opacity .3s linear, top .3s ease-out;-o-transition:opacity .3s linear, top .3s ease-out;transition:opacity .3s linear, top .3s ease-out;top:-25%;}
 .ui-dialog.fade.in{top:50%;}
 .ui-dialog .ui-dialog-titlebar{border-bottom:1px solid #eee;cursor:move;padding:9px 15px;}.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close{float:right;}
