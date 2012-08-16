@@ -149,6 +149,13 @@ head.js(
 			$this->view->class    = $page_class;
 			$this->view->actions  = $this->page_actions;
 
+
+			// And finally the profiler stats
+			if (self::$user && self::$user->has_role('admin')) { //in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {
+				Widget::add('foot', View::factory('generic/debug'));
+				Widget::add('foot', View::factory('profiler/stats'));
+			}
+
 		}
 
 		parent::after();
