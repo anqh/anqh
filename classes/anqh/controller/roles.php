@@ -4,13 +4,13 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Roles extends Controller_Template {
+class Anqh_Controller_Roles extends Controller_Page {
 
 	/**
-	 * Construct controller
+	 * Construct controller.
 	 */
 	public function before() {
 		parent::before();
@@ -20,13 +20,18 @@ class Anqh_Controller_Roles extends Controller_Template {
 
 
 	/**
-	 * Controller default action
+	 * Controller default action.
 	 */
 	public function action_index() {
-		$this->page_title = __('Roles');
-		$this->page_actions[] = array('link' => Route::get('role')->uri(), 'text' => __('New role'), 'class' => 'role-add');
+		$this->view = View_Page::factory(__('Roles'));
 
-		Widget::add('main', View_Module::Factory('roles/roles', array('roles' => Model_Role::factory()->find_all())));
+		$this->page_actions[] = array(
+			'link'  =>  Route::url('role'),
+			'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new role'),
+			'class' => 'btn btn-primary role-add'
+		);
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_roles());
 	}
 
 
@@ -45,7 +50,7 @@ class Anqh_Controller_Roles extends Controller_Template {
 
 		$role->delete();
 
-		Request::back(Route::get('roles')->uri());
+		Request::back(Route::url('roles'));
 	}
 
 
@@ -75,21 +80,50 @@ class Anqh_Controller_Roles extends Controller_Template {
 			$role->description = Arr::get($_POST, 'description');
 			try {
 				$role->save();
-				$this->request->redirect(Route::get('roles')->uri());
+				$this->request->redirect(Route::url('roles'));
 			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validate');
 			}
 		}
 
 		// Set title
-		$this->page_title = __('Role') . ($role->name ? ': ' . HTML::chars($role->name) : '');
+		$this->view = View_Page::factory(__('Role') . ($role->name ? ': ' . $role->name : ''));
 
 		// Set actions
 		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE, self::$user)) {
-			$this->page_actions[] = array('link' => Route::model($role, 'delete') . '?token=' . Security::csrf(), 'text' => __('Delete role'), 'class' => 'role-delete');
+			$this->page_actions[] = array(
+				'link'  =>  Route::model($role, 'delete') . '?token=' . Security::csrf(),
+				'text'  =>  '<i class="icon-trash icon-white"></i> ' . __('Delete role'),
+				'class' => 'btn btn-danger role-delete'
+			);
 		}
 
-		Widget::add('main', View_Module::factory('roles/edit', array('role' => $role, 'errors' => $errors)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_role($role, $errors));
+	}
+
+
+	/**
+	 * Get role editor.
+	 *
+	 * @param   Model_Role  $role
+	 * @param   array       $errors
+	 * @return  View_Admin_Role
+	 */
+	public function section_role(Model_Role $role = null, array $errors = null) {
+		$section = new View_Admin_Role($role);
+		$section->errors = $errors;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get roles list.
+	 *
+	 * @return  View_Admin_Roles
+	 */
+	public function section_roles() {
+		return new View_Admin_Roles();
 	}
 
 }
