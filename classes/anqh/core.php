@@ -9,17 +9,8 @@
  */
 class Anqh_Core {
 
-	/**
-	 * Anqh version
-	 *
-	 * Roadmap:
-	 * 0.6 = Kohana 3.1.1
-	 * 0.7 = AutoModeler
-	 * 0.8 = DB Schemas
-	 * 0.9 = Kostache(?)
-	 * 1.0 = Optimizations
-	 */
-	const VERSION = 0.8;
+	/** Anqh version */
+	const VERSION = 0.9;
 
 	/**
 	 * @var  array  Static local cache in front of external cache

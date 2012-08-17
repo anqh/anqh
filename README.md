@@ -8,6 +8,6 @@
 
 0.8 = DB Schemas
 
-*0.9 = Kostache(??)*
+0.9 = View classes
 
-1.0 = Optimizations
+1.0 = Kohana 3.3.0
