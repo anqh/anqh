@@ -129,7 +129,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 				$invitation->is_valid();
 
 				// Send invitation
-				$subject = __(':site invite', array(':site' => Kohana::config('site.site_name')));
+				$subject = __(':site invite', array(':site' => Kohana::$config->load('site.site_name')));
 				$mail    = __(
 					"Your invitation code is: :code\n\nOr click directly to sign up: :url",
 					array(
@@ -139,7 +139,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 				);
 
 				// Send invitation
-				if (Email::send($invitation->email, Kohana::config('site.email_invitation'), $subject, $mail)) {
+				if (Email::send($invitation->email, Kohana::$config->load('site.email_invitation'), $subject, $mail)) {
 					$invitation->save();
 
 					$message = '<div class="alert alert-success">' . __('Invitation sent, you can proceed to Step 2 when you receive your mail.') . '</div>';

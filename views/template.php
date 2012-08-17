@@ -14,7 +14,7 @@
 <head>
 	<meta charset="<?php echo Kohana::$charset ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo Kohana::$charset ?>" />
-	<title><?php echo $page_title ? HTML::chars($page_title) . ' | ' : '' ?><?php echo Kohana::config('site.site_name') ?></title>
+	<title><?php echo $page_title ? HTML::chars($page_title) . ' | ' : '' ?><?php echo Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="/ui/favicon.png" />
 
 	<?php foreach ($styles as $file => $attributes) echo HTML::style($file, $attributes), "\n" ?>
@@ -56,7 +56,7 @@ head
 		<div class="container grid12">
 
 			<hgroup id="logo" class="grid1 first">
-				<h1><?php echo HTML::anchor('/', Kohana::config('site.site_name')) ?></h1>
+				<h1><?php echo HTML::anchor('/', Kohana::$config->load('site.site_name')) ?></h1>
 			</hgroup>
 
 			<section id="dock" class="grid11">
@@ -212,8 +212,8 @@ head.js(
 	{ 'jquery-bbcode': '" . URL::base() . "js/markitup.bbcode.js' },
 	{ 'anqh': '" . URL::base() . "js/anqh.js?2' },
 	function() {
-		Anqh.geoNamesURL = '" . Kohana::config('geo.base_url') . "';
-		Anqh.geoNamesUser = '" . Kohana::config('geo.username') . "';
+		Anqh.geoNamesURL = '" . Kohana::$config->load('geo.base_url') . "';
+		Anqh.geoNamesUser = '" . Kohana::$config->load('geo.username') . "';
 	}
 );
 "); ?>

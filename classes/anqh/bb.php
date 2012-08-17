@@ -32,7 +32,7 @@ class Anqh_BB extends BBCode {
 		$this->SetDetectURLs(true);
 
 		// We have our own smileys
-		$config = Kohana::config('site.smiley');
+		$config = Kohana::$config->load('site.smiley');
 		if (!empty($config)) {
 			$this->ClearSmileys();
 			$this->SetSmileyURL(URL::base() . $config['dir']);

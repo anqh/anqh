@@ -59,7 +59,7 @@ class View_User_Register extends View_Section {
 		array('username' => __('Username')),
 		Arr::get($this->errors, 'username'),
 		__('Choose a unique username with at least <var>:length</var> characters. No special characters, thank you.',
-			array(':length' => Kohana::config('visitor.username.length_min')))
+			array(':length' => Kohana::$config->load('visitor.username.length_min')))
 	) ?>
 
 	<?= Form::control_group(

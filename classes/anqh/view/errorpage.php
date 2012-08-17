@@ -37,7 +37,7 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 	<base href="<?php echo $this->base ?>" />
 
-	<title><?= ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::config('site.site_name') ?></title>
+	<title><?= ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="<?= $this->base ?>ui/favicon.png" />
 
 	<?= $this->_styles() ?>

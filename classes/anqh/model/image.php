@@ -114,7 +114,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	public function convert($old_path) {
 
 		// Make sure we have the new target directory
-		$new_path = Kohana::config('image.path') . URL::id($this->id);
+		$new_path = Kohana::$config->load('image.path') . URL::id($this->id);
 		if (!is_dir($new_path)) {
 			mkdir($new_path, 0777, true);
 			chmod($new_path, 0777);
@@ -127,7 +127,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 		// New file name with some random postfix for hard to guess filenames
 		!$this->postfix and $this->postfix = Text::random('alnum', 8);
-		$new_file = $this->id . '_' . $this->postfix . Kohana::config('image.postfix_original') . '.jpg';
+		$new_file = $this->id . '_' . $this->postfix . Kohana::$config->load('image.postfix_original') . '.jpg';
 
 		// Rename and copy to correct directory using image id
 		if (!copy($old_path . $this->legacy_filename, $new_path . $new_file)) {
@@ -159,7 +159,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			}
 
 			// Delete other sizes
-			$sizes = Kohana::config('image.sizes');
+			$sizes = Kohana::$config->load('image.sizes');
 			foreach ($sizes as $size => $config) {
 				if (isset($config['postfix']) && is_file($this->get_filename($size))) {
 					unlink($this->get_filename($size));
@@ -241,7 +241,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		$this->original_size   = filesize($original);
 
 		$path  = rtrim(realpath(pathinfo($original, PATHINFO_DIRNAME)), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$sizes = Kohana::config('image.sizes');
+		$sizes = Kohana::$config->load('image.sizes');
 		$queue = array_merge((array)$this->normal, $this->thumbnails);
 		foreach ($queue as $size => $config) {
 
@@ -270,7 +270,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 				}
 			}
 
-			$image->save($dest, Arr::get($config, 'quality', Kohana::config('image.quality')));
+			$image->save($dest, Arr::get($config, 'quality', Kohana::$config->load('image.quality')));
 
 			// If no prefix, assumed to be the default size
 			if (!isset($config['postfix'])) {
@@ -297,9 +297,9 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		// Saved image, based on ID
-		$path = Kohana::config('image.path') . URL::id($this->id);
+		$path = Kohana::$config->load('image.path') . URL::id($this->id);
 		$path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
+		$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::$config->load('image.postfix_original') : Arr::path(Kohana::$config->load('image.sizes'), $size . '.postfix');
 
 		return $path . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 	}
@@ -318,7 +318,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		// Saved image, based on ID
-		$server = Kohana::config('site.image_server');
+		$server = Kohana::$config->load('site.image_server');
 		if ($this->legacy_filename && !$this->postfix) {
 			if ($size == self::SIZE_THUMBNAIL) {
 				$size = 'thumb_';
@@ -329,8 +329,8 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			}
 			$url = ($server ? 'http://' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
 		} else {
-			$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::config('image.postfix_original') : Arr::path(Kohana::config('image.sizes'), $size . '.postfix');
-			$url     = ($server ? 'http://' . $server : '') . '/' . Kohana::config('image.url') . URL::id($this->id) . '/';
+			$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::$config->load('image.postfix_original') : Arr::path(Kohana::$config->load('image.sizes'), $size . '.postfix');
+			$url     = ($server ? 'http://' . $server : '') . '/' . Kohana::$config->load('image.url') . URL::id($this->id) . '/';
 			$url     = $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 		}
 
@@ -408,7 +408,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 		// Validate new image
 		if ($new) {
-			$path = Kohana::config('image.upload_path');
+			$path = Kohana::$config->load('image.upload_path');
 
 			// Download remote files
 			if ($this->remote && !$this->file) {
@@ -417,13 +417,13 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 			if (!$this->file || (!$this->remote && !Upload::not_empty($this->file))) {
 				throw new Kohana_Exception(__('No image'));
-			} else if (!Upload::size($this->file, Kohana::config('image.filesize'))) {
-				throw new Kohana_Exception(__('Image too big (limit :size)', array(':size' => Kohana::config('image.filesize'))));
+			} else if (!Upload::size($this->file, Kohana::$config->load('image.filesize'))) {
+				throw new Kohana_Exception(__('Image too big (limit :size)', array(':size' => Kohana::$config->load('image.filesize'))));
 			} else if (
-				!Upload::type($this->file, Kohana::config('image.filetypes'))
-				&& !in_array($this->file['type'], Kohana::config('image.mimetypes'))
+				!Upload::type($this->file, Kohana::$config->load('image.filetypes'))
+				&& !in_array($this->file['type'], Kohana::$config->load('image.mimetypes'))
 			) {
-				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::config('image.filetypes')))));
+				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::$config->load('image.filetypes')))));
 			}
 
 			$upload = $this->file;
@@ -466,7 +466,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		if ($new) {
 
 			// Make sure we have the new target directory
-			$new_path = Kohana::config('image.path') . URL::id($this->id);
+			$new_path = Kohana::$config->load('image.path') . URL::id($this->id);
 			if (!is_dir($new_path)) {
 				mkdir($new_path, 0777, true);
 				chmod($new_path, 0777);
@@ -479,7 +479,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 			// New file name with some random postfix for hard to guess filenames
 			!$this->postfix and $this->postfix = Text::random('alnum', 8);
-			$new_file = $this->id . '_' . $this->postfix . Kohana::config('image.postfix_original') . '.jpg';
+			$new_file = $this->id . '_' . $this->postfix . Kohana::$config->load('image.postfix_original') . '.jpg';
 
 			// Rename and move to correct directory using image id
 			$old_file = $this->file;

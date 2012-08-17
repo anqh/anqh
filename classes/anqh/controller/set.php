@@ -15,7 +15,7 @@ class Anqh_Controller_Set extends Controller {
 	public function action_lang() {
 		$language = $this->request->param('value');
 
-		$locale = Kohana::config('locale');
+		$locale = Kohana::$config->load('locale');
 		if (isset($locale['languages'][$language])) {
 			Session::instance()->set('language', $locale['languages'][$language][2]);
 		}
@@ -45,7 +45,7 @@ class Anqh_Controller_Set extends Controller {
 	 */
 	public function action_skin() {
 		$skin = $this->request->param('value');
-		$skins = Kohana::config('site.skins');
+		$skins = Kohana::$config->load('site.skins');
 
 		if (isset($skins[$skin])) {
 			Session::instance()->set('skin', $skin);

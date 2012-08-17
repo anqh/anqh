@@ -269,7 +269,7 @@ class Anqh_View_Page extends View_Base {
 			<nav role="navigation">
 				<ul role="menubar" class="nav nav-pills">
 					<li role="menuitem"><a href="<?php echo $this->base ?>"><?php echo __('Front page') ?></a></li>
-					<?php foreach (Kohana::config('site.menu') as $id => $item) { ?>
+					<?php foreach (Kohana::$config->load('site.menu') as $id => $item) { ?>
 					<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
 					<?php } ?>
 				</ul>
@@ -287,7 +287,7 @@ class Anqh_View_Page extends View_Base {
 
 		<section>
 			<?php echo $this->_statistics() ?><br />
-			Copyright &copy; 2000&ndash;<?php echo date('Y')?> <?php echo Kohana::config('site.site_name') ?> -
+			Copyright &copy; 2000&ndash;<?php echo date('Y')?> <?php echo Kohana::$config->load('site.site_name') ?> -
 			Powered by Anqh v<?php echo Anqh::VERSION ?> and Kohana v<?php echo Kohana::VERSION ?>
 		</section>
 
@@ -325,7 +325,7 @@ class Anqh_View_Page extends View_Base {
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 	<base href="<?php echo $this->base ?>" />
 
-	<title><?php echo ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::config('site.site_name') ?></title>
+	<title><?php echo ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="<?php echo $this->base ?>ui/favicon.png" />
 
 	<?php echo $this->_styles() ?>
@@ -392,9 +392,9 @@ class Anqh_View_Page extends View_Base {
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</a>
-		<a class="brand" href="<?php echo $this->base ?>"><?php echo Kohana::config('site.site_name') ?></a>
+		<a class="brand" href="<?php echo $this->base ?>"><?php echo Kohana::$config->load('site.site_name') ?></a>
 		<ul class="nav nav-collapse" role="menubar">
-			<?php foreach (Kohana::config('site.menu') as $id => $item) { ?>
+			<?php foreach (Kohana::$config->load('site.menu') as $id => $item) { ?>
 			<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
 			<?php } ?>
 		</ul>

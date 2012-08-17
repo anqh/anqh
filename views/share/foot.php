@@ -8,7 +8,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-if ($google_analytics = Kohana::config('site.google_analytics')) {
+if ($google_analytics = Kohana::$config->load('site.google_analytics')) {
 
 	// Google Analytics integration
 	echo HTML::script_source("

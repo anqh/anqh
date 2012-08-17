@@ -304,19 +304,6 @@ class Anqh_Form extends Kohana_Form {
 
 
 	/**
-	 * Override open() to fix empty action.
-	 *
-	 * @static
-	 * @param   srting|Request  $action
-	 * @param   array           $attributes
-	 * @return  string
-	 */
-	public static function open($action = null, array $attributes = null) {
-		return parent::open($action ? $action : Request::current()->current_uri(), $attributes);
-	}
-
-
-	/**
 	 * Creates a password form input.
 	 *
 	 * @param   string        $name        input name

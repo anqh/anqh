@@ -106,7 +106,7 @@ abstract class Anqh_Controller_Page extends Controller {
 
 
 			// Analytics
-			if ($google_analytics = Kohana::config('site.google_analytics')) {
+			if ($google_analytics = Kohana::$config->load('site.google_analytics')) {
 				Widget::add('head', HTML::script_source("
 var tracker;
 head.js(
@@ -121,7 +121,7 @@ head.js(
 
 
 			// Ads
-			$ads = Kohana::config('site.ads');
+			$ads = Kohana::$config->load('site.ads');
 			if ($ads && $ads['enabled']) {
 				foreach ($ads['slots'] as $ad => $slot) {
 					if ($slot == 'side') {

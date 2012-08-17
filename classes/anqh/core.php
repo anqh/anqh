@@ -237,13 +237,13 @@ class Anqh_Core {
 
 		// Initialize required Open Graph tags when setting first value
 	  if ($value && !is_array($og)) {
-		  if ($app_id = Kohana::config('site.facebook')) {
+		  if ($app_id = Kohana::$config->load('site.facebook')) {
 				$og = array(
-					'og:title'     => Kohana::config('site.site_name'),
+					'og:title'     => Kohana::$config->load('site.site_name'),
 					'og:type'      => 'article',
 					'og:image'     => URL::site('/ui/opengraph.jpg', true),
 					'og:url'       => URL::site('', true),
-					'og:site_name' => Kohana::config('site.site_name'),
+					'og:site_name' => Kohana::$config->load('site.site_name'),
 					'fb:app_id'    => $app_id,
 				);
 		  }

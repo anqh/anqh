@@ -73,7 +73,7 @@ class View_Generic_Share extends View_Section {
 </div>
 
 <?php if ($script) { ?>
-	<?php if (Kohana::config('site.google_analytics')) { ?>
+	<?php if (Kohana::$config->load('site.google_analytics')) { ?>
 
 <script>
 	var addthis_config, addthis_share;
@@ -81,11 +81,11 @@ class View_Generic_Share extends View_Section {
 		addthis_config = {
 			data_ga_tracker: tracker,
 			data_track_clickback: true,
-			pubid: '<?php echo Kohana::config('site.share') ?>'
+			pubid: '<?php echo Kohana::$config->load('site.share') ?>'
 		};
 		addthis_share = {
 			templates: {
-				twitter: '{{title}}: {{url}} (via @<?php echo Kohana::config('site.share') ?>)'
+				twitter: '{{title}}: {{url}} (via @<?php echo Kohana::$config->load('site.share') ?>)'
 			}
 		};
 
@@ -97,7 +97,7 @@ class View_Generic_Share extends View_Section {
 
 	<?php } else { ?>
 
-<script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=<?php echo Kohana::config('site.share') ?>"></script>
+<script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=<?php echo Kohana::$config->load('site.share') ?>"></script>
 
 <?php
 			}

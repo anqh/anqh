@@ -143,7 +143,7 @@ abstract class Anqh_Text extends Kohana_Text {
 		if (!is_array($smileys)) {
 			$smileys = array();
 
-			$config = Kohana::config('site.smiley');
+			$config = Kohana::$config->load('site.smiley');
 			if (!empty($config)) {
 				$url = /*URL::base() .*/ $config['dir'] . '/';
 				foreach ($config['smileys'] as $name => $smiley) {

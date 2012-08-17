@@ -51,8 +51,8 @@ class Anqh_Controller_API extends Controller {
 		$api_request->save();
 
 		// Rate limit
-		$rate_span  = Kohana::config('api.rate_span');
-		$rate_limit = Kohana::config('api.rate_limit');
+		$rate_span  = Kohana::$config->load('api.rate_span');
+		$rate_limit = Kohana::$config->load('api.rate_limit');
 		$requests   = Model_API_Request::request_count(time() - $rate_span, Request::$client_ip);
 		$requests_left = $rate_limit - $requests;
 		if ($requests_left < 0) {

@@ -94,7 +94,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			Widget::add('breadcrumb', View::factory('generic/breadcrumb', array('breadcrumb' => $this->breadcrumb, 'last' => !$this->history)));
 			Widget::add('actions',    View::factory('generic/actions',    array('actions' => $this->page_actions)));
 			Widget::add('navigation', View::factory('generic/navigation', array(
-				'items'    => Kohana::config('site.menu'),
+				'items'    => Kohana::$config->load('site.menu'),
 				'selected' => $this->page_id,
 			)));
 			if (!empty($this->tabs)) {
@@ -132,7 +132,7 @@ abstract class Anqh_Controller_Template extends Controller {
 
 
 			// Skin
-			$skins = Kohana::config('site.skins');
+			$skins = Kohana::$config->load('site.skins');
 			$skin = 'dark';//$session->get('skin', 'dark');
 			$skin_imports = array(
 				'ui/mixin.less',
@@ -162,7 +162,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			//Widget::add('dock', __('Theme') . ': ' . implode(', ', $classes));
 
 			// Language selection
-			$available_languages  = Kohana::config('locale.languages');
+			$available_languages  = Kohana::$config->load('locale.languages');
 			if (count($available_languages)) {
 				$languages = array();
 				foreach ($available_languages as $lang => $locale) {
@@ -195,7 +195,7 @@ abstract class Anqh_Controller_Template extends Controller {
 			Widget::add('end', View::factory('generic/end'));
 
 			// Analytics
-			if ($google_analytics = Kohana::config('site.google_analytics')) {
+			if ($google_analytics = Kohana::$config->load('site.google_analytics')) {
 				Widget::add('head', HTML::script_source("
 var tracker;
 head.js(
@@ -219,13 +219,13 @@ head.js(
 
 			// Share
 			if (Anqh::share()) {
-				if ($share = Kohana::config('site.share')) {
+				if ($share = Kohana::$config->load('site.share')) {
 
 					// 3rd party share
 					Widget::add('share', View_Module::factory('share/share', array('mod_class' => 'like', 'id' => $share)));
 					Widget::add('foot', View::factory('share/foot', array('id' => $share)));
 
-				} else if ($facebook = Kohana::config('site.facebook')) {
+				} else if ($facebook = Kohana::$config->load('site.facebook')) {
 
 					// Facebook Like
 					Widget::add('share', View_Module::factory('facebook/like'));
@@ -236,7 +236,7 @@ head.js(
 
 
 			// Ads
-			$ads = Kohana::config('site.ads');
+			$ads = Kohana::$config->load('site.ads');
 			if ($ads && $ads['enabled']) {
 				foreach ($ads['slots'] as $ad => $slot) {
 					Widget::add($slot, View::factory('ads/' . $ad), Widget::MIDDLE);

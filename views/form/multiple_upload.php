@@ -23,8 +23,8 @@ $field_name = Arr::path($form, 'field.name', 'file') . '[]';
 				null,
 				null,
 				__('Allowed image types: :types, maximum image size: :size', array(
-					':types' => implode(', ', Kohana::config('image.filetypes')),
-					':size'  => Kohana::config('image.filesize')
+					':types' => implode(', ', Kohana::$config->load('image.filetypes')),
+					':size'  => Kohana::$config->load('image.filesize')
 				))
 			) ?>
 		</ul>

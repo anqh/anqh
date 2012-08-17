@@ -27,7 +27,7 @@ class Anqh_Controller_Index extends Controller_Page {
 		}
 
 		// Build page
-		$this->view = View_Page::factory(__('Welcome to :site', array(':site' => Kohana::config('site.site_name'))));
+		$this->view = View_Page::factory(__('Welcome to :site', array(':site' => Kohana::$config->load('site.site_name'))));
 
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed());

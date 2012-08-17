@@ -29,7 +29,7 @@ abstract class Anqh_Geo {
 	 * @return  array
 	 */
 	private static function _country_info($id, $lang = 'en') {
-		$url = Kohana::config('geo.base_url') . '/countryInfo?country=' . $id . '&lang=' . $lang;
+		$url = Kohana::$config->load('geo.base_url') . '/countryInfo?country=' . $id . '&lang=' . $lang;
 		try {
 			$xml = new SimpleXMLElement($url, null, true);
 			Kohana::$log->add(Log::DEBUG, 'GeoNames OK: ' . $url);
@@ -49,7 +49,7 @@ abstract class Anqh_Geo {
 	 * @return  array
 	 */
 	private static function _get($id, $lang = 'en') {
-		$url = Kohana::config('geo.base_url') . '/get?geonameId=' . (int)$id . '&lang=' . $lang . '&style=full';
+		$url = Kohana::$config->load('geo.base_url') . '/get?geonameId=' . (int)$id . '&lang=' . $lang . '&style=full';
 		try {
 			$xml = new SimpleXMLElement($url, null, true);
 			Kohana::$log->add(Log::DEBUG, 'GeoNames OK: ' . $url);
@@ -109,7 +109,7 @@ abstract class Anqh_Geo {
 
 		// Localization
 		if (!isset($city->i18n[$lang])) {
-			$languages = Kohana::config('geo.languages');
+			$languages = Kohana::$config->load('geo.languages');
 			$i18n = (array)$city->i18n;
 			foreach ($languages as $language) {
 				if (!isset($i18n[$language]) && $page = self::_get($city->id, $language)) {
@@ -184,7 +184,7 @@ abstract class Anqh_Geo {
 
 		// Localization
 		if (!isset($country->i18n[$lang])) {
-			$languages = Kohana::config('geo.languages');
+			$languages = Kohana::$config->load('geo.languages');
 			$i18n = (array)$country->i18n;
 			foreach ($languages as $language) {
 				if (!isset($i18n[$language]) && $info = self::_country_info($country->code, $language)) {

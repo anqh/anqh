@@ -32,7 +32,7 @@ class Anqh_Visitor {
 	 * @param  array  $config
 	 */
 	public function __construct($config = array()) {
-		$config['salt_pattern'] = Arr::get($config, 'salt_pattern', Kohana::config('visitor')->get('salt_pattern'));
+		$config['salt_pattern'] = Arr::get($config, 'salt_pattern', Kohana::$config->load('visitor')->get('salt_pattern'));
 		!is_array($config['salt_pattern']) and $config['salt_pattern'] = preg_split('/,\s*/', $config['salt_pattern']);
 
 		$this->_config  = $config;
@@ -299,7 +299,7 @@ class Anqh_Visitor {
 	 */
 	public static function instance() {
 		if (!self::$_instance) {
-			self::$_instance = new Visitor(Kohana::config('visitor'));
+			self::$_instance = new Visitor(Kohana::$config->load('visitor'));
 		}
 
 		return self::$_instance;
