@@ -267,9 +267,11 @@ class Anqh_Controller_Events extends Controller_Page {
 						if (!$url) continue;
 
 						$image = new Model_Image();
-						$image->remote = $url;
+						$image->remote  = $url;
 						$image->created = time();
-						$event->author_id and $image->author_id = $event->author_id;
+						if ($event->author_id) {
+							$image->author_id = $event->author_id;
+						}
 						try {
 							$image->save();
 
@@ -294,7 +296,9 @@ class Anqh_Controller_Events extends Controller_Page {
 								$event->flyer_back_image_id = $image->id;
 								$event->flyer_back_url = $image->get_url();
 							}
-							$event->save();
+
+							// Save event, skipping validation
+							$event->save(false);
 
 							Widget::add('main', HTML::anchor(Route::model($event), HTML::image($image->get_url('thumbnail'))));
 
@@ -310,14 +314,14 @@ class Anqh_Controller_Events extends Controller_Page {
 					// Clear flyer
 					if ($clear == 'front' && $event->flyer_front_url) {
 						$event->flyer_front_url = null;
-						$event->save();
+						$event->save(false);
 					} else if ($clear == 'back' && $event->flyer_back_url) {
 						$event->flyer_back_url = null;
-						$event->save();
+						$event->save(false);
 					} else if ($clear == 'both') {
 						$event->flyer_front_url = null;
 						$event->flyer_back_url = null;
-						$event->save();
+						$event->save(false);
 					}
 
 				}
