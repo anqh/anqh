@@ -23,7 +23,7 @@ Route::set('flyer_comment', 'flyer/comment/<id>/<commentaction>', array('comment
 		'controller' => 'galleries',
 		'action'     => 'comment_flyer',
 	));
-Route::set('flyer', 'flyer/<id>(/<action>)', array('action' => 'hover', 'id' => '\d+'))
+Route::set('flyer', 'flyer/<id>(/<action>)', array('action' => 'hover'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'flyer',
