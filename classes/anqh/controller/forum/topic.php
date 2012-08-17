@@ -158,7 +158,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			}
 
 			// Facebook
-			if (Kohana::config('site.facebook')) {
+			if (Kohana::$config->load('site.facebook')) {
 				Anqh::open_graph('title', $topic->name);
 				Anqh::open_graph('url', URL::site(Route::url('forum_topic', array('id' => $topic->id, 'action' => '')), true));
 			}
@@ -731,7 +731,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	public function section_pagination(Model_Forum_Topic $topic) {
 		return new View_Generic_Pagination(array(
 			'base_url'       => Route::model($topic),
-			'items_per_page' => Kohana::config('forum.posts_per_page'),
+			'items_per_page' => Kohana::$config->load('forum.posts_per_page'),
 			'total_items'    => max(1, $topic->post_count),
 		));
 	}

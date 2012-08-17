@@ -110,7 +110,7 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 	 * @return  array
 	 */
 	public static function get_binds($bind = true) {
-		$config = Kohana::config('forum.binds');
+		$config = Kohana::$config->load('forum.binds');
 		if ($bind === true) {
 
 			// Short list for selects etc

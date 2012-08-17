@@ -223,7 +223,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		return new View_Generic_Pagination(array(
 			'previous_text'  => '&laquo; ' . __('Previous page'),
 			'next_text'      => __('Next page') . ' &raquo;',
-			'items_per_page' => Kohana::config('forum.topics_per_page'),
+			'items_per_page' => Kohana::$config->load('forum.topics_per_page'),
 			'total_items'    => $topics,
 		));
 	}
