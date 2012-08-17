@@ -137,9 +137,11 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 
 		if ($data->check()) {
 			$this->_validation = null;
+
 			return $this->_validated = true;
 		}	else {
 			$this->_validation = $data;
+
 			throw new Validation_Exception($data, 'Could not validate data.');
 		}
 	}
@@ -181,6 +183,7 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 
 	/**
 	 * Override save() to fix primary keys.
+	 * Set $validation to false to skip validation.
 	 *
 	 * @param   mixed  $validation a manual validation object to combine the model properties with
 	 * @return  integer
@@ -190,6 +193,11 @@ class Anqh_AutoModeler extends AutoModeler_Core {
 		// Don't try to insert null primary keys
 		if (!$this->loaded() && !$this->id()) {
 			unset($this->_data[$this->_primary_key]);
+		}
+
+		// Skip validation?
+		if ($validation === false) {
+			$this->_validated = true;
 		}
 
 		return parent::save($validation);

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 return array(
@@ -25,10 +25,11 @@ return array(
 	'quality' => 95,
 
 	// Maximum filesize
-	'filesize' => '2M',
+	'filesize' => '5M',
 
 	// Allowed file types
 	'filetypes' => array('jpg', 'jpeg', 'gif', 'png'),
+	'mimetypes' => array('image/jpg', 'image/jpeg', 'image/gif', 'image/png'),
 
 	// Different image sizes
 	'sizes' => array(

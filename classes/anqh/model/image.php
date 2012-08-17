@@ -419,7 +419,10 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 				throw new Kohana_Exception(__('No image'));
 			} else if (!Upload::size($this->file, Kohana::config('image.filesize'))) {
 				throw new Kohana_Exception(__('Image too big (limit :size)', array(':size' => Kohana::config('image.filesize'))));
-			} else if (!Upload::type($this->file, Kohana::config('image.filetypes'))) {
+			} else if (
+				!Upload::type($this->file, Kohana::config('image.filetypes'))
+				&& !in_array($this->file['type'], Kohana::config('image.mimetypes'))
+			) {
 				throw new Kohana_Exception(__('Invalid image type (use :types)', array(':types' => implode(', ', Kohana::config('image.filetypes')))));
 			}
 
