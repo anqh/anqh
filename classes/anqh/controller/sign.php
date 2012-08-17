@@ -4,10 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_Sign extends Controller_Template {
+class Anqh_Controller_Sign extends Controller_Page {
 
 	/**
 	 * Construct controller
@@ -80,7 +80,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 			Request::back();
 		}
 
-		$this->page_title = __('Sign up');
+		$this->view = View_Page::factory(__('Sign up'));
 
 		// Check invitation code
 		$code = trim(Arr::get($_REQUEST, 'code'));
@@ -94,7 +94,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 		if (!$code && $_POST) {
 			$code = Arr::get($_POST, 'code');
 			if ($code) {
-				$this->request->redirect(Route::get('sign')->uri(array('action' => 'up')) . '?code=' . $code);
+				$this->request->redirect(Route::url('sign', array('action' => 'up')) . '?code=' . $code);
 			}
 		}
 
@@ -142,9 +142,9 @@ class Anqh_Controller_Sign extends Controller_Template {
 				if (Email::send($invitation->email, Kohana::config('site.email_invitation'), $subject, $mail)) {
 					$invitation->save();
 
-					$message = '<p>' . __('Invitation sent, you can proceed to Step 2 when you receive your mail.') . '<p>';
+					$message = '<div class="alert alert-success">' . __('Invitation sent, you can proceed to Step 2 when you receive your mail.') . '</div>';
 				} else {
-					$message = '<p>' . __('Could not send invite to :email', array(':email' => $invitation->email)) . '<p>';
+					$message = '<div class="alert">' . __('Could not send invite to :email', array(':email' => $invitation->email)) . '</div>';
 				}
 
 			} catch (Validation_Exception $e) {
@@ -152,18 +152,7 @@ class Anqh_Controller_Sign extends Controller_Template {
 			}
 		}
 
-		// Send invitation
-		Widget::add('main', View_Module::factory('generic/invite', array(
-			'invitation' => $invitation,
-			'errors'     => $errors,
-			'message'    => $message
-		)));
-
-		// Enter invitation
-		Widget::add('main', View_Module::factory('generic/invited', array(
-			'errors'     => $errors,
-		)));
-
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_invitation($invitation, $errors, $message));
 	}
 
 
@@ -202,12 +191,41 @@ class Anqh_Controller_Sign extends Controller_Template {
 			}
 		}
 
-		// Build form
-		Widget::add('main', View_Module::factory('generic/register', array(
-			'user'   => $user,
-			'code'   => $invitation->code,
-			'errors' => $errors,
-		)));
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_register($user, $errors, $invitation->code));
+	}
+
+
+	/**
+	 * Get invitation views.
+	 *
+	 * @param  Model_Invitation  $invitation
+	 * @param  array             $errors
+	 * @param  string            $message
+	 * @return View_User_Invite
+	 */
+	public function section_invitation(Model_Invitation $invitation, array $errors = null, $message = null) {
+		$section = new View_User_Invite($invitation);
+		$section->errors  = $errors;
+		$section->message = $message;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get register view.
+	 *
+	 * @param   Model_User  $user
+	 * @param   array       $errors
+	 * @param   string      $code
+	 * @return  View_User_Register
+	 */
+	public function section_register(Model_User $user, array $errors = null, $code = null) {
+		$section = new View_User_Register($user, $code);
+		$section->errors = $errors;
+
+		return $section;
 	}
 
 }

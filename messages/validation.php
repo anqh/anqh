@@ -10,4 +10,5 @@
 
 return array(
 	'AutoModeler::unique' => ':field must be unique.',
+	'unique'              => ':field must be unique.',
 );
