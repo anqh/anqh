@@ -149,7 +149,7 @@ head.ready('jquery-ui', function fileUpload() {
 			$('#form-multiple-upload').fileupload({
 				acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
 				//autoUpload: true,
-				maxFileSize:     <?= Num::bytes(Kohana::config('image.filesize')) ?>,
+				maxFileSize:     <?= Num::bytes(Kohana::$config->load('image.filesize')) ?>,
 				dropZone:        $('.droparea'),
 				formData:        {
 					token:    $('input[name=token]').val(),
