@@ -162,7 +162,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 
 		// Share
-		if (Kohana::config('site.facebook')) {
+		if (Kohana::$config->load('site.facebook')) {
 			Anqh::open_graph('type', 'activity');
 			Anqh::open_graph('title', $event->name);
 			Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
