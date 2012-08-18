@@ -563,7 +563,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Are we approving pending images?
 		if ($this->request->action() == 'pending') {
-			Form::$bootsrap = true;
 
 			// Can we see galleries with un-approved images?
 			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);

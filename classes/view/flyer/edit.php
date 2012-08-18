@@ -30,8 +30,6 @@ class View_Flyer_Edit extends View_Section {
 
 		$this->flyer = $flyer;
 		$this->title = __('Edit flyer');
-
-		Form::$bootsrap = true;
 	}
 
 
