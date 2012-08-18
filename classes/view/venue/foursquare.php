@@ -111,7 +111,6 @@ class View_Venue_Foursquare extends View_Section {
 		);
 
 		// Form
-		Form::$bootsrap = true;
 		echo Form::open(Route::url('venue', array('id' => Route::model_id($this->venue), 'action' => 'foursquare')), array('id' => 'form-foursquare-link', 'style' => 'display: none'));
 
 ?>

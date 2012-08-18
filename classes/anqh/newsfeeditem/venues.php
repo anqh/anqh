@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
@@ -39,7 +39,11 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
 			    $text = __('added new venue<br />:venue', array(
-				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
+				    ':venue' => HTML::anchor(
+					    Route::model($venue),
+				      '<i class="icon-globe"></i> ' . HTML::chars($venue->name),
+					    array('class' => 'venue')
+				    )
 			    ));
 		    }
 		    break;
@@ -48,7 +52,11 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
 			    $text = __('updated venue<br />:venue', array(
-				    ':venue' => HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'venue'))
+				    ':venue' => HTML::anchor(
+					    Route::model($venue),
+				     '<i class="icon-globe"></i> ' . HTML::chars($venue->name),
+					    array('class' => 'venue')
+				    )
 			    ));
 		    }
 		    break;
