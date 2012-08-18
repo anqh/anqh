@@ -10,11 +10,6 @@
 class Anqh_Form extends Kohana_Form {
 
 	/**
-	 * @var  boolean  User Twitter bootstrap styles
-	 */
-	public static $bootsrap = false;
-
-	/**
 	 * @var  array  Form errors
 	 */
 	public $errors = null;
@@ -74,19 +69,12 @@ class Anqh_Form extends Kohana_Form {
 		$checked    = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
 
-		if (self::$bootsrap) {
-			$input = Form::checkbox($name, $value, $checked, $attributes);
-			$label = is_array($label)
-				? Form::label(null, $input . current($label), array('class' => 'checkbox'))
-				: Form::label(null, $input . $label, array('class' => 'checkbox'));
+		$input = Form::checkbox($name, $value, $checked, $attributes);
+		$label = is_array($label)
+			? Form::label(null, $input . current($label), array('class' => 'checkbox'))
+			: Form::label(null, $input . $label, array('class' => 'checkbox'));
 
-			return Form::wrap(null, $name, $label, $error, $tip);
-		} else {
-			$label = $label ? array($attributes['id'] => $label) : '';
-			$input = Form::checkbox($name, $value, $checked, $attributes);
-
-			return Form::wrap($input, $name, $label, $error, $tip, true);
-		}
+		return Form::wrap(null, $name, $label, $error, $tip);
 	}
 
 
@@ -104,23 +92,12 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
-		if (self::$bootsrap) {
-			$input = ($class ? '<ul class="unstyled ' . $class . '">' : '<ul class="unstyled">') . "\n";
-			foreach ($values as $checkbox_value => $checkbox_title) {
-				$id = self::input_id($name) . '-' . $checkbox_value;
-				$input .= '<li>';
-				$input .= Form::checkbox_wrap($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id), $checkbox_title);
-				$input .= "</li>\n";
-			}
-		} else {
-			$input = ($class ? '<ul class="' . $class . '">' : '<ul>') . "\n";
-			foreach ($values as $checkbox_value => $checkbox_title) {
-				$id = self::input_id($name) . '-' . $checkbox_value;
-				$input .= '<li>';
-				$input .= Form::checkbox($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id));
-				$input .= Form::label($id, $checkbox_title);
-				$input .= "</li>\n";
-			}
+		$input = ($class ? '<ul class="unstyled ' . $class . '">' : '<ul class="unstyled">') . "\n";
+		foreach ($values as $checkbox_value => $checkbox_title) {
+			$id = self::input_id($name) . '-' . $checkbox_value;
+			$input .= '<li>';
+			$input .= Form::checkbox_wrap($name . '[]', $checkbox_value, isset($checked[$checkbox_value]), array('id' => $id), $checkbox_title);
+			$input .= "</li>\n";
 		}
 		$input .= "</ul>\n";
 
@@ -363,28 +340,14 @@ class Anqh_Form extends Kohana_Form {
 			$checked = Arr::get($checked, $name);
 		}
 
-		if (self::$bootsrap) {
-			$input = '';
-			foreach ($values as $radio_value => $radio_title) {
-				$id = self::input_id($name) . '-' . $radio_value;
-				$radio  = Form::radio($name, $radio_value, $checked === $radio_value, array('id' => $id));
-				$input .= Form::label(null, $radio . $radio_title, array('class' => 'radio ' . $class));
-			}
-
-			return Form::wrap($label ? '<div class="controls">' . $input . '</div>' : $input, $name, $label, $error, $tip);
-		} else {
-			$input = ($class ? '<ul class="' . $class . '">' : '<ul>') . "\n";
-			foreach ($values as $radio_value => $radio_title) {
-				$id = self::input_id($name) . '-' . $radio_value;
-				$input .= '<li' . HTML::attributes($attributes) . '>';
-				$input .= Form::radio($name, $radio_value, $radio_value == $checked, array('id' => $id));
-				$input .= Form::label($id, $radio_title);
-				$input .= "</li>\n";
-			}
-			$input .= "</ul>\n";
-
-			return Form::wrap($input, $name, $label, $error, $tip);
+		$input = '';
+		foreach ($values as $radio_value => $radio_title) {
+			$id = self::input_id($name) . '-' . $radio_value;
+			$radio  = Form::radio($name, $radio_value, $checked === $radio_value, array('id' => $id));
+			$input .= Form::label(null, $radio . $radio_title, array('class' => 'radio ' . $class));
 		}
+
+		return Form::wrap($label ? '<div class="controls">' . $input . '</div>' : $input, $name, $label, $error, $tip);
 	}
 
 
@@ -555,43 +518,21 @@ head.ready("bbcode", function initMarkItUp() {
 			$attributes['class'] = trim('error ' . Arr::get($attributes, 'class'));
 		}
 
-		if (self::$bootsrap) {
+		$attributes['class'] .= ' control-group';
 
-			// Twitter bootstrap styles
-			$attributes['class'] .= ' control-group';
-
-			// Label
-			if ($label) {
-				$label = is_array($label)
-					? Form::label(key($label), current($label), array('class' => 'control-label'))
-					: Form::label($name, $label, array('class' => 'control-label'));
-			}
-
-			// Tip
-			if ($tip) {
-				$tip = '<p class="help-block">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
-			}
-
-			return '<div' . HTML::attributes($attributes) . '>' . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</div>\n";
-
-		} else {
-
-			// Errors
-			$wrap = '<li' . HTML::attributes($attributes) . '>';
-
-			// Input label if any
-			if ($label) {
-				$label = is_array($label) ? Form::label(key($label), current($label)) : Form::label($name, $label);
-			}
-
-			// Input tip if any
-			if ($tip) {
-				$tip = '<p class="tip">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
-			}
-
-			return $wrap . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</li>\n";
-
+		// Label
+		if ($label) {
+			$label = is_array($label)
+				? Form::label(key($label), current($label), array('class' => 'control-label'))
+				: Form::label($name, $label, array('class' => 'control-label'));
 		}
+
+		// Tip
+		if ($tip) {
+			$tip = '<p class="help-block">' . (is_array($tip) ? Arr::get($tip, $name) : $tip) . '</p>';
+		}
+
+		return '<div' . HTML::attributes($attributes) . '>' . ($label_after ? $input . $label : $label . $input) . $error . $tip . "</div>\n";
 	}
 
 }
