@@ -45,8 +45,6 @@ class View_Blog_Edit extends View_Section {
 	public function content() {
 		ob_start();
 
-		Form::$bootsrap = true;
-
 		echo Form::open();
 
 ?>
