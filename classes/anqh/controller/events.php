@@ -802,7 +802,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 
 		// Form
-		Form::$bootsrap = true;
 		$section = $this->section_event_edit($event);
 		$section->event_errors = isset($event_validation) ? $event_validation->array->errors('validation') : null;
 		$section->venue        = isset($venue) ? $venue : $event->venue;

@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Events extends NewsfeedItem {
@@ -75,7 +75,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 					$text = __('added event to favorites<br />:event', array(
 						':event' => HTML::anchor(
 							Route::model($event),
-							'<i class="icon-calendar"></i> ' . HTML::chars($event->name),
+							'<i class="icon-heart"></i> ' . HTML::chars($event->name),
 							array('class' => 'hoverable')
 						)
 					));
