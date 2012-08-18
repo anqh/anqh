@@ -533,9 +533,9 @@ class Anqh_View_Page extends View_Base {
 	protected function _search() {
 		ob_start();
 
-		echo Form::open(null, array('class' => 'navbar-form form-search navbar-search pull-right'));
+		echo Form::open(null, array('id' => 'form-search', 'class' => 'navbar-form form-search navbar-search pull-right'));
 
-//		echo Form::input('search', null, array('class' => 'input-medium search-query', 'placeholder' => __('Search..')));
+		echo Form::input('search', null, array('class' => 'input-medium search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters')));
 
 		/*
 ?>
