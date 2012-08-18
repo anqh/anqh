@@ -4201,26 +4201,29 @@ a.badge:hover {
   visibility: hidden;
 }
 body {
-  padding-top: 60px;
+  padding-top: 90px;
 }
 legend {
   margin-bottom: 0;
 }
-.navbar .btn {
-  margin-top: 0;
+.navbar .form-search .btn {
+  margin: 0;
 }
-.navbar .nav > li.menuitem-profile {
+.navbar #visitor li.menuitem-profile {
   width: 30px;
 }
-.navbar .nav > li.menuitem-profile a {
+.navbar #visitor li.menuitem-profile a {
   height: auto;
   margin: 0;
   padding: 5px 0 0;
   width: auto;
 }
-.navbar .nav > li.menu-me .dropdown-menu {
+.navbar #visitor li.menu-me .dropdown-menu {
   left: 0;
   right: auto;
+}
+.unauthenticated #visitor .btn {
+  margin: 5px 0 0 0;
 }
 #title {
   margin-bottom: 10px;
@@ -4271,7 +4274,7 @@ footer.meta {
 #footer nav .nav {
   display: inline-block;
 }
-#footer [role=contentinfo] {
+#footer hr + section {
   text-align: center;
 }
 .kohana {
