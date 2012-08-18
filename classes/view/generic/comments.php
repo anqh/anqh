@@ -64,8 +64,6 @@ class View_Generic_Comments extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		Form::$bootsrap = true;
-
 		ob_start();
 
 		// Comment form

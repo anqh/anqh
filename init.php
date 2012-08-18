@@ -47,6 +47,11 @@ Route::set('sign', 'sign/<action>', array('action' => 'up|in|out'))
 		'controller' => 'sign',
 		'action'     => 'up'
 	));
+Route::set('password', 'password')
+	->defaults(array(
+		'controller' => 'sign',
+		'action'     => 'password'
+	));
 Route::set('setting', 'set/<action>/<value>')
 	->defaults(array(
 		'controller' => 'set'

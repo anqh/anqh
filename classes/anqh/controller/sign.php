@@ -37,6 +37,11 @@ class Anqh_Controller_Sign extends Controller_Page {
 			// Log login attempt
 			Model_Login::log($success, $user ? $user : $_POST['username'], isset($_POST['password']) && $_POST['password'] != '');
 
+			// Redirect to lost password page on fail
+			if (!$success) {
+				Request::current()->redirect(Route::url('password'));
+			}
+
 		} else {
 
 			// 3rd party sign in
@@ -67,6 +72,51 @@ class Anqh_Controller_Sign extends Controller_Page {
 		Visitor::instance()->logout();
 
 		Request::back();
+	}
+
+
+	/**
+	 * Action: Password lost
+	 */
+	public function action_password() {
+		$this->history = false;
+
+		$email = $message = '';
+
+		// Handle request
+		if ($_POST && $email = trim(Arr::get($_POST, 'email', ''))) {
+			$message = new View_Alert(__('We could not find any user or the user is missing email address, sorry.'), __('Uh oh,'));
+
+			// Find the user, accept only strings
+			$user = Valid::digit($email) ? false : Model_User::find_user(trim($email));
+
+			// Send email
+			if ($user && Valid::email($user->email)) {
+				$subject = __('Your new :site password', array(':site' => Kohana::$config->load('site.site_name')));
+				$mail    = __(
+					"Forgot your password, :username?\n\nWe received a request to generate a new password for your :site account, please sign in and change your password. You should also delete this email.\n\nUsername: :username\nPassword: :password",
+					array(
+						':site'     => Kohana::$config->load('site.site_name'),
+						':username' => Text::clean($user->username),
+						':password' => Visitor::generate_password($user->password),
+					)
+				);
+
+				if (Email::send($user->email, Kohana::$config->load('site.email_invitation'), $subject, $mail)) {
+					$message = new View_Alert(
+						__(':email should soon receive the generated password in their inbox.', array(':email' => $email)),
+						__('Mission accomplished!'),
+						View_Alert::SUCCESS
+					);
+					$email = '';
+				}
+			}
+
+		}
+
+		// Build page
+		$this->view = View_Page::factory(__('Misplaced your password?'));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_password($message, $email));
 	}
 
 
@@ -208,6 +258,22 @@ class Anqh_Controller_Sign extends Controller_Page {
 		$section = new View_User_Invite($invitation);
 		$section->errors  = $errors;
 		$section->message = $message;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get lost password view.
+	 *
+	 * @param   string  $message
+	 * @param   string  $email
+	 * @return  View_User_Password
+	 */
+	public function section_password($message = null, $email = null) {
+		$section = new View_User_Password();
+		$section->message = $message;
+		$section->email   = $email;
 
 		return $section;
 	}

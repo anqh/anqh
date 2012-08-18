@@ -55,15 +55,13 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		/*
-		'home'    => array('url' => '/', 'text' => __('Home')),
-		'events'  => array('url' => Route::get('events')->uri(),  'text' => __('Events')),
-		'venues'  => array('url' => Route::get('venues')->uri(),  'text' => __('Venues')),
-		'music'   => array('url' => Route::get('music')->uri(),   'text' => __('Music')),
-		'forum'   => array('url' => Route::get('forum')->uri(),   'text' => __('Forum')),
-		'blogs'   => array('url' => Route::get('blogs')->uri(),   'text' => __('Blogs')),
-		'members' => array('url' => Route::get('members')->uri(), 'text' => __('Members')),
-		*/
+		'home'      => array('url' => URL::site(),                          'text' => __('Home')),
+		'events'    => array('url' => URL::site(Route::url('events')),      'text' => __('Events')),
+		'forum'     => array('url' => URL::site(Route::url('forum_group')), 'text' => __('Forum')),
+		'galleries' => array('url' => URL::site(Route::url('galleries')),   'text' => __('Galleries')),
+		'venues'    => array('url' => URL::site(Route::url('venues')),      'text' => __('Venues')),
+		'blogs'     => array('url' => URL::site(Route::url('blogs')),       'text' => __('Blogs')),
+		'members'   => array('url' => URL::site(Route::url('users')),       'text' => __('Members')),
 	),
 
 	/**

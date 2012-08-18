@@ -134,11 +134,12 @@ head.js(
 
 
 			// Do some CSS magic to page class
-			$page_class = explode(' ',
-				$this->language . ' ' .          // Language
-				$this->request->action() . ' ' . // Controller method
-				$this->page_class);              // Controller set class
-			$page_class = implode(' ', array_unique(array_map('trim', $page_class)));
+			$page_class = array_merge(array(
+				$this->language,
+				$this->request->action(),
+				self::$user ? 'authenticated' : 'unauthenticated',
+			), explode(' ' , $this->page_class));
+			$page_class = implode(' ', array_unique($page_class));
 
 
 			// Set the generic page variables

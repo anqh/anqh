@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * View_Page
+ * Page view class.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Page extends View_Base {
@@ -105,6 +105,29 @@ class Anqh_View_Page extends View_Base {
 		} else {
 			$this->_content[$column][] = $content;
 		}
+	}
+
+
+	/**
+	 * Render brand/logo.
+	 *
+	 * @return  string
+	 */
+	protected function _brand() {
+		ob_start();
+
+?>
+
+	<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+	</a>
+	<a class="brand" href="<?php echo $this->base ?>"><?php echo Kohana::$config->load('site.site_name') ?></a>
+
+<?php
+
+		return ob_get_clean();
 	}
 
 
@@ -223,14 +246,14 @@ class Anqh_View_Page extends View_Base {
 			{ 'google-maps':        'http://maps.google.com/maps/api/js?sensor=false&callback=isNaN' }, // Use callback hack to initialize correctly
 			{ 'jquery':             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
 			{ 'jquery-ui':          'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
-			{ 'bootstrap':          '<?php echo $this->base ?>static/js/bootstrap.js' },
-			{ 'jquery-markitup':    '<?php echo $this->base ?>js/jquery.markitup.js' },
-			{ 'bbcode':             '<?php echo $this->base ?>js/markitup.bbcode.js' },
-			{ 'jquery-tools':       '<?php echo $this->base ?>js/jquery.tools.min.js' },
-			{ 'jquery-form':        '<?php echo $this->base ?>js/jquery.form.js' },
-			{ 'jquery-imgarea':     '<?php echo $this->base ?>js/jquery.imgareaselect.js' },
-			{ 'jquery-fixedscroll': '<?php echo $this->base ?>js/jquery-scrolltofixed.js' },
-			{ 'anqh':               '<?php echo $this->base ?>js/anqh.js?2' }
+			{ 'bootstrap':          '<?= $this->base ?>static/js/bootstrap.js' },
+			{ 'jquery-markitup':    '<?= $this->base ?>js/jquery.markitup.js' },
+			{ 'bbcode':             '<?= $this->base ?>js/markitup.bbcode.js' },
+			{ 'jquery-tools':       '<?= $this->base ?>js/jquery.tools.min.js' },
+			{ 'jquery-form':        '<?= $this->base ?>js/jquery.form.js' },
+			{ 'jquery-imgarea':     '<?= $this->base ?>js/jquery.imgareaselect.js' },
+			{ 'jquery-fixedscroll': '<?= $this->base ?>js/jquery-scrolltofixed.js' },
+			{ 'anqh':               '<?= $this->base ?>js/anqh.js?2' }
 		);
 	</script>
 
@@ -264,20 +287,20 @@ class Anqh_View_Page extends View_Base {
 
 	<footer id="footer" class="container">
 
-		<section role="complementary">
+		<section>
 
 			<nav role="navigation">
 				<ul role="menubar" class="nav nav-pills">
-					<li role="menuitem"><a href="<?php echo $this->base ?>"><?php echo __('Front page') ?></a></li>
-					<?php foreach (Kohana::$config->load('site.menu') as $id => $item) { ?>
-					<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
-					<?php } ?>
+					<li role="menuitem"><a href="<?= $this->base ?>"><?= __('Front page') ?></a></li>
+					<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
+					<li role="menuitem" class="menu-<?= $id ?>"><a href="<?= $item['url'] ?>"><?= HTML::chars($item['text']) ?></a></li>
+					<?php endforeach ?>
 				</ul>
 			</nav>
 
 			<div class="row">
 
-				<?php echo $this->footer() ?>
+				<?= $this->footer() ?>
 
 			</div>
 
@@ -285,8 +308,8 @@ class Anqh_View_Page extends View_Base {
 
 		<hr />
 
-		<section>
-			<?php echo $this->_statistics() ?><br />
+		<section class="copyright">
+			<?= $this->_statistics() ?><br />
 			Copyright &copy; 2000&ndash;<?php echo date('Y')?> <?php echo Kohana::$config->load('site.site_name') ?> -
 			Powered by Anqh v<?php echo Anqh::VERSION ?> and Kohana v<?php echo Kohana::VERSION ?>
 		</section>
@@ -360,11 +383,20 @@ class Anqh_View_Page extends View_Base {
 		<div class="navbar-inner">
 			<div class="container">
 
-		<?php echo $this->_notifications() ?>
+<?= $this->_notifications() ?>
 
-		<?php echo $this->_mainmenu() ?>
+				<div class="pull-left">
 
-		<?php echo $this->_visitor() ?>
+<?= $this->_mainmenu() ?><br />
+<?= $this->_brand() ?>
+
+				</div>
+				<div class="pull-right">
+
+<?php if (self::$_user_id) echo $this->_search() . '<br />' ?>
+<?= $this->_visitor() ?>
+
+				</div>
 
 			</div>
 		</div>
@@ -387,12 +419,6 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 	<nav id="mainmenu" role="navigation">
-		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		</a>
-		<a class="brand" href="<?php echo $this->base ?>"><?php echo Kohana::$config->load('site.site_name') ?></a>
 		<ul class="nav nav-collapse" role="menubar">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item) { ?>
 			<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
@@ -494,6 +520,37 @@ class Anqh_View_Page extends View_Base {
 </html>
 
 <?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Render search.
+	 *
+	 * @return  string
+	 */
+	protected function _search() {
+		ob_start();
+
+		echo Form::open(null, array('class' => 'navbar-form form-search navbar-search pull-right'));
+
+//		echo Form::input('search', null, array('class' => 'input-medium search-query', 'placeholder' => __('Search..')));
+
+		/*
+?>
+
+	<div class="input-append">
+
+		<?= Form::input('search', null, array('class' => 'input-medium search-query', 'placeholder' => __('Search..'))) .
+		    Form::button(null, '<i class="icon-search icon-white"></i>', array('class' => 'btn btn-inverse')) ?>
+
+	</div>
+
+<?php
+		*/
+
+		echo Form::close();
 
 		return ob_get_clean();
 	}
@@ -636,7 +693,7 @@ class Anqh_View_Page extends View_Base {
 			// Authenticated user
 ?>
 
-	<nav id="visitor" class="nav-collapse navbar-text pull-right">
+	<nav id="visitor" class="nav-collapse navbar-text">
 		<ul class="nav" role="menubar">
 
 			<?php foreach (Anqh::notifications(self::$_user) as $class => $link) { ?>
@@ -661,7 +718,9 @@ class Anqh_View_Page extends View_Base {
 				</ul>
 			</li>
 
-			<li role="menuitem" class="menu-signout"><?php echo HTML::anchor(Route::url('sign', array('action' => 'out')), __('Sign out')) ?></li>
+			<li role="menuitem" class="menu-signout">
+				<?= HTML::anchor(Route::url('sign', array('action' => 'out')), __('Sign out')) ?>
+			</li>
 		</ul>
 	</nav><!-- #visitor -->
 
@@ -674,14 +733,20 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="visitor" class="nav-collapse navbar-text pull-right">
-		<form class="nav form-inline" action="<?php echo Route::url('sign', array('action' => 'in')) ?>" method="post">
-			<?php echo HTML::anchor(Route::url('sign', array('action' => 'up')), __('Sign up!')) ?>
-			<input class="input-small" name="username" type="text" placeholder="<?php echo __('Username') ?>" />
-			<input class="input-small" name="password" type="password" placeholder="<?php echo __('Password') ?>" />
-			<button class="btn btn-small btn-primary" type="submit" title="<?php echo __('Automatically sign out if idle') ?>"><?php echo __('Sign in') ?></button>
-			<button class="btn btn-small btn-inverse" type="submit" name="remember" value="true" title="<?php echo __('Remember your sign in on this browser') ?>"><?php echo __('Stay in') ?></button>
-		</form>
+	<nav id="visitor" class="nav-collapse navbar-text">
+		<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'navbar-form form-inline')) ?>
+		<?= Form::input('username', null, array('tabindex' => 1, 'class' => 'input-small', 'placeholder' => __('Username'), 'title' => __('TIP: You can also use email'))) ?>
+		<?= Form::password('password', null, array('tabindex' => 2, 'class' => 'input-small', 'placeholder' => __('Password'))) ?>
+		<?= Form::label(null, Form::checkbox('remember', 'true', true, array('tabindex' => 4)) . ' ' . __('Remember me'), array('class' => 'checkbox')) ?>
+		<?= Form::button(null, __('Sign in'), array('tabindex' => 3, 'class' => 'btn btn-primary')) ?>
+		<?= Form::close(); ?>
+
+		<?= HTML::anchor(Route::url('password'), __('Forgot your password?')) ?>
+		<?= HTML::anchor(
+			Route::url('sign', array('action' => 'up')),
+			__('Sign up, be happy!') . ' <i class="icon-heart icon-white"></i>',
+			array('class' => 'btn btn-large btn-success pull-right', 'title' => __("Did we mention it's FREE!"))
+		) ?>
 	</nav>
 
 <?php

@@ -189,6 +189,17 @@ class Anqh_Visitor {
 
 
 	/**
+	 * Generate a "temporary" password from original password to be used with password retrieval mail.
+	 *
+	 * @param   string  $password
+	 * @return  string
+	 */
+	public static function generate_password($password) {
+		return md5($password);
+	}
+
+
+	/**
 	 * Get config parameter(s) of Visitor
 	 *
 	 * @param   string  $key
@@ -351,10 +362,10 @@ class Anqh_Visitor {
 		$salt = $this->find_salt($user->password);
 
 		// Create a hashed password using the salt from the stored password
-		$password = $this->hash_password($password, $salt);
+		$hashed_password = $this->hash_password($password, $salt);
 
-		// If the passwords match, perform a login
-		if ($user->password === $password && $user->has_role('login')) {
+		// If the passwords match to hashed password or "generated" password, perform a login
+		if (($user->password === $hashed_password || self::generate_password($user->password) === $password) && $user->has_role('login')) {
 			if ($remember === true) {
 
 				// Create a new autologin token

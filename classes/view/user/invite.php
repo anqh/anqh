@@ -65,7 +65,7 @@ class View_User_Invite extends View_Section {
 </fieldset>
 
 <fieldset class="form-actions">
-	<?= Form::button('invite', __('Send invitation'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
+	<?= Form::button('invite', '<i class="icon-envelope icon-white"></i> ' . __('Send invitation'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
 	<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
 </fieldset>
 
@@ -93,7 +93,7 @@ class View_User_Invite extends View_Section {
 
 <fieldset class="form-actions">
 	<?= Form::hidden('signup', true) ?>
-	<?= Form::button('invited', __('Final step!'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
+	<?= Form::button('invited', __('Final step!') . ' <i class="icon-arrow-right icon-white"></i>', array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
 	<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
 </fieldset>
 
