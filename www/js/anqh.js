@@ -334,23 +334,26 @@ $.fn.autocompleteEvent = function(options) {
 	var lastXhr;
 
 	var defaults = {
-		'eventId':   'event_id',
-		'limit':     25,
-		'minLength': 3,
-		'action':    'form',
-		'search':    'name',
-		'field':     'id:name:city:stamp_begin:url',
-		'order':     'stamp_begin.desc'
+		eventId:   'event_id',
+		limit:     25,
+		minLength: 3,
+		action:    'form',
+		search:    'name',
+		field:     'id:name:city:stamp_begin:url',
+		order:     'stamp_begin.desc',
+		position:  { collision: 'fit' }
 	};
 	options = $.extend(defaults, options || {});
 
 	$(this)
 		.autocomplete({
 			minLength: options.minLength,
+			position:  options.position,
 
 			source: function(request, response) {
 				if (request.term in cache) {
 					response(cache[request.term]);
+
 					return;
 				}
 
@@ -408,7 +411,7 @@ $.fn.autocompleteEvent = function(options) {
 
 		})
 		.data('autocomplete')._renderItem = function(ul, item) {
-			return $("<li></li>")
+			return $('<li></li>')
 				.data('item.autocomplete', item)
 				.append('<a>' + $.datepicker.formatDate('dd.mm.yy', new Date(item.stamp * 1000)) + ' ' + item.label + ', ' + item.city + '</a>')
 				.appendTo(ul);
@@ -1072,5 +1075,19 @@ $(function() {
 
 	// Carousels
 	$('.carousel').carousel({ interval: false });
+
+
+	// Search
+	$('#form-search').on('submit', function _disable(event) {
+		return false;
+	});
+	$('#form-search [name=search-events]').autocompleteEvent({
+		action:   'redirect',
+		position: { collision: 'flip' }
+	});
+	$('#form-search [name=search-users]').autocompleteUser({
+		action:   'redirect',
+		position: { collision: 'flip' }
+	});
 
 });
