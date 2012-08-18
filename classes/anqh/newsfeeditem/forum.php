@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
@@ -42,8 +42,8 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 					$text = __('replied to topic<br />:topic', array(
 						':topic' => HTML::anchor(
 							Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $item->data['post_id'])) . '#post-' . $item->data['post_id'],
-							HTML::chars($topic->name),
-							array('title' => $topic->name, 'class' => 'icon topic')
+							'<i class="icon-comment"></i> ' . HTML::chars($topic->name),
+							array('title' => $topic->name)
 						)
 					));
 				}
@@ -55,8 +55,8 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 					$text = __('started a new topic<br />:topic', array(
 						':topic' => HTML::anchor(
 							Route::model($topic),
-							HTML::chars($topic->name),
-							array('title' => $topic->name, 'class' => 'icon topic')
+							'<i class="icon-comment"></i> ' . HTML::chars($topic->name),
+							array('title' => $topic->name)
 						)
 					));
 				}

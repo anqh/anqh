@@ -114,8 +114,6 @@ class View_Forum_PostEdit extends View_Article {
 	public function content() {
 		ob_start();
 
-		Form::$bootsrap = true;
-
 		// Create form attributes
 		$attributes = array();
 		if ($this->form_id):
