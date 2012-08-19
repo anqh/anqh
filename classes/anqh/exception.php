@@ -43,6 +43,11 @@ class Anqh_Exception extends Kohana_Kohana_Exception {
 				// This really shouldn't happen, ever
 				$params['action'] = 404;
 
+			} else if ($e instanceof Controller_API_Exception) {
+
+				// API error
+				$params['action'] = 403;
+
 			}
 
 			// Display error page

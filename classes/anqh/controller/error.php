@@ -52,7 +52,18 @@ class Anqh_Controller_Error extends Controller_Page {
 
 
 	/**
-	 * Action: 404
+	 * Action: 403 Forbidden
+	 */
+	public function action_403() {
+		$this->response->status(403);
+		$this->response->body($this->request->param('message'));
+
+		exit;
+	}
+
+
+	/**
+	 * Action: 404 Not found
 	 */
 	public function action_404() {
 		$this->response->status(404);
@@ -67,7 +78,7 @@ class Anqh_Controller_Error extends Controller_Page {
 
 
 	/**
-	 * Action: 500
+	 * Action: 500 Internal server error
 	 */
 	public function action_500() {
 		$this->response->status(200);
@@ -76,7 +87,7 @@ class Anqh_Controller_Error extends Controller_Page {
 
 
 	/**
-	 * Action: 503
+	 * Action: 503 Service unavailable
 	 */
 	public function action_503() {
 		$this->view->title = __('Maintenance Mode');

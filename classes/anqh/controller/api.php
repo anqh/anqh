@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_API extends Controller {
@@ -39,7 +39,9 @@ class Anqh_Controller_API extends Controller {
 
 
 	/**
-	 * Construct controller
+	 * Construct controller.
+	 *
+	 * @throws  Controller_API_Exception  on invalid version, rate limit exceeded, invalid format
 	 */
 	public function before() {
 
@@ -50,19 +52,26 @@ class Anqh_Controller_API extends Controller {
 		$api_request->created = time();
 		$api_request->save();
 
-		// Rate limit
-		$rate_span  = Kohana::$config->load('api.rate_span');
-		$rate_limit = Kohana::$config->load('api.rate_limit');
-		$requests   = Model_API_Request::request_count(time() - $rate_span, Request::$client_ip);
-		$requests_left = $rate_limit - $requests;
-		if ($requests_left < 0) {
-			throw new Controller_API_Exception('Request limit reached');
-		}
-
 		// Check version
 		$this->version = $this->request->param('version');
 		if (!in_array($this->version, self::$_versions)) {
 			throw new Controller_API_Exception('Invalid version');
+		}
+		$this->data['version'] = $this->version;
+
+		// Rate limit
+		$rate_limit = (int)Kohana::$config->load('api.rate_limit');
+		$rate_span  = (int)Kohana::$config->load('api.rate_span');
+		if ($rate_limit) {
+			$requests      = Model_API_Request::request_count(time() - $rate_span, Request::$client_ip);
+			$requests_left = $rate_limit - $requests;
+			if ($requests_left < 0) {
+				throw new Controller_API_Exception('Request limit reached');
+			}
+
+			$this->data['requests']       = $requests;
+			$this->data['requests_left']  = $requests_left;
+			$this->data['request_window'] = $rate_span;
 		}
 
 		// Check format
@@ -72,18 +81,13 @@ class Anqh_Controller_API extends Controller {
 			throw new Controller_API_Exception('Invalid format');
 		}
 
-		// Set result defaults
-		$this->data = array(
-			'version'        => $this->version,
-			'requests'       => $requests,
-			'requests_left'  => $requests_left,
-			'request_window' => $rate_span,
-		);
-
-		return parent::before();
+		parent::before();
 	}
 
 
+	/**
+	 * Output response.
+	 */
 	public function after() {
 		switch ($this->format) {
 

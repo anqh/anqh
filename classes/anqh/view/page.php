@@ -253,7 +253,10 @@ class Anqh_View_Page extends View_Base {
 			{ 'jquery-form':        '<?= $this->base ?>js/jquery.form.js' },
 			{ 'jquery-imgarea':     '<?= $this->base ?>js/jquery.imgareaselect.js' },
 			{ 'jquery-fixedscroll': '<?= $this->base ?>js/jquery-scrolltofixed.js' },
-			{ 'anqh':               '<?= $this->base ?>js/anqh.js?2' }
+			{ 'anqh':               '<?= $this->base ?>js/anqh.js?2' },
+			function _loaded() {
+				Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
+			}
 		);
 	</script>
 
@@ -387,8 +390,8 @@ class Anqh_View_Page extends View_Base {
 
 				<div class="pull-left">
 
-<?= $this->_mainmenu() ?><br />
-<?= $this->_brand() ?>
+<?= $this->_brand() ?><br />
+<?= $this->_mainmenu() ?>
 
 				</div>
 				<div class="pull-right">
@@ -536,7 +539,7 @@ class Anqh_View_Page extends View_Base {
 		echo Form::open(null, array('id' => 'form-search', 'class' => 'navbar-form form-search navbar-search pull-right'));
 
 		echo Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters')));
-		echo Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 3 characters')));
+		echo Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters')));
 
 		/*
 ?>
@@ -689,7 +692,7 @@ class Anqh_View_Page extends View_Base {
 		));
 		*/
 
-		if (self::$_user_id) {
+		if (self::$_user_id):
 
 			// Authenticated user
 ?>
@@ -697,24 +700,26 @@ class Anqh_View_Page extends View_Base {
 	<nav id="visitor" class="nav-collapse navbar-text">
 		<ul class="nav" role="menubar">
 
-			<?php foreach (Anqh::notifications(self::$_user) as $class => $link) { ?>
-			<li role="menuitem" class="<?php echo $class ?>"><?php echo $link ?></li>
-			<?php } ?>
+			<?php foreach (Anqh::notifications(self::$_user) as $class => $link): ?>
+			<li role="menuitem" class="<?= $class ?>"><?= $link ?></li>
+			<?php endforeach; ?>
 
-			<li role="menuitem" class="menuitem-profile"><?php echo HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?></li>
+			<li role="menuitem" class="menuitem-profile"><?= HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?></li>
 
 			<li class="dropdown menu-me" role="menuitem" aria-haspopup="true">
-				<a class="dropdown-toggle" href="#" data-toggle="dropdown"><?php echo HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
+				<a class="dropdown-toggle" href="#" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
 				<ul class="dropdown-menu" role="menu">
-					<li role="menuitem"><a href="<?php echo URL::user(self::$_user->username) ?>"><i class="icon-home"></i> <?php echo __('Profile') ?></a><li>
-					<li role="menuitem"><a href="<?php echo Forum::private_messages_url() ?>"><i class="icon-envelope"></i> <?php echo __('Private messages') ?></a></li>
-					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'friends') ?>"><i class="icon-heart"></i> <?php echo  __('Friends') ?></a></li>
-					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'ignores') ?>"><i class="icon-ban-circle"></i> <?php echo __('Ignores') ?></a></li>
-					<li role="menuitem"><a href="<?php echo URL::user(self::$_user, 'settings') ?>"><i class="icon-cog"></i> <?php echo __('Settings') ?></a></li>
+					<li role="menuitem"><a href="<?= URL::user(self::$_user->username) ?>"><i class="icon-home"></i> <?= __('Profile') ?></a><li>
+					<li role="menuitem"><a href="<?= Forum::private_messages_url() ?>"><i class="icon-envelope"></i> <?= __('Private messages') ?></a></li>
+					<li role="menuitem"><a href="<?= URL::user(self::$_user, 'friends') ?>"><i class="icon-heart"></i> <?=  __('Friends') ?></a></li>
+					<li role="menuitem"><a href="<?= URL::user(self::$_user, 'ignores') ?>"><i class="icon-ban-circle"></i> <?= __('Ignores') ?></a></li>
+					<li role="menuitem"><a href="<?= URL::user(self::$_user, 'settings') ?>"><i class="icon-cog"></i> <?= __('Settings') ?></a></li>
 					<?php if (self::$_user->has_role('admin')) { ?>
-					<li role="menuitem" class="admin"><a href="<?php echo Route::url('roles') ?>"><i class="icon-asterisk"></i> <?php echo __('Roles') ?></a></li>
-					<li role="menuitem" class="admin"><a href="<?php echo Route::url('tags') ?>"><i class="icon-tags"></i> <?php echo __('Tags') ?></a></li>
-					<li role="menuitem" class="admin"><a href="#debug" onclick="$('div.kohana').toggle();"> <i class="icon-signal"></i> <?php echo __('Profiler') ?></a></li>
+					<li class="divider"></li>
+					<li class="nav-header"><?= __('Admin functions') ?></li>
+					<li role="menuitem" class="admin"><a href="<?php echo Route::url('roles') ?>"><i class="icon-asterisk"></i> <?= __('Roles') ?></a></li>
+					<li role="menuitem" class="admin"><a href="<?php echo Route::url('tags') ?>"><i class="icon-tags"></i> <?= __('Tags') ?></a></li>
+					<li role="menuitem" class="admin"><a href="#debug" onclick="$('div.kohana').toggle();"> <i class="icon-signal"></i> <?= __('Profiler') ?></a></li>
 					<?php } ?>
 				</ul>
 			</li>
@@ -728,7 +733,7 @@ class Anqh_View_Page extends View_Base {
 
 <?php
 
-		} else {
+		else:
 
 			// Non-authenticated user
 
@@ -752,7 +757,7 @@ class Anqh_View_Page extends View_Base {
 
 <?php
 
-		}
+		endif;
 
 		return ob_get_clean();
 	}
