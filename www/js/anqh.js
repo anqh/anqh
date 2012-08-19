@@ -10,6 +10,9 @@
 // Anqh 'namespace'
 var Anqh = {
 
+	// Anqh API URL
+	APIURL: '/api',
+
 	// GeoNames API URL
 	geoNamesURL: null,
 
@@ -357,9 +360,10 @@ $.fn.autocompleteEvent = function(options) {
 					return;
 				}
 
-				lastXhr = $.getJSON(
-					'/api/v1/events/search',
-					{
+				lastXhr = $.ajax({
+					url: Anqh.APIURL + '/v1/events/search',
+					dataType: 'jsonp',
+					data: {
 						'q':      request.term,
 						'limit':  25,
 						'filter': options.filter,
@@ -367,7 +371,7 @@ $.fn.autocompleteEvent = function(options) {
 						'field':  options.field,
 						'order':  options.order
 					},
-					function(data, status, xhr) {
+					success: function(data, status, xhr) {
 						cache[request.term] = $.map(data.events, function(item) {
 							return {
 								'label': item.name,
@@ -383,7 +387,7 @@ $.fn.autocompleteEvent = function(options) {
 							response(cache[request.term]);
 						}
 					}
-				);
+				});
 			},
 
 			select: function(event, ui) {
@@ -553,16 +557,17 @@ $.fn.autocompleteUser = function(options) {
 					return;
 				}
 
-				lastXhr = $.getJSON(
-					'/api/v1/user/search',
-					{
+				lastXhr = $.ajax({
+					url: Anqh.APIURL + '/v1/user/search',
+					dataType: 'jsonp',
+					data: {
 						'q':     term,
 						'user':  options.user,
 						'limit': options.limit,
 						'field': options.field,
 						'order': options.order
 					},
-					function(data, status, xhr) {
+					success: function(data, status, xhr) {
 						cache[term] = $.map(data.users, function(item) {
 							return {
 								'label': item.username,
@@ -577,7 +582,7 @@ $.fn.autocompleteUser = function(options) {
 							response(cache[term]);
 						}
 					}
-				);
+				});
 			},
 
 			// Custom minLength check for multiple terms
@@ -735,7 +740,7 @@ $.fn.foursquareVenue = function(options) {
 			minLength: 2,
 			source:    function(request, response) {
 				$.ajax({
-					url:      '/api/v1/venues/foursquare',
+					url:      Anqh.APIURL + '/v1/venues/foursquare',
 					dataType: 'jsonp',
 					type:     'get',
 					data:     {
