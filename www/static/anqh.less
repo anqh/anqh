@@ -1,3 +1,7 @@
+// Variables
+@iconAjaxPath:                             "../img/ajax.gif";
+
+
 body                                   { padding-top: 90px; }
 legend                                 { margin-bottom: 0; }
 
@@ -62,6 +66,7 @@ footer.meta                            { color: @grayLight; }
 
 #ui-widget                             { background: @bodyBackground; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); .border-radius(4px); .box-shadow(0 5px 10px rgba(0,0,0,.2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; }
 .ui-widget:not(.ui-datepicker-inline)  { #ui-widget; z-index: @zindexDropdown; }
+.ui-autocomplete-loading               { background-image: url("@{iconAjaxPath}"); background-position: right center; background-repeat: no-repeat; }
 .ui-autocomplete                       {
   a                                    { clear: both; color: @gray; display: block; font-weight: normal; line-height: @baseLineHeight; padding: 3px 15px; white-space: nowrap; }
   a.ui-state-hover                     { background-color: @linkColor; color: @white; text-decoration: none; }

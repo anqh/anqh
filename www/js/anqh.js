@@ -510,16 +510,17 @@ $.fn.autocompleteUser = function(options) {
 	var lastXhr;
 
 	var defaults = {
-		'user':      0,
-		'userId':    'user_id',
-		'limit':     15,
-		'minLength': 2,
-		'maxUsers':  1,
-		'tokenized': false,
-		'action':    'form',
-		'search':    'username',
-		'field':     'id:username:avatar:url',
-		'order':     'username.asc'
+		user:      0,
+		userId:    'user_id',
+		limit:     15,
+		minLength: 2,
+		maxUsers:  1,
+		tokenized: false,
+		action:    'form',
+		search:    'username',
+		field:     'id:username:avatar:url',
+		order:     'username.asc',
+		position:  { collision: 'fit' }
 	};
 	options = $.extend(defaults, options || {});
 
@@ -548,6 +549,7 @@ $.fn.autocompleteUser = function(options) {
 	$(this)
 		.autocomplete({
 			minLength: options.minLength,
+			position:  options.position,
 
 			source: function(request, response) {
 				var term = multiple ? lastTerm(request.term) : request.term;
@@ -674,13 +676,16 @@ $.fn.autocompleteVenue = function(options) {
 		limit:     25,
 		minLength: 1,
 		action:    'form',
-		source:    []
+		source:    [],
+		position:  { collision: 'fit' }
+
 	};
 	options = $.extend(defaults, options || {});
 
 	$(this)
 		.autocomplete({
 			minLength: options.minLength,
+			position:  options.position,
 			source:    options.source,
 
 			select: function(event, ui) {
@@ -730,7 +735,9 @@ $.fn.foursquareVenue = function(options) {
 		venueId:         'venue_id',
 		categoryId:      'category_id',
 		map:             'map',
-		limit:           10
+		limit:           10,
+		position:        { collision: 'fit' }
+
 	};
 
 	options = $.extend(defaults, options || {});
@@ -738,6 +745,7 @@ $.fn.foursquareVenue = function(options) {
 	$(this)
 		.autocomplete({
 			minLength: 2,
+			position:  options.position,
 			source:    function(request, response) {
 				$.ajax({
 					url:      Anqh.APIURL + '/v1/venues/foursquare',

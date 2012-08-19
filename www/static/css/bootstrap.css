@@ -4374,6 +4374,11 @@ footer.meta {
   overflow: hidden;
   z-index: 1000;
 }
+.ui-autocomplete-loading {
+  background-image: url("../img/ajax.gif");
+  background-position: right center;
+  background-repeat: no-repeat;
+}
 .ui-autocomplete a {
   clear: both;
   color: #555555;
