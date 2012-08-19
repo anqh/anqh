@@ -14,8 +14,10 @@ class Anqh_Controller_Events_API extends Controller_API {
 	 */
 	public static $_fields = array(
 		'id', 'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'city',
-		'country', 'dj', 'info', 'age', 'price', 'price2', 'created',
-		'modified', 'flyer_front', 'flyer_back', 'favorite_count', 'url'
+		'country', 'dj', 'info', 'age', 'price', 'price2', 'created', 'modified',
+		'flyer_front', 'flyer_front_thumb', 'flyer_front_icon',
+		'flyer_back', 'flyer_back_thumb', 'flyer_back_icon',
+		'favorite_count', 'url'
 	);
 
 	/**
@@ -251,9 +253,22 @@ class Anqh_Controller_Events_API extends Controller_API {
 
 				case 'flyer_front':
 				case 'flyer_back':
-					$column = $field . '_image_id';
+				case 'flyer_front_icon':
+				case 'flyer_back_icon':
+				case 'flyer_front_thumb':
+				case 'flyer_back_thumb':
+					if (strpos($field, 'icon')) {
+						$column = str_replace('_icon', '', $field) . '_image_id';
+						$size   = Model_Image::SIZE_ICON;
+					} else if (strpos($field, '_thumb')) {
+						$column = str_replace('_thumb', '', $field) . '_image_id';
+						$size   = Model_Image::SIZE_THUMBNAIL;
+					} else {
+						$column = $field . '_image_id';
+						$size   = null;
+					}
 					$image  = new Model_Image($event->$column);
-			    $data[$field] = $image->loaded() ? $image->get_url() : '';
+			    $data[$field] = $image->loaded() ? $image->get_url($size) : null;
 			    break;
 
 				case 'url':
