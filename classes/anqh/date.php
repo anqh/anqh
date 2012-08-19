@@ -137,7 +137,7 @@ class Anqh_Date extends Kohana_Date {
 	 * Returns the difference between timestamps in a "fuzzy" way.
 	 *
 	 * @param   integer  $timestamp
-	 * @param   interer  $timestamp2  Defaults to now
+	 * @param   integer  $timestamp2  Defaults to now
 	 * @return  string
 	 */
 	public static function fuzzy_span($timestamp, $timestamp2 = null) {
@@ -154,9 +154,9 @@ class Anqh_Date extends Kohana_Date {
 	 *
 	 *     $times = Date::hours_minutes(); // 01:00, 01:30, 02:00, ..., 11:00, 11:30, 12:00
 	 *
-	 * @param   integer  amount to increment each step by, minutes
-	 * @param   boolean  use 24-hour time
-	 * @param   integer  the hour to start at
+	 * @param   integer  $step   amount to increment each step by, minutes
+	 * @param   boolean  $long   use 24-hour time
+	 * @param   integer  $start  the hour to start at
 	 * @return  array    A mirrored (foo => foo) array from start-12 or start-23.
 	 */
 	public static function hours_minutes($step = 30, $long = false, $start = null) {
@@ -182,6 +182,29 @@ class Anqh_Date extends Kohana_Date {
 		}
 
 		return $times;
+	}
+
+
+	/**
+	 * Parse short span to long span
+	 * e.g. 1d => 1 day, 2 w => 2 weeks
+	 *
+	 * @param   string  $span
+	 * @return  string
+	 */
+	public static function parse_span($span) {
+		$spans = array(
+			'd' => 'days',
+			'w' => 'weeks',
+			'm' => 'months',
+			'y' => 'years',
+		);
+
+		if (preg_match('/(\d+) ?([dwmy])/i', $span, $match)) {
+			return $match[1] . ' ' . $spans[$match[2]];
+		}
+
+		return null;
 	}
 
 
