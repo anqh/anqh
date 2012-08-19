@@ -35,6 +35,77 @@ class Anqh_Controller_Events_API extends Controller_API {
 
 
 	/**
+	 * Action: browse
+	 */
+	public function action_browse() {
+		$this->data['events'] = array();
+
+		// Get start stamp
+		$from = Arr::get($_REQUEST, 'from', 'today');
+		$from = Valid::numeric($from) ? (int)$from : strtotime($from);
+
+		// Get order
+		$order = Arr::get($_REQUEST, 'order') == 'desc' ? 'desc' : 'asc';
+
+		// Get limit, time span or 500 events max
+		$limit = Arr::get($_REQUEST, 'limit', '1w');
+		if (Valid::numeric($limit)) {
+
+			// Limit given as event count
+			$to    = false;
+			$limit = max(min((int)$limit, 500), 1);
+
+		} else if ($span = Date::parse_span($limit)) {
+
+			// Limit given as timespan
+			$to    = strtotime(($order == 'asc' ? '+' : '-') . $span, $from);
+			$limit = 500;
+
+		} else {
+
+			// No limit given
+			$to    = false;
+			$limit = 500;
+
+		}
+
+		// Get fields
+		$field  = explode(':', Arr::get($_REQUEST, 'field', 'id:name:city'));
+		$fields = (empty($field) || $field[0] = 'all') ? self::$_fields : array_intersect($field, self::$_fields);
+		$fields = empty($fields) ? array('id', 'name') : $fields;
+
+		// Build query
+		$event  = new Model_Event();
+		$events = DB::select_array($event->fields())->order_by('stamp_begin', $order);
+		if ($order == 'asc') {
+
+			// Upcoming events
+			if ($to) {
+				$events->where('stamp_begin', 'BETWEEN', array($from, $to));
+			} else {
+				$events->where('stamp_begin', '>=', $from);
+			}
+
+		} else {
+
+			// Past events
+			if ($to) {
+				$events->where('stamp_begin', 'BETWEEN', array($to, $from));
+			} else {
+				$events->where('stamp_begin', '<=', $from);
+			}
+
+		}
+
+		// Build data
+		foreach ($event->load($events, $limit) as $event) {
+			$this->data['events'][] = $this->_prepare_event($event, $fields);
+		}
+
+	}
+
+
+	/**
 	 * Action: event
 	 */
 	public function action_event() {
@@ -68,14 +139,14 @@ class Anqh_Controller_Events_API extends Controller_API {
 		if (strlen($term) >= 3) {
 
 			// 500 events max
-			$limit = min($limit, 500);
+			$limit = max(min($limit, 500), 1);
 
 			// Get order
 			$orders = $this->_prepare_order($order, self::$_orderable);
 			$orders = empty($orders) ? array('name' => 'asc') : $orders;
 
 			// Get fields
-			$fields = empty($field) ? self::$_fields : array_intersect($field, self::$_fields);
+			$fields = empty($field) || $field[0] = 'all' ? self::$_fields : array_intersect($field, self::$_fields);
 			$fields = empty($fields) ? array('id', 'name') : $fields;
 
 			// Get search
