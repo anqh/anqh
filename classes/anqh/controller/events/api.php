@@ -17,7 +17,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 		'country', 'dj', 'info', 'age', 'price', 'price2', 'created', 'modified',
 		'flyer_front', 'flyer_front_thumb', 'flyer_front_icon',
 		'flyer_back', 'flyer_back_thumb', 'flyer_back_icon',
-		'favorite_count', 'url'
+		'favorite_count', 'music', 'url'
 	);
 
 	/**
@@ -270,6 +270,17 @@ class Anqh_Controller_Events_API extends Controller_API {
 					$image  = new Model_Image($event->$column);
 			    $data[$field] = $image->loaded() ? $image->get_url($size) : null;
 			    break;
+
+				case 'music':
+					if ($tags = $event->tags()) {
+						$music = implode(', ', $tags);
+					} else if (!empty($event->music)) {
+						$music = $event->music;
+					} else {
+						$music = null;
+					}
+					$data[$field] = $music;
+					break;
 
 				case 'url':
 					$data[$field] = URL::site(Route::model($event), true);
