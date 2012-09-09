@@ -148,7 +148,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			$orders = empty($orders) ? array('name' => 'asc') : $orders;
 
 			// Get fields
-			$fields = empty($field) || $field[0] = 'all' ? self::$_fields : array_intersect($field, self::$_fields);
+			$fields = (empty($field) || $field[0] = 'all') ? self::$_fields : array_intersect($field, self::$_fields);
 			$fields = empty($fields) ? array('id', 'name') : $fields;
 
 			// Get search
