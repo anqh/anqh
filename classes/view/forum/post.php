@@ -70,7 +70,7 @@ class View_Forum_Post extends View_Article {
 
 
 		$this->id    = 'post-' . $this->forum_post->id;
-		$this->class = 'row post' . ($this->owner ? ' owner' : '') . ($this->my ? ' my' : '');
+		$this->class = 'row permalink post' . ($this->owner ? ' owner' : '') . ($this->my ? ' my' : '');
 	}
 
 
@@ -104,7 +104,6 @@ class View_Forum_Post extends View_Article {
 </div>
 
 <div class="post-content span6">
-
 	<header<?= $this->forum_post->id == $this->forum_topic->last_post_id ? ' id="last"' : '' ?>>
 		<small class="ago">
 			<?= HTML::time(Date::short_span($this->forum_post->created, true, true), $this->forum_post->created) ?>
