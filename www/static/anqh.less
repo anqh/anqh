@@ -5,20 +5,18 @@
 legend                                 { margin-bottom: 0; }
 
 // Main menu
-#header                                { background: black; padding-top: @navbarHeight; }
+#header                                { background: black; height: @navbarHeight; padding-top: @navbarHeight; }
 .navbar-fixed-top                      { background: rgba(0, 0, 0, .8); }
 #header .container                     { #grid > .core > .span(@gridColumns); }
-.navbar                                { background: @navbarInverseBackground;
+.navbar                                { background: @navbarInverseBackground; margin-bottom: 0;
   .brand                               { margin-left: 0; }
   .navbar-search                       { margin-top: 0; }
-  .form-search .btn                    { margin: 0; }
   #visitor                             { clear: both;
     li.menuitem-profile                { width: 30px;
       a                                { height: auto; margin: 0; padding: 5px 0 0; width: auto; }
     }
   }
 }
-.unauthenticated #visitor .btn         { margin: 5px 0 0 0; }
 
 
 // Containers
@@ -28,9 +26,9 @@ legend                                 { margin-bottom: 0; }
 #side > article + section,
 #side > article + article              { margin-top: @gridGutterWidth; }
 
-.ad                                     {
+.ad                                    {
   &.ad140x350                          { height: 350px; width: 140px; }
-  &.ad728x90                           { margin: -8px auto 10px auto; height: 90px; width: 728px; }
+  &.ad728x90                           { margin: 10px auto; height: 90px; width: 728px; }
 }
 
 section                                { overflow: hidden;
@@ -166,6 +164,7 @@ blockquote                             { font-family: @altFontFamily; font-style
   p                                    { font-family: @altFontFamily; font-size: inherit; line-height: inherit; }
 }
 .post footer                           { font: .75em/1.5 @monoFontFamily; .muted; }
+.permalink                             { padding-top: @navbarHeight; position: relative; top: -@navbarHeight; }
 
 // Galleries
 .thumbnails                            {

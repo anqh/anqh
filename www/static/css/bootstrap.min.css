@@ -825,18 +825,16 @@ a.label:hover,a.badge:hover{color:#ffffff;text-decoration:none;cursor:pointer;}
 .invisible{visibility:hidden;}
 .affix{position:fixed;}
 legend{margin-bottom:0;}
-#header{background:black;padding-top:40px;}
+#header{background:black;height:40px;padding-top:40px;}
 .navbar-fixed-top{background:rgba(0, 0, 0, 0.8);}
 #header .container{width:940px;}
-.navbar{background:#111111;}.navbar .brand{margin-left:0;}
+.navbar{background:#111111;margin-bottom:0;}.navbar .brand{margin-left:0;}
 .navbar .navbar-search{margin-top:0;}
-.navbar .form-search .btn{margin:0;}
 .navbar #visitor{clear:both;}.navbar #visitor li.menuitem-profile{width:30px;}.navbar #visitor li.menuitem-profile a{height:auto;margin:0;padding:5px 0 0;width:auto;}
-.unauthenticated #visitor .btn{margin:5px 0 0 0;}
 #title{margin-bottom:10px;}
 #side>section+section,#side>section+article,#side>article+section,#side>article+article{margin-top:20px;}
 .ad.ad140x350{height:350px;width:140px;}
-.ad.ad728x90{margin:-8px auto 10px auto;height:90px;width:728px;}
+.ad.ad728x90{margin:10px auto;height:90px;width:728px;}
 section{overflow:hidden;}section >header{position:relative;}section >header .nav{position:absolute;right:0;top:0;}
 section li .transparent{opacity:0.1;filter:alpha(opacity=10);}
 section li:hover .transparent{opacity:1;filter:alpha(opacity=100);}
@@ -902,6 +900,7 @@ a.friend{font-weight:bold;}
 #user textarea[name=signature]{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;}
 blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
 .post footer{font:0.75em/1.5 Menlo,Monaco,Consolas,"Courier New",monospace;color:#999999;}
+.permalink{padding-top:40px;position:relative;top:-40px;}
 .thumbnails h4{height:36px;overflow:hidden;}
 .thumbnails i+i{margin-left:10px;}
 .thumbnails i.icon-star+i.icon-star,.thumbnails i.icon-star+i.icon-star-empty,.thumbnails i.icon-star-empty+i.icon-star,.thumbnails i.icon-star-empty+i.icon-star-empty{margin-left:0;}

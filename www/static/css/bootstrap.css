@@ -4886,6 +4886,7 @@ legend {
 }
 #header {
   background: black;
+  height: 40px;
   padding-top: 40px;
 }
 .navbar-fixed-top {
@@ -4896,15 +4897,13 @@ legend {
 }
 .navbar {
   background: #111111;
+  margin-bottom: 0;
 }
 .navbar .brand {
   margin-left: 0;
 }
 .navbar .navbar-search {
   margin-top: 0;
-}
-.navbar .form-search .btn {
-  margin: 0;
 }
 .navbar #visitor {
   clear: both;
@@ -4917,9 +4916,6 @@ legend {
   margin: 0;
   padding: 5px 0 0;
   width: auto;
-}
-.unauthenticated #visitor .btn {
-  margin: 5px 0 0 0;
 }
 #title {
   margin-bottom: 10px;
@@ -4935,7 +4931,7 @@ legend {
   width: 140px;
 }
 .ad.ad728x90 {
-  margin: -8px auto 10px auto;
+  margin: 10px auto;
   height: 90px;
   width: 728px;
 }
@@ -5319,6 +5315,11 @@ blockquote p {
 .post footer {
   font: 0.75em/1.5 Menlo, Monaco, Consolas, "Courier New", monospace;
   color: #999999;
+}
+.permalink {
+  padding-top: 40px;
+  position: relative;
+  top: -40px;
 }
 .thumbnails h4 {
   height: 36px;
