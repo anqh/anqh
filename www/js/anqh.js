@@ -880,56 +880,46 @@ $(function() {
 
 
 	// Hover card
-	if ('popover' in $.fn) {
-		var hoverTimeout;
-		$(document).on({
-			mouseenter: function() {
-				var $this = $(this);
+	var hoverTimeout;
+	$(document).on({
+		mouseenter: function() {
+			var $this    = $(this)
+				, $popover = $this.data('popover');
 
-				// Load ajax only once
-				if (!$this.data('hovercard')) {
-					$this.data('hovercard', true);
+			// Initialize popover
+			if (!$popover) {
+				hoverTimeout = setTimeout(function _delay() {
+					$.get($this.attr('href') + '/hover', function _loaded(response) {
+						var $card = $(response);
 
-					// Use deferred to wait for ajax and delay before showing popover
-					var dfd = $.Deferred();
-					$.get($this.attr('href')+ '/hover', function cardLoaded(card) {
-						var $card = $(card);
-
-						// Create the popover when we have the contents
 						$this.popover({
-							title:   $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
-							content: $card.html(),
-							delay:   { show: 500, hide: 500 },
+							trigger:   'manual',
+							title:     $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
+							content:   $card.html(),
 							placement: function() {
-								return $this.offset().left > window.innerWidth / 2 ? 'left' : 'right';
+								var offset = $this.offset();
+
+								return offset.top < 100 ? 'bottom' : (offset.left > window.innerWidth / 2 ? 'left' : 'right');
 							}
 						});
 
-						// Ajax done
-						dfd.resolve();
-
+						$this.popover('show');
 					});
-
-					// Initial manual delay
-					hoverTimeout = setTimeout(function delay() {
-						dfd.done(function show() {
-							$this.popover('show');
-						});
-					}, 500);
-
-				}
-
-			},
-			mouseleave: function() {
-
-				// Don't show the popover if not hovering anymore
-				clearInterval(hoverTimeout);
-
+				}, 500);
+			} else {
+				$this.popover('show');
 			}
-		}, 'a.hoverable');
-	} else {
-		$('a.hoverable').hovercard();
-	}
+		},
+		mouseleave: function() {
+			var $this = $(this);
+
+			if (!$this.data('popover')) {
+				clearInterval(hoverTimeout);
+			} else {
+				$this.popover('hide');
+			}
+		}
+	}, 'a.hoverable');
 
 
 	// Theme
@@ -1039,7 +1029,7 @@ $(function() {
 			, limit      = $container.offset().top + $container.outerHeight() - $this.outerHeight();
 
 		$this.scrollToFixed({
-			marginTop: $('#header').outerHeight(),
+			marginTop: $('.navbar-fixed-top').outerHeight(),
 			limit:     limit,
 			preFixed:  function sticked() { $this.addClass('sticked'); },
 			postFixed: function unsticked() { $this.removeClass('sticked'); }
@@ -1091,16 +1081,19 @@ $(function() {
 
 
 	// Search
-	$('#form-search').on('submit', function _disable(event) {
-		return false;
-	});
-	$('#form-search [name=search-events]').autocompleteEvent({
-		action:   'redirect',
-		position: { collision: 'flip' }
-	});
-	$('#form-search [name=search-users]').autocompleteUser({
-		action:   'redirect',
-		position: { collision: 'flip' }
-	});
+	var $search = $('#form-search');
+	if ($search.length) {
+		$search.on('submit', function _disable(event) {
+			event.preventDefault();
+		});
+		$search.find('[name=search-events]').autocompleteEvent({
+			action:   'redirect',
+			position: { collision: 'flip' }
+		});
+		$search.find('[name=search-users]').autocompleteUser({
+			action:   'redirect',
+			position: { collision: 'flip' }
+		});
+	}
 
 });

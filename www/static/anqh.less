@@ -2,18 +2,22 @@
 @iconAjaxPath:                             "../img/ajax.gif";
 
 
-body                                   { padding-top: 90px; }
 legend                                 { margin-bottom: 0; }
 
 // Main menu
-.navbar                                {
+#header                                { background: black; padding-top: @navbarHeight; }
+.navbar-fixed-top                      { background: rgba(0, 0, 0, .8); }
+#header .container                     { #grid > .core > .span(@gridColumns); }
+.navbar                                { background: @navbarInverseBackground;
+  .brand                               { margin-left: 0; }
+  .navbar-search                       { margin-top: 0; }
   .form-search .btn                    { margin: 0; }
-  #visitor                             {
+  #visitor                             { clear: both;
     li.menuitem-profile                { width: 30px;
       a                                { height: auto; margin: 0; padding: 5px 0 0; width: auto; }
     }
     li.menu-me .dropdown-menu          { left: 0; right: auto; }
-	}
+  }
 }
 .unauthenticated #visitor .btn         { margin: 5px 0 0 0; }
 
@@ -24,6 +28,11 @@ legend                                 { margin-bottom: 0; }
 #side > section + article,
 #side > article + section,
 #side > article + article              { margin-top: @gridGutterWidth; }
+
+.ad                                     {
+  &.ad140x350                          { height: 350px; width: 140px; }
+  &.ad728x90                           { margin: -8px auto 10px auto; height: 90px; width: 728px; }
+}
 
 section                                { overflow: hidden;
   & > header                           { position: relative;

@@ -27,7 +27,8 @@ bootstrap:
 		bootstrap/js/bootstrap-popover.js \
 		bootstrap/js/bootstrap-scrollspy.js \
 		bootstrap/js/bootstrap-tab.js \
-		bootstrap/js/bootstrap-typeahead.js > js/bootstrap.js
+		bootstrap/js/bootstrap-typeahead.js \
+		bootstrap/js/bootstrap-affix.js > js/bootstrap.js
 	uglifyjs -nc js/bootstrap.js > js/bootstrap.min.js
 
 #
