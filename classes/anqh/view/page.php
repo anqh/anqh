@@ -422,15 +422,10 @@ endif; ?>
 
 	<nav id="mainmenu" role="navigation">
 		<?= HTML::anchor($this->base, Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		</a>
 
-		<ul class="nav nav-collapse" role="menubar">
+		<ul class="nav" role="menubar">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
-			<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], $item['text']) ?></li>
+			<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
 			<?php endforeach; ?>
 		</ul>
 	</nav><!-- #mainmenu -->
@@ -503,7 +498,7 @@ endif; ?>
 	protected function _search() {
 		ob_start();
 
-		echo Form::open(null, array('id' => 'form-search', 'class' => 'navbar-form form-search navbar-search pull-right'));
+		echo Form::open(null, array('id' => 'form-search', 'class' => 'navbar-form form-search navbar-search pull-right hidden-phone'));
 
 		echo Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters')));
 		echo Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters')));
@@ -537,7 +532,7 @@ endif; ?>
 
 ?>
 
-	<nav id="visitor" class="nav-collapse">
+	<nav id="visitor">
 		<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'navbar-form form-inline')) ?>
 		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
 		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
@@ -686,7 +681,7 @@ endif; ?>
 
 ?>
 
-	<nav id="visitor" class="nav-collapse navbar-text">
+	<nav id="visitor" class="navbar-text">
 		<ul class="nav" role="menubar">
 			<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
 			<li role="menuitem" class="menuitem-profile"><?= HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?></li>

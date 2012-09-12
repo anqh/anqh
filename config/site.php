@@ -56,12 +56,12 @@ return array(
 	 */
 	'menu' => array(
 //		'home'      => array('url' => URL::site(),                          'text' => __('Home')),
-		'events'    => array('url' => URL::site(Route::url('events')),      'text' => __('Events')),
-		'forum'     => array('url' => URL::site(Route::url('forum_group')), 'text' => __('Forum')),
-		'galleries' => array('url' => URL::site(Route::url('galleries')),   'text' => __('Galleries')),
-		'venues'    => array('url' => URL::site(Route::url('venues')),      'text' => __('Venues')),
-		'blogs'     => array('url' => URL::site(Route::url('blogs')),       'text' => __('Blogs')),
-		'members'   => array('url' => URL::site(Route::url('users')),       'text' => __('Members')),
+		'events'    => array('url' => URL::site(Route::url('events')),      'text' => __('Events'),    'icon' => 'icon-calendar'),
+		'forum'     => array('url' => URL::site(Route::url('forum_group')), 'text' => __('Forum'),     'icon' => 'icon-comment'),
+		'galleries' => array('url' => URL::site(Route::url('galleries')),   'text' => __('Galleries'), 'icon' => 'icon-picture'),
+		'venues'    => array('url' => URL::site(Route::url('venues')),      'text' => __('Venues'),    'icon' => 'icon-map-marker'),
+		'blogs'     => array('url' => URL::site(Route::url('blogs')),       'text' => __('Blogs'),     'icon' => 'icon-book'),
+		'members'   => array('url' => URL::site(Route::url('users')),       'text' => __('Members'),   'icon' => 'icon-user'),
 	),
 
 	/**
