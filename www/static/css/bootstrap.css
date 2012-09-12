@@ -4918,10 +4918,6 @@ legend {
   padding: 5px 0 0;
   width: auto;
 }
-.navbar #visitor li.menu-me .dropdown-menu {
-  left: 0;
-  right: auto;
-}
 .unauthenticated #visitor .btn {
   margin: 5px 0 0 0;
 }
