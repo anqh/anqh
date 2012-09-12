@@ -90,19 +90,17 @@ class Anqh_Controller_User extends Controller_Page {
 	 * Action: hover card
 	 */
 	public function action_hover() {
+		$this->history = false;
 
 		// Hover card works only with ajax
-		if (!$this->ajax) {
+		if ($this->_request_type !== Controller::REQUEST_AJAX) {
 			return $this->action_index();
 		}
 
 		if ($user = Model_User::find_user_light(urldecode((string)$this->request->param('username'))))	{
-			echo View_Module::factory('user/hovercard', array(
-				'mod_title' => HTML::chars($user['username']) . ' <small>#' . $user['id'] . '</small>',
-				'user'      => $user
-			));
+			$this->response->body(new View_User_HoverCard($user));
 		} else {
-			echo __('Member not found o_O');
+			$this->response->body(__('Member not found o_O'));
 		}
 	}
 
