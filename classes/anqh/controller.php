@@ -105,7 +105,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected $_response_format;
 
 	/**
-	 * @var  Session  Current session
+	 * @var  Model_Session  Current session
 	 */
 	public $session;
 
@@ -191,6 +191,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 
 			}
 			$this->_response_format = key($accept_types);
+
 		}
 
 	}

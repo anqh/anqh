@@ -19,6 +19,9 @@ abstract class Anqh_Controller_Page extends Controller {
 		$this->breadcrumb  = Session::instance()->get('breadcrumb', array());
 		$this->history     = $this->history && !$this->ajax;
 
+		// Initialize Ads
+		Ads::init();
+
 		// Load the template
 		if ($this->auto_render === true) {
 			$this->view = View_Page::factory();
@@ -121,7 +124,7 @@ head.js(
 
 
 			// Ads
-			$ads = Kohana::$config->load('site.ads');
+/*			$ads = Kohana::$config->load('site.ads');
 			if ($ads && $ads['enabled']) {
 				foreach ($ads['slots'] as $ad => $slot) {
 					if ($slot == 'side') {
@@ -130,7 +133,7 @@ head.js(
 						Widget::add($slot, View::factory('ads/' . $ad), Widget::MIDDLE);
 					}
 				}
-			}
+			}*/
 
 
 			// Do some CSS magic to page class

@@ -109,29 +109,6 @@ class Anqh_View_Page extends View_Base {
 
 
 	/**
-	 * Render brand/logo.
-	 *
-	 * @return  string
-	 */
-	protected function _brand() {
-		ob_start();
-
-?>
-
-	<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-	</a>
-	<a class="brand" href="<?php echo $this->base ?>"><?php echo Kohana::$config->load('site.site_name') ?></a>
-
-<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
 	 * Render a column.
 	 *
 	 * @param   string  $column
@@ -157,9 +134,11 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-			<div id="<?php echo $column ?>" class="<?php echo $class ?>">
+			<div id="<?= $column ?>" class="<?= $class ?>">
 
-				<?php echo implode("\n<!--<br />\n-->", $this->_content[$column]) ?>
+				<?= implode("\n<!--<br />\n-->", $this->_content[$column]) ?>
+
+				<?= Ads::slot($column) ?>
 
 			</div><!-- #<?php echo $column ?> -->
 
@@ -264,6 +243,8 @@ class Anqh_View_Page extends View_Base {
 
 		echo $this->foot();
 
+		echo Ads::foot();
+
 		return ob_get_clean();
 	}
 
@@ -354,15 +335,17 @@ class Anqh_View_Page extends View_Base {
 	<title><?php echo ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="<?php echo $this->base ?>ui/favicon.png" />
 
-	<?php echo $this->_styles() ?>
+	<?= $this->_styles() ?>
 
-	<?php echo $this->_skins() ?>
+	<?= $this->_skins() ?>
 
-	<?php echo HTML::style('ui/site.css') ?>
+	<?= HTML::style('ui/site.css') ?>
 
-	<?php echo HTML::script(Kohana::$environment == Kohana::PRODUCTION ? 'js/head.min.js' : 'js/head.js') ?>
+	<?= HTML::script(Kohana::$environment == Kohana::PRODUCTION ? 'js/head.min.js' : 'js/head.js') ?>
 
-	<?php echo $this->head(); ?>
+	<?= $this->head(); ?>
+
+	<?= Ads::head() ?>
 
 </head>
 
@@ -382,27 +365,43 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<header id="header" class="navbar navbar-fixed-top">
-		<div class="navbar-inner">
+	<header id="header" class="navbar navbar-inverse">
+
+		<div class="navbar-fixed-top">
 			<div class="container">
-
-<?= $this->_notifications() ?>
-
 				<div class="pull-left">
 
-<?= $this->_brand() ?><br />
 <?= $this->_mainmenu() ?>
 
 				</div>
 				<div class="pull-right">
 
-<?php if (self::$_user_id) echo $this->_search() . '<br />' ?>
-<?= $this->_visitor() ?>
+<?php if (self::$_user_id):
+	echo $this->_search();
+else:
+	echo HTML::anchor(
+		Route::url('sign', array('action' => 'up')),
+		__('Sign up, be happy!') . ' <i class="icon-heart icon-white"></i>',
+		array('class' => 'btn btn-success', 'title' => __("Did we mention it's FREE!"))
+	);
+endif; ?>
 
 				</div>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="pull-right">
+
+<?php if (self::$_user_id):
+	echo $this->_visitor();
+else:
+	echo $this->_signin();
+endif; ?>
 
 			</div>
 		</div>
+
 	</header><!-- #header -->
 
 <?php
@@ -422,55 +421,23 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 	<nav id="mainmenu" role="navigation">
+		<?= HTML::anchor($this->base, Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</a>
+
 		<ul class="nav nav-collapse" role="menubar">
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item) { ?>
-			<li role="menuitem" class="menu-<?php echo $id ?>"><a href="<?php echo $item['url'] ?>"><?php echo HTML::chars($item['text']) ?></a></li>
-			<?php } ?>
+			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
+			<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], $item['text']) ?></li>
+			<?php endforeach; ?>
 		</ul>
 	</nav><!-- #mainmenu -->
 
 <?php
 
 		return ob_get_clean();
-	}
-
-
-	/**
-	 * Add new notification.
-	 *
-	 * @static
-	 * @param   string  $message
-	 * @param   string  $type
-	 */
-	public static function notify($message, $type = null) {
-		self::$notifications[] = array(
-			'message' => $message,
-			'type'    => $type,
-		);
-	}
-
-
-	/**
-	 * Render notifications.
-	 *
-	 * @return  string
-	 */
-	protected function _notifications() {
-		if (self::$notifications) {
-			ob_start();
-
-			foreach (self::$notifications as $notification) {
-?>
-
-		<div role="alert"><?php echo $notification['message'] ?></div>
-
-<?php
-			}
-
-			return ob_get_clean();
-		}
-
-		return '';
 	}
 
 
@@ -485,38 +452,38 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <!doctype html>
-<html lang="<?php echo $this->language ?>">
+<html lang="<?= $this->language ?>">
 
-<?php echo $this->_head() ?>
+<?= $this->_head() ?>
 
-<body id="<?php echo $this->id ?>" class="<?php echo $this->class ?>">
+<body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
 
 	<!-- HEADER -->
 
-	<?php echo $this->_header() ?>
+	<?= $this->_header() ?>
 
 	<!-- /HEADER -->
 
 
-	<?php echo Widget::get('ad_top') ?>
+	<?= Ads::slot(Ads::TOP) ?>
 
 
 	<!-- CONTENT -->
 
-	<?php echo $this->_content() ?>
+	<?= $this->_content() ?>
 
 	<!-- /CONTENT -->
 
 
 	<!-- FOOTER -->
 
-	<?php echo $this->_footer() ?>
+	<?= $this->_footer() ?>
 
 	<!-- /FOOTER -->
 
 
-	<?php echo $this->_foot() ?>
+	<?= $this->_foot() ?>
 
 </body>
 
@@ -555,6 +522,31 @@ class Anqh_View_Page extends View_Base {
 		*/
 
 		echo Form::close();
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Login form.
+	 *
+	 * @return  string
+	 */
+	protected function _signin() {
+		ob_start();
+
+?>
+
+	<nav id="visitor" class="nav-collapse navbar-text">
+		<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'navbar-form form-inline')) ?>
+		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
+		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
+		<?= Form::button(null, __('Sign in'), array('class' => 'btn btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
+		<?= Form::hidden('remember', 'true') ?>
+		<?= Form::close(); ?>
+	</nav>
+
+<?php
 
 		return ob_get_clean();
 	}
@@ -692,18 +684,11 @@ class Anqh_View_Page extends View_Base {
 		));
 		*/
 
-		if (self::$_user_id):
-
-			// Authenticated user
 ?>
 
 	<nav id="visitor" class="nav-collapse navbar-text">
 		<ul class="nav" role="menubar">
-
-			<?php foreach (Anqh::notifications(self::$_user) as $class => $link): ?>
-			<li role="menuitem" class="<?= $class ?>"><?= $link ?></li>
-			<?php endforeach; ?>
-
+			<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
 			<li role="menuitem" class="menuitem-profile"><?= HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?></li>
 
 			<li class="dropdown menu-me" role="menuitem" aria-haspopup="true">
@@ -732,32 +717,6 @@ class Anqh_View_Page extends View_Base {
 
 
 <?php
-
-		else:
-
-			// Non-authenticated user
-
-?>
-
-	<nav id="visitor" class="nav-collapse navbar-text">
-		<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'navbar-form form-inline')) ?>
-		<?= Form::input('username', null, array('tabindex' => 1, 'class' => 'input-small', 'placeholder' => __('Username'), 'title' => __('TIP: You can also use email'))) ?>
-		<?= Form::password('password', null, array('tabindex' => 2, 'class' => 'input-small', 'placeholder' => __('Password'))) ?>
-		<?= Form::label(null, Form::checkbox('remember', 'true', true, array('tabindex' => 4)) . ' ' . __('Remember me'), array('class' => 'checkbox')) ?>
-		<?= Form::button(null, __('Sign in'), array('tabindex' => 3, 'class' => 'btn btn-primary')) ?>
-		<?= Form::close(); ?>
-
-		<?= HTML::anchor(Route::url('password'), __('Forgot your password?')) ?>
-		<?= HTML::anchor(
-			Route::url('sign', array('action' => 'up')),
-			__('Sign up, be happy!') . ' <i class="icon-heart icon-white"></i>',
-			array('class' => 'btn btn-large btn-success pull-right', 'title' => __("Did we mention it's FREE!"))
-		) ?>
-	</nav>
-
-<?php
-
-		endif;
 
 		return ob_get_clean();
 	}
