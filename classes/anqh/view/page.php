@@ -379,11 +379,7 @@ class Anqh_View_Page extends View_Base {
 <?php if (self::$_user_id):
 	echo $this->_search();
 else:
-	echo HTML::anchor(
-		Route::url('sign', array('action' => 'up')),
-		__('Sign up, be happy!') . ' <i class="icon-heart icon-white"></i>',
-		array('class' => 'btn btn-success', 'title' => __("Did we mention it's FREE!"))
-	);
+	echo $this->_signin();
 endif; ?>
 
 				</div>
@@ -396,7 +392,11 @@ endif; ?>
 <?php if (self::$_user_id):
 	echo $this->_visitor();
 else:
-	echo $this->_signin();
+	echo HTML::anchor(
+		Route::url('sign', array('action' => 'up')),
+		__('Sign up, be happy!') . ' <i class="icon-heart icon-white"></i>',
+		array('class' => 'btn btn-success', 'title' => __("Did we mention it's FREE!"))
+	);
 endif; ?>
 
 			</div>
@@ -693,25 +693,26 @@ endif; ?>
 
 			<li class="dropdown menu-me" role="menuitem" aria-haspopup="true">
 				<a class="dropdown-toggle" href="#" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
-				<ul class="dropdown-menu" role="menu">
-					<li role="menuitem"><a href="<?= URL::user(self::$_user->username) ?>"><i class="icon-home"></i> <?= __('Profile') ?></a><li>
-					<li role="menuitem"><a href="<?= Forum::private_messages_url() ?>"><i class="icon-envelope"></i> <?= __('Private messages') ?></a></li>
-					<li role="menuitem"><a href="<?= URL::user(self::$_user, 'friends') ?>"><i class="icon-heart"></i> <?=  __('Friends') ?></a></li>
-					<li role="menuitem"><a href="<?= URL::user(self::$_user, 'ignores') ?>"><i class="icon-ban-circle"></i> <?= __('Ignores') ?></a></li>
-					<li role="menuitem"><a href="<?= URL::user(self::$_user, 'settings') ?>"><i class="icon-cog"></i> <?= __('Settings') ?></a></li>
+				<ul class="dropdown-menu pull-right" role="menu">
+					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-home"></i> ' . __('Profile')) ?><li>
+					<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope"></i> ' . __('Private messages')) ?></li>
+					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart"></i> ' . __('Friends')) ?></li>
+					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle"></i> ' . __('Ignores')) ?></li>
+					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog"></i> ' . __('Settings')) ?></li>
 					<?php if (self::$_user->has_role('admin')) { ?>
 					<li class="divider"></li>
 					<li class="nav-header"><?= __('Admin functions') ?></li>
-					<li role="menuitem" class="admin"><a href="<?php echo Route::url('roles') ?>"><i class="icon-asterisk"></i> <?= __('Roles') ?></a></li>
-					<li role="menuitem" class="admin"><a href="<?php echo Route::url('tags') ?>"><i class="icon-tags"></i> <?= __('Tags') ?></a></li>
-					<li role="menuitem" class="admin"><a href="#debug" onclick="$('div.kohana').toggle();"> <i class="icon-signal"></i> <?= __('Profiler') ?></a></li>
+					<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk"></i> ' . __('Roles')) ?></li>
+					<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags"></i> ' . __('Tags')) ?></li>
+					<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
 					<?php } ?>
+					<li class="divider"></li>
+					<li role="menuitem">
+						<?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-off"></i> ' . __('Sign out')) ?>
+					</li>
 				</ul>
 			</li>
 
-			<li role="menuitem" class="menu-signout">
-				<?= HTML::anchor(Route::url('sign', array('action' => 'out')), __('Sign out')) ?>
-			</li>
 		</ul>
 	</nav><!-- #visitor -->
 
