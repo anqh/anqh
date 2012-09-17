@@ -480,7 +480,7 @@ class Anqh_Controller_User extends Controller_Page {
 	 * Get image slideshow.
 	 *
 	 * @param   Model_User  $user
-	 * @return  View_Generic_Carousel
+	 * @return  View_User_Carousel
 	 */
 	public function section_carousel(Model_User $user) {
 		return new View_User_Carousel($user);
