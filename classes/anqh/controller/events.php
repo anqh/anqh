@@ -129,13 +129,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view = View_Page::factory($event->name);
 
 		// Set actions
-		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
-				'link'  => Route::model($event, 'edit'),
-				'text'  => '<i class="icon-edit"></i> ' . __('Edit event'),
-				'class' => 'event-edit',
-			);
-		}
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
 			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array(
@@ -159,6 +152,18 @@ class Anqh_Controller_Events extends Controller_Page {
 			'link'  => Route::get('forum_event')->uri(array('id' => $event->id)),
 			'text'  => '<i class="icon-comment"></i> ' . __('Forum') . ' &raquo;',
 		);
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
+			$this->page_actions[] = array(
+				'link'  => Route::model($event, 'edit'),
+				'text'  => '<i class="icon-edit"></i> ' . __('Edit event'),
+				'class' => 'event-edit',
+			);
+			$this->page_actions[] = array(
+				'link'  => Route::model($event, 'image'),
+				'text'  => '<i class="icon-picture"></i> ' . __('Add flyer'),
+				'class' => 'btn'
+			);
+		}
 
 
 		// Share
@@ -178,23 +183,8 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 
-		// Event flyers
-		if (count($flyers = $event->flyers()) > 1) {
-			$images = array();
-			foreach ($flyers as $flyer) {
-				$images[] = $flyer->image();
-			}
-
-			$classes = array();
-			$event->flyer_front_image_id and $classes[$event->flyer_front_image_id] = 'front default active ';
-			$event->flyer_back_image_id and $classes[$event->flyer_back_image_id] = 'back ';
-			$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory('generic/image_slideshow', array(
-				'images'  => array_reverse($images),
-				'classes' => $classes,
-			)));
-		}
-
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_image($event));
+		// Flyers
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_carousel($event));
 
 		// Event side info
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
@@ -534,9 +524,6 @@ class Anqh_Controller_Events extends Controller_Page {
 			}
 		}
 
-		$this->view->errors = &$errors;
-		$this->view->event  = &$event;
-
 		$view = $this->section_flyer_upload(
 			Route::model($event, 'image'),
 			$this->_request_type === Controller::REQUEST_AJAX ? Route::model($event, 'image') . '?cancel' : Route::model($event),
@@ -544,7 +531,14 @@ class Anqh_Controller_Events extends Controller_Page {
 		);
 		if ($this->_request_type === Controller::REQUEST_AJAX) {
 			$this->response->body($view);
+
+			return;
 		}
+
+		// Build page
+		$this->view = View_Page::factory($event->name);
+
+		$this->view->add(View_Page::COLUMN_MAIN, $view);
 	}
 
 
@@ -844,6 +838,17 @@ class Anqh_Controller_Events extends Controller_Page {
 		$section->url_month = Route::url('events') . '/:year/:month';
 
 		return $section;
+	}
+
+
+	/**
+	 * Get image slideshow.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  View_Event_Carousel
+	 */
+	public function section_carousel(Model_Event $event) {
+		return new View_Event_Carousel($event);
 	}
 
 
