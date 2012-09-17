@@ -330,7 +330,6 @@ class Anqh_View_Page extends View_Base {
 	<meta charset="<?php echo Kohana::$charset ?>" />
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo Kohana::$charset ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-	<base href="<?php echo $this->base ?>" />
 
 	<title><?php echo ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="<?php echo $this->base ?>ui/favicon.png" />
