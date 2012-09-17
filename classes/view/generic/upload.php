@@ -10,6 +10,11 @@
 class View_Generic_Upload extends View_Article {
 
 	/**
+	 * @var  string  URL for action target
+	 */
+	public $action;
+
+	/**
 	 * @var  string  URL for cancel action
 	 */
 	public $cancel;
@@ -34,7 +39,7 @@ class View_Generic_Upload extends View_Article {
 				$cancel_attributes = null;
 			}
 
-			echo Form::open(null, array('enctype' => 'multipart/form-data'));
+			echo Form::open($this->action, array('enctype' => 'multipart/form-data'));
 
 ?>
 
