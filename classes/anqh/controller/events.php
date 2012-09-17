@@ -537,7 +537,11 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->errors = &$errors;
 		$this->view->event  = &$event;
 
-		$view = $this->section_flyer_upload($this->_request_type === Controller::REQUEST_AJAX ? Route::model($event, 'image') . '?cancel' : Route::model($event), $errors);
+		$view = $this->section_flyer_upload(
+			Route::model($event, 'image'),
+			$this->_request_type === Controller::REQUEST_AJAX ? Route::model($event, 'image') . '?cancel' : Route::model($event),
+			$errors
+		);
 		if ($this->_request_type === Controller::REQUEST_AJAX) {
 			$this->response->body($view);
 		}
@@ -1000,9 +1004,10 @@ class Anqh_Controller_Events extends Controller_Page {
 	 * @param   array   $errors
 	 * @return  View_Generic_Upload
 	 */
-	public function section_flyer_upload($cancel = null, $errors = null) {
+	public function section_flyer_upload($action = null, $cancel = null, $errors = null) {
 		$section = new View_Generic_Upload();
 		$section->title  = __('Add flyer');
+		$section->action = $action;
 		$section->cancel = $cancel;
 		$section->errors = $errors;
 
