@@ -894,9 +894,9 @@ a.friend{font-weight:bold;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
 #map{width:200px;height:150px;}
 .share .addthis_32x32_style{height:32px;}
+#carousel .carousel-control{top:35px;}
+#carousel .btn-group{bottom:5px;left:5px;position:absolute;}
 .ago{float:right;color:#999999;}
-#user #carousel .carousel-control{top:35px;}
-#user #carousel .btn-group{bottom:5px;left:5px;position:absolute;}
 #user textarea[name=signature]{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;}
 blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
 .post footer{font:0.75em/1.5 Menlo,Monaco,Consolas,"Courier New",monospace;color:#999999;}
