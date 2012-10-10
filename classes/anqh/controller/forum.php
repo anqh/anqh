@@ -26,11 +26,11 @@ class Anqh_Controller_Forum extends Controller_Page {
 		// Generic page actions
 		$this->page_actions[] = array(
 			'link'  => Route::url('forum'),
-			'text'  => '<i class="icon-comment"></i> ' . __('New posts'),
+			'text'  => '<i class="icon-comment icon-white"></i> ' . __('New posts'),
 		);
 		$this->page_actions[] = array(
 			'link'  => Route::url('forum_group'),
-			'text'  => '<i class="icon-folder-open"></i> ' . __('Areas'),
+			'text'  => '<i class="icon-folder-open icon-white"></i> ' . __('Areas'),
 		);
 		$this->page_id = 'forum';
 		$this->page_title = __('Forum');
@@ -42,7 +42,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		if (self::$user) {
 			$this->page_actions[] = array(
 				'link'  => Forum::private_messages_url(),
-				'text'  => '<i class="icon-envelope"></i> ' . __('Private messages'),
+				'text'  => '<i class="icon-envelope icon-white"></i> ' . __('Private messages'),
 			);
 			$this->tabs['private'] = array('url' => Forum::private_messages_url(), 'text' => __('Private messages'));
 		}

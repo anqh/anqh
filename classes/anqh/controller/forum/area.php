@@ -144,8 +144,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array(
 				'link'  => Route::model($area, 'edit', false),
-				'text'  => '<i class="icon-edit"></i> ' . __('Edit area'),
-				'class' => 'btn area-edit',
+				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit area'),
 			);
 		}
 

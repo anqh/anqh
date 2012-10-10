@@ -42,7 +42,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 					$text = __('replied to topic<br />:topic', array(
 						':topic' => HTML::anchor(
 							Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $item->data['post_id'])) . '#post-' . $item->data['post_id'],
-							'<i class="icon-comment"></i> ' . HTML::chars($topic->name),
+							'<i class="icon-comment icon-white"></i> ' . HTML::chars($topic->name),
 							array('title' => $topic->name)
 						)
 					));
@@ -55,7 +55,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 					$text = __('started a new topic<br />:topic', array(
 						':topic' => HTML::anchor(
 							Route::model($topic),
-							'<i class="icon-comment"></i> ' . HTML::chars($topic->name),
+							'<i class="icon-comment icon-white"></i> ' . HTML::chars($topic->name),
 							array('title' => $topic->name)
 						)
 					));

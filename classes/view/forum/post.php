@@ -123,16 +123,16 @@ class View_Forum_Post extends View_Article {
 					'id'       => Route::model_id($this->forum_post),
 					'topic_id' => Route::model_id($this->forum_topic),
 					'action'   => 'edit')),
-					'<i class="icon-edit"></i> ' . __('Edit'),
-				array('class' => 'btn btn-mini post-edit')) ?>
+					'<i class="icon-edit icon-white"></i> ' . __('Edit'),
+				array('class' => 'btn btn-inverse btn-mini post-edit')) ?>
 
 		<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, self::$_user)) echo HTML::anchor(
 				Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 					'id'       => Route::model_id($this->forum_post),
 					'topic_id' => Route::model_id($this->forum_topic),
 					'action'   => 'delete')) . '?token=' . Security::csrf(),
-					'<i class="icon-trash"></i> ' . __('Delete'),
-				array('class' => 'btn btn-mini post-delete')) ?>
+					'<i class="icon-trash icon-white"></i> ' . __('Delete'),
+				array('class' => 'btn btn-inverse btn-mini post-delete')) ?>
 
 		<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, self::$_user)) echo HTML::anchor(
 				Route::url($this->private ? 'forum_private_post' : 'forum_post', array(

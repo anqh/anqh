@@ -42,7 +42,7 @@ class View_Topics_Private extends View_Topics_Index {
 			<td class="topic">
 				<?= HTML::anchor(
 							Route::model($topic, '?page=last#last'),
-							'<i class="' . (($recipients = $topic->recipient_count) < 3 ? 'icon-envelope' : 'icon-comment') . '"></i> ' . HTML::chars($topic->name),
+							'<i class="' . (($recipients = $topic->recipient_count) < 3 ? 'icon-envelope' : 'icon-comment') . ' icon-white"></i> ' . HTML::chars($topic->name),
 							array(
 								'title' => $recipients < 3 ? __('Personal message') : __(':recipients recipients', array(':recipients' => Num::format($recipients, 0)))
 							)

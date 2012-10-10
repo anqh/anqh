@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Topic extends Controller_Forum {
@@ -198,8 +198,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array(
 				'link'  => Route::model($topic, 'edit'),
-				'text'  => '<i class="icon-edit"></i> ' . __('Edit topic'),
-				'class' => 'topic-edit'
+				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit topic'),
 			);
 		}
 
