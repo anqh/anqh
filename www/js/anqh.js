@@ -1081,18 +1081,18 @@ $(function() {
 
 
 	// Search
-	var $search = $('#form-search');
+	var $search = $('#form-search-events, #form-search-users');
 	if ($search.length) {
 		$search.on('submit', function _disable(event) {
 			event.preventDefault();
 		});
 		$search.find('[name=search-events]').autocompleteEvent({
 			action:   'redirect',
-			position: { collision: 'flip' }
+			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
 		});
 		$search.find('[name=search-users]').autocompleteUser({
 			action:   'redirect',
-			position: { collision: 'flip' }
+			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
 		});
 	}
 

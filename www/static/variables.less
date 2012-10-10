@@ -15,7 +15,7 @@
 @grayDark:              #333;
 @gray:                  #555;
 @grayLight:             #999;
-@grayLighter:           #eee;
+@grayLighter:           #c6c6c6; //#eee;
 @white:                 #fff;
 
 
@@ -33,8 +33,8 @@
 
 // Scaffolding
 // -------------------------
-@bodyBackground:        @white;
-@textColor:             @grayDark;
+@bodyBackground:        #1a1a1a;      //@white;
+@textColor:             @grayLighter; //@grayDark;
 
 
 // Links
@@ -49,7 +49,7 @@
 @serifFontFamily:       Georgia, "Times New Roman", Times, serif;
 @monoFontFamily:        Menlo, Monaco, Consolas, "Courier New", monospace;
 
-@baseFontSize:          13px;
+@baseFontSize:          12px;
 @baseFontFamily:        @sansFontFamily;
 @baseLineHeight:        18px;
 @altFontFamily:         @serifFontFamily;
@@ -64,7 +64,7 @@
 @tableBackground:                   transparent; // overall background-color
 @tableBackgroundAccent:             #f9f9f9; // for striping
 @tableBackgroundHover:              #f5f5f5; // for hover
-@tableBorder:                       #ddd; // table and cell border
+@tableBorder:                       @grayDark;  //#ddd; // table and cell border
 
 
 // Buttons
@@ -94,21 +94,21 @@
 
 // Forms
 // -------------------------
-@inputBackground:               @white;
-@inputBorder:                   #ccc;
+@inputBackground:               #202020;     //@white;
+@inputBorder:                   #111;        //#ccc;
 @inputBorderRadius:             3px;
-@inputDisabledBackground:       @grayLighter;
-@formActionsBackground:         #f5f5f5;
+@inputDisabledBackground:       @grayDark;   //@grayLighter;
+@formActionsBackground:         @grayDarker; //#f5f5f5;
 
 
 // Dropdowns
 // -------------------------
-@dropdownBackground:            @white;
-@dropdownBorder:                rgba(0,0,0,.2);
-@dropdownDividerTop:            #e5e5e5;
-@dropdownDividerBottom:         @white;
+@dropdownBackground:            #161616;     // @white;
+@dropdownBorder:                #1f1f1f;     // rgba(0,0,0,.2);
+@dropdownDividerTop:            @black;      // #e5e5e5;
+@dropdownDividerBottom:         @grayDarker; // @white;
 
-@dropdownLinkColor:             @grayDark;
+@dropdownLinkColor:             @linkColor;  // @grayDark;
 @dropdownLinkColorHover:        @white;
 @dropdownLinkBackgroundHover:   @dropdownLinkColor;
 
@@ -145,7 +145,7 @@
 
 // Hr border color
 // -------------------------
-@hrBorder:                @grayLighter;
+@hrBorder:                @black; //@grayLighter;
 
 
 // Horizontal forms & lists
@@ -155,7 +155,7 @@
 
 // Wells
 // -------------------------
-@wellBackground:                  #f5f5f5;
+@wellBackground:                  #202020; //#f5f5f5;
 
 
 // Navbar
@@ -198,9 +198,9 @@
 
 // Pagination
 // -------------------------
-@paginationBackground:                #fff;
-@paginationBorder:                    #ddd;
-@paginationActiveBackground:          #f5f5f5;
+@paginationBackground:                @black;    //#fff;
+@paginationBorder:                    #111;      //#ddd;
+@paginationActiveBackground:          @grayDark; //#f5f5f5;
 
 
 // Hero unit
@@ -236,9 +236,9 @@
 @tooltipArrowWidth:       5px;
 @tooltipArrowColor:       @tooltipBackground;
 
-@popoverBackground:       #fff;
+@popoverBackground:       @grayDarker; //#fff;
 @popoverArrowWidth:       10px;
-@popoverArrowColor:       #fff;
+@popoverArrowColor:       @grayDarker; //#fff;
 @popoverTitleBackground:  darken(@popoverBackground, 3%);
 
 // Special enhancement for popovers
