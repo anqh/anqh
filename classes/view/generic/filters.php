@@ -43,13 +43,13 @@ class View_Generic_Filters extends View_Section {
 
 <div class="btn-toolbar filters">
 	<div class="btn-group" data-toggle="buttons-checkbox">
-		<a data-filter="all" class="btn btn-mini active"><?php echo __('All') ?></a>
+		<a data-filter="all" class="btn btn-mini btn-inverse active"><?php echo __('All') ?></a>
 	</div>
 
 	<div class="btn-group" data-toggle="buttons-checkbox">
 
 		<?php foreach ($filter['filters'] as $key => $name) { ?>
-		<a data-filter="<?php echo $type . '-' . $key ?>" class="btn btn-mini"><?php echo HTML::chars($name) ?></a>
+		<a data-filter="<?php echo $type . '-' . $key ?>" class="btn btn-mini btn-inverse"><?php echo HTML::chars($name) ?></a>
 		<?php } ?>
 
 	</div>

@@ -68,7 +68,7 @@ class View_Index_Shouts extends View_Section {
 <?php if ($this->_can_shout) { ?>
 <form class="form-inline ajaxify" action="<?= Route::url('shouts', array('action' => 'shout')) ?>" method="post">
 	<input type="text" name="shout" maxlength="300" placeholder="<?= __('Shout, and ye shall be heard..') ?>" />
-	<button class="btn" type="submit" name="submit"><?= __('Shout') ?></button>
+	<button class="btn btn-inverse" type="submit" name="submit"><i class="icon-comment icon-white"></i></button>
 	<?= Form::CSRF() ?>
 </form>
 <?php
