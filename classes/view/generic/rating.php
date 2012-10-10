@@ -59,7 +59,7 @@ class View_Generic_Rating extends View_Base {
 
 <span class="rating">
 	<?php for ($r = 1; $r <= 5; $r++): ?>
-	<i class="<?= $rating >= $r - .5 ? 'icon-star' : 'icon-star-empty' ?>" title="<?= $r ?>"></i>
+	<i class="<?= $rating >= $r - .5 ? 'icon-star' : 'icon-star-empty' ?> icon-white" title="<?= $r ?>"></i>
 	<?php endfor; ?>
 	<?php if ($this->score): ?>
 	<var title="<?php echo __($this->count == 1 ? ':rates rating' : ':rates ratings', array(':rates' => $this->count)) ?>"><?php echo Num::format($rating, 2) ?></var>

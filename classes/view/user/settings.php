@@ -117,7 +117,7 @@ class View_User_Settings extends View_Section {
 	</fieldset>
 </div>
 
-<fieldset class="form-actions">
+<fieldset class="span8 form-actions">
 	<?= Form::hidden('latitude', $this->user->latitude) ?>
 	<?= Form::hidden('longitude', $this->user->longitude) ?>
 

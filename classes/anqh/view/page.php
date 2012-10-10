@@ -627,7 +627,7 @@ endif; ?>
 							// Action is a link
 							$attributes = $action;
 							unset($attributes['link'], $attributes['text']);
-							$attributes['class'] = isset($attributes['class']) ? 'btn ' . $attributes['class'] : 'btn';
+							$attributes['class'] = isset($attributes['class']) ? 'btn ' . $attributes['class'] : 'btn btn-inverse';
 							echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
 
 						else:

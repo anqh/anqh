@@ -418,14 +418,14 @@ class Anqh_Controller_User extends Controller_Page {
 				if (self::$user->is_friend($user)) {
 					$this->page_actions[] = array(
 						'link'  => URL::user($user, 'unfriend') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-heart"></i> ' . __('Remove friend'),
-						'class' => 'btn friend-delete'
+						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Remove friend'),
+						'class' => 'btn-inverse friend-delete'
 					);
 				} else {
 					$this->page_actions[] = array(
 						'link'  => URL::user($user, 'friend') . '?token=' . Security::csrf(),
 						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to friends'),
-						'class' => 'btn btn-primary friend-add'
+						'class' => 'btn-primary friend-add'
 					);
 				}
 			}
@@ -435,14 +435,13 @@ class Anqh_Controller_User extends Controller_Page {
 				if (self::$user->is_ignored($user)) {
 					$this->page_actions[] = array(
 						'link'  => URL::user($user, 'unignore') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-ban-circle"></i> ' . __('Unignore'),
-						'class' => 'btn ignore-delete'
+						'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Unignore'),
+						'class' => 'btn-inverse ignore-delete'
 					);
 				} else {
 					$this->page_actions[] = array(
 						'link'  => URL::user($user, 'ignore') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-ban-circle"></i> ' . __('Ignore'),
-						'class' => 'btn ignore-add'
+						'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ignore'),
 					);
 				}
 			}
@@ -451,23 +450,19 @@ class Anqh_Controller_User extends Controller_Page {
 			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
 				$this->page_actions[] = array(
 					'link'  =>  URL::user($user, 'friends'),
-					'text'  => '<i class="icon-heart"></i> ' . __('Friends'),
-					'class' => 'btn'
+					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Friends'),
 				);
 				$this->page_actions[] = array(
 					'link'  =>  URL::user($user, 'ignores'),
-					'text'  => '<i class="icon-ban-circle"></i> ' . __('Ingores'),
-					'class' => 'btn'
+					'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ingores'),
 				);
 				$this->page_actions[] = array(
 					'link'  =>  URL::user($user, 'settings'),
-					'text'  => '<i class="icon-cog"></i> ' . __('Settings'),
-					'class' => 'btn'
+					'text'  => '<i class="icon-cog icon-white"></i> ' . __('Settings'),
 				);
 				$this->page_actions[] = array(
 					'link'  => URL::user($user, 'image'),
-					'text'  => '<i class="icon-picture"></i> ' . __('Add image'),
-					'class' => 'btn'
+					'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add image'),
 				);
 			}
 
