@@ -61,7 +61,7 @@ class View_Blog_Edit extends View_Section {
 				Arr::get($this->errors, 'content')) ?>
 		</fieldset>
 
-		<fieldset>
+		<fieldset class="form-actions">
 			<?= Form::csrf(); ?>
 			<?= Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
 			<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>

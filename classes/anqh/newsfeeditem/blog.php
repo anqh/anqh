@@ -41,7 +41,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 					$text = __('commented to blog<br />:blog', array(
 						':blog' => HTML::anchor(
 							Route::model($entry),
-							'<i class="icon-book"></i> ' . HTML::chars($entry->name),
+							'<i class="icon-book icon-white"></i> ' . HTML::chars($entry->name),
 							array('title' => $entry->name)
 						)
 					));
@@ -54,7 +54,7 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 					$text = __('wrote a new blog entry<br />:blog', array(
 						':blog' => HTML::anchor(
 							Route::model($entry),
-							'<i class="icon-book"></i> ' . HTML::chars($entry->name),
+							'<i class="icon-book icon-white"></i> ' . HTML::chars($entry->name),
 							array('title' => $entry->name)
 						)
 					));
