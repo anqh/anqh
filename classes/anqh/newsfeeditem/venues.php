@@ -41,7 +41,7 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 			    $text = __('added new venue<br />:venue', array(
 				    ':venue' => HTML::anchor(
 					    Route::model($venue),
-				      '<i class="icon-map-marker"></i> ' . HTML::chars($venue->name),
+				      '<i class="icon-map-marker icon-white"></i> ' . HTML::chars($venue->name),
 					    array('class' => 'venue')
 				    )
 			    ));
@@ -54,7 +54,7 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 			    $text = __('updated venue<br />:venue', array(
 				    ':venue' => HTML::anchor(
 					    Route::model($venue),
-				     '<i class="icon-map-marker"></i> ' . HTML::chars($venue->name),
+				     '<i class="icon-map-marker icon-white"></i> ' . HTML::chars($venue->name),
 					    array('class' => 'venue')
 				    )
 			    ));

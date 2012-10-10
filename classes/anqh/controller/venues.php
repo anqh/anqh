@@ -272,15 +272,14 @@ class Anqh_Controller_Venues extends Controller_Page {
 		$this->page_actions[] = array(
 			'link'  => Route::url('venues'),
 			'text'  => '&laquo; ' . __('Back to Venues'),
-			'class' => 'btn'
 		);
 
 		// Set actions
 		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array(
 				'link'  => Route::model($venue, 'edit'),
-				'text'  => '<i class="icon-edit"></i> ' . __('Edit venue'),
-				'class' => 'btn venue-edit');
+				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit venue'),
+			);
 		}
 
 		// Events
