@@ -70,7 +70,7 @@ class View_Galleries_Thumbs extends View_Section {
 				foreach ($copyrights as &$copyright) $copyright = HTML::user($copyright);
 
 				echo '&copy; ', implode(', ', $copyrights), '<br />';
-				echo '<i class="icon-camera"></i> ', count($pending_images);
+				echo '<i class="icon-camera icon-white"></i> ', count($pending_images);
 
 			else:
 
@@ -80,11 +80,11 @@ class View_Galleries_Thumbs extends View_Section {
 				endif;
 
 				// Image count
-				echo '<i class="icon-camera"></i> ', $gallery->image_count;
+				echo '<i class="icon-camera icon-white"></i> ', $gallery->image_count;
 
 				// Comment count
 				if ($gallery->comment_count > 0):
-					echo '<i class="icon-comment"></i> ', $gallery->comment_count;
+					echo '<i class="icon-comment icon-white"></i> ', $gallery->comment_count;
 				endif;
 
 				// Copyright

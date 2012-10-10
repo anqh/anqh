@@ -56,7 +56,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 					$text = __('commented to an image<br />:gallery', array(
 						':gallery' => HTML::anchor(
 							Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-							'<i class="icon-camera"></i> ' . HTML::chars($gallery->name),
+							'<i class="icon-camera icon-white"></i> ' . HTML::chars($gallery->name),
 							array('class' => 'hoverable')
 						)
 					));
@@ -69,7 +69,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 					$text = __('commented to a flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
 							Route::url('flyer', array('id' => $flyer->id)),
-							'<i class="icon-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+							'<i class="icon-picture icon-white"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
 							array('class' => 'hoverable')
 						)
 					));
@@ -82,7 +82,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 					$text = __('updated flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
 							Route::url('flyer', array('id' => $flyer->id)),
-							'<i class="icon-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+							'<i class="icon-picture icon-white"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
 							array('class' => 'hoverable')
 						)
 					));
@@ -98,7 +98,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 						':user' => HTML::user($user),
 						':gallery' => HTML::anchor(
 							Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-							'<i class="icon-tag"></i> ' . HTML::chars($gallery->name),
+							'<i class="icon-tag icon-white"></i> ' . HTML::chars($gallery->name),
 							array('class' => 'hoverable')
 						)
 					));

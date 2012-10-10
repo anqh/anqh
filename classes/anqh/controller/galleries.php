@@ -293,7 +293,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			// Set actions
 			$this->page_actions[] = array(
 				'link' => Route::model($event),
-				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
+				'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;'
 			);
 
 			$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_empty($event));
@@ -637,7 +637,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array(
 				'link'  => Route::model($gallery, 'update'),
-				'text'  => '<i class="icon-refresh"></i> ' . __('Update gallery'),
+				'text'  => '<i class="icon-refresh icon-white"></i> ' . __('Update gallery'),
 			);
 		}
 
@@ -877,15 +877,15 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
 				$this->page_actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-home"></i> ' . __('Set default'),
-					'class' => 'image-default'
+					'text'  => '<i class="icon-home icon-white"></i> ' . __('Set default'),
+					'class' => 'btn-inverse image-default'
 				);
 			}
 			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
 				$this->page_actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-trash"></i> ' . __('Delete'),
-					'class' => 'image-delete'
+					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete'),
+					'class' => 'btn-inverse image-delete'
 				);
 			}
 
@@ -1328,11 +1328,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function _set_flyer_actions(Model_Flyer $flyer = null) {
 		$this->page_actions[] = array(
 			'link' => Route::get('flyer')->uri(array('id' => 'undated')),
-			'text' => '<i class="icon-random"></i> ' . __('Random undated flyer'),
+			'text' => '<i class="icon-random icon-white"></i> ' . __('Random undated flyer'),
 		);
 		$this->page_actions[] = array(
 			'link' => Route::get('flyer')->uri(array('id' => 'random')),
-			'text' => '<i class="icon-random"></i> ' . __('Random flyer'),
+			'text' => '<i class="icon-random icon-white"></i> ' . __('Random flyer'),
 		);
 
 		if ($flyer) {
@@ -1353,7 +1353,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if ($event = $flyer->event()) {
 				$this->page_actions[] = array(
 					'link'  => Route::model($event),
-					'text'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
+					'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;',
 				);
 			}
 		}
@@ -1375,11 +1375,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 		$this->page_actions['browse'] = array(
 			'link' => Route::url('galleries', array('action' => 'browse')),
-			'text' => '<i class="icon-camera"></i> ' . __('Browse galleries')
+			'text' => '<i class="icon-camera icon-white"></i> ' . __('Browse galleries')
 		);
 		$this->page_actions['flyers'] = array(
 			'link' => Route::url('flyers', array('action' => '')),
-			'text' => '<i class="icon-picture"></i> ' . __('Browse flyers')
+			'text' => '<i class="icon-picture icon-white"></i> ' . __('Browse flyers')
 		);
 	}
 
@@ -1404,7 +1404,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if ($event = $gallery->event()) {
 			$this->page_actions[] = array(
 				'link' => Route::model($event),
-				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
+				'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;'
 			);
 		}
 
@@ -1417,11 +1417,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function _set_random_actions() {
 		$this->page_actions[] = array(
 			'link' => Route::url('flyer', array('id' => 'undated')),
-			'text' => '<i class="icon-random"></i> ' . __('Random undated flyer')
+			'text' => '<i class="icon-random icon-white"></i> ' . __('Random undated flyer')
 		);
 		$this->page_actions[] = array(
 			'link' => Route::url('flyer', array('id' => 'random')),
-			'text' => '<i class="icon-random"></i> ' . __('Random flyer')
+			'text' => '<i class="icon-random icon-white"></i> ' . __('Random flyer')
 		);
 	}
 

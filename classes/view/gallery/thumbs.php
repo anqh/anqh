@@ -137,8 +137,8 @@ class View_Gallery_Thumbs extends View_Section {
 			if (!$this->show_pending) {
 
 				// Info
-				echo '<i class="icon-comment"></i> ' . (int)$image->comment_count;
-				echo '<i class="icon-eye-open"></i> ' . (int)$image->view_count;
+				echo '<i class="icon-comment icon-white"></i> ' . (int)$image->comment_count;
+				echo '<i class="icon-eye-open icon-white"></i> ' . (int)$image->view_count;
 
 			} else {
 

@@ -39,8 +39,8 @@ class View_Image_Info extends View_Section {
 			__('Copyright')  => $this->image->author_id ? HTML::user($this->image->author_id) : null,
 			__('Added')      => HTML::time(Date::format('DMYYYY_HM', $this->image->created), $this->image->created),
 			__('Statistics') =>
-				'<i class="icon-comment"></i> ' . (int)$this->image->comment_count . ', ' .
-				'<i class="icon-eye-open"></i> ' . (int)$this->image->view_count
+				'<i class="icon-comment icon-white"></i> ' . (int)$this->image->comment_count . ', ' .
+				'<i class="icon-eye-open icon-white"></i> ' . (int)$this->image->view_count
 		);
 
 		// Image EXIF

@@ -181,7 +181,7 @@ class View_Image_Full extends View_Section {
 
 			// Add note action
 			if ($this->can_note):
-				echo '<li><a href="#" class="btn btn-mini note-add"><i class="icon-tag"></i> ', __('Tag people'), '</a></li>';
+				echo '<li><a href="#" class="btn btn-inverse btn-mini note-add"><i class="icon-tag icon-white"></i> ', __('Tag people'), '</a></li>';
 			endif;
 
 ?>
