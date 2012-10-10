@@ -35,14 +35,14 @@ var Anqh = {
 				dialogClass: 'confirm-delete',
 				modal: true,
 				close: function(ev, ui) { $(this).remove(); },
-				closeText: '✕',
+				closeText: '☓',
 /*				buttons: {
 					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
 					'✕ No, cancel': function() { $(this).dialog('close'); }
 				},*/
 				buttons: [
 					{ 'text': '✓ Yes, do it!', 'class': 'btn btn-danger', click: function() { $(this).dialog('close'); action(); } },
-					{ 'text': '✕ No, cancel',  'class': 'btn', click: function() { $(this).dialog('close'); } }
+					{ 'text': '☓ No, cancel',  'class': 'btn btn-inverse', click: function() { $(this).dialog('close'); } }
 				]
 			});
 		} else {

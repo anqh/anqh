@@ -19,6 +19,7 @@ h1,
 h2,
 h3                                     { /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .5);*/ }
 
+legend                                 { border-bottom: 1px solid #111; box-shadow: 0 1px 0 @grayDarker; color: @grayLighter; }
 textarea,
 input[type="text"],
 input[type="password"],
@@ -34,8 +35,11 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"],
-.uneditable-input                      { box-shadow: inset 0 1px 7px rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .1); }
+.uneditable-input                      { box-shadow: inset 0 1px 7px rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .1); color: @white; }
+select                                 { color: @white; }
 .form-actions                          { border-top: #111; }
+.input-append .add-on,
+.input-prepend .add-on                 { background: @grayDarker; border-color: @inputBorder; text-shadow: 0 1px 0 @black; }
 
 .pager                                 {
   a,
@@ -45,6 +49,8 @@ input[type="color"],
   .disabled a:hover,
   .disabled span                       { background-color: @grayDarker; }
 }
+
+.thumbnail                             { border: 1px solid @grayDark; }
 
 blockquote                             { border-left-color: @grayDark; }
 
@@ -104,19 +110,19 @@ footer.meta                            { color: @grayLight; }
 
 
 // jQuery UI
-.ui-dialog                             { background: @bodyBackground; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); .border-radius(6px); .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
+.ui-dialog                             { background: @grayDark; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); border-radius: 6px; .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
   &.fade                               { .transition(e('opacity .3s linear, top .3s ease-out')); top: -25%; }
   &.fade.in                            { top: 50%; }
-  .ui-dialog-titlebar                  { border-bottom: 1px solid #eee; cursor: move; padding: 9px 15px;
+  .ui-dialog-titlebar                  { border-bottom: 1px solid rgba(0, 0, 0, .3); cursor: move; padding: 9px 15px;
     .ui-dialog-titlebar-close          { float: right; }
   }
   .ui-dialog-content                   { padding: 15px; }
-  .ui-dialog-buttonpane                { background-color: #f5f5f5; .border-radius(0 0 6px 6px); border-top: 1px solid #ddd; .box-shadow(inset 0 1px 0 @white); margin-bottom: 0; padding: 14px 15px 15px; .clearfix();
+  .ui-dialog-buttonpane                { background-color: @grayDarker; border-radius: 0 0 6px 6px; border-top: 1px solid rgba(0, 0, 0, .3); .box-shadow(inset 0 1px 0 @black); margin-bottom: 0; padding: 14px 15px 15px; .clearfix();
     button                             { float: right; margin-left: 5px; margin-bottom: 0; }
   }
 }
 
-#ui-widget                             { background: @bodyBackground; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); .border-radius(4px); .box-shadow(0 5px 10px rgba(0,0,0,.2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; }
+#ui-widget                             { background: @grayDark; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, .2); border-radius: 4px; .box-shadow(0 5px 10px rgba(0, 0, 0, .2)); margin-top: 2px; max-width: 300px; min-width: 160px; overflow: hidden; }
 .ui-widget:not(.ui-datepicker-inline)  { #ui-widget; z-index: @zindexDropdown; }
 .ui-autocomplete-loading               { background-image: url("@{iconAjaxPath}"); background-position: right center; background-repeat: no-repeat; }
 .ui-autocomplete                       { max-height: 200px;
@@ -233,8 +239,8 @@ div.image                              { text-align: center;
 	  a.image                            { display: inline-block; }
 
     .note                              { cursor: help; position: absolute; }
-    .notea                             { border: 1px solid rgba(255, 255, 255, .75); .border-radius(2px); .box-shadow(0 5px 10px rgba(0, 0, 0, .75)); position: relative; visibility: hidden; }
-    /*.notea:before                      { border: 1px solid black; .border-radius(3px); content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
+    .notea                             { border: 1px solid rgba(255, 255, 255, .75); border-radius: 2px; .box-shadow(0 5px 10px rgba(0, 0, 0, .75)); position: relative; visibility: hidden; }
+    /*.notea:before                      { border: 1px solid black; border-radius: 3px; content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
     .notet                             { .opacity(0); margin-top: @gridGutterWidth; .transition(opacity .25s ease-in-out); }
     .note:hover .notet                 { .opacity(100); }
   }

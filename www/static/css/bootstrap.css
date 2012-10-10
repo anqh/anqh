@@ -942,15 +942,15 @@ input[type="checkbox"]:focus {
 }
 input:-moz-placeholder,
 textarea:-moz-placeholder {
-  color: #999999;
+  color: #333333;
 }
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
-  color: #999999;
+  color: #333333;
 }
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
-  color: #999999;
+  color: #333333;
 }
 .radio,
 .checkbox {
@@ -4900,6 +4900,7 @@ h2 {
 }
 h3 {
   font-size: 18px;
+  line-height: 20px;
 }
 h4 {
   font-size: 14px;
@@ -4927,6 +4928,11 @@ h2,
 h3 {
   /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .5);*/
 }
+legend {
+  border-bottom: 1px solid #111;
+  box-shadow: 0 1px 0 #222222;
+  color: #c6c6c6;
+}
 textarea,
 input[type="text"],
 input[type="password"],
@@ -4944,9 +4950,19 @@ input[type="tel"],
 input[type="color"],
 .uneditable-input {
   box-shadow: inset 0 1px 7px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+select {
+  color: #ffffff;
 }
 .form-actions {
   border-top: #111;
+}
+.input-append .add-on,
+.input-prepend .add-on {
+  background: #222222;
+  border-color: #111111;
+  text-shadow: 0 1px 0 #000000;
 }
 .pager a,
 .pager span {
@@ -4960,6 +4976,9 @@ input[type="color"],
 .pager .disabled a:hover,
 .pager .disabled span {
   background-color: #222222;
+}
+.thumbnail {
+  border: 1px solid #333333;
 }
 blockquote {
   border-left-color: #333333;
@@ -5021,7 +5040,7 @@ section  > header {
 section  > header .nav {
   position: absolute;
   right: 0;
-  top: 0;
+  top: -5px;
 }
 section li .transparent {
   opacity: 0.1;
@@ -5059,14 +5078,12 @@ footer.meta {
   display: none;
 }
 .ui-dialog {
-  background: #1a1a1a;
+  background: #333333;
   -webkit-background-clip: padding-box;
   -moz-background-clip: padding-box;
   background-clip: padding-box;
   border: 1px solid #999;
   border: 1px solid rgba(0, 0, 0, 0.3);
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
   border-radius: 6px;
   -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
@@ -5084,7 +5101,7 @@ footer.meta {
   top: 50%;
 }
 .ui-dialog .ui-dialog-titlebar {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   cursor: move;
   padding: 9px 15px;
 }
@@ -5095,14 +5112,12 @@ footer.meta {
   padding: 15px;
 }
 .ui-dialog .ui-dialog-buttonpane {
-  background-color: #f5f5f5;
-  -webkit-border-radius: 0 0 6px 6px;
-  -moz-border-radius: 0 0 6px 6px;
+  background-color: #222222;
   border-radius: 0 0 6px 6px;
-  border-top: 1px solid #ddd;
-  -webkit-box-shadow: inset 0 1px 0 #ffffff;
-  -moz-box-shadow: inset 0 1px 0 #ffffff;
-  box-shadow: inset 0 1px 0 #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 1px 0 #000000;
+  -moz-box-shadow: inset 0 1px 0 #000000;
+  box-shadow: inset 0 1px 0 #000000;
   margin-bottom: 0;
   padding: 14px 15px 15px;
   *zoom: 1;
@@ -5122,11 +5137,9 @@ footer.meta {
   margin-bottom: 0;
 }
 #ui-widget {
-  background: #1a1a1a;
+  background: #333333;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
   border-radius: 4px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -5137,11 +5150,9 @@ footer.meta {
   overflow: hidden;
 }
 .ui-widget:not(.ui-datepicker-inline) {
-  background: #1a1a1a;
+  background: #333333;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
   border-radius: 4px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -5429,7 +5440,7 @@ div.image figure {
   display: inline-block;
   margin: 0;
   position: relative;
-  /*.notea:before                      { border: 1px solid black; .border-radius(3px); content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
+  /*.notea:before                      { border: 1px solid black; border-radius: 3px; content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
 
 }
 div.image figure a.image {
@@ -5441,8 +5452,6 @@ div.image figure .note {
 }
 div.image figure .notea {
   border: 1px solid rgba(255, 255, 255, 0.75);
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
   border-radius: 2px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.75);
@@ -5470,11 +5479,9 @@ div.image ul.notes li {
   display: inline;
 }
 div.image #form-note {
-  background: #1a1a1a;
+  background: #333333;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
   border-radius: 4px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
