@@ -133,8 +133,8 @@ class Anqh_Controller_Events extends Controller_Page {
 			if ($event->is_favorite(self::$user)) {
 				$this->page_actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-heart"></i> ' . __('Remove favorite'),
-					'class' => 'favorite-delete',
+					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Remove favorite'),
+					'class' => 'btn-inverse favorite-delete',
 				);
 			} else {
 				$this->page_actions[] = array(
@@ -146,22 +146,20 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 		$this->page_actions[] = array(
 			'link'  => Route::get('gallery_event')->uri(array('id' => $event->id)),
-			'text'  => '<i class="icon-camera"></i> ' . __('Gallery') . ' &raquo;',
+			'text'  => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
 		);
 		$this->page_actions[] = array(
 			'link'  => Route::get('forum_event')->uri(array('id' => $event->id)),
-			'text'  => '<i class="icon-comment"></i> ' . __('Forum') . ' &raquo;',
+			'text'  => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
 		);
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
 			$this->page_actions[] = array(
 				'link'  => Route::model($event, 'edit'),
-				'text'  => '<i class="icon-edit"></i> ' . __('Edit event'),
-				'class' => 'event-edit',
+				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit event'),
 			);
 			$this->page_actions[] = array(
 				'link'  => Route::model($event, 'image'),
-				'text'  => '<i class="icon-picture"></i> ' . __('Add flyer'),
-				'class' => 'btn'
+				'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add flyer'),
 			);
 		}
 
@@ -606,7 +604,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (Permission::has(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user)) {
 			$this->page_actions[] = array(
 				'link' => Route::url('events', array('action' => 'flyers')),
-				'text' => '<i class="icon-download-alt"></i> ' . __('Import flyers'),
+				'text' => '<i class="icon-download-alt icon-white"></i> ' . __('Import flyers'),
 			);
 		}
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
@@ -906,9 +904,9 @@ class Anqh_Controller_Events extends Controller_Page {
 			$actions = array();
 			$actions[] = HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' . __('Add flyer'), array('class' => 'btn btn-small btn-primary image-add ajaxify'));
 			if ($image) {
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&front=' . $image->id,  __('As front'), array('class' => 'btn btn-small image-change' . ($event->flyer_front_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'front'));
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&back=' . $image->id,   __('As back'),  array('class' => 'btn btn-small image-change' . ($event->flyer_back_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'back'));
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-small image-delete'));
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&front=' . $image->id,  __('As front'), array('class' => 'btn btn-small btn-inverse image-change' . ($event->flyer_front_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'front'));
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&back=' . $image->id,   __('As back'),  array('class' => 'btn btn-small btn-inverse image-change' . ($event->flyer_back_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'back'));
+				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-small btn-inverse image-delete'));
 			}
 		} else {
 			$actions = null;
