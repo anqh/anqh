@@ -519,15 +519,15 @@ endif; ?>
 
 	<nav id="visitor">
 		<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'navbar-form form-inline')) ?>
-		<?= HTML::anchor(
-				Route::url('sign', array('action' => 'up')),
-				__('Sign up') . ' <i class="icon-heart icon-white"></i>',
-				array('class' => 'btn btn-success', 'title' => __("Did we mention it's FREE!"))
-			) ?>
 		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
 		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
 		<?= Form::button(null, __('Sign in'), array('class' => 'btn btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
 		<?= Form::hidden('remember', 'true') ?>
+		<?= HTML::anchor(
+				Route::url('sign', array('action' => 'up')),
+				__('Sign up') . ' <i class="icon-heart icon-white"></i>',
+				array('class' => 'btn btn-lovely', 'title' => __("Did we mention it's FREE!"))
+			) ?>
 		<?= Form::close(); ?>
 	</nav>
 
