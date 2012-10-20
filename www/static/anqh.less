@@ -3,9 +3,11 @@
 
 // Bootstrap overrides
 body                                   { background: @bodyBackground url(../img/background.png); padding-top: @navbarHeight + 10px; }
+a                                      { color: @anchorColor; }
+a:hover                                { color: @anchorColorHover; }
 hr                                     { border-bottom-color: @grayDarker; }
 legend                                 { margin-bottom: 0; }
-h1                                     { font-size: 30px; letter-spacing: 1px; }
+h1                                     { font-size: 30px; font-weight: normal; letter-spacing: 1px; text-shadow: 0 3px 0 fade(@textColor, 20%); }
 h2                                     { font-size: 24px; }
 h3                                     { font-size: 18px; line-height: 20px; }
 h4                                     { font-size: 14px; }
@@ -158,9 +160,13 @@ footer.meta                            { color: @grayLight; }
 // Miscellaneous
 .label-special                         { background-color: @purple; }
 .label-special:hover                   { background-color: darken(@purple, 10%); }
+.btn-lovely                            { .buttonBackground(lighten(@pink, 15%), @pink); }
 .btn-special                           { .buttonBackground(lighten(@purple, 15%), @purple); }
+.btn-lovely,
+.btn-lovely:hover,
 .btn-special,
 .btn-special:hover                     { color: @white; text-shadow: 0 -1px 0 rgba(0,0,0,.25); }
+.bth-lovely.active,
 .btn-special.active                    { color: rgba(255, 255, 255, .75); }
 
 .input-max                             { width: 100%; }
@@ -170,12 +176,12 @@ input.private                          { border-color: @purple; }
 //p.cut,
 .cut li                                { .text-overflow; }
 
-a.user                                 { color: @grayLight; }
+a.user                                 { color: @grayLighter; }
 .male,
 a.male                                 { color: @blueDark; }
 .female,
 a.female                               { color: @pink; }
-a.user:hover                           { color: @linkColorHover; }
+a.user:hover                           { color: @anchorColorHover; }
 a.friend                               { font-weight: bold; }
 .avatar                                { display: inline-block; float: left; margin: 5px 10px 5px 0; .square(50px); text-align: center;
   img                                  { max-height: 100%; max-width: 100%; }
@@ -183,7 +189,7 @@ a.friend                               { font-weight: bold; }
 
 .popover                               {
   figure                               { text-align: center; }
-  .stats                               { position: absolute; right: 17px; top: 17px; }
+  .stats                               { background: @popoverTitleBackground; padding: 0 2px; position: absolute; right: 10px; top: 10px; }
 }
 
 // BBCode

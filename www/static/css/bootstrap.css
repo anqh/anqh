@@ -148,7 +148,7 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   line-height: 18px;
-  color: #c6c6c6;
+  color: #999999;
   background-color: #1a1a1a;
 }
 a {
@@ -1261,7 +1261,7 @@ select:focus:required:invalid:focus {
 }
 .help-block,
 .help-inline {
-  color: #ececec;
+  color: #bfbfbf;
 }
 .help-block {
   display: block;
@@ -4885,6 +4885,12 @@ body {
   background: #1a1a1a url(../img/background.png);
   padding-top: 50px;
 }
+a {
+  color: #c6c6c6;
+}
+a:hover {
+  color: #a0a0a0;
+}
 hr {
   border-bottom-color: #222222;
 }
@@ -4893,7 +4899,9 @@ legend {
 }
 h1 {
   font-size: 30px;
+  font-weight: normal;
   letter-spacing: 1px;
+  text-shadow: 0 3px 0 rgba(153, 153, 153, 0.2);
 }
 h2 {
   font-size: 24px;
@@ -5265,6 +5273,37 @@ footer.meta {
 .label-special:hover {
   background-color: #613591;
 }
+.btn-lovely {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #d0537a;
+  background-image: -moz-linear-gradient(top, #d9698c, #c3325f);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d9698c), to(#c3325f));
+  background-image: -webkit-linear-gradient(top, #d9698c, #c3325f);
+  background-image: -o-linear-gradient(top, #d9698c, #c3325f);
+  background-image: linear-gradient(to bottom, #d9698c, #c3325f);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9698c', endColorstr='#ffc3325f', GradientType=0);
+  border-color: #c3325f #c3325f #862241;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #c3325f;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.btn-lovely:hover,
+.btn-lovely:active,
+.btn-lovely.active,
+.btn-lovely.disabled,
+.btn-lovely[disabled] {
+  color: #ffffff;
+  background-color: #c3325f;
+  *background-color: #af2d55;
+}
+.btn-lovely:active,
+.btn-lovely.active {
+  background-color: #9a284b \9;
+}
 .btn-special {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
@@ -5296,11 +5335,14 @@ footer.meta {
 .btn-special.active {
   background-color: #613591 \9;
 }
+.btn-lovely,
+.btn-lovely:hover,
 .btn-special,
 .btn-special:hover {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
+.bth-lovely.active,
 .btn-special.active {
   color: rgba(255, 255, 255, 0.75);
 }
@@ -5319,7 +5361,7 @@ input.private {
   white-space: nowrap;
 }
 a.user {
-  color: #999999;
+  color: #c6c6c6;
 }
 .male,
 a.male {
@@ -5330,7 +5372,7 @@ a.female {
   color: #c3325f;
 }
 a.user:hover {
-  color: #005580;
+  color: #a0a0a0;
 }
 a.friend {
   font-weight: bold;
@@ -5351,9 +5393,11 @@ a.friend {
   text-align: center;
 }
 .popover .stats {
+  background: #1a1a1a;
+  padding: 0 2px;
   position: absolute;
-  right: 17px;
-  top: 17px;
+  right: 10px;
+  top: 10px;
 }
 .markItUpHeader {
   height: 28px;
