@@ -141,7 +141,7 @@ class Anqh_View_Page extends View_Base {
 
 			<div id="<?= $column ?>" class="<?= $class ?>">
 
-				<?= implode("\n<hr /><!--<br />\n-->", $this->_content[$column]) ?>
+				<?= implode("\n", $this->_content[$column]) ?>
 
 				<?= Ads::slot($column) ?>
 
@@ -476,38 +476,6 @@ endif; ?>
 
 
 	/**
-	 * Render search.
-	 *
-	 * @return  string
-	 */
-	protected function _search() {
-		ob_start();
-
-		echo Form::open(null, array('id' => 'form-search', 'class' => 'navbar-form form-search navbar-search pull-right hidden-phone'));
-
-		echo Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters')));
-		echo Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters')));
-
-		/*
-?>
-
-	<div class="input-append">
-
-		<?= Form::input('search', null, array('class' => 'input-medium search-query', 'placeholder' => __('Search..'))) .
-		    Form::button(null, '<i class="icon-search icon-white"></i>', array('class' => 'btn btn-inverse')) ?>
-
-	</div>
-
-<?php
-		*/
-
-		echo Form::close();
-
-		return ob_get_clean();
-	}
-
-
-	/**
 	 * Login form.
 	 *
 	 * @return  string
@@ -688,7 +656,7 @@ endif; ?>
 			<li class="dropdown menu-me" role="menuitem" aria-haspopup="true">
 				<a class="dropdown-toggle" href="#" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
 				<ul class="dropdown-menu pull-right" role="menu">
-					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-home icon-white"></i> ' . __('Profile')) ?><li>
+					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user icon-white"></i> ' . __('Profile')) ?><li>
 					<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope icon-white"></i> ' . __('Private messages')) ?></li>
 					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart icon-white"></i> ' . __('Friends')) ?></li>
 					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle icon-white"></i> ' . __('Ignores')) ?></li>
@@ -712,12 +680,18 @@ endif; ?>
 					<ul class="dropdown-menu pull-right" role="menu">
 						<li role="menuitem">
 							<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
-							<?= Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters'))); ?>
+							<label class="span2">
+								<i class="icon-calendar icon-white"></i>
+								<?= Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters'))); ?>
+							</label>
 							<?= Form::close(); ?>
 						</li>
 						<li role="menuitem">
 							<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
-							<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
+							<label class="span2">
+								<i class="icon-user icon-white"></i>
+								<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
+							</label>
 							<?= Form::close(); ?>
 						</li>
 					</ul>
