@@ -60,6 +60,7 @@ return array(
 		'forum'     => array('url' => URL::site(Route::url('forum_group')), 'text' => __('Forum'),     'icon' => 'icon-comment'),
 		'galleries' => array('url' => URL::site(Route::url('galleries')),   'text' => __('Galleries'), 'icon' => 'icon-picture'),
 		'venues'    => array('url' => URL::site(Route::url('venues')),      'text' => __('Venues'),    'icon' => 'icon-map-marker'),
+		'charts'    => array('url' => URL::site(Route::url('charts')),      'text' => __('Charts'),    'icon' => 'icon-music'),
 		'blogs'     => array('url' => URL::site(Route::url('blogs')),       'text' => __('Blogs'),     'icon' => 'icon-book'),
 		'members'   => array('url' => URL::site(Route::url('users')),       'text' => __('Members'),   'icon' => 'icon-user'),
 	),
