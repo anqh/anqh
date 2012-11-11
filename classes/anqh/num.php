@@ -33,4 +33,36 @@ class Anqh_Num extends Kohana_Num {
 		return $amount . $currency;
 	}
 
+
+	/**
+	 * Get minutes from seconds.
+	 *
+	 * @param   integer  $seconds
+	 * @return  string
+	 */
+	public static function minutes($seconds) {
+		$hours   = floor($seconds / 3600);
+		$minutes = floor($seconds / 60);
+		$seconds = $seconds % 60;
+
+		return ($hours ? $hours . ':' : '') . $minutes . ':' . ($seconds < 10 ? '0' . $seconds : $seconds);
+	}
+
+
+	/**
+	 * Get seconds from minutes.
+	 *
+	 * @param   string  $minutes
+	 * @return  integer
+	 */
+	public static function seconds($minutes) {
+		if (preg_match('/([0-9]{1,2})?:?([0-9]{1,3}):([0-9]{1,2})/', $minutes, $seconds)) {
+			return isset($seconds[3])
+				? 3600 * $seconds[1] + 60 * $seconds[2] + $seconds[3]
+				: 60 * $seconds[1] + $seconds[2];
+		}
+
+		return 0;
+	}
+
 }
