@@ -58,3 +58,6 @@
 [submodule "www/static/bootstrap"]
 	path = www/static/bootstrap
 	url = git://github.com/twitter/bootstrap.git
+[submodule "modules/music"]
+	path = modules/music
+	url = git@github.com:anqh/music.git
