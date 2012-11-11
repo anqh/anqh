@@ -581,7 +581,9 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 				$add[] = (int)$tag->id;
 			}
 		}
-		$add and $this->relate('tags', $add);
+		if ($add) {
+			$this->relate('tags', $add);
+		}
 
 		// Normalized tags for old version, to be deprecated
 		if ($this->music != ($music = implode(', ', $this->tags()))) {

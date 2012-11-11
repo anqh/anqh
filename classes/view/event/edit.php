@@ -78,22 +78,22 @@ class View_Event_Edit extends View_Article {
 			<div class="span8">
 				<fieldset id="fields-primary">
 					<?php echo Form::control_group(
-						Form::input('name', $this->event->name, array('class' => 'input-xxlarge')),
+						Form::input('name', $this->event->name, array('class' => 'span8')),
 						array('name' => __('Event')),
 						Arr::get($this->event_errors, 'name')) ?>
 
 					<?php echo Form::control_group(
-						Form::textarea('dj', $this->event->dj, array('class' => 'input-xxlarge'), true),
+						Form::textarea('dj', $this->event->dj, array('class' => 'span8'), true),
 						array('dj' => __('Performers')),
 						Arr::get($this->event_errors, 'dj')) ?>
 
 					<?php echo Form::control_group(
-						Form::textarea_editor('info', $this->event->info, array('class' => 'input-xxlarge'), true),
+						Form::textarea_editor('info', $this->event->info, array('class' => 'span8'), true),
 						array('info' => __('Other information')),
 						Arr::get($this->event_errors, 'info')) ?>
 
 					<?php echo Form::control_group(
-						Form::input('homepage', $this->event->homepage, array('class' => 'input-xxlarge', 'placeholder' => 'http://')),
+						Form::input('homepage', $this->event->homepage, array('class' => 'span8', 'placeholder' => 'http://')),
 						array('homepage' => __('Homepage')),
 						Arr::get($this->event_errors, 'homepage')) ?>
 				</fieldset>

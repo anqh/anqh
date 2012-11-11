@@ -83,7 +83,7 @@ class Anqh_Controller_Events extends Controller_Page {
 	public function action_delete() {
 		$this->history = false;
 
-		// Load venue
+		// Load event
 		$event_id = (int)$this->request->param('id');
 		$event = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
