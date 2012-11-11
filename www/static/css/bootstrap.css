@@ -942,15 +942,15 @@ input[type="checkbox"]:focus {
 }
 input:-moz-placeholder,
 textarea:-moz-placeholder {
-  color: #333333;
+  color: #555555;
 }
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
-  color: #333333;
+  color: #555555;
 }
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
-  color: #333333;
+  color: #555555;
 }
 .radio,
 .checkbox {
@@ -5003,8 +5003,8 @@ blockquote {
 .navbar .brand {
   margin-left: 0;
 }
-.navbar .navbar-search {
-  margin-top: 0;
+.navbar .menu-search label {
+  margin-left: 0;
 }
 .navbar #visitor {
   clear: both;
@@ -5071,7 +5071,7 @@ header.sticked {
   background: #1a1a1a;
 }
 footer.meta {
-  color: #999999;
+  color: #555555;
 }
 #footer nav {
   text-align: center;
@@ -5085,6 +5085,10 @@ footer.meta {
 .kohana {
   display: none;
 }
+.ui-widget-overlay {
+  background: #222222;
+  z-index: 1040 !important;
+}
 .ui-dialog {
   background: #333333;
   -webkit-background-clip: padding-box;
@@ -5096,7 +5100,7 @@ footer.meta {
   -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
-  z-index: 1050;
+  z-index: 1050 !important;
 }
 .ui-dialog.fade {
   -webkit-transition: opacity .3s linear, top .3s ease-out;
@@ -5568,6 +5572,30 @@ div.image #form-note {
   background-color: #000;
   opacity: 0.5;
   filter: alpha(opacity=50);
+}
+.charts th.current {
+  font-size: 18px;
+  font-weight: bold;
+}
+.charts td.previous {
+  padding: 0 5px;
+}
+.charts td.previous .new {
+  text-transform: uppercase;
+}
+.charts td.previous small {
+  font-size: 8px;
+}
+.charts td.previous sup {
+  color: #46a546;
+}
+.charts td.previous sub {
+  color: #9d261d;
+}
+.charts td.track {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 /**
  * Loaned from Foundation by ZURB, http://foundation.zurb.com

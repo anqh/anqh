@@ -63,7 +63,7 @@ blockquote                             { border-left-color: @grayDark; }
 //#header .container                     { #grid > .core > .span(@gridColumns); }
 .navbar                                { background: @navbarInverseBackground; margin-bottom: 0;
   .brand                               { margin-left: 0; }
-  .navbar-search                       { margin-top: 0; }
+  .menu-search label                   { margin-left: 0; }
   #visitor                             { clear: both;
     li.menuitem-profile                { width: 30px;
       a                                { height: auto; margin: 0; padding: 5px 0 0; width: auto; }
@@ -99,7 +99,7 @@ article header                         { margin-bottom: 10px;
 }
 
 header.sticked                         { background: @bodyBackground; }
-footer.meta                            { color: @grayLight; }
+footer.meta                            { color: @gray; }
 
 
 // Footer
@@ -112,7 +112,8 @@ footer.meta                            { color: @grayLight; }
 
 
 // jQuery UI
-.ui-dialog                             { background: @grayDark; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); border-radius: 6px; .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal;
+.ui-widget-overlay                     { background: @grayDarker; z-index: @zindexModalBackdrop !important; }
+.ui-dialog                             { background: @grayDark; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); border-radius: 6px; .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal !important;
   &.fade                               { .transition(e('opacity .3s linear, top .3s ease-out')); top: -25%; }
   &.fade.in                            { top: 50%; }
   .ui-dialog-titlebar                  { border-bottom: 1px solid rgba(0, 0, 0, .3); cursor: move; padding: 9px 15px;
@@ -270,6 +271,17 @@ div.image                              { text-align: center;
 .imgareaselect-outer                   { background-color: #000; .opacity(50); }
 .imgareaselect-selection               { }
 
+// Charts
+.charts                                {
+  th.current                           { font-size: 18px; font-weight: bold; }
+  td.previous                          { padding: 0 5px;
+    .new                               { text-transform: uppercase; }
+    small                              { font-size: 8px; }
+    sup                                { color: @green; }
+    sub                                { color: @red; }
+  }
+  td.track                             { .text-overflow(); }
+}
 
 
 /**

@@ -98,9 +98,10 @@ Kohana::modules(array(
 	'core'         => MODPATH . 'anqh',         // Anqh core
 	'events'       => MODPATH . 'events',       // Anqh event calendar
 	'forum'        => MODPATH . 'forum',        // Anqh forums
+	'galleries'    => MODPATH . 'galleries',    // Anqh galleries
+	'music'        => MODPATH . 'music',        // Anqh music charts
 	'venues'       => MODPATH . 'venues',       // Anqh venues
 	'blog'         => MODPATH . 'blog',         // Anqh blogs
-	'galleries'    => MODPATH . 'galleries',    // Anqh galleries
 
 	'auto-modeler' => MODPATH . 'auto-modeler', // Auto Modeler
 	'cache'        => MODPATH . 'cache',        // Caching with multiple backends
