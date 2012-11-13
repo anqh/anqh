@@ -1003,6 +1003,7 @@ class Anqh_Controller_Events extends Controller_Page {
 	/**
 	 * Get flyer upload.
 	 *
+	 * @param   string  $action
 	 * @param   string  $cancel  URL
 	 * @param   array   $errors
 	 * @return  View_Generic_Upload
