@@ -173,6 +173,77 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Get music count by type.
+	 *
+	 * @param   integer  $type
+	 * @param   string   $tag
+	 * @return  integer
+	 */
+	public function count_by_type($type, $tag = null) {
+
+		// Validate type
+		if ($type !== self::TYPE_TRACK && $type !== self::TYPE_MIX) {
+			$type = self::TYPE_MIX;
+		}
+
+		$query = DB::select(array(DB::expr('COUNT(id)'), 'tracks'))
+			->from($this->_table_name)
+			->where('type', '=', $type);
+
+		if ($tag) {
+			return (int)$query
+				->and_where('music', 'LIKE', '%' . $tag . '%')
+				->execute($this->_db)
+				->get('tracks');
+		} else {
+			return (int)$query
+				->execute($this->_db)
+				->get('tracks');
+		}
+	}
+
+
+	/**
+	 * Browse music.
+	 *
+	 * @param   integer  $type
+	 * @param   string   $tag
+	 * @param   integer  $limit
+	 * @param   integer  $offset
+	 * @param   string   $order_by
+	 * @param   string   $order
+	 * @return  Model_Music_Track[]
+	 */
+	public function find_by_type($type, $tag = null, $limit = 10, $offset = 0, $order_by = 'id', $order = 'DESC') {
+
+		// Validate type
+		if ($type !== self::TYPE_TRACK && $type !== self::TYPE_MIX) {
+			$type = self::TYPE_MIX;
+		}
+
+		// Validate order
+		if (!in_array($order_by, array('id', 'name', 'size_time', 'listen_count'))) {
+			$order_by = 'id';
+		}
+
+		// Build query
+		$query = DB::select_array($this->fields())
+			->where('type', '=', $type)
+			->order_by($order_by, $order);
+
+		if ($tag) {
+			$query = $query->and_where('music', 'LIKE', '%' . $tag . '%');
+		}
+
+		if ($limit || $offset) {
+			return $this->load($query->offset($offset), $limit);
+		} else {
+			return $this->load($query, 0);
+		}
+	}
+
+
+	/**
 	 * Find latest musics.
 	 *
 	 * @param   integer  $type

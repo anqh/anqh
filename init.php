@@ -8,17 +8,17 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-Route::set('track_comment', 'track/comment/<id>/<commentaction>', array('commentaction' => 'delete|private'))
-	->defaults(array(
-		'controller' => 'music',
-		'action'     => 'comment',
-	));
 Route::set('music_add', '<music>/add', array('music' => 'mixtape|track'))
 	->defaults(array(
 		'controller' => 'music',
 		'action'     => 'add',
 	));
-Route::set('music_track', 'track/<id>(/<action>)', array('action' => 'edit|delete|listen'))
+Route::set('music_browse', '<music>(/<genre>)', array('music' => 'mixtapes|tracks'))
+	->defaults(array(
+		'controller' => 'music',
+		'action'     => 'browse',
+	));
+Route::set('music_track', 'music/<id>(/<action>)', array('action' => 'edit|delete|listen'))
 	->defaults(array(
 		'controller' => 'music',
 		'action'     => 'track',

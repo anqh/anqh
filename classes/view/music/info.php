@@ -47,7 +47,7 @@ class View_Music_Info extends View_Section {
 
 		// Listen count
 		if ($this->track->listen_count > 1):
-			echo '<i class="icon-headphones icon-white"></i> ', __('Listened :count times', array(':count' => $this->track->listen_count)), '<br />';
+			echo '<i class="icon-headphones icon-white"></i> ', __(':count plays', array(':count' => $this->track->listen_count)), '<br />';
 		endif;
 
 		// Tags

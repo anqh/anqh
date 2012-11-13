@@ -18,6 +18,51 @@ class Anqh_Controller_Music extends Controller_Page {
 
 
 	/**
+	 * Action: browse tracks
+	 */
+	public function action_browse() {
+		$type  = $this->request->param('music') == 'mixtapes' ? Model_Music_Track::TYPE_MIX : Model_Music_Track::TYPE_TRACK;
+		$genre = $this->request->param('genre');
+
+		// Set actions
+		$this->_set_page_actions();
+
+		// Load requested music
+		$limit  = 25;
+		$music  = Model_Music_Track::factory();
+		$count  = $music->count_by_type($type, $genre);
+
+		// Build page
+		$this->view = View_Page::factory($type == Model_Music_Track::TYPE_MIX ? __('Mixtapes') : __('Tracks'));
+
+		// Filters
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters($this->request->param('music'), $genre));
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($limit, $count));
+		$this->view->subtitle = __($pagination->total_pages == 1 ? ':pages page' : ':pages pages', array(':pages' => Num::format($pagination->total_pages, 0)));
+
+		// Browse
+		$tracks = $music->find_by_type($type, $genre, $limit, $pagination->offset);
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_browse($tracks));
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+
+		// New
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_list(
+			$music->find_new(Model_Music_Track::TYPE_MIX, 10),
+			__('New mixtapes')
+		));
+
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_list(
+			$music->find_new(Model_Music_Track::TYPE_TRACK, 10),
+			__('New tracks')
+		));
+	}
+
+
+	/**
 	 * Action: delete track
 	 */
 	public function action_delete() {
@@ -139,18 +184,7 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view = new View_Page(__('Charts'));
 
 		// Set actions
-		if (Permission::has(new Model_Music_Track, Model_Music_Track::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array(
-				'link'  => Route::url('music_add', array('music' => 'mixtape')),
-				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new mixtape'),
-				'class' => 'btn btn-primary'
-			);
-			$this->page_actions[] = array(
-				'link'  => Route::url('music_add', array('music' => 'track')),
-				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new track'),
-				'class' => 'btn btn-primary'
-			);
-		}
+		$this->_set_page_actions();
 
 		$this->view->add(View_Page::COLUMN_MAIN, '<div class="row">');
 
@@ -261,6 +295,21 @@ class Anqh_Controller_Music extends Controller_Page {
 
 
 	/**
+	 * Get browse view.
+	 *
+	 * @param   Model_Music_Track[]  $tracks
+	 * @return  View_Music_Browse
+	 */
+	public function section_browse($tracks) {
+		if (!$tracks) {
+			return new View_Alert(__('Listen to the sound of silence.'), __('No music found'), View_Alert::INFO);
+		}
+
+		return new View_Music_Browse($tracks);
+	}
+
+
+	/**
 	 * Get charts view.
 	 *
 	 * @param   array   $tracks
@@ -273,6 +322,29 @@ class Anqh_Controller_Music extends Controller_Page {
 		$view->class = 'span4';
 
 		return $view;
+	}
+
+
+	/**
+	 * Get filters.
+	 *
+	 * @param   string  $music
+	 * @param   array   $filter  Active filter
+	 * @return  View_Generic_Filters
+	 */
+	public function section_filters($music, $filter = null) {
+		$filters = array(
+			'tag' => array(
+				'name'    => __('Music'),
+				'filters' => $this->_tags()
+			),
+		);
+
+		$section = new View_Generic_Filters($filters, $filter);
+		$section->type     = View_Generic_Filters::TYPE_URL;
+		$section->base_url = Route::url('music_browse', array('music' => $music));
+
+		return $section;
 	}
 
 
@@ -310,6 +382,21 @@ class Anqh_Controller_Music extends Controller_Page {
 
 
 	/**
+	 * Get pagination view.
+	 *
+	 * @param   integer  $limit
+	 * @param   integer  $total
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_pagination($limit, $total) {
+		return new View_Generic_Pagination(array(
+			'items_per_page' => $limit,
+			'total_items'    => max(1, $total),
+		));
+	}
+
+
+	/**
 	 * Get track edit view.
 	 *
 	 * @param   Model_Music_Track  $track
@@ -317,6 +404,57 @@ class Anqh_Controller_Music extends Controller_Page {
 	 */
 	public function section_track_edit(Model_Music_Track $track) {
 		return new View_Music_Edit($track);
+	}
+
+
+	/**
+	 * Set common page actions.
+	 */
+	public function _set_page_actions() {
+
+		// Browsing
+		$this->page_actions[] = array(
+			'link'  => Route::url('music_browse', array('music' => 'mixtapes')),
+			'text'  => '<i class="icon-th-list icon-white"></i> ' . __('Browse mixtapes'),
+		);
+		$this->page_actions[] = array(
+			'link'  => Route::url('music_browse', array('music' => 'tracks')),
+			'text'  => '<i class="icon-th-list icon-white"></i> ' . __('Browse tracks'),
+		);
+
+		// Content creation
+		if (Permission::has(new Model_Music_Track, Model_Music_Track::PERMISSION_CREATE, self::$user)) {
+			$this->page_actions[] = array(
+				'link'  => Route::url('music_add', array('music' => 'mixtape')),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new mixtape'),
+				'class' => 'btn btn-primary'
+			);
+			$this->page_actions[] = array(
+				'link'  => Route::url('music_add', array('music' => 'track')),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new track'),
+				'class' => 'btn btn-primary'
+			);
+		}
+
+	}
+
+
+	/**
+	 * Get available tags.
+	 *
+	 * @return  array
+	 */
+	public function _tags() {
+		$tags      = array();
+		$tag_group = new Model_Tag_Group('Music');
+
+		if ($tag_group->loaded() && count($tag_group->tags())) {
+			foreach ($tag_group->tags() as $tag) {
+				$tags[$tag->id()] = $tag->name();
+			}
+		}
+
+		return $tags;
 	}
 
 }

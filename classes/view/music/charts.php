@@ -62,7 +62,6 @@ class View_Music_Charts extends View_Section {
 
 		ob_start();
 
-		$position = 1;
 ?>
 
 <table class="charts">
@@ -72,7 +71,10 @@ class View_Music_Charts extends View_Section {
 		<tr>
 			<th class="current"><?= $track['rank'] + 1 ?></th>
 			<td class="previous"><?= $this->_change($track) ?></td>
-			<td class="track"><?= HTML::anchor(Route::model($track['track']), HTML::chars($track['track']->name), array('class' => 'track')) ?><br /><?= HTML::user($track['track']->author_id) ?></td>
+			<td class="track">
+				<?= HTML::anchor(Route::model($track['track']), HTML::chars($track['track']->name), array('class' => 'track')) ?><br />
+				<?= HTML::user($track['track']->author_id) ?>
+			</td>
 		</tr>
 		<?php endforeach ?>
 
