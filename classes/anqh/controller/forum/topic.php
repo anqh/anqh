@@ -10,17 +10,6 @@
 class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 	/**
-	 * Construct controller
-	 */
-	public function before() {
-		parent::before();
-
-//		Widget::add('head', HTML::script('js/jquery.markitup.pack.js'));
-//		Widget::add('head', HTML::script('js/markitup.bbcode.js'));
-	}
-
-
-	/**
 	 * Action: delete
 	 */
 	public function action_delete() {
@@ -123,14 +112,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			return;
 		}
 
-		// Add new tab
+		// Update counts
 		if ($this->private) {
 			$topic->mark_as_read(self::$user);
-		} else {
-			$this->tabs['area'] = array('url' => Route::model($topic->area()), 'text' => __('Area'));
 		}
-
-		// Update counts
 		if (!self::$user || $topic->author_id != self::$user->id) {
 			$topic->read_count++;
 			$topic->save();
@@ -202,6 +187,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			);
 		}
 
+		// Breadcrumbs
+		$this->page_breadcrumbs[] = HTML::anchor(Route::url('forum_group'), __('Forum'));
+		$this->page_breadcrumbs[] = HTML::anchor(Route::model($topic->area()), $topic->area()->name);
+
+
 		// Pagination
 		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($topic));
 		$this->view->subtitle .= ', ' . __($pagination->total_pages == 1 ? ':pages page' : ':pages pages', array(':pages' => Num::format($pagination->total_pages, 0)));
@@ -236,7 +226,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Pagination
 		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
-		//$this->side_views();
+		$this->_side_views();
 	}
 
 
