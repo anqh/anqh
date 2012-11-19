@@ -410,7 +410,7 @@ endif; ?>
 
 		<ul class="nav" role="menubar">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
-			<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
+			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
 			<?php endforeach; ?>
 		</ul>
 	</nav><!-- #mainmenu -->
@@ -570,11 +570,8 @@ endif; ?>
 			<header id="title">
 
 				<?php if ($this->breadcrumbs): ?>
-				<nav>
-
-					<?php foreach ($this->breadcrumbs as $breadcrumb)
-						echo HTML::anchor($breadcrumb['url'], $breadcrumb['text']); ?>
-
+				<nav class="breadcrumbs">
+					<?= implode(' &rsaquo; ', $this->breadcrumbs); ?>
 				</nav>
 				<?php endif; ?>
 
@@ -594,9 +591,31 @@ endif; ?>
 
 							// Action is a link
 							$attributes = $action;
-							unset($attributes['link'], $attributes['text']);
+							unset($attributes['link'], $attributes['text'], $attributes['dropdown']);
 							$attributes['class'] = isset($attributes['class']) ? 'btn ' . $attributes['class'] : 'btn btn-inverse';
-							echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+
+							if ($action['dropdown']):
+				?>
+
+					<div class="btn-group">
+						<?= HTML::anchor($action['link'], $action['text'], $attributes) ?>
+						<?= HTML::anchor('#', '<span class="caret"></span>', array('class' => $attributes['class'] . ' dropdown-toggle', 'data-toggle' => 'dropdown')) ?>
+						<ul class="dropdown-menu">
+							<?php foreach ($action['dropdown'] as $dropdown): ?>
+								<?php if ($dropdown['divider']): ?>
+							<li class="divider"></li>
+								<?php else: ?>
+							<li><?= HTML::anchor($dropdown['link'], $dropdown['text']) ?></li>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+
+				<?php
+
+							else:
+								echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+							endif;
 
 						else:
 

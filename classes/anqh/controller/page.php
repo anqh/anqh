@@ -16,7 +16,6 @@ abstract class Anqh_Controller_Page extends Controller {
 		parent::before();
 
 		$this->auto_render = ($this->_request_type === Controller::REQUEST_INITIAL);
-		$this->breadcrumb  = Session::instance()->get('breadcrumb', array());
 		$this->history     = $this->history && !$this->ajax;
 
 		// Initialize Ads
@@ -146,12 +145,13 @@ head.js(
 
 
 			// Set the generic page variables
-			$this->view->styles   = $styles;
-			$this->view->skins    = $skins;
-			$this->view->language = $this->language;
-			$this->view->id       = $this->page_id;
-			$this->view->class    = $page_class;
-			$this->view->actions  = $this->page_actions;
+			$this->view->styles      = $styles;
+			$this->view->skins       = $skins;
+			$this->view->language    = $this->language;
+			$this->view->id          = $this->page_id;
+			$this->view->class       = $page_class;
+			$this->view->actions     = $this->page_actions;
+			$this->view->breadcrumbs = $this->page_breadcrumbs;
 
 
 			// And finally the profiler stats

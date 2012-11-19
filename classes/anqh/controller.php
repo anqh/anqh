@@ -48,11 +48,6 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected $auto_render = true;
 
 	/**
-	 * @var  array  Bookmarks / navigation history
-	 */
-	protected $breadcrumb = array();
-
-	/**
 	 * @var  boolean  Add current page to history
 	 */
 	protected $history = true;
@@ -71,6 +66,11 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	 * @var  array  Actions for current page
 	 */
 	protected $page_actions = array();
+
+	/**
+	 * @var  array
+	 */
+	protected $page_breadcrumbs = array();
 
 	/**
 	 * @var  string  Current page class
@@ -142,7 +142,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 			$this->internal      = true;
 		}
 
-		// Update history (and breadcrumbs)?
+		// Update history?
 		$this->history = $this->history && !$this->ajax;
 
 		// Initialize session
@@ -164,7 +164,6 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		// Update current online user for initial and ajax requests
 		if ($this->_request_type !== self::REQUEST_INTERNAL) {
 			Model_User_Online::update(self::$user);
-			$this->breadcrumb = $this->session->get('breadcrumb', array());
 		}
 
 		// Open outside links to a new tab/window
@@ -203,16 +202,9 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	public function after() {
 		if ($this->history && $this->response->status() < 400) {
 
-			// Update breadcrumbs and history
+			// Update history
 			$uri = $this->request->current_uri();
-			unset($this->breadcrumb[$uri]);
-
-			// Limit to 10 items
-			$this->breadcrumb = array_slice($this->breadcrumb, -9, 9, true);
-			$this->breadcrumb[$uri] = $this->view->title;
-			$this->session
-				->set('history', $uri . ($_GET ? URL::query($_GET) : ''))
-				->set('breadcrumb', $this->breadcrumb);
+			$this->session->set('history', $uri . ($_GET ? URL::query($_GET) : ''));
 		}
 
 		if ($this->auto_render) {
