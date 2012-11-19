@@ -1026,8 +1026,8 @@ class Anqh_Controller_Events extends Controller_Page {
 	 */
 	public function section_pagination() {
 		return new View_Generic_Pagination(array(
-			'previous_text' => '&laquo; ' . __('Previous events'),
-			'next_text'     => __('Next events') . ' &raquo;',
+			'previous_text' => '&lsaquo; ' . __('Previous events'),
+			'next_text'     => __('Next events') . ' &rsaquo;',
 			'previous_url'  => Route::url('events_ymd', array(
 					'year'  => date('Y', $this->stamp_previous),
 					'month' => date('m', $this->stamp_previous),
