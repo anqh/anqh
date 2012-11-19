@@ -463,7 +463,7 @@ table [class*=span],.row-fluid table [class*=span]{display:table-cell;float:none
 .dropdown-menu .active>a,.dropdown-menu .active>a:hover{color:#ffffff;text-decoration:none;outline:0;background-color:#0088cc;background-color:#0081c2;background-image:-moz-linear-gradient(top, #0088cc, #0077b3);background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));background-image:-webkit-linear-gradient(top, #0088cc, #0077b3);background-image:-o-linear-gradient(top, #0088cc, #0077b3);background-image:linear-gradient(to bottom, #0088cc, #0077b3);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);}
 .dropdown-menu .disabled>a,.dropdown-menu .disabled>a:hover{color:#999999;}
 .dropdown-menu .disabled>a:hover{text-decoration:none;background-color:transparent;cursor:default;}
-.open{*z-index:1000;}.open >.dropdown-menu{display:block;}
+.open{*z-index:1000;}.open>.dropdown-menu{display:block;}
 .pull-right>.dropdown-menu{right:0;left:auto;}
 .dropup .caret,.navbar-fixed-bottom .dropdown .caret{border-top:0;border-bottom:4px solid #000000;content:"";}
 .dropup .dropdown-menu,.navbar-fixed-bottom .dropdown .dropdown-menu{top:auto;bottom:100%;margin-bottom:1px;}
@@ -859,7 +859,7 @@ blockquote{border-left-color:#333333;}
 #side>section+section,#side>section+article,#side>article+section,#side>article+article{margin-top:20px;}
 .ad.ad140x350{height:350px;width:140px;}
 .ad.ad728x90{margin:10px auto;max-height:90px;width:728px;}
-section{overflow:hidden;}section >header{position:relative;}section >header .nav{position:absolute;right:0;top:-5px;}
+section{overflow:hidden;}section>header{position:relative;}section>header .nav{position:absolute;right:0;top:-5px;}
 section li .transparent{opacity:0.1;filter:alpha(opacity=10);}
 section li:hover .transparent{opacity:1;filter:alpha(opacity=100);}
 article header{margin-bottom:10px;}article header ul li{display:inline;}
@@ -918,7 +918,7 @@ a.friend{font-weight:bold;}
 .avatar{display:inline-block;float:left;margin:5px 10px 5px 0;width:50px;height:50px;text-align:center;}.avatar img{max-height:100%;max-width:100%;}
 .popover figure{text-align:center;}
 .popover .stats{background:#1a1a1a;padding:0 2px;position:absolute;right:10px;top:10px;}
-.markItUpHeader{height:28px;position:relative;}.markItUpHeader >ul{left:0;margin:0;position:absolute;top:0;}
+.markItUpHeader{height:28px;position:relative;}.markItUpHeader>ul{left:0;margin:0;position:absolute;top:0;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
 #map{width:200px;height:150px;}
 .share .addthis_32x32_style{height:32px;}
@@ -926,9 +926,12 @@ a.friend{font-weight:bold;}
 #carousel .btn-group{bottom:5px;left:5px;position:absolute;}
 .ago{float:right;color:#999999;}
 #user textarea[name=signature]{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;}
+.permalink:target{background:rgba(128, 128, 128, 0.1);padding-top:40px;position:relative;top:-40px;}
 blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
 .post footer{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:10px;line-height:16px;color:#999999;}
-.permalink{padding-top:40px;position:relative;top:-40px;}
+.owner{color:#709f70;}
+.my{color:#ccaf53;}
+.admin{color:#049cdb;}
 .thumbnails h4{height:36px;overflow:hidden;}
 .thumbnails i+i{margin-left:10px;}
 .thumbnails i.icon-star+i.icon-star,.thumbnails i.icon-star+i.icon-star-empty,.thumbnails i.icon-star-empty+i.icon-star,.thumbnails i.icon-star-empty+i.icon-star-empty{margin-left:0;}
@@ -953,7 +956,7 @@ div.image #form-note{background:#333333;border:1px solid #ccc;border:1px solid r
 .charts td.previous sup{color:#46a546;}
 .charts td.previous sub{color:#9d261d;}
 .charts td.track{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.block-grid{display:block;overflow:hidden;}.block-grid >li{display:block;float:left;height:auto;}
+.block-grid{display:block;overflow:hidden;}.block-grid>li{display:block;float:left;height:auto;}
 .block-grid.two-up{margin-left:-4%;}
 .block-grid.two-up>li{margin-left:4%;width:46%;}
 .block-grid.three-up{margin-left:-2%;}

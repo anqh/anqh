@@ -2361,7 +2361,7 @@ table [class*=span],
 .open {
   *z-index: 1000;
 }
-.open  > .dropdown-menu {
+.open > .dropdown-menu {
   display: block;
 }
 .pull-right > .dropdown-menu {
@@ -5042,10 +5042,10 @@ blockquote {
 section {
   overflow: hidden;
 }
-section  > header {
+section > header {
   position: relative;
 }
-section  > header .nav {
+section > header .nav {
   position: absolute;
   right: 0;
   top: -5px;
@@ -5407,7 +5407,7 @@ a.friend {
   height: 28px;
   position: relative;
 }
-.markItUpHeader  > ul {
+.markItUpHeader > ul {
   left: 0;
   margin: 0;
   position: absolute;
@@ -5445,6 +5445,12 @@ a.friend {
   tr td:last-child                     { .text-overflow; }
 }
 */
+.permalink:target {
+  background: rgba(128, 128, 128, 0.1);
+  padding-top: 40px;
+  position: relative;
+  top: -40px;
+}
 blockquote {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
@@ -5460,10 +5466,14 @@ blockquote p {
   line-height: 16px;
   color: #999999;
 }
-.permalink {
-  padding-top: 40px;
-  position: relative;
-  top: -40px;
+.owner {
+  color: #709f70;
+}
+.my {
+  color: #ccaf53;
+}
+.admin {
+  color: #049cdb;
 }
 .thumbnails h4 {
   height: 36px;
@@ -5612,7 +5622,7 @@ div.image #form-note {
   /*  &.five-up > li:nth-child(5n+1)       { clear: left; } */
 
 }
-.block-grid  > li {
+.block-grid > li {
   display: block;
   float: left;
   height: auto;

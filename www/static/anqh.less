@@ -1,5 +1,8 @@
 // Variables
 @iconAjaxPath:                         '../img/ajax.gif';
+@textColorMe:                          mix(@yellow, @textColor);
+@textColorOwner:                       mix(@green, @textColor);
+@textColorAdmin:                       @blue;
 
 // Bootstrap overrides
 body                                   { background: @bodyBackground url(../img/background.png); padding-top: @navbarHeight + 10px; }
@@ -223,11 +226,14 @@ a.friend                               { font-weight: bold; }
   tr td:last-child                     { .text-overflow; }
 }
 */
+.permalink:target                      { background: rgba(128, 128, 128, .1); padding-top: @navbarHeight; position: relative; top: -@navbarHeight; }
 blockquote                             { font-family: @altFontFamily; font-style: italic;
   p                                    { font-family: @altFontFamily; font-size: inherit; line-height: inherit; }
 }
 .post footer                           { font-family: @monoFontFamily; font-size: @baseFontSize - 2px; line-height: @baseLineHeight - 2px;  .muted; }
-.permalink                             { padding-top: @navbarHeight; position: relative; top: -@navbarHeight; }
+.owner                                 { color: @textColorOwner; }
+.my                                    { color: @textColorMe; }
+.admin                                 { color: @textColorAdmin; }
 
 // Galleries
 .thumbnails                            {
