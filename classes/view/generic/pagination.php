@@ -25,14 +25,34 @@ class View_Generic_Pagination extends View_Base {
 	public $current_page;
 
 	/**
+	 * @var  string  Text for first page
+	 */
+	public $first_text = '&laquo;';
+
+	/**
+	 * @var  string  First page URL
+	 */
+	public $first_url;
+
+	/**
 	 * @var  integer  How many items to show per page
 	 */
 	public $items_per_page;
 
 	/**
+	 * @var  string  Text for last page
+	 */
+	public $last_text = '&raquo;';
+
+	/**
+	 * @var  string  Last page URL
+	 */
+	public $last_url;
+
+	/**
 	 * @var  string  Text for next page
 	 */
-	public $next_text = '&raquo;';
+	public $next_text = '&rsaquo;';
 
 	/**
 	 * @var  string  Next page URL
@@ -52,7 +72,7 @@ class View_Generic_Pagination extends View_Base {
 	/**
 	 * @var  string  Text for previous page
 	 */
-	public $previous_text = '&laquo;';
+	public $previous_text = '&lsaquo;';
 
 	/**
 	 * @var  string  Previous page URL
@@ -136,12 +156,20 @@ class View_Generic_Pagination extends View_Base {
 
 <ul <?= HTML::attributes($attributes) ?>>
 
+	<?php if ($this->first_url): ?>
+	<li class="previous"><?= HTML::anchor($this->first_url, $this->first_text) ?></li>
+	<?php endif; ?>
+
 	<?php if ($this->previous_url): ?>
 	<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
 	<?php endif; ?>
 
 	<?php if ($this->current_page): ?>
 	<li class="disabled"><a><?= $this->current_page . ($this->total_pages ? ' / ' . $this->total_pages : '') ?></a></li>
+	<?php endif; ?>
+
+	<?php if ($this->last_url): ?>
+	<li class="next"><?= HTML::anchor($this->last_url, $this->last_text) ?></li>
 	<?php endif; ?>
 
 	<?php if ($this->next_url): ?>
@@ -179,6 +207,14 @@ class View_Generic_Pagination extends View_Base {
 			$this->next_url = $this->url($this->current_page + 1);
 		}
 
+		if ($this->first_url === null && $this->total_pages && $this->current_page > 1) {
+			$this->first_url = $this->url(1);
+		}
+
+		if ($this->last_url === null && $this->total_pages && $this->current_page < $this->total_pages) {
+			$this->last_url = $this->url(-1);
+		}
+
 		if ($this->offset === null && $this->items_per_page) {
 			$this->offset = max(0, $this->current_page - 1) * $this->items_per_page;
 		}
@@ -195,8 +231,14 @@ class View_Generic_Pagination extends View_Base {
 	 */
 	public function url($page = 1) {
 
+		// Last page
+		if ($page === -1 && $this->total_pages) {
+			$page = $this->total_pages;
+		}
+
 		// Clean the page number
 		$page = max(1, (int)$page);
+
 
 		// No page number in URLs to first page
 		if ($page === 1) {
