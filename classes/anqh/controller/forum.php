@@ -8,6 +8,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum extends Controller_Page {
+	public $page_id = 'forum';
 
 	protected $_config;
 
@@ -23,20 +24,37 @@ class Anqh_Controller_Forum extends Controller_Page {
 	public function before() {
 		parent::before();
 
+		$this->page_title = __('Forum');
+
 		// Generic page actions
 		$this->page_actions[] = array(
 			'link'  => Route::url('forum'),
 			'text'  => '<i class="icon-comment icon-white"></i> ' . __('New posts'),
 		);
+
+		// Forum areas dropdown
+		$groups = Model_Forum_Group::factory()->find_all();
+		$areas   = array();
+		foreach ($groups as $group) {
+			$divider = false;
+			foreach ($group->areas() as $area) {
+				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$user)) {
+					$divider = true;
+					$areas[] = array(
+						'link' => Route::model($area),
+						'text' => HTML::entities($area->name),
+					);
+				}
+			}
+			if ($divider) {
+				$areas[] = array('divider' => true);
+			}
+		}
+		array_pop($areas);
 		$this->page_actions[] = array(
-			'link'  => Route::url('forum_group'),
-			'text'  => '<i class="icon-folder-open icon-white"></i> ' . __('Areas'),
-		);
-		$this->page_id = 'forum';
-		$this->page_title = __('Forum');
-		$this->tabs = array(
-			'index' => array('url' => Route::get('forum')->uri(),       'text' => __('New posts')),
-			'areas' => array('url' => Route::get('forum_group')->uri(), 'text' => __('Areas'))
+			'link'     => Route::url('forum_group'),
+			'text'     => '<i class="icon-folder-open icon-white"></i> ' . __('Areas'),
+			'dropdown' => $areas,
 		);
 
 		if (self::$user) {
@@ -80,36 +98,6 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 */
 	public function section_topics($topics) {
 		return new View_Topics_Index($topics);
-	}
-
-
-	/**
-	 * Side tabs
-	 */
-	public function side_views() {
-		$tabs = array(
-			'active' => array('href' => '#topics-active', 'title' => __('New posts'), 'tab' => View_Module::factory('forum/topiclist', array(
-				'mod_id'    => 'topics-active',
-				'mod_class' => 'cut tab topics',
-				'title'     => __('New posts'),
-				'topics'    => Model_Forum_Topic::factory()->find_active(20),
-			))),
-			'latest' => array('href' => '#topics-new', 'title' => __('New topics'), 'tab' => View_Module::factory('forum/topiclist', array(
-				'mod_id'    => 'topics-new',
-				'mod_class' => 'cut tab topics',
-				'title'     => __('New topics'),
-				'topics'    => Model_Forum_Topic::factory()->find_new(10),
-			))),
-			'areas' => array('href' => '#forum-areas', 'title' => __('Areas'), 'selected' => $this->tab_id == 'index', 'tab' => View_Module::factory('forum/grouplist', array(
-				'mod_id'    => 'forum-areas',
-				'mod_class' => 'cut tab areas',
-				'title'     => __('Forum areas'),
-				'groups'    => Model_Forum_Group::factory()->find_all(),
-				'user'      => self::$user,
-			))),
-		);
-
-		Widget::add('side', View::factory('generic/tabs_side', array('id' => 'topics-tab', 'tabs' => $tabs)));
 	}
 
 
