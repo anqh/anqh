@@ -8,6 +8,8 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Music extends Controller_Page {
+	public $page_id = 'charts';
+
 
 	/**
 	 * Action: add new track
