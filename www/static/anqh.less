@@ -47,12 +47,12 @@ select                                 { color: @white; }
 .input-prepend .add-on                 { background: @grayDarker; border-color: @inputBorder; text-shadow: 0 1px 0 @black; }
 
 .pager                                 {
-  a,
-  span                                 { background-color: @paginationBackground; border-color: @paginationBorder; }
-  a:hover                              { background-color: @paginationActiveBackground; }
-  .disabled a,
-  .disabled a:hover,
-  .disabled span                       { background-color: @grayDarker; }
+  li > a,
+  li > span                            { background-color: @paginationBackground; border-color: @paginationBorder; }
+  li > a:hover                         { background-color: @paginationActiveBackground; }
+  .disabled > a,
+  .disabled > a:hover,
+  .disabled > span                     { background-color: @grayDarker; }
 }
 
 .thumbnail                             { border: 1px solid @grayDark; }
