@@ -1696,8 +1696,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 */
 	public function section_image_pagination($previous_url, $next_url, $current = null, $total = null) {
 		$section = new View_Generic_Pagination(array(
-			'previous_text' => '&laquo; ' . __('Previous'),
-			'next_text'     => __('Next') . ' &raquo;',
 			'previous_url'  => $previous_url,
 			'next_url'      => $next_url,
 			'current_page'  => $current,
