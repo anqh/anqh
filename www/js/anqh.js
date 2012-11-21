@@ -894,6 +894,7 @@ $(function() {
 
 						$this.popover({
 							trigger:   'manual',
+							html:      true,
 							title:     $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
 							content:   $card.html(),
 							placement: function() {
