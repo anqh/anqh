@@ -17,12 +17,13 @@ class View_Event_vEvent extends View_vEvent {
 	public function __construct(Model_Event $event) {
 		parent::__construct();
 
-		$this->uid     = 'event-' . $event->id . '@' . $_SERVER['HTTP_HOST'];
-		$this->summary = $event->name;
-		$this->dtstamp = View_iCalendar::stamp($event->created);
-		$this->dtstart = View_iCalendar::stamp($event->stamp_begin);
-		$this->dtend   = View_iCalendar::stamp($event->stamp_end);
-		$this->url     = URL::site(Route::model($event), true);
+		$this->uid         = 'event-' . $event->id . '@' . $_SERVER['HTTP_HOST'];
+		$this->summary     = $event->name;
+		$this->dtstamp     = View_iCalendar::stamp($event->created);
+		$this->dtstart     = View_iCalendar::stamp($event->stamp_begin);
+		$this->dtend       = View_iCalendar::stamp($event->stamp_end);
+		$this->url         = URL::site(Route::model($event), true);
+		$this->description = $this->url;
 
 		if ($venue = $event->venue()) {
 			$this->location = $venue->name . ', ' . $venue->address . ', ' . $venue->city_name;
