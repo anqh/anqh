@@ -49,7 +49,7 @@ class Anqh_View_iCalendar extends View_Base {
 	 * @return  string
 	 */
 	public static function stamp($stamp) {
-		return date("Ymd\THis\Z", $stamp);
+		return date("Ymd\THis", $stamp);
 	}
 
 
