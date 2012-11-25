@@ -60,6 +60,11 @@ class Anqh_Controller_User extends Controller_Page {
 		// Build page
 		$this->_set_page($user);
 
+		$this->page_actions[] = array(
+			'link'  => Route::url('ical_favorites', array('username' => urlencode($user->username))),
+			'text'  => '<i class="icon-download-alt icon-white"></i> ' . __('Download as .ics'),
+		);
+
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_favorites($user));
 
 	}
