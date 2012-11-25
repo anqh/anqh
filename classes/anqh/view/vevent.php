@@ -35,17 +35,19 @@ class Anqh_View_vEvent extends View_Base {
 		if ($this->last_modified) {
 			echo "LAST-MODIFIED:" . $this->last_modified . "\r\n";
 		}
-		echo "SUMMARY:" . $this->summary . "\r\n";
+		echo "SUMMARY:" . View_iCalendar::escape($this->summary) . "\r\n";
 		if ($this->description) {
-			echo "DESCRIPTION:" . $this->description . "\r\n";
+			echo "DESCRIPTION:" . View_iCalendar::escape($this->description) . "\r\n";
 		}
 		if ($this->url) {
 			echo "URL:" . $this->url . "\r\n";
 		}
-		echo "LOCATION:" . $this->location . "\r\n";
+		if ($this->location) {
+			echo "LOCATION:" . View_iCalendar::escape($this->location) . "\r\n";
+		}
 		echo "END:VEVENT\r\n";
 
-		return str_replace(',', "\,", ob_get_clean());
+		return ob_get_clean();
 	}
 
 }

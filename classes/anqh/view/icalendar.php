@@ -43,6 +43,17 @@ class Anqh_View_iCalendar extends View_Base {
 
 
 	/**
+	 * Escape iCalendar text.
+	 *
+	 * @param   string  $string
+	 * @return  string
+	 */
+	public static function escape($string) {
+		return str_replace(array(',', ';', "\\"), array("\,", "\;", "\\\\"), $string);
+	}
+
+
+	/**
 	 * Convert unix timestamp to iCalendar format.
 	 *
 	 * @param   integer  $stamp
