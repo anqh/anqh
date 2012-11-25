@@ -26,7 +26,7 @@ class View_Event_vEvent extends View_vEvent {
 		$this->description = $this->url;
 
 		if ($venue = $event->venue()) {
-			$this->location = $venue->name . ', ' . $venue->address . ', ' . $venue->city_name;
+			$this->location = $venue->name . ', ' . ($venue->address ? $venue->address . ', ' : '') . $venue->city_name;
 		} else if ($event->venue_name) {
 			$this->location = $event->venue_name . ', ' . $event->city_name;
 		} else {
