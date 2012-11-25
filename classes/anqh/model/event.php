@@ -243,16 +243,17 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 *
 	 * @param   Model_User  $user
 	 * @param   integer     $limit
+	 * @param   string      $order
 	 * @return  Model_Event[]
 	 */
-	public function find_favorites_upcoming(Model_User $user, $limit = 5) {
+	public function find_favorites_upcoming(Model_User $user, $limit = 5, $order = 'ASC') {
 		return $this->load(
 			DB::select_array($this->fields())
 				->join('favorites', 'INNER')
 				->on('favorites.event_id', '=', 'events.id')
 				->where('favorites.user_id', '=', $user->id)
 				->and_where('events.stamp_begin', '>', strtotime('today'))
-				->order_by('stamp_begin', 'ASC'),
+				->order_by('stamp_begin', $order),
 			$limit
 		);
 	}
