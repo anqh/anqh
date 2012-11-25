@@ -404,7 +404,7 @@ class Anqh_Controller_User extends Controller_Page {
 		// Build page
 		$this->view = new View_Page($user->username);
 		if ($user->name) {
-			$this->view->title_html = HTML::chars($user->username) . ' <small>' . HTML::chars($user->name) . '</small>';
+//			$this->view->title_html = HTML::chars($user->username) . ' <small>' . HTML::chars($user->name) . '</small>';
 		}
 		if ($user->title) {
 			$this->view->subtitle = HTML::chars($user->title);
