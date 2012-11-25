@@ -66,6 +66,41 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
+	 * Action: favorites in iCalendar format
+	 */
+	public function action_favorites_ical() {
+		$this->auto_render = false;
+		$this->history     = false;
+
+		$user = $this->_get_user();
+
+		// Proper headers
+		$this->response->headers(array(
+			'Content-Type'        => 'text/calendar; charset=utf-8',
+			'Content-Disposition' => 'inline; filename=favorites.ics'
+		));
+
+		// Create iCalendar
+		$icalendar = new View_iCalendar();
+
+		// Load favorites
+		$upcoming  = Model_Event::factory()->find_favorites_upcoming($user, 0, 'DESC');
+		$past      = Model_Event::factory()->find_favorites_past($user, 0);
+		$favorites = array();
+		foreach ($upcoming as $event) {
+			$favorites[] = new View_Event_vEvent($event);
+		}
+		foreach ($past as $event) {
+			$favorites[] = new View_Event_vEvent($event);
+		}
+		$icalendar->events  = $favorites;
+		$icalendar->calname = Kohana::$config->load('site.site_name');
+
+		$this->response->body($icalendar->render());
+	}
+
+
+	/**
 	 * Action: Add to friends
 	 */
 	public function action_friend() {

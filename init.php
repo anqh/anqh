@@ -27,6 +27,11 @@ Route::set('api_user', 'api/<version>/user/<action>(.<format>)', array('version'
 		'controller' => 'user_api',
 		'version'    => 'v1',
 	));
+Route::set('ical_favorites', 'member/<username>/favorites.ics', array('username' => '[^/]+'))
+	->defaults(array(
+		'controller' => 'user',
+		'action'     => 'favorites_ical',
+	));
 Route::set('user', 'member(/<username>(/<action>(/<param>)))', array(
 	'action'   => 'hover|settings|friends?|unfriend|favorites|image|ignores?|unignore',
 	'username' => '[^/]+')
