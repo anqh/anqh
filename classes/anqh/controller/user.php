@@ -501,8 +501,12 @@ class Anqh_Controller_User extends Controller_Page {
 			}
 
 			$this->page_actions[] = array(
+				'link'  =>  URL::user($user),
+				'text'  => '<i class="icon-user icon-white"></i> ' . __('Profile'),
+			);
+			$this->page_actions[] = array(
 				'link'  =>  URL::user($user, 'favorites'),
-				'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Events'),
+				'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Favorites'),
 			);
 			$this->page_actions[] = array(
 				'link'  =>  URL::user($user, 'friends'),
