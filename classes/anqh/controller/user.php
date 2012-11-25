@@ -52,6 +52,20 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
+	 * Action: List favorite events
+	 */
+	public function action_favorites() {
+		$user = $this->_get_user();
+
+		// Build page
+		$this->_set_page($user);
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_favorites($user));
+
+	}
+
+
+	/**
 	 * Action: Add to friends
 	 */
 	public function action_friend() {
@@ -446,12 +460,17 @@ class Anqh_Controller_User extends Controller_Page {
 				}
 			}
 
+			$this->page_actions[] = array(
+				'link'  =>  URL::user($user, 'favorites'),
+				'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Events'),
+			);
+			$this->page_actions[] = array(
+				'link'  =>  URL::user($user, 'friends'),
+				'text'  => '<i class="icon-heart icon-white"></i> ' . __('Friends'),
+			);
+
 			// Owner / admin actions
 			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array(
-					'link'  =>  URL::user($user, 'friends'),
-					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Friends'),
-				);
 				$this->page_actions[] = array(
 					'link'  =>  URL::user($user, 'ignores'),
 					'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ingores'),
@@ -517,6 +536,28 @@ class Anqh_Controller_User extends Controller_Page {
 	 */
 	public function section_comments_teaser($comment_count = 0) {
 		return new View_Generic_CommentsTeaser($comment_count);
+	}
+
+
+	/**
+	 * Get favorite events timeline.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Events_Timeline
+	 */
+	public function section_favorites(Model_User $user) {
+		$upcoming = Model_Event::factory()->find_favorites_upcoming($user, 0, 'DESC');
+		$past     = Model_Event::factory()->find_favorites_past($user, 0);
+
+		$favorites = array();
+		foreach ($upcoming as $event) {
+			$favorites[] = $event;
+		}
+		foreach ($past as $event) {
+			$favorites[] = $event;
+		}
+
+		return new View_Events_Timeline($favorites);
 	}
 
 
