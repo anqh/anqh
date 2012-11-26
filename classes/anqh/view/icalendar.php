@@ -49,7 +49,7 @@ class Anqh_View_iCalendar extends View_Base {
 	 * @return  string
 	 */
 	public static function escape($string) {
-		return str_replace(array(',', ';', "\\"), array("\,", "\;", "\\\\"), $string);
+		return str_replace(array("\\", ";", ","), array("\\\\", "\;", "\,"), $string);
 	}
 
 
