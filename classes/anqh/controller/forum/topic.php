@@ -405,6 +405,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			try {
 				$post->save();
+
 				if ($increase) {
 
 					// Quote, only for public topics
@@ -508,7 +509,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 
 		// Build page
-		$this->view = new View_Page(Forum::topic($topic));
+		$this->view = new View_Page();
+		$this->view->title_html = Forum::topic($topic);
 
 		$this->view->add(View_Page::COLUMN_MAIN, $section);
 
