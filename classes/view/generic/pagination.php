@@ -139,22 +139,16 @@ class View_Generic_Pagination extends View_Base {
 
 
 	/**
-	 * Render view.
+	 * Pager style pagination.
 	 *
 	 * @return  string
 	 */
-	public function render() {
-		$this->setup();
-
-		$attributes = array(
-			'class' => $this->class . ' pager' //$this->current_page ? 'pagination pagination-centered' : 'pager'
-		);
-
+	private function _pager() {
 		ob_start();
 
 ?>
 
-<ul <?= HTML::attributes($attributes) ?>>
+<ul class="pager">
 
 	<?php if ($this->first_url): ?>
 	<li class="previous"><?= HTML::anchor($this->first_url, $this->first_text) ?></li>
@@ -165,7 +159,7 @@ class View_Generic_Pagination extends View_Base {
 	<?php endif; ?>
 
 	<?php if ($this->current_page): ?>
-	<li class="disabled"><a><?= $this->current_page . ($this->total_pages ? ' / ' . $this->total_pages : '') ?></a></li>
+	<li class="disabled"><a><?= $this->current_page ?></a></li>
 	<?php endif; ?>
 
 	<?php if ($this->last_url): ?>
@@ -181,6 +175,85 @@ class View_Generic_Pagination extends View_Base {
 <?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Pagination style pagination.
+	 *
+	 * @return  string
+	 */
+	private function _pagination() {
+
+		// Build range
+		if ($this->total_pages > 15) {
+			$first = max($this->current_page - 2, 1);
+			$last  = min($this->current_page + 2, $this->total_pages);
+		} else {
+			$first = 1;
+			$last  = $this->total_pages;
+		}
+		$range = range($first, $last);
+
+		// Add gaps
+		if ($first > 1) {
+			if ($first > 10) {
+				array_unshift($range, floor($first / 2));
+			}
+			array_unshift($range, 1);
+		}
+		if ($last < $this->total_pages) {
+			if ($this->total_pages - $last > 10) {
+				$range[] = ceil(($this->total_pages - $last) / 2) + $last;
+			}
+			$range[] = $this->total_pages;
+		}
+
+		ob_start();
+
+		$previous = 1;
+?>
+
+<div class="pagination pagination-centered">
+	<ul>
+
+		<?php if ($this->previous_url): ?>
+		<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
+		<?php else: ?>
+		<li class="previous disabled"><span><?= $this->previous_text ?></span></li>
+		<?php endif; ?>
+
+		<?php foreach ($range as $page): ?>
+			<?php if ($page - $previous > 1): ?>
+		<li class="disabled"><span>&hellip;</span></li>
+			<?php endif; ?>
+		<li<?= $page == $this->current_page ? ' class="active"' : '' ?>><?= HTML::anchor($this->url($page), $page) ?></li>
+		<?php $previous = $page; endforeach; ?>
+
+		<?php if ($this->next_url): ?>
+		<li class="next"><?= HTML::anchor($this->next_url, $this->next_text) ?></li>
+		<?php else: ?>
+		<li class="next disabled"><span><?= $this->next_text ?></span></li>
+		<?php endif; ?>
+
+	</ul>
+</div>
+
+<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
+	 * Render view.
+	 *
+	 * @return  string
+	 */
+	public function render() {
+		$this->setup();
+
+		return $this->total_pages ? $this->_pagination() : $this->_pager();
 	}
 
 
