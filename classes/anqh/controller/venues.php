@@ -234,18 +234,17 @@ class Anqh_Controller_Venues extends Controller_Page {
 	 */
 	public function action_index() {
 
+		// Build page
+		$this->view = new View_Page(__('Venues'));
+
 		// Set actions
 		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::get('venue_add')->uri(),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add venue'),
 				'class' => 'btn btn-primary venue-add'
 			);
 		}
-
-
-		// Build page
-		$this->view = new View_Page(__('Venues'));
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_venues());
 
@@ -268,15 +267,20 @@ class Anqh_Controller_Venues extends Controller_Page {
 
 
 		// Build page
-		$this->view = new View_Page($venue->name);
-		$this->page_actions[] = array(
+		$this->view         = new View_Page($venue->name);
+		$this->view->tab    = 'venue';
+		$this->view->tabs[] = array(
 			'link'  => Route::url('venues'),
 			'text'  => '&laquo; ' . __('Back to Venues'),
+		);
+		$this->view->tabs['venue'] = array(
+			'link'  => Route::model($venue),
+			'text'  => __('Venue'),
 		);
 
 		// Set actions
 		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($venue, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit venue'),
 			);
@@ -364,7 +368,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 
 			// Set actions
 			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link'  => Route::model($venue, 'delete') . '?' . Security::csrf_query(),
 					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete venue'),
 					'class' => 'btn btn-danger venue-delete'
