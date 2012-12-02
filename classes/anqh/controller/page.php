@@ -150,7 +150,7 @@ head.js(
 			$this->view->language    = $this->language;
 			$this->view->id          = $this->page_id;
 			$this->view->class       = $page_class;
-			$this->view->actions     = $this->page_actions;
+			$this->view->tabs        = $this->page_actions;
 			$this->view->breadcrumbs = $this->page_breadcrumbs;
 
 

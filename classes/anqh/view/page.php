@@ -59,6 +59,16 @@ class Anqh_View_Page extends View_Base {
 	public $styles = array();
 
 	/**
+	 * @var  string  Active tab
+	 */
+	public $tab;
+
+	/**
+	 * @var  array  Page tabs
+	 */
+	public $tabs = array();
+
+	/**
 	 * @var  string  Page title
 	 */
 	public $title;
@@ -562,7 +572,7 @@ endif; ?>
 	 * @return  string
 	 */
 	protected function _title() {
-		if ($this->title || $this->actions) {
+		if ($this->title || $this->actions || $this->breadcrumbs || $this->tabs) {
 			ob_start();
 
 ?>
@@ -575,6 +585,18 @@ endif; ?>
 				</nav>
 				<?php endif; ?>
 
+				<?php if ($this->actions): ?>
+				<div class="actions">
+					<?php foreach ($this->actions as $action):
+							$attributes = $action;
+							unset($attributes['link'], $attributes['text']);
+							$attributes['class'] = $attributes['class'] ? 'btn ' . $attributes['class'] : 'btn btn-inverse';
+
+							echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+						endforeach; ?>
+				</div>
+				<?php endif; ?>
+
 				<?php if ($this->title_html || $this->title): ?>
 				<h1><?= $this->title_html ? $this->title_html : HTML::chars($this->title) ?></h1>
 				<?php endif; ?>
@@ -583,25 +605,26 @@ endif; ?>
 				<p><?= $this->subtitle ?></p>
 				<?php endif; ?>
 
-				<?php if ($this->actions): ?>
-				<nav>
+				<?php if ($this->tabs): ?>
+				<ul class="nav nav-tabs">
 
-				<?php foreach ($this->actions as $action):
-						if (is_array($action)):
+				<?php foreach ($this->tabs as $tab_id => $tab):
+						if (is_array($tab)):
 
-							// Action is a link
-							$attributes = $action;
-							unset($attributes['link'], $attributes['text'], $attributes['dropdown']);
-							$attributes['class'] = isset($attributes['class']) ? 'btn ' . $attributes['class'] : 'btn btn-inverse';
+							// Tab is a link
+							$attributes = $tab;
+							unset($attributes['link'], $attributes['text'], $attributes['dropdown'], $attributes['active']);
 
-							if ($action['dropdown']):
+							if ($tab['dropdown']):
+								$attributes['class']      .= ' dropdown-toggle';
+								$attributes['data-toggle'] = 'dropdown';
+								$attributes['data-target'] = '#';
 				?>
 
-					<div class="btn-group">
-						<?= HTML::anchor($action['link'], $action['text'], $attributes) ?>
-						<?= HTML::anchor('#', '<span class="caret"></span>', array('class' => $attributes['class'] . ' dropdown-toggle', 'data-toggle' => 'dropdown')) ?>
+					<li class="dropdown<?= $tab_id == $this->tab ? ' active' : '' ?>">
+						<?= HTML::anchor($tab['link'], $tab['text'] . ' <span class="caret"></span>', $attributes) ?>
 						<ul class="dropdown-menu">
-							<?php foreach ($action['dropdown'] as $dropdown): ?>
+							<?php foreach ($tab['dropdown'] as $dropdown): ?>
 								<?php if ($dropdown['divider']): ?>
 							<li class="divider"></li>
 								<?php else: ?>
@@ -609,23 +632,25 @@ endif; ?>
 								<?php endif; ?>
 							<?php endforeach; ?>
 						</ul>
-					</div>
+					</li>
 
 				<?php
 
 							else:
-								echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+								echo '<li' . ($tab_id == $this->tab ? ' class="active"' : '') . '>' . HTML::anchor($tab['link'], $tab['text'], $attributes) . '</li>';
 							endif;
 
 						else:
 
 							// Action is HTML
-							echo $action;
+							echo '<li' . ($tab_id == $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
 
 						endif;
-					endforeach; ?>
+					endforeach;
 
-				</nav>
+				?>
+
+				</ul>
 				<?php endif; ?>
 
 			</header>
