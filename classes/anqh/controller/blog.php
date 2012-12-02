@@ -142,7 +142,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 		// Set actions
 		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($entry, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit blog entry'),
 			);
@@ -182,7 +182,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 		// Set actions
 		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::url('blogs', array('action' => 'add')),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Write new blog entry'),
 				'class' => 'btn btn-primary'
