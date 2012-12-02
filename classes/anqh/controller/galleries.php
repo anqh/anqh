@@ -16,11 +16,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		parent::before();
 
 		$this->page_title = __('Galleries');
-		$this->tabs = array(
-			'latest' => array('url' => Route::get('galleries')->uri(), 'text' => __('Latest updates')),
-			'browse' => array('url' => Route::get('galleries')->uri(array('action' => 'browse')), 'text' => __('Browse galleries')),
-			'flyers' => array('url' => Route::get('flyers')->uri(array('action' => '')), 'text' => __('Browse flyers')),
-		);
 	}
 
 
@@ -30,7 +25,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	public function action_approve() {
 		$this->history = false;
 
-		return $this->action_image();
+		$this->action_image();
 	}
 
 
@@ -81,7 +76,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 		// Build page
-		$this->view = View_Page::factory(__('Galleries') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))));
+		$this->view      = View_Page::factory(__('Galleries') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))));
+		$this->view->tab = 'galleries';
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_flyer_actions();
 
@@ -531,6 +527,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				' - ' .
 				($month ? HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) : (__('Date unknown') . ($year == 1970 ? '' : ' ' . $year)))
 		);
+		$this->view->tab = 'flyers';
 		$this->_set_page_actions();
 		$this->_set_flyer_actions();
 
@@ -635,7 +632,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_gallery($gallery);
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($gallery, 'update'),
 				'text'  => '<i class="icon-refresh icon-white"></i> ' . __('Update gallery'),
 			);
@@ -875,14 +872,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			// Image actions
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-home icon-white"></i> ' . __('Set default'),
 					'class' => 'btn-inverse image-default'
 				);
 			}
 			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete'),
 					'class' => 'btn-inverse image-delete'
@@ -892,10 +889,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			// Gallery actions
 			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 			$this->_set_gallery($gallery);
-			array_unshift($this->page_actions, array(
+			array_unshift($this->view->tabs, array(
 				'link' => Route::model($gallery),
 				'text' => '&laquo; ' . __('Gallery')
 			));
+			$this->view->tabs['gallery'] = array(
+				'link' => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id)),
+				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photo')
+			);
 
 
 			// Pagination
@@ -941,7 +942,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	public function action_index() {
 
 		// Build page
-		$this->view = View_Page::factory(__('Galleries'));
+		$this->view      = View_Page::factory(__('Galleries'));
+		$this->view->tab = 'latest';
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_flyer_actions();
 
@@ -1326,11 +1328,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param  Model_Flyer  $flyer
 	 */
 	protected function _set_flyer_actions(Model_Flyer $flyer = null) {
-		$this->page_actions[] = array(
+		$this->view->tabs[] = array(
 			'link' => Route::get('flyer')->uri(array('id' => 'undated')),
 			'text' => '<i class="icon-random icon-white"></i> ' . __('Random undated flyer'),
 		);
-		$this->page_actions[] = array(
+		$this->view->tabs[] = array(
 			'link' => Route::get('flyer')->uri(array('id' => 'random')),
 			'text' => '<i class="icon-random icon-white"></i> ' . __('Random flyer'),
 		);
@@ -1339,7 +1341,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			// Set browse flyers to
 			if ($flyer->stamp_begin) {
-				$this->page_actions['flyers']['link'] = $flyer->has_full_date()
+				$this->view->tabs['flyers']['link'] = $flyer->has_full_date()
 					? Route::url('flyers', array('year' => date('Y', $flyer->stamp_begin), 'month' => date('n', $flyer->stamp_begin)))
 					: Route::url('flyers', array('year' => date('Y', $flyer->stamp_begin)));
 			}
@@ -1351,7 +1353,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			));
 
 			if ($event = $flyer->event()) {
-				$this->page_actions[] = array(
+				$this->view->tabs[] = array(
 					'link'  => Route::model($event),
 					'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;',
 				);
@@ -1366,21 +1368,26 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param  boolean  $upload
 	 */
 	protected function _set_page_actions($upload = false) {
+		$this->view->tabs['latest'] = array(
+			'link' => Route::url('galleries'),
+			'text' => '<i class="icon-camera icon-white"></i> ' . __('Latest updates')
+		);
+		$this->view->tabs['galleries'] = array(
+			'link' => Route::url('galleries', array('action' => 'browse')),
+			'text' => '<i class="icon-camera icon-white"></i> ' . __('Galleries')
+		);
+		$this->view->tabs['flyers'] = array(
+			'link' => Route::url('flyers', array('action' => '')),
+			'text' => '<i class="icon-picture icon-white"></i> ' . __('Flyers')
+		);
+
 		if ($upload) {
-			$this->page_actions['upload'] = array(
-				'link' => Route::url('galleries', array('action' => 'upload')),
-				'text' => '<i class="icon-upload icon-white"></i> ' . __('Upload images'),
+			$this->view->actions['upload'] = array(
+				'link'  => Route::url('galleries', array('action' => 'upload')),
+				'text'  => '<i class="icon-upload icon-white"></i> ' . __('Upload images'),
 				'class' => 'btn-primary images-add'
 			);
 		}
-		$this->page_actions['browse'] = array(
-			'link' => Route::url('galleries', array('action' => 'browse')),
-			'text' => '<i class="icon-camera icon-white"></i> ' . __('Browse galleries')
-		);
-		$this->page_actions['flyers'] = array(
-			'link' => Route::url('flyers', array('action' => '')),
-			'text' => '<i class="icon-picture icon-white"></i> ' . __('Browse flyers')
-		);
 	}
 
 
@@ -1393,16 +1400,21 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Set title
 		$images = count($gallery->images());
+		$this->view->tab      = 'gallery';
 		$this->view->title    = $gallery->name;
 		$this->view->subtitle = __($images == 1 ? ':images image' : ':images images', array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
 		// Set actions
-		$this->page_actions['browse']['link'] = Route::url('galleries', array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
-		if ($this->page_actions['upload'] && Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
-			$this->page_actions['upload']['link'] = Route::model($gallery, 'upload');
+		$this->view->tabs['galleries']['link'] = Route::url('galleries', array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
+		if ($this->view->actions['upload'] && Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
+			$this->view->actions['upload']['link'] = Route::model($gallery, 'upload');
 		}
+		$this->view->tabs['gallery'] = array(
+			'link' => Route::model($gallery),
+			'text' => '<i class="icon-camera icon-white"></i> ' . __('Gallery')
+		);
 		if ($event = $gallery->event()) {
-			$this->page_actions[] = array(
+			$this->view->tabs[] = array(
 				'link' => Route::model($event),
 				'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;'
 			);
