@@ -60,7 +60,8 @@ class Anqh_Controller_User extends Controller_Page {
 		// Build page
 		$this->_set_page($user);
 
-		$this->page_actions[] = array(
+		$this->view->tab       = 'favorites';
+		$this->view->actions[] = array(
 			'link'  => URL::site(Route::url('ical_favorites', array('username' => urlencode($user->username))), 'webcal'),
 			'text'  => '<i class="icon-download-alt icon-white"></i> ' . __('Download as .ics'),
 		);
@@ -135,6 +136,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Build page
 		$this->_set_page($user);
+		$this->view->tab = 'friends';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, __('Friends')));
 	}
@@ -185,6 +187,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Build page
 		$this->_set_page($user);
+		$this->view->tab = 'ignores';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_ignores($user));
 
@@ -272,6 +275,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Build page
 		$this->_set_page($user);
+		$this->view->tab = 'profile';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_upload(URL::user($user), $errors));
 	}
@@ -346,6 +350,15 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Build page
 		$this->_set_page($user);
+		$this->view->tab = 'profile';
+
+		// Owner / admin actions
+		if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
+			$this->view->actions[] = array(
+				'link'  => URL::user($user, 'image'),
+				'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add image'),
+			);
+		}
 
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed($user));
@@ -388,6 +401,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Build page
 		$this->_set_page($user);
+		$this->view->tab = 'settings';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_settings($user, $errors));
 	}
@@ -470,13 +484,13 @@ class Anqh_Controller_User extends Controller_Page {
 			// Friend actions
 			if (Permission::has($user, Model_User::PERMISSION_FRIEND, self::$user)) {
 				if (self::$user->is_friend($user)) {
-					$this->page_actions[] = array(
+					$this->view->actions[] = array(
 						'link'  => URL::user($user, 'unfriend') . '?token=' . Security::csrf(),
 						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Remove friend'),
 						'class' => 'btn-inverse friend-delete'
 					);
 				} else {
-					$this->page_actions[] = array(
+					$this->view->actions[] = array(
 						'link'  => URL::user($user, 'friend') . '?token=' . Security::csrf(),
 						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to friends'),
 						'class' => 'btn-primary friend-add'
@@ -487,45 +501,41 @@ class Anqh_Controller_User extends Controller_Page {
 			// Ignore actions
 			if (Permission::has($user, Model_User::PERMISSION_IGNORE, self::$user)) {
 				if (self::$user->is_ignored($user)) {
-					$this->page_actions[] = array(
+					$this->view->actions[] = array(
 						'link'  => URL::user($user, 'unignore') . '?token=' . Security::csrf(),
 						'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Unignore'),
 						'class' => 'btn-inverse ignore-delete'
 					);
 				} else {
-					$this->page_actions[] = array(
+					$this->view->actions[] = array(
 						'link'  => URL::user($user, 'ignore') . '?token=' . Security::csrf(),
 						'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ignore'),
 					);
 				}
 			}
 
-			$this->page_actions[] = array(
+			$this->view->tabs['profile'] = array(
 				'link'  =>  URL::user($user),
 				'text'  => '<i class="icon-user icon-white"></i> ' . __('Profile'),
 			);
-			$this->page_actions[] = array(
+			$this->view->tabs['favorites'] = array(
 				'link'  =>  URL::user($user, 'favorites'),
 				'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Favorites'),
 			);
-			$this->page_actions[] = array(
+			$this->view->tabs['friends'] = array(
 				'link'  =>  URL::user($user, 'friends'),
 				'text'  => '<i class="icon-heart icon-white"></i> ' . __('Friends'),
 			);
 
 			// Owner / admin actions
 			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->tabs['ignores'] = array(
 					'link'  =>  URL::user($user, 'ignores'),
 					'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ingores'),
 				);
-				$this->page_actions[] = array(
+				$this->view->tabs['settings'] = array(
 					'link'  =>  URL::user($user, 'settings'),
 					'text'  => '<i class="icon-cog icon-white"></i> ' . __('Settings'),
-				);
-				$this->page_actions[] = array(
-					'link'  => URL::user($user, 'image'),
-					'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add image'),
 				);
 			}
 
