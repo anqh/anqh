@@ -27,9 +27,9 @@ class Anqh_Controller_Forum extends Controller_Page {
 		$this->page_title = __('Forum');
 
 		// Generic page actions
-		$this->page_actions[] = array(
-			'link'  => Route::url('forum'),
-			'text'  => '<i class="icon-comment icon-white"></i> ' . __('New posts'),
+		$this->page_actions['new-posts'] = array(
+			'link' => Route::url('forum'),
+			'text' => '<i class="icon-comment icon-white"></i> ' . __('New posts'),
 		);
 
 		// Forum areas dropdown
@@ -51,18 +51,21 @@ class Anqh_Controller_Forum extends Controller_Page {
 			}
 		}
 		array_pop($areas);
-		$this->page_actions[] = array(
+		$this->page_actions['areas'] = array(
 			'link'     => Route::url('forum_group'),
 			'text'     => '<i class="icon-folder-open icon-white"></i> ' . __('Areas'),
+		);
+		$this->page_actions['area'] = array(
+			'link'     => Route::url('forum_group'),
+			'text'     => '',
 			'dropdown' => $areas,
 		);
 
 		if (self::$user) {
-			$this->page_actions[] = array(
-				'link'  => Forum::private_messages_url(),
-				'text'  => '<i class="icon-envelope icon-white"></i> ' . __('Private messages'),
+			$this->page_actions['private-messages'] = array(
+				'link' => Forum::private_messages_url(),
+				'text' => '<i class="icon-envelope icon-white"></i> ' . __('Private messages'),
 			);
-			$this->tabs['private'] = array('url' => Forum::private_messages_url(), 'text' => __('Private messages'));
 		}
 	}
 
@@ -71,7 +74,8 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 * Action: latest posts
 	 */
 	public function action_index() {
-		$this->view = new View_Page(__('Forum'));
+		$this->view      = new View_Page(__('Forum'));
+		$this->view->tab = 'new-posts';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(20)));
 

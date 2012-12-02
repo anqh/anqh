@@ -158,43 +158,49 @@ class View_Forum_PostEdit extends View_Article {
 			case self::EDIT_TOPIC:
 				$is_admin = self::$_user->has_role(array('admin', 'moderator', 'forum moderator'));
 
+				if ($is_admin):
+
 ?>
 
-<div class="span8">
+<fieldset>
+	<div class="span2">
+		<?= Form::control_group(
+					Form::select('status', array(
+						Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
+						Model_Forum_Topic::STATUS_SINK   => __('Sink'),
+						Model_Forum_Topic::STATUS_LOCKED => __('Locked'),
+					), $this->forum_topic->status, array('class' => 'input-small')),
+					array('status' => __('Status')),
+					Arr::get($this->errors, 'status')); ?>
+	</div>
 
-	<fieldset>
-		<?php if ($is_admin):
-			echo Form::control_group(
-				Form::select('status', array(
-					Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
-					Model_Forum_Topic::STATUS_SINK   => __('Sink'),
-					Model_Forum_Topic::STATUS_LOCKED => __('Locked'),
-				), $this->forum_topic->status, array('class' => 'input-small')),
-				array('status' => __('Status')),
-				Arr::get($this->errors, 'status'));
+	<div class="span2">
+		<?= Form::control_group(
+			Form::select('sticky', array(
+				Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
+				Model_Forum_Topic::STICKY_STICKY => __('Sticky'),
+			), $this->forum_topic->sticky, array('class' => 'input-small')),
+			array('sticky' => __('Stickyness')),
+			Arr::get($this->errors, 'sticky')); ?>
+	</div>
+</fieldset>
 
-			echo Form::control_group(
-				Form::select('sticky', array(
-					Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
-					Model_Forum_Topic::STICKY_STICKY => __('Sticky'),
-				), $this->forum_topic->sticky, array('class' => 'input-small')),
-				array('sticky' => __('Stickyness')),
-				Arr::get($this->errors, 'sticky'));
-		endif; ?>
+		<?php endif; ?>
 
-		<?php echo Form::control_group(
-			Form::input('name', $this->forum_topic->name, array('class' => 'input-max')),
-			array('name' => __('Topic')),
-			Arr::get($this->errors, 'name')) ?>
+<fieldset class="span8">
 
-		<?php if ($this->private) echo Form::control_group(
-			Form::textarea('recipients', $this->recipients, array('rows' => 3, 'placeholder' => __('Required'), 'class' => 'input-max'), true),
-			array('recipients' => __('Recipients')),
-			Arr::get($this->errors, 'recipients')) ?>
+	<?php echo Form::control_group(
+		Form::input('name', $this->forum_topic->name, array('class' => 'input-max')),
+		array('name' => __('Topic')),
+		Arr::get($this->errors, 'name')) ?>
 
-	</fieldset>
+	<?php if ($this->private) echo Form::control_group(
+		Form::textarea('recipients', $this->recipients, array('rows' => 3, 'placeholder' => __('Required'), 'class' => 'input-max'), true),
+		array('recipients' => __('Recipients')),
+		Arr::get($this->errors, 'recipients')) ?>
 
-</div>
+</fieldset>
+
 
 <?php
 

@@ -10,16 +10,6 @@
 class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 	/**
-	 * Construct controller
-	 */
-	public function before() {
-		parent::before();
-
-		$this->tab_id = 'areas';
-	}
-
-
-	/**
 	 * Action: add
 	 */
 	public function action_add() {
@@ -93,11 +83,12 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 
 		// Build page
-		$this->view = new View_Page(__('Forum area') . ($area->name ? ': ' . HTML::chars($area->name) : ''));
+		$this->view      = new View_Page(__('Forum area') . ($area->name ? ': ' . HTML::chars($area->name) : ''));
+		$this->view->tab = 'areas';
 
 		// Set actions
 		if ($area->loaded() && Permission::has($area, Model_Forum_Area::PERMISSION_DELETE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'delete'),
 				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete area'),
 				'class' => 'btn btn-danger area-delete',
@@ -130,19 +121,20 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 
 		// Build page
-		$this->view = new View_Page($area->name);
-		$this->view->subtitle  = $area->description;
+		$this->view           = new View_Page($area->name);
+		$this->view->tab      = 'areas';
+		$this->view->subtitle = $area->description;
 
 		// Set actions
 		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'post'),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New topic'),
 				'class' => 'btn btn-primary topic-add'
 			);
 		}
 		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'edit', false),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit area'),
 			);
@@ -169,15 +161,16 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, self::$user);
 
 		// Build page
-		$this->view = new View_Page(__('Private messages'));
-		$this->view->subtitle  = __('Personal and group messages');
+		$this->view           = new View_Page(__('Private messages'));
+		$this->view->tab      = 'private-messages';
+		$this->view->subtitle = __('Personal and group messages');
 
 		// Set actions
 		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::url('forum_private_topic_add', array('action' => 'post')),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New message'),
-				'class' => 'btn btn-primary topic-add'
+				'class' => 'btn btn-primary'
 			);
 		}
 
@@ -220,8 +213,6 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	 */
 	public function section_pagination($topics = 0) {
 		return new View_Generic_Pagination(array(
-			'previous_text'  => '&laquo; ' . __('Previous page'),
-			'next_text'      => __('Next page') . ' &raquo;',
 			'items_per_page' => Kohana::$config->load('forum.topics_per_page'),
 			'total_items'    => $topics,
 		));

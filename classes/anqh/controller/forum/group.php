@@ -63,11 +63,12 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 
 		// Build page
-		$this->view = new View_Page(__('Forum group') . ($group->name ? ': ' . HTML::chars($group->name) : ''));
+		$this->view      = new View_Page(__('Forum group') . ($group->name ? ': ' . HTML::chars($group->name) : ''));
+		$this->view->tab = 'areas';
 
 		// Set actions
 		if ($group->loaded() && Permission::has($group, Model_Forum_Group::PERMISSION_DELETE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($group, 'delete'),
 				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete group'),
 				'class' => 'btn btn-danger group-delete',
@@ -85,14 +86,15 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 		// Load group(s)
 		$group_id = (int)$this->request->param('id');
+		$actions  = array();
 		if (!$group_id) {
 
 			// All groups
 			$groups = Model_Forum_Group::factory()->find_all();
 			if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
-				$this->page_actions[] = array(
-					'link'  => Route::url('forum_group_add'),
-					'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New group'),
+				$actions[] = array(
+					'link' => Route::url('forum_group_add'),
+					'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New group'),
 				);
 			}
 
@@ -106,15 +108,15 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			Permission::required($group, Model_Forum_Group::PERMISSION_READ, self::$user);
 
 			if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$user)) {
-				$this->page_actions[] = array(
-					'link'  => Route::model($group, 'edit'),
-					'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit group'),
+				$actions[] = array(
+					'link' => Route::model($group, 'edit'),
+					'text' => '<i class="icon-edit icon-white"></i> ' . __('Edit group'),
 				);
 			}
 			if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$user)) {
-				$this->page_actions[] = array(
-					'link'  => Route::model($group, 'add'),
-					'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New area'),
+				$actions[] = array(
+					'link' => Route::model($group, 'add'),
+					'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New area'),
 				);
 			}
 			$groups = array($group);
@@ -122,7 +124,9 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 
 
 		// Build page
-		$this->view = new View_Page(count($groups) > 1 ? __('Forum areas') : $groups[0]->name);
+		$this->view          = new View_Page(count($groups) > 1 ? __('Forum areas') : $groups[0]->name);
+		$this->view->tab     = 'areas';
+		$this->view->actions = $actions;
 
 		foreach ($groups as $group) {
 			$this->view->add(View_Page::COLUMN_MAIN, $this->section_group($group));

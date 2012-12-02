@@ -123,8 +123,15 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 
 		// Build page
-		$this->view = new View_Page($topic->name);
-		$this->view->subtitle = __($topic->post_count == 1 ? ':posts post' : ':posts posts', array(':posts' => Num::format($topic->post_count, 0)));
+		$this->view             = new View_Page();
+		$this->view->title_html = Forum::topic($topic);
+		$this->view->subtitle   = __($topic->post_count == 1 ? ':posts post' : ':posts posts', array(':posts' => Num::format($topic->post_count, 0)));
+		$this->view->tab        = 'topic';
+
+		$this->page_actions['topic'] = array(
+			'link' => Route::model($topic),
+			'text' => '<i class="icon-comment icon-white"></i> ' . __('Topic'),
+		);
 
 		// Public topic extras
 		if (!$this->private) {
@@ -174,14 +181,14 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Set actions
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Request::current_uri() . '#reply',
 				'text'  => '<i class="icon-comment icon-white"></i> ' . __('Reply to topic'),
 				'class' => 'btn btn-primary topic-post'
 			);
 		}
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($topic, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit topic'),
 			);
@@ -580,12 +587,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				$recipients = $topic->find_recipient_names();
 			}
 
-			$this->_set_title($topic);
+			$this->view->title_html = Forum::topic($topic);
 			$cancel = Route::model($topic);
 
 			// Set actions
 			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link'  => Route::model($topic, 'delete') . '?' . Security::csrf_query(),
 					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete topic'),
 					'class' => 'btn btn-danger topic-delete');
