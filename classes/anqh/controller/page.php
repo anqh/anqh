@@ -145,13 +145,17 @@ head.js(
 
 
 			// Set the generic page variables
-			$this->view->styles      = $styles;
-			$this->view->skins       = $skins;
-			$this->view->language    = $this->language;
-			$this->view->id          = $this->page_id;
-			$this->view->class       = $page_class;
-			$this->view->tabs        = $this->page_actions;
-			$this->view->breadcrumbs = $this->page_breadcrumbs;
+			$this->view->styles   = $styles;
+			$this->view->skins    = $skins;
+			$this->view->language = $this->language;
+			$this->view->id       = $this->page_id;
+			$this->view->class    = $page_class;
+			if ($this->page_actions) {
+				$this->view->tabs = $this->page_actions;
+			}
+			if ($this->page_breadcrumbs) {
+				$this->view->breadcrumbs = $this->page_breadcrumbs;
+			}
 
 
 			// And finally the profiler stats

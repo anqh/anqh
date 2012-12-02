@@ -621,7 +621,7 @@ endif; ?>
 								$attributes['data-target'] = '#';
 				?>
 
-					<li class="dropdown<?= $tab_id == $this->tab ? ' active' : '' ?>">
+					<li class="dropdown<?= $tab_id === $this->tab ? ' active' : '' ?>">
 						<?= HTML::anchor($tab['link'], $tab['text'] . ' <span class="caret"></span>', $attributes) ?>
 						<ul class="dropdown-menu">
 							<?php foreach ($tab['dropdown'] as $dropdown): ?>
@@ -637,13 +637,13 @@ endif; ?>
 				<?php
 
 							else:
-								echo '<li' . ($tab_id == $this->tab ? ' class="active"' : '') . '>' . HTML::anchor($tab['link'], $tab['text'], $attributes) . '</li>';
+								echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . HTML::anchor($tab['link'], $tab['text'], $attributes) . '</li>';
 							endif;
 
 						else:
 
 							// Action is HTML
-							echo '<li' . ($tab_id == $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
+							echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
 
 						endif;
 					endforeach;
