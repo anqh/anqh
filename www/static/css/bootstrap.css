@@ -5097,6 +5097,30 @@ select {
 .pager .disabled > span {
   background-color: #222222;
 }
+.pagination {
+  margin-top: 0;
+}
+.nav > li > a:hover {
+  background-color: #222222;
+}
+.nav-tabs {
+  border-bottom-color: #333333;
+}
+.nav-tabs > li > a:hover {
+  border-color: #222222 #222222 #333333;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover {
+  border-color: #333333;
+  border-bottom-color: transparent;
+  color: #ffffff;
+}
+.nav-tabs .open .dropdown-toggle,
+.nav-pills .open .dropdown-toggle,
+.nav > li.dropdown.open.active > a:hover {
+  background-color: #333333;
+  border-color: #333333;
+}
 .thumbnail {
   border: 1px solid #333333;
 }
@@ -5135,6 +5159,14 @@ blockquote {
 }
 #title {
   margin-bottom: 10px;
+}
+#title .actions {
+  float: right;
+  line-height: 36px;
+  margin: 9px 0;
+}
+#title .actions:first-child {
+  margin: 0;
 }
 #side > section + section,
 #side > section + article,

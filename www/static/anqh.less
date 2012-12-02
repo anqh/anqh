@@ -56,6 +56,16 @@ select                                 { color: @white; }
   .disabled > a:hover,
   .disabled > span                     { background-color: @grayDarker; }
 }
+.pagination                            { margin-top: 0; }
+
+.nav > li > a:hover                    { background-color: @grayDarker; }
+.nav-tabs                              { border-bottom-color: @grayDark; }
+.nav-tabs > li > a:hover               { border-color: @grayDarker @grayDarker @grayDark; }
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover        { border-color: @grayDark; border-bottom-color: transparent; color: @white; }
+.nav-tabs .open .dropdown-toggle,
+.nav-pills .open .dropdown-toggle,
+.nav > li.dropdown.open.active > a:hover { background-color: @grayDark; border-color: @grayDark; }
 
 .thumbnail                             { border: 1px solid @grayDark; }
 
@@ -79,7 +89,10 @@ blockquote                             { border-left-color: @grayDark; }
 
 
 // Containers
-#title                                 { margin-bottom: 10px; }
+#title                                 { margin-bottom: 10px;
+  .actions                             { float: right; line-height: 36px; margin: 9px 0; }
+  .actions:first-child                 { margin: 0; }
+}
 #side > section + section,
 #side > section + article,
 #side > article + section,
