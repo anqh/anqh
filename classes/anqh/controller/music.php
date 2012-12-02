@@ -26,9 +26,6 @@ class Anqh_Controller_Music extends Controller_Page {
 		$type  = $this->request->param('music') == 'mixtapes' ? Model_Music_Track::TYPE_MIX : Model_Music_Track::TYPE_TRACK;
 		$genre = $this->request->param('genre');
 
-		// Set actions
-		$this->_set_page_actions();
-
 		// Load requested music
 		$limit  = 25;
 		$music  = Model_Music_Track::factory();
@@ -36,6 +33,10 @@ class Anqh_Controller_Music extends Controller_Page {
 
 		// Build page
 		$this->view = View_Page::factory($type == Model_Music_Track::TYPE_MIX ? __('Mixtapes') : __('Tracks'));
+
+		// Set actions
+		$this->_set_page_actions();
+		$this->view->tab = $this->request->param('music');
 
 		// Filters
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters($this->request->param('music'), $genre));
@@ -133,27 +134,34 @@ class Anqh_Controller_Music extends Controller_Page {
 
 		// Build page
 		$this->view           = new View_Page($track->name);
+		$this->view->tab      = 'music';
 		$this->view->subtitle = __('By :user :ago', array(
 			':user'  => HTML::user($track->author()),
 			':ago'   => HTML::time(Date::fuzzy_span($track->created), $track->created)
 		));
 
 		// Set actions
-		$this->page_actions[] = array(
+		$this->_set_page_actions(false);
+
+		$this->view->actions[] = array(
 			'link'   => Route::model($track, 'listen'),
 			'text'   => '<i class="icon-play icon-white"></i> ' . __('Listen'),
 			'class'  => 'btn btn-primary',
 			'target' => '_blank',
 			'rel'    => 'nofollow',
 		);
+		$this->view->tabs['music'] = array(
+			'link'  => Route::model($track),
+			'text'  => '<i class="icon-music icon-white"></i> ' . ($track->type == Model_Music_Track::TYPE_MIX ? __('Mixtape') : __('Track')),
+		);
 		if ($track->forum_topic_id) {
-			$this->page_actions[] = array(
+			$this->view->tabs[] = array(
 				'link'  => Route::url('forum_topic', array('id' => $track->forum_topic_id)),
 				'text'  => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
 			);
 		}
 		if (Permission::has($track, Model_Music_Track::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($track, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit'),
 			);
@@ -186,6 +194,7 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view = new View_Page(__('Charts'));
 
 		// Set actions
+		$this->view->tab = 'charts';
 		$this->_set_page_actions();
 
 		$this->view->add(View_Page::COLUMN_MAIN, '<div class="row">');
@@ -238,16 +247,16 @@ class Anqh_Controller_Music extends Controller_Page {
 
 			$cancel = Route::model($track);
 
+			$this->view = new View_Page(HTML::chars($track->name));
+
 			// Set actions
 			if (Permission::has($track, Model_Music_Track::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link' => Route::model($track, 'delete') . '?token=' . Security::csrf(),
 					'text' => '<i class="icon-trash icon-white"></i> ' . __('Delete'),
 					'class' => 'btn-danger music-delete'
 				);
 			}
-
-			$this->view = new View_Page(HTML::chars($track->name));
 
 		} else {
 
@@ -412,26 +421,30 @@ class Anqh_Controller_Music extends Controller_Page {
 	/**
 	 * Set common page actions.
 	 */
-	public function _set_page_actions() {
+	public function _set_page_actions($actions = true) {
 
 		// Browsing
-		$this->page_actions[] = array(
+		$this->view->tabs['charts'] = array(
+			'link'  => Route::url('charts'),
+			'text'  => '<i class="icon-fire icon-white"></i> ' . __('Charts'),
+		);
+		$this->view->tabs['mixtapes'] = array(
 			'link'  => Route::url('music_browse', array('music' => 'mixtapes')),
 			'text'  => '<i class="icon-th-list icon-white"></i> ' . __('Browse mixtapes'),
 		);
-		$this->page_actions[] = array(
+		$this->view->tabs['tracks'] = array(
 			'link'  => Route::url('music_browse', array('music' => 'tracks')),
 			'text'  => '<i class="icon-th-list icon-white"></i> ' . __('Browse tracks'),
 		);
 
 		// Content creation
-		if (Permission::has(new Model_Music_Track, Model_Music_Track::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array(
+		if ($actions && Permission::has(new Model_Music_Track, Model_Music_Track::PERMISSION_CREATE, self::$user)) {
+			$this->view->actions[] = array(
 				'link'  => Route::url('music_add', array('music' => 'mixtape')),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new mixtape'),
 				'class' => 'btn btn-primary'
 			);
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::url('music_add', array('music' => 'track')),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add new track'),
 				'class' => 'btn btn-primary'
