@@ -61,23 +61,6 @@ class Anqh_Controller_Events extends Controller_Page {
 
 
 	/**
-	 * Action: browse calendar
-	 */
-	public function action_browse() {
-		$this->page_title = __('Events');
-		$this->tab_id     = 'browse';
-
-
-
-/*
-			Widget::add('main', View_Module::factory('generic/filters', array(
-				'filters' => $this->_filters($events),
-			)));
-*/
-	}
-
-
-	/**
 	 * Action: delete event
 	 */
 	public function action_delete() {
@@ -131,33 +114,38 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Set actions
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
 			if ($event->is_favorite(self::$user)) {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Remove favorite'),
 					'class' => 'btn-inverse favorite-delete',
 				);
 			} else {
-				$this->page_actions[] = array(
+				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'favorite') . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to favorites'),
 					'class' => 'btn-primary favorite-add',
 				);
 			}
 		}
-		$this->page_actions[] = array(
+		$this->view->tab = 'event';
+		$this->view->tabs['event'] = array(
+			'link' => Route::model($event),
+			'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event'),
+		);
+		$this->view->tabs[] = array(
 			'link'  => Route::get('gallery_event')->uri(array('id' => $event->id)),
 			'text'  => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
 		);
-		$this->page_actions[] = array(
+		$this->view->tabs[] = array(
 			'link'  => Route::get('forum_event')->uri(array('id' => $event->id)),
 			'text'  => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
 		);
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($event, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit event'),
 			);
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::model($event, 'image'),
 				'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add flyer'),
 			);
@@ -226,7 +214,6 @@ class Anqh_Controller_Events extends Controller_Page {
 	 */
 	public function action_flyers() {
 		$this->history = false;
-		$this->tab_id = 'flyers';
 
 		Permission::required(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user);
 
@@ -602,13 +589,13 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Set actions
 		if (Permission::has(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link' => Route::url('events', array('action' => 'flyers')),
 				'text' => '<i class="icon-download-alt icon-white"></i> ' . __('Import flyers'),
 			);
 		}
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
-			$this->page_actions[] = array(
+			$this->view->actions[] = array(
 				'link'  => Route::get('events')->uri(array('action' => 'add')),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add event'),
 				'class' => 'btn-primary event-add',
@@ -664,9 +651,9 @@ class Anqh_Controller_Events extends Controller_Page {
 
 			// Set actions
 			if (Permission::has($event, Model_Event::PERMISSION_DELETE, self::$user)) {
-				$this->page_actions[] = array(
-					'link' => Route::model($event, 'delete') . '?token=' . Security::csrf(),
-					'text' => '<i class="icon-trash icon-white"></i> ' . __('Delete event'),
+				$this->view->actions[] = array(
+					'link'  => Route::model($event, 'delete') . '?token=' . Security::csrf(),
+					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete event'),
 					'class' => 'btn-danger event-delete'
 				);
 			}
