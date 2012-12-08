@@ -71,6 +71,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'ip'                 => null,
 		'hostname'           => null,
 
+		// Deprecated
+		'level'              => null,
+		'hash'               => null,
+
 	);
 
 	protected $_rules = array(
