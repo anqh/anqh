@@ -145,7 +145,7 @@ class View_Event_Edit extends View_Article {
 				<fieldset id="fields-venue">
 					<legend><?php echo __('Venue') ?></legend>
 					<?php echo Form::control_group(
-						'<label class="inlince checkbox">'
+						'<label class="checkbox">'
 							. Form::checkbox('venue_hidden', 'true', (bool)$this->event->venue_hidden, array('id' => 'field-ug'))
 							. ' ' . __('Underground')
 							. '</label>') ?>
@@ -164,7 +164,7 @@ class View_Event_Edit extends View_Article {
 				<fieldset id="fields-tickets">
 					<legend><?php echo __('Tickets') ?></legend>
 					<?php echo Form::control_group(
-						'<label class="inline checkbox">'
+						'<label class="checkbox">'
 							. Form::checkbox('free', 'true', $this->event->price === '0.00', array('id' => 'field-free'))
 							. ' ' . __('Free entry')
 							. '</label>') ?>
