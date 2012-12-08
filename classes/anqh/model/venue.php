@@ -111,12 +111,17 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	/**
 	 * Find all venues in autocomplete friend array.
 	 *
+	 * @param   boolean  $skip
 	 * @return  array
 	 */
-	public function find_all_autocomplete() {
+	public function find_all_autocomplete($skip = null) {
 		$venues = array();
 
 		foreach ($this->find_all() as $venue) {
+			if ($skip && $skip == $venue->id) {
+				continue;
+			}
+
 			$venues[] = array(
 				'id'        => $venue->id,
 				'label'     => $venue->name,
@@ -143,6 +148,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 			'event',
 			DB::select_array(Model_Event::factory()->fields())
 				->where('stamp_begin', '<=', strtotime('today'))
+				->order_by('stamp_begin', 'DESC')
 				->limit($limit)
 		);
 	}
@@ -159,6 +165,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 			'event',
 			DB::select_array(Model_Event::factory()->fields())
 				->where('stamp_begin', '>=', strtotime('today'))
+				->order_by('stamp_begin', 'DESC')
 				->limit($limit)
 		);
 	}
@@ -205,6 +212,40 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 				->order_by('id', 'DESC'),
 			$limit
 		);
+	}
+
+
+	/**
+	 * Find similar sounding venues.
+	 *
+	 * @param   integer  $similarity  in percents
+	 * @return  array
+	 */
+	public function find_similar($similarity = 69) {
+		$venues = array();
+		$sort   = array();
+		$name   = mb_strtolower($this->name);
+
+		foreach ($this->find_all() as $venue) {
+			if ($this->id == $venue->id) {
+				continue;
+			}
+
+			similar_text($name, mb_strtolower($venue->name), $percent);
+
+			if ($percent > $similarity) {
+				$sort[]   = $percent;
+				$venues[] = array(
+					'venue'      => $venue,
+					'similarity' => $percent
+				);
+			}
+		}
+
+		array_multisort($sort, SORT_DESC, $venues);
+
+		return $venues;
+
 	}
 
 
