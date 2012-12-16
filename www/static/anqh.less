@@ -26,6 +26,13 @@ h3                                     { /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .
 table h3,
 table h4                               { margin: 0; }
 
+dl,
+ul,
+form                                   {
+  &:last-child                         { margin-bottom: 0; }
+  &:only-child                         { margin-top: 0; }
+}
+
 legend                                 { border-bottom: 1px solid #111; box-shadow: 0 1px 0 @grayDarker; color: @grayLighter; }
 textarea,
 input[type="text"],
@@ -105,10 +112,17 @@ blockquote                             { border-left-color: @grayDark; }
 
 section                                { overflow: hidden;
   & > header                           { position: relative;
-    .nav                               { position: absolute; right: 0; top: -5px; }
+    .nav                               { margin-bottom: 0; position: absolute; right: 0; top: -5px; }
   }
-  li .transparent                      { .opacity(10); }
-  li:hover .transparent                { .opacity(100); }
+  li .transparent                      { opacity: .1; }
+  li:hover .transparent                { opacity: 1; }
+}
+#side section:not(.full)               {
+  & > header                           { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDark; padding: 10px 10px 9px;
+    h3                                 { margin: 0; }
+    .nav                               { right: 3px; top: 3px; }
+  }
+  & > div                              { background: @grayDarker; padding: 10px; }
 }
 
 article header                         { margin-bottom: 10px;
@@ -157,6 +171,13 @@ footer.meta                            { color: @gray; }
   a.ui-state-hover + img               { display: block; }
 }
 .ui-autocomplete:not(.ui-datepicker-inline) { overflow-y: auto; }
+.ui-datepicker-inline                  {
+  thead th                             { text-align: right; }
+  tbody tr:hover                       { background: @grayDarker; }
+  tbody td:hover:not(.ui-datepicker-unselectable) { text-decoration: underline; }
+  .ui-datepicker-week-col              { cursor: pointer; text-align: center; }
+  .ui-state-active                     { background: @black; }
+}
 
 // jQuery file upload
 .fileinput-button                      { overflow: hidden; position: relative; }
@@ -217,12 +238,13 @@ a.friend                               { font-weight: bold; }
   ul ul                                { display: none; list-style-type: none; margin: 0; }
 }
 
-#map                                   { .size(150px, 200px); }
+#map                                   { .size(150px, 100%); }
 
 .share .addthis_32x32_style            { height: 32px; }
 
 // Image carousel
 #carousel                              {
+  img                                  { width:  100%; }
   .carousel-control                    { top: 35px; }
   .btn-group                           { bottom: 5px; left: 5px; position: absolute; }
 }
@@ -233,6 +255,20 @@ a.friend                               { font-weight: bold; }
 // Profile
 #user                                  {
   textarea[name=signature]             { font-family: @monoFontFamily; }
+}
+
+// Events
+#main .events                          {
+  h3                                   { border-bottom: 1px solid @grayDark; }
+
+  .event                               { margin-bottom: 10px;
+    &:last-child                       { margin-bottom: 0; }
+    header,
+    h4                                 { margin: 0; }
+    .avatar.empty                      { background: @bodyBackground; border: 1px dashed lighten(@bodyBackground, 5%); .square(48px);
+      i                                { margin-top: 16px; opacity: .5; }
+    }
+  }
 }
 
 // Forum

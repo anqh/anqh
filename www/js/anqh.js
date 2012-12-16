@@ -62,11 +62,11 @@ $.fn.googleMap = function(options) {
 	}
 
 	var defaults = {
-		lat: 60.1695,
-		long: 24.9355,
-		zoom: 14,
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		marker: false,
+		lat:        60.1695,
+		long:       24.9355,
+		zoom:       14,
+		mapTypeId:  google.maps.MapTypeId.ROADMAP,
+		marker:     false,
 		infowindow: false,
 		mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU }
 	};
