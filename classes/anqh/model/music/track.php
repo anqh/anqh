@@ -116,7 +116,8 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 				}
 
 				// Links
-				$content .= '[url=' . URL::site(Route::model($this), true) . ']' . __('Listen') . '[/url] - ';
+				$content .= '[url=' . URL::site(Route::model($this), true) . ']' . __('Show details') . '[/url] - ';
+				$content .= '[url=' . URL::site(Route::model($this, 'listen'), true) . ']' . __('Listen') . '[/url]';
 
 				// Create topic
 				$author = $this->author();
