@@ -45,11 +45,11 @@ class View_Event_Info extends View_Section {
 		// Stamp
 		if ($this->event->stamp_begin != $this->event->stamp_end) {
 			echo $this->event->stamp_end ?
-				'<i class="icon-time"></i> ' . __('From :from to :to', array(
+				'<i class="icon-time icon-white"></i> ' . __('From :from to :to', array(
 					':from' => HTML::time(Date::format('HHMM', $this->event->stamp_begin), $this->event->stamp_begin),
 					':to'   => HTML::time(Date::format('HHMM', $this->event->stamp_end), $this->event->stamp_end)
 				)) :
-				'<i class="icon-time"></i> ' . __('From :from onwards', array(
+				'<i class="icon-time icon-white"></i> ' . __('From :from onwards', array(
 					':from' => HTML::time(Date::format('HHMM', $this->event->stamp_begin), $this->event->stamp_begin),
 				)), '<br />';
 		}
@@ -57,30 +57,30 @@ class View_Event_Info extends View_Section {
 
 		// Price
 		if ($this->event->price == 0) {
-			echo '<i class="icon-tag"></i> ', __('Free entry'), '<br />';
+			echo '<i class="icon-shopping-cart icon-white"></i> ', __('Free entry'), '<br />';
 		} else if ($this->event->price > 0) {
-			echo '<i class="icon-tag"></i> ', __('Tickets :price', array(':price' => '<var>' . Num::currency($this->event->price, $this->event->stamp_begin) . '</var>'));
+			echo '<i class="icon-shopping-cart icon-white"></i> ', __('Tickets :price', array(':price' => '<var>' . Num::currency($this->event->price, $this->event->stamp_begin) . '</var>'));
 			echo $this->event->price2 !== null ? ', ' . __('presale :price', array(':price' => '<var>' . Num::currency($this->event->price2, $this->event->stamp_begin) . '</var>')) : '', '<br />';
 		}
 
 
 		// Age limit
 		if ($this->event->age > 0) {
-			echo  '<i class="icon-user"></i> ', __('Age limit'), ': ', __(':years years', array(':years' => '<var>' . $this->event->age . '</var>')), '<br />';
+			echo  '<i class="icon-user icon-white"></i> ', __('Age limit'), ': ', __(':years years', array(':years' => '<var>' . $this->event->age . '</var>')), '<br />';
 		}
 
 
 		// Homepage
 		if (!empty($this->event->homepage)) {
-			echo '<i class="icon-home"></i> ', HTML::anchor($this->event->homepage), '<br />';
+			echo '<i class="icon-home icon-white"></i> ', HTML::anchor($this->event->homepage), '<br />';
 		}
 
 
 		// Tags
 		if ($tags = $this->event->tags()) {
-			echo '<i class="icon-music"></i> ', implode(', ', $tags), '<br />';
+			echo '<i class="icon-music icon-white"></i> ', implode(', ', $tags), '<br />';
 		} else if (!empty($this->event->music)) {
-			echo '<i class="icon-music"></i> ', $this->event->music, '<br />';
+			echo '<i class="icon-music icon-white"></i> ', $this->event->music, '<br />';
 		}
 
 
@@ -127,7 +127,7 @@ head.ready("anqh", function() {
 			$info    = '';
 
 		}
-		echo '<address><strong><i class="icon-map-marker"></i> ', $venue, '</strong><br />';
+		echo '<address><strong><i class="icon-map-marker icon-white"></i> ', $venue, '</strong><br />';
 		echo $address, '<br />';
 		if (isset($map)) {
 			echo HTML::anchor('#map', __('Toggle map')), '<br />';

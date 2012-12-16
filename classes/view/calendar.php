@@ -119,6 +119,7 @@ head.ready('jquery-ui', function() {
 			'nextText'        => '&#9658;',
 			'prevText'        => '&#9668;',
 			'showWeek'        => true,
+			'showOtherMonths' => true,
 			'weekHeader'      => __('Wk'),
 			'urlWeek'         => $this->url_week,
 		);

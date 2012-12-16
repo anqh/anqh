@@ -12,7 +12,7 @@ class View_Event_Carousel extends View_Section {
 	/**
 	 * @var  string  View classes
 	 */
-	public $class = 'carousel';
+	public $class = 'carousel full';
 
 	/**
 	 * @var  string  View id

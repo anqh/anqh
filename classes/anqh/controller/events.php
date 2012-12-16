@@ -856,7 +856,7 @@ class Anqh_Controller_Events extends Controller_Page {
 	 */
 	public function section_event_favorites(Model_Event $event) {
 		$section = new View_Users_List($favorites = $event->find_favorites());
-		$section->title = __('Favorites') . ' <small><i class="icon-heart"></i> ' . count($favorites) . '</small>';
+		$section->title = __('Favorites') . ' <small><i class="icon-heart icon-white"></i> ' . count($favorites) . '</small>';
 
 		return $section;
 	}

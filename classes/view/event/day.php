@@ -96,7 +96,7 @@ class View_Event_Day extends View_Article {
 
 		return $icon
 			? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar'))
-			: '<div class="avatar empty"><i class="icon-remove"></i></div>';
+			: '<div class="avatar empty"><i class="icon-picture"></i></div>';
 	}
 
 
