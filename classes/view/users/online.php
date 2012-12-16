@@ -12,7 +12,7 @@ class View_Users_Online extends View_Section {
 	/**
 	 * @var  array  Friends online
 	 */
-	private $_friends;
+	private $_friends = array();
 
 	/**
 	 * @var  integer  Number of guests online
@@ -27,7 +27,7 @@ class View_Users_Online extends View_Section {
 	/**
 	 * @var  array  Users online
 	 */
-	private $_users;
+	private $_users = array();
 
 
 	/**
@@ -41,7 +41,6 @@ class View_Users_Online extends View_Section {
 		$this->title        = __('Online');
 
 		// Build user lists
-		$this->_friends = $this->_users = array();
 		$friends = (bool)self::$_user ? self::$_user->find_friends() : array();
 		foreach ($users as $user_id) {
 			$user = Model_User::find_user_light($user_id);
@@ -62,22 +61,24 @@ class View_Users_Online extends View_Section {
 	public function content() {
 		ob_start();
 
-?>
+		// Friends
+		echo implode(', ', $this->_friends);
 
-<ul class="unstyled">
-	<?php foreach ($this->_friends as $user) { ?>
-	<li><?php echo $user ?></li>
-	<?php } ?>
-</ul>
+		if ($this->_friends && $this->_users):
+			echo '<br />';
+		endif;
 
-<ul class="unstyled">
-	<?php foreach ($this->_users as $user) { ?>
-	<li><?php echo $user ?></li>
-	<?php } ?>
-	<li><?php echo __('and :count guests', array(':count' => $this->_guest_count)) ?></li>
-</ul>
+		// Others
+		echo implode(', ', $this->_users);
 
-<?php
+		// Guests
+		if ($this->_guest_count):
+			if ($this->_friends || $this->_users):
+				echo ' ' . __('and') . ' ';
+			endif;
+
+			echo __(':count guests', array(':count' => $this->_guest_count));
+		endif;
 
 		return ob_get_clean();
 	}
