@@ -12,7 +12,7 @@ class View_User_Carousel extends View_Section {
 	/**
 	 * @var  string  View classes
 	 */
-	public $class = 'carousel';
+	public $class = 'carousel full';
 
 	/**
 	 * @var  string  View id
@@ -50,7 +50,7 @@ class View_User_Carousel extends View_Section {
 
 		// Legacy support
 		if (!count($images) && $this->user->picture):
-			echo HTML::image($this->user->picture, array('width' => 290));
+			echo HTML::image($this->user->picture);
 		endif;
 
 		if (count($images)):
@@ -75,7 +75,7 @@ class View_User_Carousel extends View_Section {
 
 		<div class="item<?= $image->id == $active_id ? ' active' : '' ?>">
 
-			<?= HTML::image($image->get_url(), array('width' => 290)) ?>
+			<?= HTML::image($image->get_url()) ?>
 
 			<?php if (isset($action_uri)): ?>
 

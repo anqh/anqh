@@ -50,7 +50,7 @@ abstract class Anqh_Controller_Page extends Controller {
 
 
 			// Skins
-			$selected_skin = Session::instance()->get('skin', 'blue');
+			$selected_skin = $this->session->get('skin', 'blue');
 
 			// Less files needed to build a skin
 			$less_imports = array(

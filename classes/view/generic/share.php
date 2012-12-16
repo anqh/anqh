@@ -12,7 +12,7 @@ class View_Generic_Share extends View_Section {
 	/**
 	 * @var  string  Section class
 	 */
-	public $class = 'share';
+	public $class = 'share full';
 
 	/**
 	 * @var  string  Shared title

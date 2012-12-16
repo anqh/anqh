@@ -51,7 +51,7 @@ class View_Generic_Filters extends View_Section {
 	/**
 	 * @var  string  Filter type
 	 */
-	public $type;
+	public $type = self::TYPE_JAVASCRIPT;
 
 
 	/**
