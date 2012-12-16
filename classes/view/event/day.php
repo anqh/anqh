@@ -51,24 +51,19 @@ class View_Event_Day extends View_Article {
 	public function content() {
 
 		// Venue
-		if ($this->event->venue_hidden) {
+		if ($this->event->venue_hidden):
 			$venue = __('Underground');
-		} else if ($venue  = $this->event->venue()) {
+		elseif ($venue  = $this->event->venue()):
 			$venue = HTML::anchor(Route::model($venue), HTML::chars($venue->name));
-		} else {
+		else:
 			$venue = HTML::chars($this->event->venue_name);
-		}
-
-		// Price
-		$price = $this->event->price !== null && $this->event->price == 0 ?
-			__('Free!') :
-			($this->event->price > 0 ? Num::currency($this->event->price, $this->event->stamp_begin) : '');
+		endif;
 
 		ob_start();
 
 ?>
 
-	<span class="details"><?= $price . ($venue ? ' @ ' : '') . $venue ?></span><br />
+	<span class="details"><?= $this->event->price() . ($venue ? ' @ ' : '') . $venue ?></span><br />
 	<span class="djs"><?= HTML::chars($this->event->dj) ?></span>
 
 <?php
@@ -78,21 +73,65 @@ class View_Event_Day extends View_Article {
 
 
 	/**
+	 * Render favorites.
+	 *
+	 * @return  string
+	 */
+	public function favorites() {
+
+		// Clickable favorites
+		if (Permission::has($this->event, Model_Event::PERMISSION_FAVORITE, self::$_user)):
+			if ($this->event->is_favorite(self::$_user)):
+
+				// Favorite event, click to unfavorite
+				return HTML::anchor(
+					Route::model($this->event, 'unfavorite') . '?token=' . Security::csrf(),
+					'<i class="icon-heart icon-white"></i> ' . $this->event->favorite_count,
+					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-small btn-lovely disabled')
+				);
+
+			else:
+
+				// Non-favorite event, click to favorite
+				if ($this->event->favorite_count):
+					return HTML::anchor(
+						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
+						'<i class="icon-heart icon-white"></i> ' . $this->event->favorite_count,
+						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse disabled')
+					);
+				else:
+					return HTML::anchor(
+						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
+						'<i class="icon-heart"></i>',
+						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse disabled')
+					);
+				endif;
+
+			endif;
+		endif;
+
+		return $this->event->favorite_count
+			? '<span class="btn btn-small btn-inverse disabled"><i class="icon-heart icon-white"></i> ' . $this->event->favorite_count . '</a>'
+			: '';
+	}
+
+
+	/**
 	 * Render flyer.
 	 *
 	 * @return  string
 	 */
 	public function flyer() {
-		if ($image = $this->event->flyer_front()) {
+		if ($image = $this->event->flyer_front()):
 			$icon = $image->get_url($image::SIZE_ICON);
-		} else if ($image = $this->event->flyer_back()) {
+		elseif ($image = $this->event->flyer_back()):
 			$icon = $image->get_url($image::SIZE_ICON);
-		} else if (count($flyers = $this->event->flyers())) {
+		elseif (count($flyers = $this->event->flyers())):
 			$image = $flyers[0]->image();
 			$icon  = $image->get_url($image::SIZE_ICON);
-		} else {
+		else:
 			$icon = null;
-		}
+		endif;
 
 		return $icon
 			? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar'))
@@ -108,9 +147,9 @@ class View_Event_Day extends View_Article {
 	public function render() {
 
 		// Start benchmark
-		if (Kohana::$profiling === true and class_exists('Profiler', false)) {
+		if (Kohana::$profiling === true and class_exists('Profiler', false)):
 			$benchmark = Profiler::start('View', __METHOD__ . '(' . get_called_class() . ')');
-		}
+		endif;
 
 		ob_start();
 
@@ -125,17 +164,19 @@ class View_Event_Day extends View_Article {
 <article<?php echo HTML::attributes($attributes) ?>>
 	<div class="span1">
 
-		<?php echo $this->flyer() ?>
+		<?= $this->flyer() ?>
+
+		<?= $this->favorites() ?>
 
 	</div>
 
 	<div class="span7">
 
-		<?php echo $this->header() ?>
+		<?= $this->header() ?>
 
-		<?php echo $this->content() ?>
+		<?= $this->content() ?>
 
-		<?php echo $this->footer() ?>
+		<?= $this->footer() ?>
 
 	</div>
 </article>
@@ -145,9 +186,9 @@ class View_Event_Day extends View_Article {
 		$render = ob_get_clean();
 
 		// Stop benchmark
-		if (isset($benchmark)) {
+		if (isset($benchmark)):
 			Profiler::stop($benchmark);
-		}
+		endif;
 
 		return $render;
 	}

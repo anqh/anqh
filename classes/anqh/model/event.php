@@ -4,14 +4,12 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2012 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
-	/**
-	 * Permission to add favorite
-	 */
+	/** Permission to add favorite */
 	const PERMISSION_FAVORITE = 'favorite';
 
 	protected $_table_name = 'events';
@@ -85,6 +83,10 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info',
 	);
 
+	/**
+	 * @var  array  Favorites static cache
+	 */
+	public static $_favorites = array();
 
 	/**
 	 * Override __set() to handle datetime.
@@ -118,6 +120,8 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 			if ($favorite->save()) {
 				$this->favorite_count++;
 				$this->save();
+
+				self::$_favorites[$this->id][(int)$user->id] = (int)$user->id;
 
 				return true;
 			}
@@ -185,6 +189,8 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 				$this->favorite_count--;
 				$this->save();
 
+				unset(self::$_favorites[$this->id][(int)$user->id]);
+
 				return true;
 			}
 		}
@@ -199,22 +205,20 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  array
 	 */
 	public function find_favorites() {
-		static $favorites;
-
-		if (!is_array($favorites)) {
-			$favorites = array();
+		if (!is_array(self::$_favorites[$this->id])) {
+			self::$_favorites[$this->id] = array();
 			if ($this->loaded()) {
 				$users = DB::select('user_id')
 					->from('favorites')
 					->where('event_id', '=', $this->id)
 					->execute();
 				foreach ($users as $user) {
-					$favorites[(int)$user['user_id']] = (int)$user['user_id'];
+					self::$_favorites[$this->id][(int)$user['user_id']] = (int)$user['user_id'];
 				}
 			}
 		}
 
-		return $favorites;
+		return self::$_favorites[$this->id];
 	}
 
 
@@ -556,6 +560,22 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		$favorites = $this->find_favorites();
 
 		return isset($favorites[(int)$user]);
+	}
+
+
+	/**
+	 * Get event ticket price in event day's currency or Free!
+	 *
+	 * @return  string
+	 */
+	public function price() {
+		if ($this->price === 0) {
+			return __('Free!');
+		} elseif ($this->price > 0) {
+			return Num::currency($this->price, $this->stamp_begin);
+		} else {
+			return null;
+		}
 	}
 
 

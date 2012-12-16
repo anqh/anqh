@@ -123,7 +123,7 @@ class Anqh_Controller_Events extends Controller_Page {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'favorite') . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to favorites'),
-					'class' => 'btn-primary favorite-add',
+					'class' => 'btn-lovely favorite-add',
 				);
 			}
 		}
@@ -191,7 +191,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Load event
 		$event_id = (int)$this->request->param('id');
-		$event = Model_Event::factory($event_id);
+		$event    = Model_Event::factory($event_id);
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
@@ -200,9 +200,14 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (Security::csrf_valid()) {
 			$event->add_favorite(self::$user);
 
-			// News feed
 			NewsfeedItem_Events::favorite(self::$user, $event);
+		}
 
+		// Ajax requests show event day
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body(new View_Event_Day($event));
+
+			return;
 		}
 
 		$this->request->redirect(Route::model($event));
@@ -623,6 +628,13 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		if (Security::csrf_valid()) {
 			$event->delete_favorite(self::$user);
+		}
+
+		// Ajax requests show event day
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body(new View_Event_Day($event));
+
+			return;
 		}
 
 		$this->request->redirect(Route::model($event));
