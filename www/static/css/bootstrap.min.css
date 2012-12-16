@@ -959,6 +959,8 @@ a.friend{font-weight:bold;}
 #main .events .event{margin-bottom:10px;}#main .events .event:last-child{margin-bottom:0;}
 #main .events .event header,#main .events .event h4{margin:0;}
 #main .events .event .avatar.empty{background:#1a1a1a;border:1px dashed #272727;width:48px;height:48px;}#main .events .event .avatar.empty i{margin-top:16px;opacity:.5;}
+#main .events .event .btn{padding:2px 5px;width:40px;}
+#main .events .event a.btn{cursor:pointer;}
 .permalink:target{background:rgba(128, 128, 128, 0.1);padding-top:40px;position:relative;top:-40px;}
 blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
 .post footer{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:10px;line-height:16px;color:#999999;}

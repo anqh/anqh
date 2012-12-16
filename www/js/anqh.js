@@ -204,21 +204,19 @@ $.fn.dialogify = function() {
 };
 
 
-// Ajaxified mod requests
+// Ajaxified requests
 $.fn.ajaxify = function(url, data, type) {
 	var $target = $(this);
+
 	type = (type == 'post' || type == 'POST') ? 'POST' : 'GET';
 	$.ajax({
-		type: type,
-		url: url,
-		data: data,
+		type:    type,
+		url:     url,
+		data:    data,
 		timeout: 2500,
 		success: function(data) {
-			$target
-				.slideUp('fast', function() {
-					$target
-						.replaceWith(data)
-						.slideDown('fast');
+			$target.slideUp('fast', function _replace() {
+				$target.replaceWith(data).slideDown('fast');
 			});
 		},
 		error: function(req, err) {
@@ -975,19 +973,21 @@ $(function() {
 	$('a[class*="-delete"]').live('click', function(e) {
 		e.preventDefault();
 
-		var $this = $(this);
+		var $this = $(this)
+			, title = $this.data('confirm') || $this.attr('title') || $this.text();
+
 		if ($this.data('action')) {
-			Anqh.confirm_delete($this.data('confirm') ? $this.data('confirm') : $this.text(), function() { $this.data('action')(); });
+			Anqh.confirm_delete(title, function _confirm() { $this.data('action')(); });
 		} else if ($this.is('a')) {
-			Anqh.confirm_delete($this.data('confirm') ? $this.data('confirm') : $this.text(), function() { window.location = $this.attr('href'); });
+			Anqh.confirm_delete(title, function _confirm() { window.location = $this.attr('href'); });
 		} else {
-			Anqh.confirm_delete($this.data('confirm') ? $this.data('confirm') : $this.text(), function() { $this.parent('form').submit(); });
+			Anqh.confirm_delete(title, function _confirm() { $this.parent('form').submit(); });
 		}
 	});
 
 
 	// Ajaxify actions
-	$('a.ajaxify').live('click', function() {
+	$(document).on('click', 'a.ajaxify', function _ajaxify() {
 		$(this).closest('section, article').ajaxify($(this).attr('href'));
 
 		return false;

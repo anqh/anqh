@@ -5651,6 +5651,13 @@ a.friend {
   margin-top: 16px;
   opacity: .5;
 }
+#main .events .event .btn {
+  padding: 2px 5px;
+  width: 40px;
+}
+#main .events .event a.btn {
+  cursor: pointer;
+}
 /*
 .forum-group                           {
   tr td:last-child                     { .text-overflow; }
