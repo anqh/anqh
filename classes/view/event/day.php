@@ -68,8 +68,8 @@ class View_Event_Day extends View_Article {
 
 ?>
 
-	<p class="details"><?php echo $price, ' ', $venue ?></p>
-	<p class="djs"><?php echo HTML::chars($this->event->dj) ?></p>
+	<span class="details"><?= $price . ($venue ? ' @ ' : '') . $venue ?></span><br />
+	<span class="djs"><?= HTML::chars($this->event->dj) ?></span>
 
 <?php
 
@@ -94,7 +94,9 @@ class View_Event_Day extends View_Article {
 			$icon = null;
 		}
 
-		return $icon ? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar')) : '&nbsp;';
+		return $icon
+			? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar'))
+			: '<div class="avatar empty"><i class="icon-remove"></i></div>';
 	}
 
 

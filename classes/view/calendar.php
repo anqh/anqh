@@ -57,18 +57,21 @@ class View_Calendar extends View_Section {
 
 <script>
 head.ready('jquery-ui', function() {
-	$('#calendar').datepicker(<?php echo $this->_options() ?>);
+	var $calendar = $('#calendar');
+
+	$calendar.datepicker(<?= $this->_options() ?>);
 
 	// Make weeks clickable
-	$('#calendar').delegate('td.ui-datepicker-week-col', 'click', function cbClick() {
+	$calendar.delegate('td.ui-datepicker-week-col', 'click', function cbClick() {
 
 		// Capture click
-		$('#calendar').datepicker('option', 'onSelect', function cbSelect(date, inst) {
-			var date = $(this).datepicker('getDate');
-			var week = (!date ? 0 : $.datepicker.iso8601Week(date));
-			var url  = $('#calendar').datepicker('option', 'urlWeek')
+		$calendar.datepicker('option', 'onSelect', function cbSelect(date, inst) {
+			var date = $(this).datepicker('getDate')
+			  , week = (!date ? 0 : $.datepicker.iso8601Week(date))
+			  , url  = $calendar.datepicker('option', 'urlWeek')
 					.replace(":year", inst.selectedYear)
 					.replace(":week", week);
+
 			window.location = url;
 		});
 
