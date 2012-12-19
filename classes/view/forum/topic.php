@@ -12,7 +12,7 @@ class View_Forum_Topic extends View_Section {
 	/**
 	 * @var  string  View class
 	 */
-	public $class = 'topic';
+	public $class = 'topic speech';
 
 	/**
 	 * @var  Model_Forum_Topic
@@ -54,7 +54,8 @@ class View_Forum_Topic extends View_Section {
 	public function content() {
 		ob_start();
 
-		$offset = $this->pagination->offset;
+		$offset   = $this->pagination->offset;
+		$previous = null;
 		foreach ($this->forum_topic->posts($offset, $this->pagination->items_per_page) as $post):
 
 			// Ignore
@@ -62,12 +63,14 @@ class View_Forum_Topic extends View_Section {
 
 			// Time difference between posts
 			$current    = strtotime($post->created);
-			$difference = (isset($previous) && $current - $previous > Date::YEAR) ? Date::fuzzy_span($previous, $current) : false;
+			$difference = ($previous && $current - $previous > Date::YEAR) ? Date::fuzzy_span($previous, $current) : false;
 			if ($difference):
 
 ?>
 
-		<div class="divider post-old"><?= __('Previous post :ago', array(':ago' => $difference)) ?></div>
+		<div class="offset1 post-old">
+			<span class="label label-inverse muted">&iexcl; <?= __('Previous post :ago', array(':ago' => $difference)) ?> !</span>
+		</div>
 
 <?php
 
@@ -78,7 +81,7 @@ class View_Forum_Topic extends View_Section {
 			$post->nth     = ++$offset;
 			$post->private = $this->private;
 
-			echo $post, '<hr />';
+			echo $post;
 
 		endforeach;
 
@@ -88,15 +91,15 @@ class View_Forum_Topic extends View_Section {
 head.ready('anqh', function() {
 
 	// Edit post
-	$('section.topic').on('click', 'a.post-edit', function editPost(e) {
+	$('section.topic').on('click', 'a.post-edit', function _editPost(e) {
 		e.preventDefault();
 
 		var href = $(this).attr('href')
 		  , post = href.match(/([0-9]*)\/edit/);
 
-		$('#post-' + post[1] + ' .actions').fadeOut();
-		$.get(href, function loaded(data) {
-			$('#post-' + post[1] + ' .post-content').replaceWith(data);
+		$('#post-' + post[1] + ' .ago').fadeOut();
+		$.get(href, function _loaded(data) {
+			$('#post-' + post[1] + ' .bubble').replaceWith(data);
 		});
 	});
 
@@ -113,15 +116,15 @@ head.ready('anqh', function() {
 	});
 
 	// Quote post
-	$('section.topic').on('click', 'a.post-quote', function quotePost(e) {
+	$('section.topic').on('click', 'a.post-quote', function _quotePost(e) {
 		e.preventDefault();
 
 		var href    = $(this).attr('href')
 		  , post    = href.match(/([0-9]*)\/quote/)
 		  , $article = $(this).closest('article');
 
-		$('#post-' + post[1] + ' .actions').fadeOut();
-		$.get(href, function loaded(data) {
+		$('#post-' + post[1] + ' .ago').fadeOut();
+		$.get(href, function _loaded(data) {
 			$article.after(data);
 
 			// Scroll form to view
@@ -134,9 +137,11 @@ head.ready('anqh', function() {
 	});
 
 	// Save post
-	$('section.post-content form').live('submit', function(e) {
+	$('section.topic').on('submit', '.post form', function(e) {
 		e.preventDefault();
+
 		var post = $(this).closest('article');
+
 		post.loading();
 		$.post($(this).attr('action'), $(this).serialize(), function(data) {
 			post.replaceWith(data);
@@ -151,7 +156,7 @@ head.ready('anqh', function() {
 		  , $article = $quote.prev('article');
 
 		$quote.slideUp(null, function slided() { $quote.remove(); });
-		$article.find('.actions').fadeIn();
+		$article.find('.ago').fadeIn();
 	});
 
 	// Cancel edit

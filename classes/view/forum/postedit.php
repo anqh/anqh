@@ -32,7 +32,7 @@ class View_Forum_PostEdit extends View_Article {
 	/**
 	 * @var  string  View class
 	 */
-	public $class = 'row';
+	public $class = 'row speech';
 
 	/**
 	 * @var  array
@@ -120,6 +120,8 @@ class View_Forum_PostEdit extends View_Article {
 			$attributes['id'] = $this->form_id;
 		endif;
 
+		$button = __('Save');
+
 		if (!$this->form_action):
 			switch ($this->mode):
 
@@ -129,10 +131,12 @@ class View_Forum_PostEdit extends View_Article {
 						'id'       => $this->forum_post->parent_id,
 						'action'   => 'quote'
 					));
+					$button = __('Reply');
 					break;
 
 				case self::REPLY:
 					$this->form_action = Route::model($this->forum_topic, 'reply');
+					$button = __('Reply');
 					break;
 
 				case self::EDIT_POST:
@@ -190,12 +194,12 @@ class View_Forum_PostEdit extends View_Article {
 <fieldset class="span8">
 
 	<?php echo Form::control_group(
-		Form::input('name', $this->forum_topic->name, array('class' => 'input-max')),
+		Form::input('name', $this->forum_topic->name, array('class' => 'input-block-level')),
 		array('name' => __('Topic')),
 		Arr::get($this->errors, 'name')) ?>
 
 	<?php if ($this->private) echo Form::control_group(
-		Form::textarea('recipients', $this->recipients, array('rows' => 3, 'placeholder' => __('Required'), 'class' => 'input-max'), true),
+		Form::textarea('recipients', $this->recipients, array('rows' => 3, 'placeholder' => __('Required'), 'class' => 'input-block-level'), true),
 		array('recipients' => __('Recipients')),
 		Arr::get($this->errors, 'recipients')) ?>
 
@@ -214,9 +218,8 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<div class="author span2">
+<div class="author span1">
 	<?= HTML::avatar(self::$_user->avatar, self::$_user->username) ?>
-	<?= HTML::user(self::$_user) ?>
 </div>
 
 <?php
@@ -226,22 +229,29 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<div class="post-edit span6">
+<div class="post-edit bubble span7">
+	<div class="arrow"></div>
+	<div class="comment">
 
-	<fieldset>
-		<?php echo Form::control_group(
-			Form::textarea_editor('post', $this->forum_post->post, array('id' => uniqid(), 'class' => 'input-max'), true),
-			null,
-			Arr::get($this->errors, 'post')) ?>
-	</fieldset>
+		<header>
+			<?= HTML::user(self::$_user) ?>
+		</header>
 
-	<fieldset class="form-actions">
-		<?php echo Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-		<?php echo $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
+		<fieldset>
+			<?php echo Form::control_group(
+				Form::textarea_editor('post', $this->forum_post->post, array('id' => uniqid(), 'class' => 'input-block-level'), true),
+				null,
+				Arr::get($this->errors, 'post')) ?>
+		</fieldset>
 
-		<?php echo Form::csrf() ?>
-	</fieldset>
+		<fieldset class="form-actions">
+			<?php echo Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+			<?php echo $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
+			<?php echo Form::csrf() ?>
+		</fieldset>
+
+	</div>
 </div>
 
 <?php
