@@ -12,7 +12,7 @@ class View_Generic_Comments extends View_Section {
 	/**
 	 * @var  string  Section class
 	 */
-	public $class = 'comments';
+	public $class = 'comments speech';
 
 	/**
 	 * @var  Model_Comment[]
@@ -88,7 +88,7 @@ class View_Generic_Comments extends View_Section {
 			// Ignore
 			if (self::$_user && self::$_user->is_ignored($author)) continue;
 
-			$classes = array('row-fluid');
+			$classes = array('row');
 
 			// Private comment?
 			if ($comment->private) {
@@ -113,32 +113,33 @@ class View_Generic_Comments extends View_Section {
 ?>
 
 	<li class="<?= implode(' ', $classes) ?>" id="comment-<?= $comment->id ?>">
-		<?= HTML::avatar($author['avatar'], $author['username'], true) ?>
-		<?= HTML::user($author) ?>
-		<small class="ago"><?= in_array('new', $classes) ? __('New') : '' ?> <?= HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?></small>
+		<div class="span1 author">
+			<?= HTML::avatar($author['avatar'], $author['username'], true) ?>
+		</div>
+		<div class="span7 bubble">
+			<div class="arrow"></div>
+			<div class="comment">
+				<small class="ago">
+					<?php if (self::$_user_id && $comment->user_id == self::$_user_id || in_array('my', $classes)):
 
-		<?php if (self::$_user_id && $comment->user_id == self::$_user_id || in_array('my', $classes)): ?>
-		<span class="actions transparent">
+						if ($this->private && !$comment->private):
+							echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'comment-private')) . ' &bull; ';
+						endif;
 
-<?php
+						if  ($this->delete):
+							echo HTML::anchor(sprintf($this->delete, $comment->id), __('Delete'), array('class' => 'comment-delete')) . ' &bull; ';
+						endif;
 
-			if ($this->private && !$comment->private):
-				echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'btn btn-special btn-mini comment-private'));
-			endif;
+					endif; ?>
 
-			if ($this->delete):
-				echo HTML::anchor(sprintf($this->delete, $comment->id), __('Delete'), array('class' => 'btn btn-danger btn-mini comment-delete'));
-			endif;
+					<?= in_array('new', $classes) ? __('New') : '' ?> <?= HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?>
+				</small>
+				<?= HTML::user($author) ?><br />
+				<?= $comment->private ? '<span class="label label-special" title="' . __('Private comment') . '">' . __('Priv') . '</span>: ' : '' ?>
+				<?= Text::smileys(Text::auto_link_urls(HTML::chars($comment->comment))) ?>
+			</div>
+		</div>
 
-?>
-
-		</span>
-		<?php endif; ?>
-
-		<p>
-			<?= $comment->private ? '<span class="label label-special" title="' . __('Private comment') . '">' . __('Priv') . '</span>: ' : '' ?>
-			<?= Text::smileys(Text::auto_link_urls(HTML::chars($comment->comment))) ?>
-		</p>
 	</li>
 
 	<?php endforeach; ?>
