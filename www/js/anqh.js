@@ -108,51 +108,6 @@ $.fn.googleMap = function(options) {
 };
 
 
-// Hovercards
-$.fn.hovercard = function() {
-
-	if ($('#hovercard').length == 0) {
-		$('body').append('<div id="hovercard"></div>');
-		$('#hovercard').data('cache', []);
-	}
-
-	$(this).tooltip({
-		effect: 'slide',
-		predelay: 500,
-		tip: '#hovercard',
-		lazy: false,
-		position: 'center left',
-		onBeforeShow: function() {
-			hovercard(this);
-		}
-	}).dynamic({
-		top: {
-			direction: 'up',
-			bounce: true
-		}
-	});
-
-	function hovercard(tip) {
-		var $tip = tip.getTip();
-		var href = tip.getTrigger().attr('href');
-		var cache = $tip.data('cache');
-		if (!cache[href]) {
-			$tip.text('Loading...');
-			$.get(href + '/hover', function(response) {
-				tip.hide();
-				$tip.html(cache[href] = response);
-				tip.show();
-			});
-			$tip.data('cache', cache);
-			return;
-		}
-		$tip.html(cache[href]);
-	}
-
-	return this;
-};
-
-
 // Theme switcher
 $.fn.skinswitcher = function() {
 

@@ -5087,12 +5087,19 @@ select {
 }
 .form-actions {
   border-top: #111;
+  margin: 0;
 }
 .input-append .add-on,
 .input-prepend .add-on {
   background: #222222;
   border-color: #111111;
   text-shadow: 0 1px 0 #000000;
+}
+.muted {
+  color: #555555;
+}
+.pager {
+  margin: 5px 0;
 }
 .pager li > a,
 .pager li > span {
@@ -5578,6 +5585,10 @@ a.friend {
   max-height: 100%;
   max-width: 100%;
 }
+.popover h3,
+.popover p {
+  color: #999999;
+}
 .popover figure {
   text-align: center;
 }
@@ -5621,9 +5632,44 @@ a.friend {
   left: 5px;
   position: absolute;
 }
+.speech .author .avatar {
+  margin-top: 0;
+}
+.speech .bubble {
+  background: #222222;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  min-height: 50px;
+  position: relative;
+}
+.speech .bubble .arrow,
+.speech .bubble .arrow:after {
+  position: absolute;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+.speech .bubble .arrow {
+  border-right-color: #222222;
+  border-width: 10px 10px 10px 0;
+  left: -10px;
+  top: 15px;
+}
+.speech .bubble .arrow:after {
+  border-right-color: rgba(0, 0, 0, 0.25);
+  border-width: 11px 11px 11px 0;
+  bottom: -11px;
+  left: -1px;
+}
+.speech .bubble .comment {
+  margin: 10px;
+}
 .ago {
   float: right;
   color: #999999;
+  color: #555555;
 }
 #user textarea[name=signature] {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -5655,25 +5701,31 @@ a.friend {
   padding: 2px 5px;
   width: 40px;
 }
-#main .events .event a.btn {
-  cursor: pointer;
-}
 /*
 .forum-group                           {
   tr td:last-child                     { .text-overflow; }
 }
 */
-.permalink:target {
-  background: rgba(128, 128, 128, 0.1);
-  padding-top: 40px;
-  position: relative;
-  top: -40px;
+.post.owner {
+  color: #709f70;
 }
-blockquote {
+.post.my {
+  color: #ccaf53;
+}
+.post.admin {
+  color: #049cdb;
+}
+.post.permalink:target .bubble {
+  background: #333333;
+}
+.post.permalink:target .bubble .arrow {
+  border-right-color: #333333;
+}
+.post blockquote {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
 }
-blockquote p {
+.post blockquote p {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: inherit;
   line-height: inherit;
@@ -5682,16 +5734,14 @@ blockquote p {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   font-size: 10px;
   line-height: 16px;
+  margin-top: 10px;
   color: #999999;
+  color: #555555;
 }
-.owner {
-  color: #709f70;
-}
-.my {
-  color: #ccaf53;
-}
-.admin {
-  color: #049cdb;
+.post-old {
+  color: #555555;
+  padding: 0 10px 10px;
+  text-align: center;
 }
 .thumbnails h4 {
   height: 36px;
