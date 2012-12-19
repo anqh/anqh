@@ -87,7 +87,7 @@ class View_Event_Day extends View_Article {
 				return HTML::anchor(
 					Route::model($this->event, 'unfavorite') . '?token=' . Security::csrf(),
 					'<i class="icon-heart icon-white"></i> ' . $this->event->favorite_count,
-					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-small btn-lovely disabled')
+					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-small btn-lovely active')
 				);
 
 			else:
@@ -97,13 +97,13 @@ class View_Event_Day extends View_Article {
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
 						'<i class="icon-heart icon-white"></i> ' . $this->event->favorite_count,
-						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse disabled')
+						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
 					);
 				else:
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
 						'<i class="icon-heart"></i>',
-						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse disabled')
+						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
 					);
 				endif;
 
