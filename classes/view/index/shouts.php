@@ -59,7 +59,7 @@ class View_Index_Shouts extends View_Section {
 	<li>
 		<?= HTML::time(Date::format('HHMM', $shout['created']), $shout['created']) ?>
 		<?= HTML::user($shout['user_id']) ?>:
-		<?= Text::smileys(Text::auto_link_urls($shout['shout'])) ?>
+		<?= Text::smileys(Text::auto_link_urls(HTML::chars($shout['shout']))) ?>
 	</li>
 	<?php } ?>
 
