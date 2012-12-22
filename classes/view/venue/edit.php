@@ -52,27 +52,27 @@ class View_Venue_Edit extends View_Section {
 	<div class="span8">
 		<fieldset>
 			<?= Form::control_group(
-				Form::input('name', $this->venue->name, array('class' => 'input-xxlarge')),
+				Form::input('name', $this->venue->name, array('class' => 'input-block-level')),
 				array('name' => __('Venue')),
 				Arr::get($this->errors, 'name')) ?>
 
 			<?= Form::control_group(
-				Form::input('homepage', $this->venue->homepage, array('class' => 'input-xxlarge')),
+				Form::input('homepage', $this->venue->homepage, array('class' => 'input-block-level')),
 				array('homepage' => __('Homepage')),
 				Arr::get($this->errors, 'homepage')) ?>
 
 			<?= Form::control_group(
-				Form::input('description', $this->venue->description, array('class' => 'input-xxlarge')),
+				Form::input('description', $this->venue->description, array('class' => 'input-block-level')),
 				array('description' => __('Short description')),
 				Arr::get($this->errors, 'description')) ?>
 
 			<?= Form::control_group(
-				Form::textarea('hours', $this->venue->hours, array('class' => 'input-xxlarge'), true),
+				Form::textarea('hours', $this->venue->hours, array('class' => 'input-block-level'), true),
 				array('hours' => __('Opening hours')),
 				Arr::get($this->errors, 'hours')) ?>
 
 			<?= Form::control_group(
-				Form::textarea('info', $this->venue->info, array('class' => 'input-xxlarge'), true),
+				Form::textarea('info', $this->venue->info, array('class' => 'input-block-level'), true),
 				array('info' => __('Other information')),
 				Arr::get($this->errors, 'info')) ?>
 		</fieldset>
@@ -93,14 +93,14 @@ class View_Venue_Edit extends View_Section {
 	<div class="span4">
 		<fieldset id="fields-location">
 			<?= Form::control_group(
-				Form::input('address', $this->venue->address),
-				array('address' => __('Address')),
-				Arr::get($this->errors, 'address')) ?>
-
-			<?= Form::control_group(
-				Form::input('city_name', $this->venue->city_name),
+				Form::input('city_name', $this->venue->city_name, array('class' => 'input-block-level')),
 				array('city_name' => __('City')),
 				Arr::get($this->errors, 'city_name')) ?>
+
+			<?= Form::control_group(
+				Form::input('address', $this->venue->address, array('class' => 'input-block-level')),
+				array('address' => __('Address')),
+				Arr::get($this->errors, 'address')) ?>
 		</fieldset>
 	</div>
 
@@ -108,9 +108,22 @@ class View_Venue_Edit extends View_Section {
 
 <script>
 head.ready('anqh', function() {
+
 	$('#fields-location').append('<div id="map"><?= __('Loading map..') ?></div>');
 
-	$('#map').googleMap(<?= ($this->venue->latitude ? json_encode(array('marker' => true, 'lat' => $this->venue->latitude, 'long' => $this->venue->longitude)) : '') ?>);
+	var loader;
+	function initMap() {
+		if ('maps' in google && 'Geocoder' in google.maps) {
+			clearTimeout(loader);
+		} else {
+			loader = setTimeout(initMap, 500);
+
+			return;
+		}
+
+		$('#map').googleMap(<?= ($this->venue->latitude ? json_encode(array('marker' => true, 'lat' => $this->venue->latitude, 'long' => $this->venue->longitude)) : '') ?>);
+	}
+	initMap();
 
 	$('input[name=city_name]').autocompleteGeo();
 
