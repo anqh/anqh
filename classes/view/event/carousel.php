@@ -48,12 +48,12 @@ class View_Event_Carousel extends View_Section {
 		// Load images
 		$flyers = $this->event->flyers();
 
-		// Legacy support
 		if (!count($flyers) && $this->event->flyer_front_url):
-			echo HTML::image($this->event->flyer_front_url, array('width' => 290));
-		endif;
 
-		if (count($flyers)):
+			// Legacy support
+			echo HTML::image($this->event->flyer_front_url, array('width' => 290));
+
+		elseif (count($flyers)):
 
 			// Check for actions
 			if (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
@@ -100,10 +100,17 @@ class View_Event_Carousel extends View_Section {
 
 </div>
 
+<?php if (count($flyers) > 1): ?>
 <a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev">&lsaquo;</a>
 <a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next">&rsaquo;</a>
+<?php endif; ?>
 
 <?php
+
+		elseif (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
+
+			// Add new flyer
+			echo HTML::anchor(Route::model($this->event, 'image'), '<i class="icon-picture icon-white"></i> ' . __('Add flyer'), array('class' => 'empty ajaxify'));
 
 		endif;
 

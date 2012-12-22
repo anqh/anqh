@@ -39,11 +39,11 @@ class View_Event_Main extends View_Article {
 
 ?>
 
-<p class="dj">
+<div class="dj">
 	<h3><?php echo __('Line-up') ?></h3>
 
 	<?php echo Text::auto_p(HTML::chars($this->event->dj)) ?>
-</p>
+</div>
 
 <?php
 
@@ -53,11 +53,11 @@ class View_Event_Main extends View_Article {
 
 ?>
 
-<p class="extra-info">
+<div class="extra-info">
 	<h3><?php echo __('Extra info') ?></h3>
 
 	<?php echo BB::factory($this->event->info)->render() ?>
-</p>
+</div>
 
 <?php
 

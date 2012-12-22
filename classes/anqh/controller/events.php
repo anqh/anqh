@@ -110,6 +110,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Build page
 		$this->view = View_Page::factory($event->name);
+		$this->view->subtitle = $this->_event_subtitle($event);
 
 		// Set actions
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
@@ -133,21 +134,22 @@ class Anqh_Controller_Events extends Controller_Page {
 			'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event'),
 		);
 		$this->view->tabs[] = array(
-			'link'  => Route::get('gallery_event')->uri(array('id' => $event->id)),
-			'text'  => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
+			'link' => Route::get('gallery_event')->uri(array('id' => $event->id)),
+			'text' => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
 		);
 		$this->view->tabs[] = array(
-			'link'  => Route::get('forum_event')->uri(array('id' => $event->id)),
-			'text'  => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
+			'link' => Route::get('forum_event')->uri(array('id' => $event->id)),
+			'text' => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
 		);
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
-				'link'  => Route::model($event, 'edit'),
-				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit event'),
+				'link' => Route::model($event, 'edit'),
+				'text' => '<i class="icon-edit icon-white"></i> ' . __('Edit event'),
 			);
 			$this->view->actions[] = array(
 				'link'  => Route::model($event, 'image'),
 				'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add flyer'),
+				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
 			);
 		}
 
@@ -440,7 +442,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Cancel change
 		if (isset($cancel) || isset($_REQUEST['cancel'])) {
 			if ($this->_request_type === Controller::REQUEST_AJAX) {
-				$this->response->body($this->section_event_image($event));
+				$this->response->body($this->section_carousel($event));
 
 				return;
 			}
@@ -497,10 +499,10 @@ class Anqh_Controller_Events extends Controller_Page {
 				}
 				$event->save();
 
-				NewsfeedItem_Events::event_edit(self::$user, $event);
+//				NewsfeedItem_Events::event_edit(self::$user, $event);
 
 				if ($this->_request_type === Controller::REQUEST_AJAX) {
-					$this->response->body($this->section_event_image($event));
+					$this->response->body($this->section_carousel($event));
 
 					return;
 				}
@@ -803,6 +805,84 @@ class Anqh_Controller_Events extends Controller_Page {
 		$section->venue_errors = isset($venue_validation) ? $venue_validation->array->errors('validation') : null;
 		$section->cancel       = $cancel;
 		$this->view->add(View_Page::COLUMN_TOP, $section);
+	}
+
+
+	/**
+	 * Add event subtitle.
+	 *
+	 * @param   Model_Event  $event
+	 * @return  string
+	 */
+	protected function _event_subtitle(Model_Event $event) {
+		$subtitle = array();
+
+		// Date
+		$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', ' . Date::format(Date::DMY_LONG, $event->stamp_begin), $event->stamp_begin, true);
+
+		// Time
+		if ($event->stamp_begin != $event->stamp_end) {
+			$subtitle[] = $event->stamp_end ?
+				'<i class="icon-time icon-white"></i> ' . __(':from until :to', array(
+					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
+					':to'   => HTML::time(Date::format('HHMM', $event->stamp_end), $event->stamp_end)
+				)) :
+				'<i class="icon-time icon-white"></i> ' . __('From :from onwards', array(
+					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
+				));
+		}
+
+		// Venue
+		if ($_venue = $event->venue()) {
+
+			// Venue found from db
+			$venue   = HTML::anchor(Route::model($_venue), HTML::chars($_venue->name));
+			$address = HTML::chars($_venue->city_name);
+
+			if ($_venue->latitude) {
+				$map = array(
+					'marker'     => HTML::chars($_venue->name),
+					'infowindow' => HTML::chars($_venue->address) . '<br />' . HTML::chars($_venue->city_name),
+					'lat'        => $_venue->latitude,
+					'long'       => $_venue->longitude
+				);
+				Widget::add('foot', HTML::script_source('
+head.ready("anqh", function() {
+	$("a[href=#map]").on("click", function toggleMap(event) {
+		$("#map").toggle("fast", function openMap() {
+			$("#map").googleMap(' .  json_encode($map) . ');
+		});
+
+		return false;
+	});
+});
+'));
+			}
+
+		} else if ($event->venue_name) {
+
+			// No venue in db
+			$venue   = $event->venue_url
+				? HTML::anchor($event->venue_url, HTML::chars($event->venue_name))
+				: HTML::chars($event->venue_name);
+			$address = HTML::chars($event->city_name);
+
+		} else {
+
+			// Venue not set
+			$venue   = $event->venue_hidden ? __('Underground') : __('(Unknown)');
+			$address = HTML::chars($event->city_name);
+
+		}
+		$subtitle[] = '<i class="icon-map-marker icon-white"></i> ' . $venue . ($address ? ', ' . $address : '');
+
+		if (isset($map)) {
+			$subtitle[] = HTML::anchor('#map', __('Show map'));
+
+			return implode(' &nbsp; ', $subtitle) . '<div id="map" style="display: none">' . __('Map loading') . '</div>';
+		}
+
+		return implode(' &nbsp; ', $subtitle);
 	}
 
 
