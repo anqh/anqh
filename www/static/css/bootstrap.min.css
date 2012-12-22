@@ -858,6 +858,7 @@ textarea,input[type="text"],input[type="password"],input[type="datetime"],input[
 select{color:#ffffff;}
 .form-actions{border-top:#111;margin:0;}
 .input-append .add-on,.input-prepend .add-on{background:#222222;border-color:#111111;text-shadow:0 1px 0 #000000;}
+legend .control-group{float:right;}
 .muted{color:#555555;}
 .pager{margin:5px 0;}.pager li>a,.pager li>span{background-color:#000000;border-color:#111111;}
 .pager li>a:hover{background-color:#333333;}
@@ -936,6 +937,8 @@ footer.meta{color:#555555;}
 .btn-lovely,.btn-lovely:hover,.btn-special,.btn-special:hover{color:#ffffff;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);}
 .bth-lovely.active,.btn-special.active{color:rgba(255, 255, 255, 0.75);}
 .input-max{width:100%;}
+input.date{width:62px;}
+select.time{width:75px;}
 input.private{border-color:#7a43b6;}
 .private p{color:#7a43b6;}
 .cut li{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -950,7 +953,7 @@ a.friend{font-weight:bold;}
 .popover .stats{background:#1a1a1a;padding:0 2px;position:absolute;right:10px;top:10px;}
 .markItUpHeader{height:28px;position:relative;}.markItUpHeader>ul{left:0;margin:0;position:absolute;top:0;}
 .markItUpHeader ul ul{display:none;list-style-type:none;margin:0;}
-#map{width:100%;height:150px;}
+#map{width:100%;height:250px;}#map img{display:inline;max-width:none;width:auto;}
 .share .addthis_32x32_style{height:32px;}
 #carousel img{width:100%;}
 #carousel .carousel-control{top:35px;}
@@ -961,6 +964,9 @@ a.friend{font-weight:bold;}
 .speech .bubble .comment{margin:10px;}
 .ago{float:right;color:#999999;color:#555555;}
 #user textarea[name=signature]{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;}
+#main .dj p{font-size:15px;}
+#carousel .empty{background:#1a1a1a;border:1px dashed #272727;display:block;line-height:200px;text-align:center;}
+#carousel .empty:hover{text-decoration:none;}
 #main .events h3{border-bottom:1px solid #333333;}
 #main .events .event{margin-bottom:10px;}#main .events .event:last-child{margin-bottom:0;}
 #main .events .event header,#main .events .event h4{margin:0;}
@@ -969,7 +975,7 @@ a.friend{font-weight:bold;}
 .post.owner{color:#709f70;}
 .post.my{color:#ccaf53;}
 .post.admin{color:#049cdb;}
-.post.permalink:target .bubble{background:#333333;}.post.permalink:target .bubble .arrow{border-right-color:#333333;}
+.post.permalink:target .bubble{background:#333333;padding-top:40px;}.post.permalink:target .bubble .arrow{border-right-color:#333333;}
 .post blockquote{font-family:Georgia,"Times New Roman",Times,serif;font-style:italic;}.post blockquote p{font-family:Georgia,"Times New Roman",Times,serif;font-size:inherit;line-height:inherit;}
 .post footer{font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:10px;line-height:16px;margin-top:10px;color:#999999;color:#555555;}
 .post-old{color:#555555;padding:0 10px 10px;text-align:center;}
