@@ -113,9 +113,10 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string|array  $label  'Label' or 'input-id' => 'Label'
 	 * @param   string|array  $error  'Fail' or 'error' => 'Fail', 'success' => 'Yay'
 	 * @param   string        $help
+	 * @param   array         $attr   Extra attributes
 	 * @return  string
 	 */
-	public static function control_group($input, $label = null, $error = null, $help = null) {
+	public static function control_group($input, $label = null, $error = null, $help = null, $attr = array()) {
 
 		// Wrapper basic class
 		$class = 'control-group ';
@@ -144,7 +145,9 @@ class Anqh_Form extends Kohana_Form {
 			$help = '<p class="help-block">' . $error . ($error && $help ? '<br />' : '') . $help . '</p>';
 		}
 
-		return '<div class="' . $class . '">' . $label . '<div class="controls">' . $input . $help . '</div></div>';
+		$attr['class'] = trim($class . ' ' . $attr['class']);
+
+		return '<div' . HTML::attributes($attr) . '>' . $label . '<div class="controls">' . $input . $help . '</div></div>';
 	}
 
 
