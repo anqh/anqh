@@ -235,7 +235,7 @@ class Anqh_Date extends Kohana_Date {
 		} else if ($offset < Date::DAY) {
 			$span = __(':hour h', array(':hour' => sprintf($wrap, floor($offset / Date::HOUR))));
 		} else if ($offset < Date::WEEK) {
-			$span = date('l', $timestamp); //__(':day d', array(':day' => sprintf($wrap, floor($offset / Date::DAY))));
+			return date('l', $timestamp); //__(':day d', array(':day' => sprintf($wrap, floor($offset / Date::DAY))));
 		} else if ($offset < Date::MONTH) {
 			$span = __(':week wk', array(':week' => sprintf($wrap, floor($offset / Date::WEEK))));
 		} else if ($offset < (Date::YEAR)) {
