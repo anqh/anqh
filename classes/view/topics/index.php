@@ -54,7 +54,8 @@ class View_Topics_Index extends View_Section {
 
 		<tr>
 			<td class="topic">
-				<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
+				<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
+				<?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?>
 			</td>
 			<td class="replies">
 				<?= Num::format($topic->post_count - 1, 0) ?>
