@@ -116,11 +116,10 @@ class Anqh_Controller_Forum extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_SIDE, $section);
 
 		// New topics
-		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_new(20));
-		$section->title = __('New topics');
-		$this->view->add(View_Page::COLUMN_SIDE, $section);
+//		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_new(20));
+//		$section->title = __('New topics');
+//		$this->view->add(View_Page::COLUMN_SIDE, $section);
 
-		// Areas
 	}
 
 }
