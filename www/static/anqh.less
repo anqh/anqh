@@ -216,7 +216,7 @@ footer.meta                            { color: @gray; }
 input.date                             { width: 62px; }
 select.time                            { width: 75px; }
 input.private                          { border-color: @purple; }
-.private p                             { color: @purple; }
+.private div                           { color: @purple; }
 
 //p.cut,
 .cut li                                { .text-overflow; }
@@ -228,8 +228,8 @@ a.male                                 { color: @blueDark; }
 a.female                               { color: @pink; }
 a.user:hover                           { color: @anchorColorHover; }
 a.friend                               { font-weight: bold; }
-.avatar                                { display: inline-block; float: left; margin: 5px 10px 5px 0; .square(50px); text-align: center;
-  img                                  { max-height: 100%; max-width: 100%; }
+.avatar                                { display: inline-block; float: left; /*margin: 5px 10px 5px 0;*/ .square(50px); text-align: center;
+  img                                  { max-height: 100%; max-width: 100% !important; /* !important needed for Jasny */ }
 }
 
 .popover                               {
@@ -260,15 +260,12 @@ a.friend                               { font-weight: bold; }
 
 // Speech bubbles
 .speech                                {
-  .author .avatar                      { margin-top: 0; }
-  .bubble                              { background: @popoverBackground; border-radius: 4px; margin-bottom: 10px; min-height: 50px; position: relative;
-    .arrow,
-    .arrow:after                       { .popover .arrow; }
-    .arrow                             { border-right-color: @popoverArrowColor; border-width: @popoverArrowWidth @popoverArrowWidth @popoverArrowWidth 0; left: -@popoverArrowWidth; top: 15px;
-      &:after                          { border-right-color: @popoverArrowOuterColor; border-width: @popoverArrowOuterWidth @popoverArrowOuterWidth @popoverArrowOuterWidth 0; bottom: -@popoverArrowOuterWidth; left: -1px; }
-    }
-    .comment                           { margin: 10px; }
+  .arrow,
+  .arrow:after                         { .popover .arrow; }
+  .arrow                               { border-right-color: @popoverArrowColor; border-width: @popoverArrowWidth @popoverArrowWidth @popoverArrowWidth 0; position: relative; .pull-left; top: 10px;
+    &:after                            { border-right-color: @popoverArrowOuterColor; border-width: @popoverArrowOuterWidth @popoverArrowOuterWidth @popoverArrowOuterWidth 0; bottom: -@popoverArrowOuterWidth; left: -1px; }
   }
+  .media-body                          { background: @popoverBackground; border-radius: 4px; min-height: 30px; padding: 10px; }
 }
 
 // Page specific
