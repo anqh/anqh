@@ -32,7 +32,7 @@ class View_Forum_PostEdit extends View_Article {
 	/**
 	 * @var  string  View class
 	 */
-	public $class = 'row speech';
+	public $class = 'media speech';
 
 	/**
 	 * @var  array
@@ -115,7 +115,7 @@ class View_Forum_PostEdit extends View_Article {
 		ob_start();
 
 		// Create form attributes
-		$attributes = array();
+		$attributes = array('class' => 'form-horizontal small-labels');
 		if ($this->form_id):
 			$attributes['id'] = $this->form_id;
 		endif;
@@ -166,8 +166,8 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<fieldset>
-	<div class="span2">
+<fieldset class="row">
+	<div class="span3">
 		<?= Form::control_group(
 					Form::select('status', array(
 						Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
@@ -178,7 +178,7 @@ class View_Forum_PostEdit extends View_Article {
 					Arr::get($this->errors, 'status')); ?>
 	</div>
 
-	<div class="span2">
+	<div class="span3">
 		<?= Form::control_group(
 			Form::select('sticky', array(
 				Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
@@ -191,8 +191,6 @@ class View_Forum_PostEdit extends View_Article {
 
 		<?php endif; ?>
 
-<fieldset class="span8">
-
 	<?php echo Form::control_group(
 		Form::input('name', $this->forum_topic->name, array('class' => 'input-block-level')),
 		array('name' => __('Topic')),
@@ -202,9 +200,6 @@ class View_Forum_PostEdit extends View_Article {
 		Form::textarea('recipients', $this->recipients, array('rows' => 3, 'placeholder' => __('Required'), 'class' => 'input-block-level'), true),
 		array('recipients' => __('Recipients')),
 		Arr::get($this->errors, 'recipients')) ?>
-
-</fieldset>
-
 
 <?php
 
@@ -218,9 +213,11 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<div class="author span1">
+<div class="pull-left">
 	<?= HTML::avatar(self::$_user->avatar, self::$_user->username) ?>
 </div>
+
+<div class="arrow"></div>
 
 <?php
 
@@ -229,29 +226,25 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<div class="post-edit bubble span7">
-	<div class="arrow"></div>
-	<div class="comment">
+<div class="post-edit media-body form-vertical">
+	<header>
+		<?= HTML::user(self::$_user) ?>
+	</header>
 
-		<header>
-			<?= HTML::user(self::$_user) ?>
-		</header>
+	<fieldset>
+		<?php echo Form::control_group(
+			Form::textarea_editor('post', $this->forum_post->post, array('id' => uniqid(), 'class' => 'input-block-level'), true),
+			null,
+			Arr::get($this->errors, 'post')) ?>
+	</fieldset>
 
-		<fieldset>
-			<?php echo Form::control_group(
-				Form::textarea_editor('post', $this->forum_post->post, array('id' => uniqid(), 'class' => 'input-block-level'), true),
-				null,
-				Arr::get($this->errors, 'post')) ?>
-		</fieldset>
+	<fieldset class="form-actions">
+		<?php echo Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+		<?php echo $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
-		<fieldset class="form-actions">
-			<?php echo Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-			<?php echo $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
+		<?php echo Form::csrf() ?>
+	</fieldset>
 
-			<?php echo Form::csrf() ?>
-		</fieldset>
-
-	</div>
 </div>
 
 <?php

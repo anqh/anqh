@@ -70,7 +70,7 @@ class View_Forum_Post extends View_Article {
 
 
 		$this->id    = 'post-' . $this->forum_post->id;
-		$this->class = 'row permalink post' . ($this->owner ? ' owner' : '') . ($this->my ? ' my' : '');
+		$this->class = 'media permalink post' . ($this->owner ? ' owner' : '') . ($this->my ? ' my' : '');
 	}
 
 
@@ -84,7 +84,7 @@ class View_Forum_Post extends View_Article {
 
 ?>
 
-<div class="span1 author">
+<div class="pull-left">
 
 	<?php if ($this->author): ?>
 		<?= HTML::avatar($this->author->avatar, $this->author->username) ?>
@@ -99,77 +99,74 @@ class View_Forum_Post extends View_Article {
 
 </div>
 
-<div class="span7 bubble">
-	<div class="arrow"></div>
-	<div class="comment">
+<div class="arrow"></div>
 
-		<header<?= $this->forum_post->id == $this->forum_topic->last_post_id ? ' id="last"' : '' ?>>
-			<small class="ago">
-				<?= HTML::anchor(
+<div class="media-body">
+	<header<?= $this->forum_post->id == $this->forum_topic->last_post_id ? ' id="last"' : '' ?>>
+		<small class="ago">
+			<?= HTML::anchor(
+				Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+					'id'       => Route::model_id($this->forum_post),
+					'topic_id' => Route::model_id($this->forum_topic)
+				)) . '#post-' . $this->forum_post->id,
+				'#' . $this->nth,
+				array('title' => __('Permalink'))) ?>
+
+			&bull;
+
+			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_UPDATE, self::$_user)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
-						'topic_id' => Route::model_id($this->forum_topic)
-					)) . '#post-' . $this->forum_post->id,
-					'#' . $this->nth,
-					array('title' => __('Permalink'))) ?>
+						'topic_id' => Route::model_id($this->forum_topic),
+						'action'   => 'edit')),
+						__('Edit'),
+					array('class' => 'post-edit')) . ' &bull; ' ?>
 
-				&bull;
+			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, self::$_user)) echo HTML::anchor(
+					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+						'id'       => Route::model_id($this->forum_post),
+						'topic_id' => Route::model_id($this->forum_topic),
+						'action'   => 'delete')) . '?token=' . Security::csrf(),
+						__('Delete'),
+					array('class' => 'post-delete')) . ' &bull; ' ?>
 
-				<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_UPDATE, self::$_user)) echo HTML::anchor(
-						Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
-							'id'       => Route::model_id($this->forum_post),
-							'topic_id' => Route::model_id($this->forum_topic),
-							'action'   => 'edit')),
-							__('Edit'),
-						array('class' => 'post-edit')) . ' &bull; ' ?>
+			<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, self::$_user)) echo HTML::anchor(
+					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+						'id'       => Route::model_id($this->forum_post),
+						'topic_id' => Route::model_id($this->forum_topic),
+						'action'   => 'quote')),
+						__('Reply'),
+					array('class' => 'post-quote')) . ' &bull; ' ?>
 
-				<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, self::$_user)) echo HTML::anchor(
-						Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
-							'id'       => Route::model_id($this->forum_post),
-							'topic_id' => Route::model_id($this->forum_topic),
-							'action'   => 'delete')) . '?token=' . Security::csrf(),
-							__('Delete'),
-						array('class' => 'post-delete')) . ' &bull; ' ?>
+			<?= HTML::time(Date::short_span($this->forum_post->created, true, true), $this->forum_post->created) ?>
+		</small>
 
-				<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, self::$_user)) echo HTML::anchor(
-						Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
-							'id'       => Route::model_id($this->forum_post),
-							'topic_id' => Route::model_id($this->forum_topic),
-							'action'   => 'quote')),
-							__('Reply'),
-						array('class' => 'post-quote')) . ' &bull; ' ?>
+		<?php if ($this->author):
+				echo HTML::user($this->author->light_array());
+				if ($this->author->title):
+					echo ' <small>&ldquo;' . HTML::chars($this->author->title) . '&rdquo;</small>';
+				endif;
+			else:
+				echo $this->forum_post->author_name;
+				echo ' <small>&ldquo;' . __('Guest') . '&rdquo;</small>';
+			endif; ?>
+	</header>
 
-				<?= HTML::time(Date::short_span($this->forum_post->created, true, true), $this->forum_post->created) ?>
-			</small>
+	<?php if ($this->forum_post->parent_id) echo __('Replying to :parent', array(
+		':parent' => HTML::anchor(
+			Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+				'topic_id' => Route::model_id($this->forum_topic),
+				'id'       => $this->forum_post->parent_id)) . '#post-' . $this->forum_post->parent_id,
+			HTML::chars($this->forum_post->parent()->topic()->name)
+		))) ?>
 
-			<?php if ($this->author):
-					echo HTML::user($this->author->light_array());
-					if ($this->author->title):
-						echo ' <small>&ldquo;' . HTML::chars($this->author->title) . '&rdquo;</small>';
-					endif;
-				else:
-					echo $this->forum_post->author_name;
-					echo ' <small>&ldquo;' . __('Guest') . '&rdquo;</small>';
-				endif; ?>
-		</header>
+	<?= BB::factory($this->forum_post->post)->render() ?>
 
-		<?php if ($this->forum_post->parent_id) echo __('Replying to :parent', array(
-			':parent' => HTML::anchor(
-				Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
-					'topic_id' => Route::model_id($this->forum_topic),
-					'id'       => $this->forum_post->parent_id)) . '#post-' . $this->forum_post->parent_id,
-				HTML::chars($this->forum_post->parent()->topic()->name)
-			))) ?>
+	<footer>
+		<?= $this->author && $this->author->signature ? BB::factory("\n--\n" . $this->author->signature)->render() : '' ?>
 
-		<?= BB::factory($this->forum_post->post)->render() ?>
-
-		<footer>
-			<?= $this->author && $this->author->signature ? BB::factory("\n--\n" . $this->author->signature)->render() : '' ?>
-
-			<?php if ($this->forum_post->modify_count > 0) echo '<br /><br />' . __('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($this->forum_post->modified), $this->forum_post->modified))); ?>
-		</footer>
-
-	</div>
+		<?php if ($this->forum_post->modify_count > 0) echo '<br /><br />' . __('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($this->forum_post->modified), $this->forum_post->modified))); ?>
+	</footer>
 </div>
 
 <?php
