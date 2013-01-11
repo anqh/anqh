@@ -12,7 +12,7 @@ class View_Generic_Comments extends View_Section {
 	/**
 	 * @var  string  Section class
 	 */
-	public $class = 'comments speech';
+	public $class = 'comments';
 
 	/**
 	 * @var  Model_Comment[]
@@ -76,7 +76,7 @@ class View_Generic_Comments extends View_Section {
 
 ?>
 
-<ul class="unstyled">
+<ul class="media-list">
 
 <?php
 
@@ -88,7 +88,7 @@ class View_Generic_Comments extends View_Section {
 			// Ignore
 			if (self::$_user && self::$_user->is_ignored($author)) continue;
 
-			$classes = array('row');
+			$classes = array('media', 'speech');
 
 			// Private comment?
 			if ($comment->private) {
@@ -113,33 +113,30 @@ class View_Generic_Comments extends View_Section {
 ?>
 
 	<li class="<?= implode(' ', $classes) ?>" id="comment-<?= $comment->id ?>">
-		<div class="span1 author">
+		<div class="pull-left">
 			<?= HTML::avatar($author['avatar'], $author['username'], true) ?>
 		</div>
-		<div class="span7 bubble">
-			<div class="arrow"></div>
-			<div class="comment">
-				<small class="ago">
-					<?php if (self::$_user_id && $comment->user_id == self::$_user_id || in_array('my', $classes)):
+		<div class="arrow"></div>
+		<div class="media-body">
+			<small class="ago">
+				<?php if (self::$_user_id && $comment->user_id == self::$_user_id || in_array('my', $classes)):
 
-						if ($this->private && !$comment->private):
-							echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'comment-private')) . ' &bull; ';
-						endif;
+					if ($this->private && !$comment->private):
+						echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'comment-private')) . ' &bull; ';
+					endif;
 
-						if  ($this->delete):
-							echo HTML::anchor(sprintf($this->delete, $comment->id), __('Delete'), array('class' => 'comment-delete')) . ' &bull; ';
-						endif;
+					if  ($this->delete):
+						echo HTML::anchor(sprintf($this->delete, $comment->id), __('Delete'), array('class' => 'comment-delete')) . ' &bull; ';
+					endif;
 
-					endif; ?>
+				endif; ?>
 
-					<?= in_array('new', $classes) ? __('New') : '' ?> <?= HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?>
-				</small>
-				<?= HTML::user($author) ?><br />
-				<?= $comment->private ? '<span class="label label-special" title="' . __('Private comment') . '">' . __('Priv') . '</span>: ' : '' ?>
-				<?= Text::smileys(Text::auto_link_urls(HTML::chars($comment->comment))) ?>
-			</div>
+				<?= in_array('new', $classes) ? __('New') : '' ?> <?= HTML::time(Date::short_span($comment->created, true, true), $comment->created) ?>
+			</small>
+			<?= HTML::user($author) ?><br />
+			<?= $comment->private ? '<span class="label label-special" title="' . __('Private comment') . '">' . __('Priv') . '</span>: ' : '' ?>
+			<?= Text::smileys(Text::auto_link_urls(HTML::chars($comment->comment))) ?>
 		</div>
-
 	</li>
 
 	<?php endforeach; ?>
