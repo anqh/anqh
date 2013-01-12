@@ -19,9 +19,6 @@
 [submodule "modules/events"]
 	path = modules/events
 	url = git@github.com:anqh/events.git
-[submodule "modules/forum"]
-	path = modules/forum
-	url = git@github.com:anqh/forum.git
 [submodule "modules/venues"]
 	path = modules/venues
 	url = git@github.com:anqh/venues.git
