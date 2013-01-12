@@ -48,34 +48,10 @@ abstract class Anqh_Controller_Page extends Controller {
 				'http://fonts.googleapis.com/css?family=Terminal+Dosis'
 			);
 
-
-			// Skins
-			$selected_skin = $this->session->get('skin', 'blue');
-
-			// Less files needed to build a skin
-			$less_imports = array(
-				//'ui/blue.less',
-				'ui/mixin.less',
-				'ui/anqh.less',
-			);
-
 			$skins = array(
 				HTML::style('static/css/bootstrap.css'),
 				HTML::style('static/css/bootstrap-responsive.css'),
 			);
-
-			foreach (array('blue') as $skin) {
-				$skinsi[] = Less::style(
-					'ui/' . $skin . '.less',
-					array(
-						'title' => $skin,
-						'rel'   => $skin == $selected_skin ? 'stylesheet' : 'alternate stylesheet'
-					),
-					false,
-					$less_imports
-				);
-			}
-
 
 			// Footer
 			$section = new View_Events_List();
