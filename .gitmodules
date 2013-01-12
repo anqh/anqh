@@ -16,9 +16,6 @@
 [submodule "modules/image"]
 	path = modules/image
 	url = http://github.com/kohana/image.git
-[submodule "modules/events"]
-	path = modules/events
-	url = git@github.com:anqh/events.git
 [submodule "modules/venues"]
 	path = modules/venues
 	url = git@github.com:anqh/venues.git
