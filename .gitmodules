@@ -16,9 +16,6 @@
 [submodule "modules/image"]
 	path = modules/image
 	url = http://github.com/kohana/image.git
-[submodule "modules/venues"]
-	path = modules/venues
-	url = git@github.com:anqh/venues.git
 [submodule "modules/postgresql"]
 	path = modules/postgresql
 	url = git@github.com:anqqa/kohana-postgresql.git
