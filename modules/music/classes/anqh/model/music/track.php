@@ -36,7 +36,7 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 	protected $_rules = array(
 		'name'           => array('not_empty', 'max_length' => array(':value', 250)),
 		'description'    => array('max_length' => array(':value', 4096)),
-		'tracklist'      => array('max_length' => array(':value', 1024)),
+		'tracklist'      => array('max_length' => array(':value', 4096)),
 		'url'            => array('not_empty', 'url'),
 		'cover'          => array('url'),
 		'forum_topic_id' => array('digit'),
