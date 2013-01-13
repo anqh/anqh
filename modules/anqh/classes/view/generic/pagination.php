@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Pagination extends View_Base {
@@ -207,6 +207,11 @@ class View_Generic_Pagination extends View_Base {
 				$range[] = ceil(($this->total_pages - $last) / 2) + $last;
 			}
 			$range[] = $this->total_pages;
+		}
+
+		// No pagination if only 1 page
+		if ($this->auto_hide && $this->total_pages == 1) {
+			return '';
 		}
 
 		ob_start();
