@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Topic extends Controller_Forum {
@@ -224,6 +224,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Reply
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
+
+			// Old post warning
+			if ($topic->last_posted && time() - $topic->last_posted > Date::YEAR) {
+				$this->view->add(View_Page::COLUMN_MAIN, $this->section_ancient_warning($topic->last_posted));
+			}
+
 			$section = $this->section_post_edit(View_Forum_PostEdit::REPLY, $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory());
 			$section->forum_topic = $topic;
 
@@ -717,6 +723,27 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$section->recipients  = isset($recipients) ? implode(', ', $recipients) : null;
 
 		$this->view->add(View_Page::COLUMN_MAIN, $section);
+	}
+
+
+	/**
+	 * Get replying to old post warning.
+	 *
+	 * @param   integer  $previous
+	 * @return  string
+	 */
+	public function section_ancient_warning($previous) {
+		ob_start();
+
+?>
+
+<div class="offset1 post-old">
+	<span class="label label-warning">&iexcl; <?= __('You are replying to a dead topic.') ?> <?= __('Previous post :ago', array(':ago' => Date::fuzzy_span($previous))) ?> !</span>
+</div>
+
+<?php
+
+		return ob_get_clean();
 	}
 
 

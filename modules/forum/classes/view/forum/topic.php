@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Forum_Topic
+ * Forum Topic view.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_Topic extends View_Section {
@@ -59,10 +59,12 @@ class View_Forum_Topic extends View_Section {
 		foreach ($this->forum_topic->posts($offset, $this->pagination->items_per_page) as $post):
 
 			// Ignore
-			if (!Permission::has($post, Model_Forum_Post::PERMISSION_READ, self::$_user)) continue;
+			if (!Permission::has($post, Model_Forum_Post::PERMISSION_READ, self::$_user)) {
+				continue;
+			}
 
 			// Time difference between posts
-			$current    = strtotime($post->created);
+			$current    = $post->created;
 			$difference = ($previous && $current - $previous > Date::YEAR) ? Date::fuzzy_span($previous, $current) : false;
 			if ($difference):
 
@@ -90,18 +92,77 @@ class View_Forum_Topic extends View_Section {
 <script>
 head.ready('anqh', function() {
 
-	// Edit post
-	$('section.topic').on('click', 'a.post-edit', function _editPost(e) {
-		e.preventDefault();
+	$('section.topic')
 
-		var href = $(this).attr('href')
-		  , post = href.match(/([0-9]*)\/edit/);
+		// Edit post
+		.on('click', 'a.post-edit', function _editPost(e) {
+			e.preventDefault();
 
-		$('#post-' + post[1] + ' .ago').fadeOut();
-		$.get(href, function _loaded(data) {
-			$('#post-' + post[1] + ' .bubble').replaceWith(data);
+			var href = $(this).attr('href')
+			  , post = href.match(/([0-9]*)\/edit/);
+
+			$('#post-' + post[1] + ' .ago').fadeOut();
+			$.get(href, function _loaded(data) {
+				$('#post-' + post[1] + ' .bubble').replaceWith(data);
+			});
+		})
+
+		// Quote post
+		.on('click', 'a.post-quote', function _quotePost(e) {
+			e.preventDefault();
+
+			var href    = $(this).attr('href')
+			  , post    = href.match(/([0-9]*)\/quote/)
+			  , $article = $(this).closest('article');
+
+			$('#post-' + post[1] + ' .ago').fadeOut();
+			$.get(href, function _loaded(data) {
+				$article.after(data);
+
+				// Scroll form to view
+				var $quote = $article.next('article');
+				if ($quote.offset().top + $quote.outerHeight() > $(window).scrollTop() + $(window).height()) {
+					window.scrollTo(0, $quote.offset().top + $quote.outerHeight() - $(window).height() );
+				}
+
+			});
+		})
+
+		// Save post
+		.on('submit', '.post form', function(e) {
+			e.preventDefault();
+
+			var post = $(this).closest('article');
+
+			post.loading();
+			$.post($(this).attr('action'), $(this).serialize(), function(data) {
+				post.replaceWith(data);
+			});
+		})
+
+		// Cancel quote
+		.on('click', '.quote a.cancel', function cancelQuote(e) {
+			e.preventDefault();
+
+			var $quote   = $(this).closest('article')
+			  , $article = $quote.prev('article');
+
+			$quote.slideUp(null, function slided() { $quote.remove(); });
+			$article.find('.ago').fadeIn();
+		})
+
+		// Cancel edit
+		.on('click', '.post-edit a.cancel', function cancelEdit(e) {
+			e.preventDefault();
+
+			var $post = $(this).closest('article');
+
+			if (!$post.hasClass('quote')) {
+				$.get($(this).attr('href'), function loaded(data) {
+					$post.replaceWith(data);
+				});
+			}
 		});
-	});
 
 	// Delete post
 	$('a.post-delete').each(function deletePost() {
@@ -115,62 +176,6 @@ head.ready('anqh', function() {
 		});
 	});
 
-	// Quote post
-	$('section.topic').on('click', 'a.post-quote', function _quotePost(e) {
-		e.preventDefault();
-
-		var href    = $(this).attr('href')
-		  , post    = href.match(/([0-9]*)\/quote/)
-		  , $article = $(this).closest('article');
-
-		$('#post-' + post[1] + ' .ago').fadeOut();
-		$.get(href, function _loaded(data) {
-			$article.after(data);
-
-			// Scroll form to view
-			var $quote = $article.next('article');
-			if ($quote.offset().top + $quote.outerHeight() > $(window).scrollTop() + $(window).height()) {
-				window.scrollTo(0, $quote.offset().top + $quote.outerHeight() - $(window).height() );
-			}
-
-		});
-	});
-
-	// Save post
-	$('section.topic').on('submit', '.post form', function(e) {
-		e.preventDefault();
-
-		var post = $(this).closest('article');
-
-		post.loading();
-		$.post($(this).attr('action'), $(this).serialize(), function(data) {
-			post.replaceWith(data);
-		});
-	});
-
-	// Cancel quote
-	$('section.topic').on('click', '.quote a.cancel', function cancelQuote(e) {
-		e.preventDefault();
-
-		var $quote   = $(this).closest('article')
-		  , $article = $quote.prev('article');
-
-		$quote.slideUp(null, function slided() { $quote.remove(); });
-		$article.find('.ago').fadeIn();
-	});
-
-	// Cancel edit
-	$('section.topic').on('click', '.post-edit a.cancel', function cancelEdit(e) {
-		e.preventDefault();
-
-		var $post = $(this).closest('article');
-
-		if (!$post.hasClass('quote')) {
-			$.get($(this).attr('href'), function loaded(data) {
-				$post.replaceWith(data);
-			});
-		}
-	});
 
 });
 </script>
