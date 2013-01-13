@@ -1,15 +1,15 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Music_List
+ * Music list view.
  *
  * @package    Music
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Music_List extends View_Section {
 
-	public $class = 'span4 cut';
+	public $class = 'cut';
 
 	/**
 	 * @var  Model_Music_Track[]
@@ -43,7 +43,7 @@ class View_Music_List extends View_Section {
 
 	<?php foreach ($this->tracks as $track): ?>
 	<li>
-		<?= HTML::anchor(Route::model($track), HTML::chars($track->name), array('class' => 'hoverablee', 'title' => HTML::chars($track->name))) ?>
+		<?= HTML::anchor(Route::model($track), HTML::chars($track->name), array('title' => HTML::chars($track->name))) ?>
 	</li>
 	<?php endforeach; ?>
 
