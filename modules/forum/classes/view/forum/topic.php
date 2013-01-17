@@ -103,7 +103,7 @@ head.ready('anqh', function() {
 
 			$('#post-' + post[1] + ' .ago').fadeOut();
 			$.get(href, function _loaded(data) {
-				$('#post-' + post[1] + ' .bubble').replaceWith(data);
+				$('#post-' + post[1] + ' .media-body').replaceWith(data);
 			});
 		})
 
