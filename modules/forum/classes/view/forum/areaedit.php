@@ -53,7 +53,7 @@ class View_Forum_AreaEdit extends View_Section {
 	<fieldset>
 
 		<?= Form::control_group(
-			Form::select('forum_group_id', $groups, $this->area->id),
+			Form::select('forum_group_id', $groups, $this->area->forum_group_id),
 			array('forum_group_id' => __('Group')),
 			Arr::get($this->errors, 'forum_group_id')) ?>
 
