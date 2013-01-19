@@ -135,7 +135,7 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 
 
 	/**
-	 * Get comment image
+	 * Get forum group.
 	 *
 	 * @return  Model_Forum_Group
 	 */
