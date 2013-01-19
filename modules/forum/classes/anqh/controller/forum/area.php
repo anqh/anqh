@@ -126,17 +126,30 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->view->subtitle = $area->description;
 
 		// Set actions
-		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, self::$user)) {
+		$group = $area->group();
+		if ($group && Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
-				'link'  => Route::model($area, 'post'),
-				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New topic'),
-				'class' => 'btn btn-primary topic-add'
+				'link' => Route::model($group, 'edit'),
+				'text' => '<i class="icon-edit icon-white"></i> ' . __('Edit group'),
+			);
+		}
+		if ($group && Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$user)) {
+			$this->view->actions[] = array(
+				'link' => Route::model($group, 'add'),
+				'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New area'),
 			);
 		}
 		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'edit', false),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit area'),
+			);
+		}
+		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, self::$user)) {
+			$this->view->actions[] = array(
+				'link'  => Route::model($area, 'post'),
+				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New topic'),
+				'class' => 'btn btn-primary topic-add'
 			);
 		}
 
