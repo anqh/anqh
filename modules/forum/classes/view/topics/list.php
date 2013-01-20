@@ -52,7 +52,7 @@ class View_Topics_List extends View_Section {
 		<li>
 			<small class="ago"><?= HTML::time(Date::short_span($topic->last_posted, true), $topic->last_posted) ?></small>
 			<?= HTML::anchor(Route::model($topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
-			<?= HTML::anchor(Route::model($topic, '?page=last#last'), HTML::chars($topic->name), array('title' => $topic->name)) ?>
+			<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('title' => $topic->name)) ?>
 		</li>
 		<?php endforeach; ?>
 

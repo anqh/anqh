@@ -53,7 +53,7 @@ class View_Forum_Group extends View_Section {
 	<thead>
 		<tr>
 			<th class="span5"><h3><?= HTML::chars($group->name) ?></h3></th>
-			<th class="span3"></th>
+			<th class="span3 muted"><?= __('Last post') ?></th>
 		</tr>
 	</thead>
 
@@ -86,7 +86,7 @@ class View_Forum_Group extends View_Section {
 
 				<small class="ago"><?= HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
 				<?= HTML::anchor(Route::model($last_topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
-				<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), HTML::chars($last_topic->name), array('title' => HTML::chars($last_topic->name))) ?><br />
+				<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), Forum::topic($last_topic), array('title' => HTML::chars($last_topic->name))) ?><br />
 				<?= HTML::user($last_topic->last_post()->author_id, $last_topic->last_poster) ?>
 
 			<?php else: ?>

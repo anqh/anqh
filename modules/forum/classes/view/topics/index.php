@@ -1,13 +1,18 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Topics_Index
+ * Topics Index view.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Topics_Index extends View_Section {
+
+	/**
+	 * @var  string  View class
+	 */
+	public $class = 'forum-topics';
 
 	/**
 	 * @var  Model_Forum_Topic[]

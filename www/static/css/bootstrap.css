@@ -8344,6 +8344,10 @@ a.friend {
   background: rgba(34, 34, 34, 0.5);
 }
 
+.forum-topics .replies {
+  text-align: center;
+}
+
 .post.owner {
   color: #709f70;
 }
