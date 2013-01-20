@@ -152,13 +152,13 @@ class View_Forum_Post extends View_Article {
 			endif; ?>
 	</header>
 
-	<?php if ($this->forum_post->parent_id) echo __('Replying to :parent', array(
+	<?php if ($this->forum_post->parent_id) echo '<p class="muted">' . __('Replying to :parent', array(
 		':parent' => HTML::anchor(
 			Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 				'topic_id' => Route::model_id($this->forum_topic),
 				'id'       => $this->forum_post->parent_id)) . '#post-' . $this->forum_post->parent_id,
 			HTML::chars($this->forum_post->parent()->topic()->name)
-		))) ?>
+		))) . ':</p>' ?>
 
 	<?= BB::factory($this->forum_post->post)->render() ?>
 
