@@ -8340,11 +8340,9 @@ a.friend {
   padding: 2px 5px;
 }
 
-/*
-.forum-group                           {
-  tr td:last-child                     { .text-overflow; }
+.forum-groups thead {
+  background: rgba(34, 34, 34, 0.5);
 }
-*/
 
 .post.owner {
   color: #709f70;

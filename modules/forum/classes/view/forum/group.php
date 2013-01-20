@@ -10,6 +10,11 @@
 class View_Forum_Group extends View_Section {
 
 	/**
+	 * @var  string  Section class
+	 */
+	public $class = 'forum-groups';
+
+	/**
 	 * @var  Model_Forum_Group[]
 	 */
 	public $groups;
@@ -41,23 +46,18 @@ class View_Forum_Group extends View_Section {
 
 ?>
 
-<table class="table">
+<table class="table table-condensed">
+
+	<?php foreach ($this->groups as $group): ?>
+
 	<thead>
 		<tr>
-			<th class="span4"></th>
-			<th class="span1"><?= __('Topics') ?></th>
-			<th class="span1"><?= __('Posts') ?></th>
-			<th class="span2"><?= __('Latest post') ?></th>
+			<th class="span5"><h3><?= HTML::chars($group->name) ?></h3></th>
+			<th class="span3"></th>
 		</tr>
 	</thead>
 
 	<tbody>
-
-	<?php foreach ($this->groups as $group): ?>
-
-		<tr>
-			<th colspan="4"><h3><?= HTML::chars($group->name) ?></h3></th>
-		</tr>
 
 <?php
 
@@ -72,19 +72,22 @@ class View_Forum_Group extends View_Section {
 
 		<tr>
 			<td>
-				<h4><?= HTML::anchor(Route::model($area), HTML::chars($area->name)) ?></h4>
-				<?= $area->description ?>
+				<h4>
+					<?= HTML::anchor(Route::model($area), HTML::chars($area->name)) ?>
+					<small class="muted"><?= Num::format($area->topic_count, 0) ?> topics, <?= Num::format($area->post_count, 0) ?> posts</small>
+				</h4>
+				<sup>
+					<?= $area->description ?>
+				</sup>
 			</td>
-			<td><?= Num::format($area->topic_count, 0) ?></td>
-			<td><?= Num::format($area->post_count, 0) ?></td>
 			<td>
 
 			<?php if ($area->topic_count > 0): $last_topic = $area->last_topic(); ?>
 
 				<small class="ago"><?= HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
-				<?= HTML::user($last_topic->last_post()->author_id, $last_topic->last_poster) ?><br />
 				<?= HTML::anchor(Route::model($last_topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
-				<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), HTML::chars($last_topic->name), array('title' => HTML::chars($last_topic->name))) ?>
+				<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), HTML::chars($last_topic->name), array('title' => HTML::chars($last_topic->name))) ?><br />
+				<?= HTML::user($last_topic->last_post()->author_id, $last_topic->last_poster) ?>
 
 			<?php else: ?>
 
@@ -115,7 +118,7 @@ class View_Forum_Group extends View_Section {
 ?>
 
 		<tr>
-			<td colspan="4">
+			<td colspan="3">
 
 			<?= __('No areas available.') ?>
 
@@ -130,14 +133,12 @@ class View_Forum_Group extends View_Section {
 			</td>
 		</tr>
 
-<?php
-			endif;
-
-		endforeach; // groups
-
-?>
+		<?php	endif; ?>
 
 	</tbody>
+
+	<?php endforeach; // groups ?>
+
 </table>
 
 <?php

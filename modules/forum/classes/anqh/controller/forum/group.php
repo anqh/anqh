@@ -88,7 +88,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		$groups = Model_Forum_Group::factory()->find_all();
 
 		// Build page
-		$this->view      = new View_Page(__('Forum areas'));
+		$this->view      = new View_Page(__('Forum'));
 		$this->view->tab = 'areas';
 
 		// Set actions
