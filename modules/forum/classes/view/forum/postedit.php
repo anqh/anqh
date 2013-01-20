@@ -191,7 +191,7 @@ class View_Forum_PostEdit extends View_Article {
 
 		<?php endif; ?>
 
-	<?php echo Form::control_group(
+	<?= Form::control_group(
 		Form::input('name', $this->forum_topic->name, array('class' => 'input-block-level')),
 		array('name' => __('Topic')),
 		Arr::get($this->errors, 'name')) ?>
@@ -232,17 +232,18 @@ class View_Forum_PostEdit extends View_Article {
 	</header>
 
 	<fieldset>
-		<?php echo Form::control_group(
+		<?= Form::control_group(
 			Form::textarea_editor('post', $this->forum_post->post, array('id' => uniqid(), 'class' => 'input-block-level'), true),
 			null,
 			Arr::get($this->errors, 'post')) ?>
 	</fieldset>
 
 	<fieldset class="form-actions">
-		<?php echo Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-		<?php echo $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
+		<?= Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+		<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-inverse btn-large')) ?>
+		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
-		<?php echo Form::csrf() ?>
+		<?= Form::csrf() ?>
 	</fieldset>
 
 </div>

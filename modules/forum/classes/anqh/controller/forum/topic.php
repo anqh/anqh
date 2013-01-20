@@ -272,6 +272,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 *
 	 * @param  integer  $topic_id
 	 * @param  integer  $post_id
+	 *
+	 * @throws  Model_Exception
 	 */
 	protected function _delete_post($topic_id, $post_id) {
 		$this->history = false;
@@ -402,11 +404,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				$post->created        = time();
 				$increase = true;
 
-				// Notify recipients
-				if ($this->private) {
-					$topic->notify_recipients(self::$user);
-				}
-
 			} else {
 
 				// Old post
@@ -416,6 +413,16 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			}
 
+			// Preview
+			if (isset($_POST['preview'])) {
+				if ($this->ajax) {
+					$this->response->body($this->section_post($topic, $post));
+				}
+
+				return;
+			}
+
+			// Save
 			try {
 				$post->save();
 
@@ -431,6 +438,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 						$quote->forum_post_id  = $post->id;
 						$quote->created        = time();
 						$quote->save();
+					}
+
+					// Notify recipients
+					if ($this->private) {
+						$topic->notify_recipients(self::$user);
 					}
 
 					// Topic
@@ -498,21 +510,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					'id'       => $quote_id ? $quote_id : $post->id,
 				))
 			: Request::back(Route::model($topic), true);
-/*		$form = array(
-			'errors'  => $errors,
-			'ajax'    => $this->ajax ? true : null,
-			'topic'   => $topic,
-			'post'    => $post,
-			'user'    => self::$user,
-			'private' => $this->private,
-			'cancel'  => $this->ajax
-				? Route::get($this->private ? 'forum_private_post' : 'forum_post')
-						->uri(array(
-							'topic_id' => Route::model_id($topic),
-							'id'       => $quote_id ? $quote_id : $post->id,
-						))
-				: Request::back(Route::model($topic), true),
-		);*/
 
 		if ($this->ajax) {
 			$this->response->body($mode == View_Forum_PostEdit::EDIT_POST ? $section->content() : $section);
@@ -527,10 +524,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		$this->view->add(View_Page::COLUMN_MAIN, $section);
 
-/*
-		Widget::add('main', View_Module::factory('forum/reply', array(
-			'mod_id'  => 'reply',
-		) + $form));*/
 	}
 
 

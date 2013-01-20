@@ -176,6 +176,27 @@ head.ready('anqh', function() {
 		});
 	});
 
+		// Preview post
+	$('#main').on('click', 'button[name=preview]', function _preview(e) {
+		e.preventDefault();
+
+		var $form = $(this).closest('form')
+		  , form  = $form.serialize() + '&preview=1'
+		  , $post = $(this).closest('article');
+
+		$post.loading();
+		$post.find('.preview').remove();
+		$.post($form.attr('action'), form, function _response(data) {
+			var $preview = $(data).find('.media-body');
+			$preview
+				.removeClass('media-body').addClass('preview')
+				.find('.ago').remove();
+
+			$form.find('.post-edit').prepend($preview);
+		});
+
+	})
+
 
 });
 </script>
