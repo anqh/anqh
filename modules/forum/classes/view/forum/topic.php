@@ -189,7 +189,7 @@ head.ready('anqh', function() {
 		$.post($form.attr('action'), form, function _response(data) {
 			var $preview = $(data).find('.media-body');
 			$preview
-				.removeClass('media-body').addClass('preview')
+				.removeClass('media-body').addClass('preview post')
 				.find('.ago').remove();
 
 			$form.find('.post-edit').prepend($preview);
