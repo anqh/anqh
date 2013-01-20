@@ -53,8 +53,8 @@ class Anqh_BB extends BBCode {
 		// Image templates for [img]
 		'img' => array(
 			'all' => array(
-				'pattern'  => '/^https?:\/\/([a-z0-9-\.]*)\/(.*\.[jpg|gif|png]\??.*)$/i',
-				'template' => '<img src="http://$1/$2" alt="" />',
+				'pattern'  => '/^(https?:\/\/[a-z0-9-\.]{4,}\/.*\.(jpg|gif|png)\??.*)$/i',
+				'template' => '<img src="$1" alt="" />',
        ),
 		),
 
