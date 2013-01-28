@@ -646,6 +646,15 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$errors += $e->array->errors('validate');
 				}
 
+				// Preview
+				if (isset($_POST['preview'])) {
+					if ($this->ajax) {
+						$this->response->body($this->section_post($topic, $post));
+					}
+
+					return;
+				}
+
 				// If no errors found, save models
 				if (empty($errors)) {
 					$topic->save();

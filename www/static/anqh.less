@@ -4,8 +4,12 @@
 @textColorOwner:                       mix(@green, @textColor);
 @textColorAdmin:                       @blue;
 
+// Custom mixins
+.ajax                                  { background-image: url("@{iconAjaxPath}"); background-position: right top; background-repeat: no-repeat; }
+
 // Bootstrap overrides
 body                                   { background: @bodyBackground url(../img/background.png); padding-top: @navbarHeight + 10px; }
+article                                { position: relative; }
 a                                      { color: @anchorColor; }
 a:hover                                { color: @anchorColorHover; }
 hr                                     { border-bottom-color: @grayDarker; }
@@ -196,7 +200,7 @@ footer.meta                            { color: @gray; }
   .delete                              { text-align: right; white-space: nowrap; }
 }
 .progress-animated .bar                { background: url(../img/progressbar.gif) !important; filter: none; }
-.fileupload-loading                    { background: url(../img/loading.gif); display: none; height: 128px; left: 50%; position: absolute; width: 128px; }
+.fileupload-loading                    { background: url(../img/loading.gif); display: none; left: 50%; position: absolute; .square(128px); }
 .droparea                              { border: 1px dashed @gray; cursor: default; font-size: 15px; text-align: center; }
 .ie .droparea                          { display: none; }
 
@@ -231,6 +235,9 @@ a.friend                               { font-weight: bold; }
 .avatar                                { display: inline-block; float: left; /*margin: 5px 10px 5px 0;*/ .square(50px); text-align: center;
   img                                  { max-height: 100%; max-width: 100% !important; /* !important needed for Jasny */ }
 }
+
+div.loading                            { .ajax; position: absolute; right: 5px; .square(16px); top: 5px; }
+
 
 .popover                               {
   h3,

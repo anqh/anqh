@@ -941,6 +941,46 @@ $(function() {
 	});
 
 
+	// Preview post
+	$(document).on('click', 'button[name=preview]', function _preview(e) {
+		e.preventDefault();
+
+		var $this    = $(this)
+		  , $form    = $this.closest('form')
+		  , form     = $form.serialize() + '&preview=1'
+		  , $post    = $this.closest('article')
+		  , preClass = $this.attr('data-content-class') || 'media-body'
+		  , addClass = $this.attr('data-preview-class') || 'post'
+		  , prepend  = $this.attr('data-prepend') || '.post-edit';
+
+		// Add ajax loader
+		$post.loading();
+
+		// Remove previous preview
+		$post.find('.preview').remove();
+
+		// Submit form
+		$.post($form.attr('action'), form, function _response(data) {
+
+			// Find preview data from result
+			var $preview = preClass ? $(data).find('.' + preClass) : $(data);
+
+			// Mangle
+			$preview
+				.removeClass(preClass).addClass('preview ' + addClass)
+				.find('.ago').remove();
+
+			// Add to view
+			$form.find(prepend).prepend($preview);
+
+			// Remove loader
+			$post.loading(true);
+
+		});
+
+	});
+
+
 	// Ajaxify actions
 	$(document).on('click', 'a.ajaxify', function _ajaxify() {
 		$(this).closest('section, article').ajaxify($(this).attr('href'));

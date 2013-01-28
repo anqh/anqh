@@ -7450,9 +7450,19 @@ body > .container.tabs-right.tabbable-bodered > .tab-content {
   position: fixed;
 }
 
+.ajax {
+  background-image: url("../img/ajax.gif");
+  background-position: right top;
+  background-repeat: no-repeat;
+}
+
 body {
   padding-top: 50px;
   background: #1a1a1a url(../img/background.png);
+}
+
+article {
+  position: relative;
 }
 
 a {
@@ -8183,6 +8193,17 @@ a.friend {
   max-height: 100%;
 }
 
+div.loading {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 16px;
+  height: 16px;
+  background-image: url("../img/ajax.gif");
+  background-position: right top;
+  background-repeat: no-repeat;
+}
+
 .popover h3,
 .popover p {
   color: #999999;
@@ -8345,7 +8366,7 @@ a.friend {
 }
 
 .forum-topics .replies {
-  text-align: center;
+  text-align: right;
 }
 
 .post.owner {
