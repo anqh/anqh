@@ -963,7 +963,7 @@ $(function() {
 		$.post($form.attr('action'), form, function _response(data) {
 
 			// Find preview data from result
-			var $preview = preClass ? $(data).find('.' + preClass) : $(data);
+			var $preview = preClass !== '*' ? $(data).find('.' + preClass) : $(data);
 
 			// Mangle
 			$preview

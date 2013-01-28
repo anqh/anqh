@@ -75,6 +75,8 @@ class View_Event_Edit extends View_Article {
 			<?php } ?>
 		-->
 
+			<div class="placeholder"></div>
+
 			<div class="span8">
 				<fieldset id="fields-primary">
 					<?= Form::control_group(
@@ -96,6 +98,11 @@ class View_Event_Edit extends View_Article {
 
 				<fieldset class="form-actions">
 					<?= Form::button('save', __('Save event'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+					<?= Form::button('preview', __('Preview'), array(
+							'class'              => 'btn btn-inverse btn-large',
+							'data-content-class' => '*',
+							'data-prepend'       => '.placeholder'
+						)) ?>
 					<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
 					<?= Form::csrf() ?>

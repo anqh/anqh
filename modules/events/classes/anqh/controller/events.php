@@ -696,6 +696,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Handle post
 		if ($_POST && Security::csrf_valid()) {
+			$preview = isset($_POST['preview']);
 
 			// Handle venue
 			if ($venue_hidden = Arr::get($_POST, 'venue_hidden')) {
@@ -757,10 +758,13 @@ class Anqh_Controller_Events extends Controller_Page {
 				$venue->event_host = true;
 				$venue->author_id  = self::$user->id;
 				$venue->city_name  = $event->city_name;
-				try {
-					$venue->save();
-					$event->venue_id = $venue->id;
-				} catch (Validation_Exception $venue_validation) {}
+
+				if (!$preview) {
+					try {
+						$venue->save();
+						$event->venue_id = $venue->id;
+					} catch (Validation_Exception $venue_validation) {}
+				}
 
 			}
 
@@ -768,6 +772,21 @@ class Anqh_Controller_Events extends Controller_Page {
 			try {
 				$event->is_valid();
 			} catch (Validation_Exception $event_validation) {}
+
+			// Handle preview request
+			if ($preview) {
+				if ($this->ajax) {
+					$preview  = '<div id="main" class="span8">';
+					$preview .= $this->section_event_main($event);
+					$preview .= '</div><div id="side" class="span4">';
+					$preview .= $this->section_event_info($event);
+					$preview .= '</div>';
+
+					$this->response->body($preview);
+				}
+
+				return;
+			}
 
 			// If no errors found, save
 			if (!isset($venue_validation) && !isset($event_validation)) {
