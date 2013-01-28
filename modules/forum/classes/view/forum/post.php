@@ -80,6 +80,8 @@ class View_Forum_Post extends View_Article {
 	 * @return  string
 	 */
 	public function content() {
+		$bbcode = BB::factory();
+
 		ob_start();
 
 ?>
@@ -160,10 +162,10 @@ class View_Forum_Post extends View_Article {
 			HTML::chars($this->forum_post->parent()->topic()->name)
 		))) . ':</p>' ?>
 
-	<?= BB::factory($this->forum_post->post)->render() ?>
+	<?= $bbcode->render($this->forum_post->post) ?>
 
 	<footer>
-		<?= $this->author && $this->author->signature ? BB::factory("\n--\n" . $this->author->signature)->render() : '' ?>
+		<?= $this->author && $this->author->signature ? $bbcode->render("\n--\n" . $this->author->signature, true) : '' ?>
 
 		<?php if ($this->forum_post->modify_count > 0) echo '<br /><br />' . __('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($this->forum_post->modified), $this->forum_post->modified))); ?>
 	</footer>
