@@ -133,10 +133,15 @@ class Anqh_Controller_Events extends Controller_Page {
 			'link' => Route::model($event),
 			'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event'),
 		);
-		$this->view->tabs[] = array(
-			'link' => Route::get('gallery_event')->uri(array('id' => $event->id)),
-			'text' => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
-		);
+
+		// Link to gallery only after the event has begun
+		if ($event->stamp_begin < time()) {
+			$this->view->tabs[] = array(
+				'link' => Route::get('gallery_event')->uri(array('id' => $event->id)),
+				'text' => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
+			);
+		}
+
 		$this->view->tabs[] = array(
 			'link' => Route::get('forum_event')->uri(array('id' => $event->id)),
 			'text' => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
