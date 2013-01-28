@@ -311,10 +311,11 @@ class Anqh_BB extends BBCode {
 	/**
 	 * Return BBCode parsed to HTML
 	 *
-	 * @param   string  $text
+	 * @param   string   $text
+	 * @param   boolean  $plain
 	 * @return  string
 	 */
-	public function render($text = null) {
+	public function render($text = null, $plain = false) {
 		if ($text) {
 			$this->text = $text;
 		}
@@ -324,13 +325,20 @@ class Anqh_BB extends BBCode {
 		}
 
 		// Convert old system tags to BBCode
-		$this->text = str_replace(array('[link', '[/link]', '[q]', '[/q]'), array('[url', '[/url]', '[quote]', '[/quote]'), $this->text);
-
-		// Convert orphan media links to tags
-		$this->text = $this->embed($this->text);
+		$text = str_replace(array('[link', '[/link]', '[q]', '[/q]'), array('[url', '[/url]', '[quote]', '[/quote]'), $this->text);
 
 		// Parse BBCode
-		$parsed = $this->Parse($this->text);
+		if ($plain) {
+			$this->SetPlainMode();
+			$parsed = Text::auto_p($this->Parse($text));
+			$this->SetPlainMode(false);
+		} else {
+
+			// Convert orphan media links to tags
+			$text = $this->embed($text);
+
+			$parsed = $this->Parse($text);
+		}
 
 		return $parsed; //$this->GetPlainMode() ? $parsed : Text::auto_p($parsed);
 	}
