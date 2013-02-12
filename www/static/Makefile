@@ -38,9 +38,9 @@ build:
 		./bootstrap-j/js/bootstrap-carousel.js \
 		./bootstrap-j/js/bootstrap-collapse.js \
 		./bootstrap-j/js/bootstrap-dropdown.js \
-		./bootstrap-j/js/bootstrap-modal.js \
-		./bootstrap-j/js/bootstrap-tooltip.js \
-		./bootstrap-j/js/bootstrap-popover.js \
+		./bootstrap/js/bootstrap-modal.js \
+		./bootstrap/js/bootstrap-tooltip.js \
+		./bootstrap/js/bootstrap-popover.js \
 		./bootstrap-j/js/bootstrap-scrollspy.js \
 		./bootstrap-j/js/bootstrap-tab.js \
 		./bootstrap-j/js/bootstrap-typeahead.js \

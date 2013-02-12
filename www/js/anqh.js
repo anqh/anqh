@@ -850,6 +850,7 @@ $(function() {
 							html:      true,
 							title:     $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
 							content:   $card.html(),
+							container: 'body',
 							placement: function() {
 								var offset = $this.offset();
 
