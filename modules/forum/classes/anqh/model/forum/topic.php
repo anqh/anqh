@@ -116,7 +116,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	public function find_active($limit = 10) {
 		return $this->load(
 			DB::select_array($this->fields())
-				->order_by('last_post_id', 'DESC'),
+				->order_by('last_posted', 'DESC'),
 			$limit
 		);
 	}
@@ -185,7 +185,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	public function find_by_latest_post($limit = 10) {
 		return $this->load(
 			DB::select_array($this->fields())
-				->order_by('last_post_id', 'DESC'),
+				->order_by('last_posted', 'DESC'),
 			$limit
 		);
 	}
