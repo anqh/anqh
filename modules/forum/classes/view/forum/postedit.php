@@ -149,6 +149,8 @@ class View_Forum_PostEdit extends View_Article {
 
 			endswitch;
 		endif;
+
+
 		echo Form::open($this->form_action ? $this->form_action : null, $attributes);
 
 
@@ -163,6 +165,16 @@ class View_Forum_PostEdit extends View_Article {
 				$is_admin = self::$_user->has_role(array('admin', 'moderator', 'forum moderator'));
 
 				if ($is_admin):
+
+					// Build available areas list
+					$areas = array();
+					foreach (Model_Forum_Group::factory()->find_all() as $_group):
+						$areas[$_group->name] = array();
+						foreach ($_group->areas() as $_area):
+							$areas[$_group->name][$_area->id] = $_area->name;
+						endforeach;
+					endforeach;
+
 
 ?>
 
@@ -188,6 +200,11 @@ class View_Forum_PostEdit extends View_Article {
 			Arr::get($this->errors, 'sticky')); ?>
 	</div>
 </fieldset>
+
+	<?= Form::control_group(
+		Form::select('forum_area_id', $areas, $this->forum_topic->forum_area_id, array('class' => 'input-block-level')),
+		array('forum_area_id' => __('Area')),
+		Arr::get($this->errors, 'forum_area_id')) ?>
 
 		<?php endif; ?>
 

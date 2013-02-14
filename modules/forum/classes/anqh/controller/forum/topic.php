@@ -700,7 +700,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			} else {
 
 				// Old topic
-				$topic->set_fields(Arr::intersect($_POST, array('name', 'status', 'sticky')));
+				$topic->name = Arr::get($_POST, 'name');
+				if (self::$user->has_role(array('admin', 'moderator', 'forum moderator'))) {
+					$topic->set_fields(Arr::intersect($_POST, array('status', 'sticky', 'forum_area_id')));
+				}
 				try {
 					$topic->save();
 
