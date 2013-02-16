@@ -191,4 +191,51 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		return Model_Forum_Topic::factory($this->last_topic_id);
 	}
 
+
+	/**
+	 * Refresh area data.
+	 * Potentially heavy function, use with caution!
+	 *
+	 * @param  boolean  $save
+	 */
+	public function refresh($save = true) {
+		if (!$this->loaded()) {
+			return false;
+		}
+
+		// Get table names
+		if ($this instanceof Anqh_Model_Forum_Area) {
+			$topic_table = Model_Forum_Topic::factory()->get_table_name();
+			$post_table  = Model_Forum_Post::factory()->get_table_name();
+		} else {
+			$topic_table = Model_Forum_Private_Topic::factory()->get_table_name();
+			$post_table  = Model_Forum_Private_Post::factory()->get_table_name();
+		}
+
+		// Stats
+		$this->topic_count = (int)DB::select(array(DB::expr('COUNT(id)'), 'topics'))
+				->from($topic_table)
+				->where('forum_area_id', '=', $this->id)
+				->execute($this->_db)
+				->get('topics');
+		$this->post_count = (int)DB::select(array(DB::expr('COUNT(id)'), 'posts'))
+				->from($post_table)
+				->where('forum_area_id', '=', $this->id)
+				->execute($this->_db)
+				->get('posts');
+
+		// Last topic
+		$this->last_topic_id = (int)DB::select(array(DB::expr('MAX(id)'), 'topic_id'))
+				->from($topic_table)
+				->where('forum_area_id', '=', $this->id)
+				->execute($this->_db)
+				->get('topic_id');
+
+		if ($save) {
+			$this->save();
+		}
+
+		return true;
+	}
+
 }

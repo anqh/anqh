@@ -700,9 +700,18 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			} else {
 
 				// Old topic
+				$new_area_id = false;
 				$topic->name = Arr::get($_POST, 'name');
 				if (self::$user->has_role(array('admin', 'moderator', 'forum moderator'))) {
-					$topic->set_fields(Arr::intersect($_POST, array('status', 'sticky', 'forum_area_id')));
+					$topic->set_fields(Arr::intersect($_POST, array('status', 'sticky')));
+
+					// Change area?
+					$new_area_id = Arr::get($_POST, 'forum_area_id');
+					if ($new_area_id && $new_area_id != $topic->forum_area_id) {
+						$old_area_id          = $topic->forum_area_id;
+						$topic->forum_area_id = $new_area_id;
+					}
+
 				}
 				try {
 					$topic->save();
@@ -710,6 +719,17 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					// Recipients
 					if ($this->private) {
 						$topic->set_recipients($post_recipients);
+					}
+
+					// Area change
+					if (isset($old_area_id)) {
+						if ($this->private) {
+							Model_Forum_Private_Area::factory($old_area_id)->refresh();
+							Model_Forum_Private_Area::factory($new_area_id)->refresh();
+						} else {
+							Model_Forum_Area::factory($old_area_id)->refresh();
+							Model_Forum_Area::factory($new_area_id)->refresh();
+						}
 					}
 
 					$this->request->redirect(Route::model($topic));
