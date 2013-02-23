@@ -89,6 +89,11 @@ Route::set('tags', 'tags')
 		'controller' => 'tags',
 		'action'     => 'index',
 	));
+Route::set('developers', 'developers')
+	->defaults(array(
+		'controller' => 'developers',
+		'action'     => 'index',
+	));
 /*
 Route::set('index', '')
 	->defaults(array(
