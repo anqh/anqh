@@ -9,9 +9,6 @@
  */
 class View_Developers_Menu extends View_Section {
 
-	public $class = 'sticky';
-
-
 	/**
 	 * Create new view.
 	 */
