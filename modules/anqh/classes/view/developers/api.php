@@ -168,25 +168,20 @@ $.ajax({
 <pre>http://api.klubitus.org/v1/events/browse?<em>{parameters}</em></pre>
 
 <?= self::parameter_table(array(
-
 	'field' => array('', HTML::anchor('#api-events-common', 'See common parameters.')),
-
-	'from' => array('
+	'from'  => array('
 <code>today</code> (default)<br />
 <em>unix timestamp</em><br />
 <em>textual datetime description</em> parsed with <strong>strtotime</strong>, e.g. <code>yesterday</code>, <code>next monday</code>, <code>last month</code>
 ', 'Initial date to start browsing.'),
-
 	'limit' => array('
 <em>count</em>, max 500<br />
 <em>date span</em>, e.g. <code>1m</code>, <code>1w</code> (default), <code>1d</code>
 ', 'How many events to load.'),
-
 	'order' => array('
 <code>asc</code> (default)<br />
 <code>desc</code>
 ', 'Browsing order, <code>asc</code> for upcoming events, <code>desc</code> for past events.'),
-
 )) ?>
 
 <hr />
@@ -196,9 +191,7 @@ $.ajax({
 <pre>http://api.klubitus.org/v1/events/event?<em>{parameter}</em></pre>
 
 <?= self::parameter_table(array(
-	'id' => array('
-<em>numeric id</em>
-', 'Load all data from given event, i.e. does <em>not</em> use <code>field</code> parameter.')
+	'id' => array('<em>numeric id</em>', 'Load all data from given event, i.e. does <em>not</em> use <code>field</code> parameter.')
 )) ?>
 
 <hr />
@@ -208,62 +201,50 @@ $.ajax({
 <pre>http://api.klubitus.org/v1/events/search?<em>{parameters}</em></pre>
 
 <?= self::parameter_table(array(
-
-	'field' => array('', HTML::anchor('#api-events-common', 'See common parameters.')),
-
+	'field'  => array('', HTML::anchor('#api-events-common', 'See common parameters.')),
 	'filter' => array('
 <code>upcoming</code><br />
 <code>past</code><br />
 <code>date:<em>from-to</em></code><br />
 ', 'Filter results by date. <code>from</code> and <code>to</code> are unix timestamps and you may leave either one empty to query for events up to or onwards.'),
-
-	'limit' => array('
-<em>count</em>, max 500<br />
-', 'How many events to search.'),
-
-	'order' => array('
-<em>field.order</em>, e.g. <code>name.asc</code>, <code>city.asc:name.asc</code>
-', 'Sort search results by this field, supports multiple fields with colon as separator'),
-
-	'q' => array('
-<em>search term</em>, minimum 3 characters
-', 'Term to search for.'),
-
+	'limit'  => array('<em>count</em>, max 500<br />', 'How many events to search.'),
+	'order'  => array('<em>field.order</em>, e.g. <code>name.asc</code>, <code>city.asc:name.asc</code>', 'Sort search results by this field, supports multiple fields with colon as separator'),
+	'q'      => array('<em>search term</em>, minimum 3 characters', 'Term to search for.'),
 	'search' => array(self::code_array(Controller_Events_API::$_searchable), 'Field(s) to search from.'),
-
 )) ?>
 
 <hr />
 
+<hr />
+
+<h3 id="api-users">Users</h3>
+
+<h4 id="api-users-search">Search</h4>
+
+<pre>http://api.klubitus.org/v1/users/search?<em>{parameters}</em></pre>
+
+<?= self::parameter_table(array(
+	'field'  => array(self::code_array(Controller_User_API::$_fields), 'Fetchable fields.'),
+	'limit'  => array('<em>count</em>, max 500<br />', 'How many users to search.'),
+	'order'  => array('<em>field.order</em>, e.g. <code>gender.desc</code>, <code>gender.desc:username.asc</code>', 'Sort search results by this field, supports multiple fields with colon as separator'),
+	'q'      => array('<em>search term</em>, minimum 2 characters', 'Term to search for.'),
+	'search' => array(self::code_array(Controller_User_API::$_searchable), 'Field(s) to search from.'),
+	'user'   => array('<em>user id</em>', 'Prioritize friends if given.')
+)) ?>
+
 <h3 id="api-venues">Venues</h3>
 
-<h4 id="api-events-search">Search</h4>
+<h4 id="api-venues-search">Search</h4>
 
 <pre>http://api.klubitus.org/v1/venues/search?<em>{parameters}</em></pre>
 
 <?= self::parameter_table(array(
-
-	'field' => array(self::code_array(Controller_Venues_API::$_fields), 'Fetchable fields.'),
-
-	'limit' => array('
-<em>count</em>, max 500<br />
-', 'How many venues to search.'),
-
-	'order' => array('
-<em>field.order</em>, e.g. <code>name.asc</code>, <code>city.asc:name.asc</code>
-', 'Sort search results by this field, supports multiple fields with colon as separator'),
-
-	'q' => array('
-<em>search term</em>, minimum 3 characters
-', 'Term to search for.'),
-
+	'field'  => array(self::code_array(Controller_Venues_API::$_fields), 'Fetchable fields.'),
+	'limit'  => array('<em>count</em>, max 500<br />', 'How many venues to search.'),
+	'order'  => array('<em>field.order</em>, e.g. <code>name.asc</code>, <code>city.asc:name.asc</code>', 'Sort search results by this field, supports multiple fields with colon as separator'),
+	'q'      => array('<em>search term</em>, minimum 3 characters', 'Term to search for.'),
 	'search' => array(self::code_array(Controller_Events_API::$_searchable), 'Field(s) to search from.'),
-
 )) ?>
-
-<hr />
-
-<h3 id="api-members">Members</h3>
 
 <?php
 

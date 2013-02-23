@@ -419,7 +419,7 @@ endif; ?>
 		<?= HTML::anchor($this->base, Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
 		<ul class="nav" role="menubar">
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
+			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
 			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
 			<?php endforeach; ?>
 		</ul>

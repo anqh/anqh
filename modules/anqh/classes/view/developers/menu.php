@@ -9,6 +9,9 @@
  */
 class View_Developers_Menu extends View_Section {
 
+	public $class = 'sticky';
+
+
 	/**
 	 * Create new view.
 	 */
@@ -29,27 +32,37 @@ class View_Developers_Menu extends View_Section {
 
 ?>
 
-<ol>
+<ul>
 	<li><?= HTML::anchor('#introduction', 'Introduction') ?></li>
 	<li><?= HTML::anchor('#anqh', 'Anqh') ?></li>
 	<li>
 		<?= HTML::anchor('#api', 'API') ?>
-		<ol>
+		<ul>
 			<li><?= HTML::anchor('#api-overview', 'Overview') ?></li>
 			<li><?= HTML::anchor('#api-examples', 'Examples') ?></li>
 			<li>
 				<?= HTML::anchor('#api-events', 'Events') ?>
-				<ol>
+				<ul>
 					<li><?= HTML::anchor('#api-events-browse', 'Browse') ?></li>
 					<li><?= HTML::anchor('#api-events-event', 'Event') ?></li>
 					<li><?= HTML::anchor('#api-events-search', 'Search') ?></li>
-				</ol>
+				</ul>
 			</li>
-			<li><?= HTML::anchor('#api-venus', 'Venues') ?></li>
-			<li><?= HTML::anchor('#api-members', 'Members') ?></li>
-		</ol>
+			<li>
+				<?= HTML::anchor('#api-users', 'Users') ?>
+				<ul>
+					<li><?= HTML::anchor('#api-users-search', 'Search') ?></li>
+				</ul>
+			</li>
+			<li>
+				<?= HTML::anchor('#api-venues', 'Venues') ?>
+				<ul>
+					<li><?= HTML::anchor('#api-venues-search', 'Search') ?></li>
+				</ul>
+			</li>
+		</ul>
 	</li>
-</ol>
+</ul>
 
 <?php
 
