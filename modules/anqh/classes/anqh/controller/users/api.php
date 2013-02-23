@@ -1,13 +1,13 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Anqh User API controller
+ * Anqh Users API controller
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class Anqh_Controller_User_API extends Controller_API {
+class Anqh_Controller_Users_API extends Controller_API {
 
 	/**
 	 * @var  array  Fetchable fields

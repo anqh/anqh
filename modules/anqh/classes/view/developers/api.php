@@ -224,11 +224,11 @@ $.ajax({
 <pre>http://api.klubitus.org/v1/users/search?<em>{parameters}</em></pre>
 
 <?= self::parameter_table(array(
-	'field'  => array(self::code_array(Controller_User_API::$_fields), 'Fetchable fields.'),
+	'field'  => array(self::code_array(Controller_Users_API::$_fields), 'Fetchable fields.'),
 	'limit'  => array('<em>count</em>, max 500<br />', 'How many users to search.'),
 	'order'  => array('<em>field.order</em>, e.g. <code>gender.desc</code>, <code>gender.desc:username.asc</code>', 'Sort search results by this field, supports multiple fields with colon as separator'),
 	'q'      => array('<em>search term</em>, minimum 2 characters', 'Term to search for.'),
-	'search' => array(self::code_array(Controller_User_API::$_searchable), 'Field(s) to search from.'),
+	'search' => array(self::code_array(Controller_Users_API::$_searchable), 'Field(s) to search from.'),
 	'user'   => array('<em>user id</em>', 'Prioritize friends if given.')
 )) ?>
 

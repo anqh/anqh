@@ -22,9 +22,13 @@ Route::set('404', '<file>.<ext>', array('ext' => 'ico|png|jpg|gif|txt|avi|flv|sq
 		'controller' => 'static',
 		'action'     => '404'
 	));
-Route::set('api_user', 'api/<version>/user/<action>(.<format>)', array('version' => 'v[0-9\.]+', 'action' => 'search', 'format' => 'xml|json'))
+Route::set('api_user', 'api/<version>/<api>/<action>(.<format>)', array(
+		'version' => 'v[0-9\.]+',
+		'api'     => 'users?',
+		'action'  => 'search',
+		'format'  => 'xml|json'))
 	->defaults(array(
-		'controller' => 'user_api',
+		'controller' => 'users_api',
 		'version'    => 'v1',
 	));
 Route::set('ical_favorites', 'member/<username>/favorites.ics', array('username' => '[^/]+'))

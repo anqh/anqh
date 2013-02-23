@@ -513,7 +513,7 @@ $.fn.autocompleteUser = function(options) {
 				}
 
 				lastXhr = $.ajax({
-					url: Anqh.APIURL + '/v1/user/search',
+					url: Anqh.APIURL + '/v1/users/search',
 					dataType: 'jsonp',
 					data: {
 						'q':     term,
