@@ -18,6 +18,18 @@ class View_Developers_API extends View_Section {
 
 
 	/**
+	 * Build a parameter value field from array.
+	 *
+	 * @param   array  $fields
+	 * @return  string
+	 */
+	public static function code_array(array $fields) {
+		sort($fields);
+
+		return '<code>' . implode("</code><br />\n<code>", $fields) . '</code>';
+	}
+
+	/**
 	 * Print document table.
 	 *
 	 * @param   array  $parameters
@@ -146,32 +158,7 @@ $.ajax({
 <h4 id="api-events-common">Common parameters</h4>
 
 <?= self::parameter_table(array(
-	'field' => array('
-<code>all</code><br />
-<code>age</code><br />
-<code>city</code><br />
-<code>country</code><br />
-<code>created</code><br />
-<code>dj</code><br />
-<code>favorite_count</code><br />
-<code>flyer_front</code><br />
-<code>flyer_front_icon</code><br />
-<code>flyer_front_thumb</code><br />
-<code>flyer_back</code><br />
-<code>flyer_back_icon</code><br />
-<code>flyer_back_thumb</code><br />
-<code>homepage</code><br />
-<code>id</code><br />
-<code>info</code><br />
-<code>modified</code><br />
-<code>music</code><br />
-<code>name</code><br />
-<code>price</code><br />
-<code>stamp_begin</code><br />
-<code>stamp_end</code><br />
-<code>url</code><br />
-<code>venue</code>
-', 'Fetchable fields.')
+	'field' => array(self::code_array(Controller_Events_API::$_fields), 'Fetchable fields.')
 )) ?>
 
 <hr />
@@ -242,18 +229,37 @@ $.ajax({
 <em>search term</em>, minimum 3 characters
 ', 'Term to search for.'),
 
-	'search' => array('
-<code>name</code><br />
-<code>venue</code><br />
-<code>city</code><br />
-<code>dj</code>
-', 'Field(s) to search from.'),
+	'search' => array(self::code_array(Controller_Events_API::$_searchable), 'Field(s) to search from.'),
 
 )) ?>
 
 <hr />
 
 <h3 id="api-venues">Venues</h3>
+
+<h4 id="api-events-search">Search</h4>
+
+<pre>http://api.klubitus.org/v1/venues/search?<em>{parameters}</em></pre>
+
+<?= self::parameter_table(array(
+
+	'field' => array(self::code_array(Controller_Venues_API::$_fields), 'Fetchable fields.'),
+
+	'limit' => array('
+<em>count</em>, max 500<br />
+', 'How many venues to search.'),
+
+	'order' => array('
+<em>field.order</em>, e.g. <code>name.asc</code>, <code>city.asc:name.asc</code>
+', 'Sort search results by this field, supports multiple fields with colon as separator'),
+
+	'q' => array('
+<em>search term</em>, minimum 3 characters
+', 'Term to search for.'),
+
+	'search' => array(self::code_array(Controller_Events_API::$_searchable), 'Field(s) to search from.'),
+
+)) ?>
 
 <hr />
 
