@@ -36,7 +36,7 @@ class View_Developers_Introduction extends View_Section {
 <h2 id="anqh">Anqh</h2>
 
 <p>
-	Klubitus is an <em>almost</em> vanilla version of <?= HTML::anchor('http://github.com/anqh/', 'Anqh ' . Anqh::VERSION, array('class' => 'label label-info')) ?>,
+	Klubitus is an <em>almost</em> vanilla version of <?= HTML::anchor('http://github.com/anqh/anqh', 'Anqh ' . Anqh::VERSION, array('class' => 'label label-info')) ?>,
 	an open source <?= HTML::anchor('http://php.net', 'PHP 5.3', array('class' => 'label label-info')) ?> project built on top of <?= HTML::anchor('http://kohanaframework.org', 'Kohana ' . Kohana::VERSION, array('class' => 'label label-info')) ?>.
 </p>
 
