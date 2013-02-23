@@ -88,6 +88,57 @@ class View_Developers_API extends View_Section {
 
 <h3 id="api-examples">Example</h3>
 
+<p>
+	Using <?= HTML::anchor('http://jquery.com', 'jQuery', array('class' => 'label label-info')) ?> to load JSONP data about event #1501:
+</p>
+<pre>
+$.ajax({
+	url:      'http://api.klubitus.org/v1/events/event',
+	dataType: 'jsonp',
+	data: {
+		id: 1501
+	},
+	success: function(data, status, xhr) {
+		console.log(data);
+	}
+});
+</pre>
+<p>
+	JSON result in console:
+</p>
+<pre>
+	{
+		"version": "v1",
+		"events":  [
+			{
+				"id":"1501",
+				"name":"massive - the birthday bash",
+				"homepage":"",
+				"stamp_begin":"1023555600",
+				"stamp_end":"1023602400",
+				"venue":"kutsulla",
+				"city":"järvenpää",
+				"country":"",
+				"dj":"bella & marski, damien & yamo, sakura & bobby s & kaiu, erno, hopee, nigel, quu, phaze, jay logic",
+				"info":" ",
+				"age":"0",
+				"price":"-1.00",
+				"created":"1014461180",
+				"modified":"1023514641",
+				"flyer_front":null,
+				"flyer_front_thumb":null,
+				"flyer_front_icon":null,
+				"flyer_back":null,
+				"flyer_back_thumb":null,
+				"flyer_back_icon":null,
+				"favorite_count":"0",
+				"music":"kiksu, pesukonetechno, progepsyketechnohouse, polkka, chill..",
+				"url":"http://alpha.klubitus.org/event/1501-massive-the-birthday-bash"
+			}
+		]
+	}
+</pre>
+
 <hr />
 
 <h3 id="api-events">Events</h3>
