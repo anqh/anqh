@@ -58,26 +58,24 @@ class View_Event_Edit extends View_Article {
 		echo Form::open(null, array('id' => 'form-event', 'class' => 'row'));
 ?>
 
-		<!--
-			<?php if ($this->event_errors) { ?>
-			<ul class="errors">
-				<?php foreach ($this->event_errors as $error) { ?>
-				<li><?= $error ?></li>
-				<?php } ?>
-			</ul>
-			<?php } ?>
-			<?php if ($this->venue_errors) { ?>
-			<ul class="errors">
-				<?php foreach ($this->venue_errors as $error) { ?>
-				<li><?= $error ?></li>
-				<?php } ?>
-			</ul>
-			<?php } ?>
-		-->
-
 			<div class="placeholder"></div>
 
 			<div class="span8">
+
+				<?php if ($this->event_errors || $this->venue_errors): ?>
+				<div class="alert alert-error">
+					<strong><?= __('Error happens!') ?></strong>
+					<ul class="">
+						<?php foreach ((array)$this->event_errors as $error): ?>
+						<li><?= $error ?></li>
+						<?php endforeach; ?>
+						<?php foreach ((array)$this->venue_errors as $error): ?>
+						<li><?= $error ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+				<?php endif; ?>
+
 				<fieldset id="fields-primary">
 					<?= Form::control_group(
 						Form::input('name', $this->event->name, array('class' => 'input-block-level')),
@@ -93,7 +91,6 @@ class View_Event_Edit extends View_Article {
 						Form::textarea_editor('info', $this->event->info, array('class' => 'input-block-level'), true),
 						array('info' => __('Other information')),
 						Arr::get($this->event_errors, 'info')) ?>
-
 				</fieldset>
 
 				<fieldset class="form-actions">
