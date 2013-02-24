@@ -7714,6 +7714,11 @@ legend .control-group {
   float: right;
 }
 
+.media,
+.media .media {
+  margin-top: 10px;
+}
+
 .muted {
   color: #555555;
 }

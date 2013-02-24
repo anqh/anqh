@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2012 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Newsfeed extends View_Section {
@@ -61,27 +61,31 @@ class View_Newsfeed extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		if ($items = $this->_items()) {
+		if ($items = $this->_items()):
 			ob_start();
 
 ?>
 
-<ul class="unstyled">
+<ul class="media-list">
 
-	<?php foreach ($items as $item) { ?>
-	<li class="row-fluid">
-		<?php echo HTML::avatar($item['user']['avatar'], $item['user']['username'], $this->mini) ?>
-		<?php echo HTML::user($item['user']) ?> <small class="ago"><?php echo  HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
-		<?php echo $item['text'] ?>
+	<?php foreach ($items as $item): ?>
+	<li class="media">
+		<div class="pull-left">
+			<?= HTML::avatar($item['user']['avatar'], $item['user']['username'], $this->mini) ?>
+		</div>
+		<div class="media-body">
+			<?= HTML::user($item['user']) ?> <small class="ago"><?= HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
+			<?= $item['text'] ?>
+		</div>
 	</li>
-	<?php } ?>
+	<?php endforeach; ?>
 
 </ul>
 
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return __('Whoa, we are totally out of news items for you!');
 	}
