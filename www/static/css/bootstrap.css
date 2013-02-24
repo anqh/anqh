@@ -7874,6 +7874,10 @@ section li:hover .transparent {
   opacity: 1;
 }
 
+#side section:not(.full) {
+  border: 1px solid #333333;
+}
+
 #side section:not(.full) > header {
   padding: 10px 10px 9px;
   background: rgba(34, 34, 34, 0.5);
