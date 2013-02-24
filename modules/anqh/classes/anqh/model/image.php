@@ -398,12 +398,12 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	/**
 	 * Creates or updates the current image.
 	 *
-	 * @param   Validation  $validation a manual validation object to combine the model properties with
+	 * @param   mixed  $validation a manual validation object to combine the model properties with
 	 * @return  integer
 	 *
 	 * @throws  Kohana_Exception
 	 */
-	public function save(Validation $validation = null) {
+	public function save($validation = null) {
 		$new = !(bool)$this->id;
 
 		// Validate new image
