@@ -51,7 +51,7 @@ class Anqh_View_Section extends View_Base {
 	 * @return  string
 	 */
 	public function content() {
-		if ($articles = &$this->articles()) {
+		if ($articles = $this->articles()) {
 			return implode("\n\n", $articles);
 		}
 
