@@ -1,5 +1,5 @@
 /* ===================================================
- * bootstrap-transition.js v2.2.2
+ * bootstrap-transition.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#transitions
  * ===================================================
  * Copyright 2012 Twitter, Inc.
@@ -58,7 +58,7 @@
   })
 
 }(window.jQuery);/* ==========================================================
- * bootstrap-alert.js v2.2.2
+ * bootstrap-alert.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#alerts
  * ==========================================================
  * Copyright 2012 Twitter, Inc.
@@ -156,7 +156,7 @@
   $(document).on('click.alert.data-api', dismiss, Alert.prototype.close)
 
 }(window.jQuery);/* ============================================================
- * bootstrap-button.js v2.2.2
+ * bootstrap-button.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#buttons
  * ============================================================
  * Copyright 2012 Twitter, Inc.
@@ -260,7 +260,7 @@
   })
 
 }(window.jQuery);/* ==========================================================
- * bootstrap-carousel.js v2.2.2
+ * bootstrap-carousel.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#carousel
  * ==========================================================
  * Copyright 2012 Twitter, Inc.
@@ -289,6 +289,7 @@
 
   var Carousel = function (element, options) {
     this.$element = $(element)
+    this.$indicators = this.$element.find('.carousel-indicators')
     this.options = options
     this.options.pause == 'hover' && this.$element
       .on('mouseenter', $.proxy(this.pause, this))
@@ -299,19 +300,24 @@
 
     cycle: function (e) {
       if (!e) this.paused = false
+      if (this.interval) clearInterval(this.interval);
       this.options.interval
         && !this.paused
         && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
       return this
     }
 
+  , getActiveIndex: function () {
+      this.$active = this.$element.find('.item.active')
+      this.$items = this.$active.parent().children()
+      return this.$items.index(this.$active)
+    }
+
   , to: function (pos) {
-      var $active = this.$element.find('.item.active')
-        , children = $active.parent().children()
-        , activePos = children.index($active)
+      var activeIndex = this.getActiveIndex()
         , that = this
 
-      if (pos > (children.length - 1) || pos < 0) return
+      if (pos > (this.$items.length - 1) || pos < 0) return
 
       if (this.sliding) {
         return this.$element.one('slid', function () {
@@ -319,11 +325,11 @@
         })
       }
 
-      if (activePos == pos) {
+      if (activeIndex == pos) {
         return this.pause().cycle()
       }
 
-      return this.slide(pos > activePos ? 'next' : 'prev', $(children[pos]))
+      return this.slide(pos > activeIndex ? 'next' : 'prev', $(this.$items[pos]))
     }
 
   , pause: function (e) {
@@ -364,9 +370,18 @@
 
       e = $.Event('slide', {
         relatedTarget: $next[0]
+      , direction: direction
       })
 
       if ($next.hasClass('active')) return
+
+      if (this.$indicators.length) {
+        this.$indicators.find('.active').removeClass('active')
+        this.$element.one('slid', function () {
+          var $nextIndicator = $(that.$indicators.children()[that.getActiveIndex()])
+          $nextIndicator && $nextIndicator.addClass('active')
+        })
+      }
 
       if ($.support.transition && this.$element.hasClass('slide')) {
         this.$element.trigger(e)
@@ -412,7 +427,7 @@
       if (!data) $this.data('carousel', (data = new Carousel(this, options)))
       if (typeof option == 'number') data.to(option)
       else if (action) data[action]()
-      else if (options.interval) data.cycle()
+      else if (options.interval) data.pause().cycle()
     })
   }
 
@@ -435,16 +450,23 @@
  /* CAROUSEL DATA-API
   * ================= */
 
-  $(document).on('click.carousel.data-api', '[data-slide]', function (e) {
+  $(document).on('click.carousel.data-api', '[data-slide], [data-slide-to]', function (e) {
     var $this = $(this), href
       , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
       , options = $.extend({}, $target.data(), $this.data())
+      , slideIndex
+
     $target.carousel(options)
+
+    if (slideIndex = $this.attr('data-slide-to')) {
+      $target.data('carousel').pause().to(slideIndex).cycle()
+    }
+
     e.preventDefault()
   })
 
 }(window.jQuery);/* =============================================================
- * bootstrap-collapse.js v2.2.2
+ * bootstrap-collapse.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#collapse
  * =============================================================
  * Copyright 2012 Twitter, Inc.
@@ -497,7 +519,7 @@
         , actives
         , hasData
 
-      if (this.transitioning) return
+      if (this.transitioning || this.$element.hasClass('in')) return
 
       dimension = this.dimension()
       scroll = $.camelCase(['scroll', dimension].join('-'))
@@ -517,7 +539,7 @@
 
   , hide: function () {
       var dimension
-      if (this.transitioning) return
+      if (this.transitioning || !this.$element.hasClass('in')) return
       dimension = this.dimension()
       this.reset(this.$element[dimension]())
       this.transition('removeClass', $.Event('hide'), 'hidden')
@@ -574,7 +596,7 @@
     return this.each(function () {
       var $this = $(this)
         , data = $this.data('collapse')
-        , options = typeof option == 'object' && option
+        , options = $.extend({}, $.fn.collapse.defaults, $this.data(), typeof option == 'object' && option)
       if (!data) $this.data('collapse', (data = new Collapse(this, options)))
       if (typeof option == 'string') data[option]()
     })
@@ -610,7 +632,7 @@
   })
 
 }(window.jQuery);/* ============================================================
- * bootstrap-dropdown.js v2.2.2
+ * bootstrap-dropdown.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#dropdowns
  * ============================================================
  * Copyright 2012 Twitter, Inc.
@@ -692,7 +714,10 @@
 
       isActive = $parent.hasClass('open')
 
-      if (!isActive || (isActive && e.keyCode == 27)) return $this.click()
+      if (!isActive || (isActive && e.keyCode == 27)) {
+        if (e.which == 27) $parent.find(toggle).focus()
+        return $this.click()
+      }
 
       $items = $('[role=menu] li:not(.divider):visible a', $parent)
 
@@ -726,8 +751,9 @@
       selector = selector && /#/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
     }
 
-    $parent = $(selector)
-    $parent.length || ($parent = $this.parent())
+    $parent = selector && $(selector)
+
+    if (!$parent || !$parent.length) $parent = $this.parent()
 
     return $parent
   }
@@ -763,13 +789,14 @@
    * =================================== */
 
   $(document)
-    .on('click.dropdown.data-api touchstart.dropdown.data-api', clearMenus)
-    .on('click.dropdown touchstart.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
-    .on('touchstart.dropdown.data-api', '.dropdown-menu', function (e) { e.stopPropagation() })
-    .on('click.dropdown.data-api touchstart.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)
-    .on('keydown.dropdown.data-api touchstart.dropdown.data-api', toggle + ', [role=menu]' , Dropdown.prototype.keydown)
+    .on('click.dropdown.data-api', clearMenus)
+    .on('click.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('.dropdown-menu', function (e) { e.stopPropagation() })
+    .on('click.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)
+    .on('keydown.dropdown.data-api', toggle + ', [role=menu]' , Dropdown.prototype.keydown)
 
-}(window.jQuery);/* =========================================================
+}(window.jQuery);
+/* =========================================================
  * bootstrap-modal.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#modals
  * =========================================================
@@ -1484,7 +1511,7 @@
 
 }(window.jQuery);
 /* =============================================================
- * bootstrap-scrollspy.js v2.2.2
+ * bootstrap-scrollspy.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#scrollspy
  * =============================================================
  * Copyright 2012 Twitter, Inc.
@@ -1544,7 +1571,7 @@
               , $href = /^#\w/.test(href) && $(href)
             return ( $href
               && $href.length
-              && [[ $href.position().top + self.$scrollElement.scrollTop(), href ]] ) || null
+              && [[ $href.position().top + (!$.isWindow(self.$scrollElement.get(0)) && self.$scrollElement.scrollTop()), href ]] ) || null
           })
           .sort(function (a, b) { return a[0] - b[0] })
           .each(function () {
@@ -1645,7 +1672,7 @@
   })
 
 }(window.jQuery);/* ========================================================
- * bootstrap-tab.js v2.2.2
+ * bootstrap-tab.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#tabs
  * ========================================================
  * Copyright 2012 Twitter, Inc.
@@ -1788,7 +1815,7 @@
   })
 
 }(window.jQuery);/* =============================================================
- * bootstrap-typeahead.js v2.2.2-j3
+ * bootstrap-typeahead.js v2.3.0-j4
  * http://twitter.github.com/bootstrap/javascript.html#typeahead
  * =============================================================
  * Copyright 2012 Twitter, Inc.
@@ -2129,6 +2156,7 @@
 
   , listen: function () {
       this.$element
+        .on('focus',    $.proxy(this.focus, this))
         .on('blur',     $.proxy(this.blur, this))
         .on('change',   $.proxy(this.change, this))
         .on('keypress', $.proxy(this.keypress, this))
@@ -2141,8 +2169,9 @@
       this.$menu
         .on('click', $.proxy(this.click, this))
         .on('mouseenter', 'li', $.proxy(this.mouseenter, this))
-      
-      $(window).on('unload', $.proxy(this.destroyReplacement, this));
+        .on('mouseleave', 'li', $.proxy(this.mouseleave, this))
+        
+      $(window).on('unload', $.proxy(this.destroyReplacement, this))
     }
 
   , eventSupported: function(eventName) {
@@ -2229,20 +2258,31 @@
       }
     }
 
+  , focus: function (e) {
+      this.focused = true
+    }
+    
   , blur: function (e) {
-      var that = this
-      setTimeout(function () { if (!that.$menu.is(':hover')) that.hide() }, 150)
+      this.focused = false
+      if (!this.mousedover && this.shown) this.hide()
     }
 
   , click: function (e) {
       e.stopPropagation()
       e.preventDefault()
       this.select()
+      this.$element.focus()
     }
 
   , mouseenter: function (e) {
+      this.mousedover = true
       this.$menu.find('.active').removeClass('active')
       $(e.currentTarget).addClass('active')
+    }
+
+  , mouseleave: function (e) {
+      this.mousedover = false
+      if (!this.focused && this.shown) this.hide()
     }
 
   }
@@ -2325,17 +2365,6 @@
   var isIphone = (window.orientation !== undefined),
       isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1
 
-  $.mask = {
-    //Predefined character definitions
-    definitions: {
-      '9': "[0-9]",
-      'a': "[A-Za-z]",
-      '?': "[A-Za-z0-9]",
-      '*': "."
-    },
-    dataName:"rawMaskFn"
-  }
-
 
  /* INPUTMASK PUBLIC CLASS DEFINITION
   * ================================= */
@@ -2344,8 +2373,8 @@
     if (isAndroid) return // No support because caret positioning doesn't work on Android
     
     this.$element = $(element)
-    this.mask = String(options.mask)
     this.options = $.extend({}, $.fn.inputmask.defaults, options)
+    this.mask = String(options.mask)
     
     this.init()
     this.listen()
@@ -2356,7 +2385,7 @@
   Inputmask.prototype = {
     
     init: function() {
-      var defs = $.mask.definitions
+      var defs = this.options.definitions
       var len = this.mask.length
 
       this.tests = [] 
@@ -2382,7 +2411,7 @@
       
       this.focusText = this.$element.val()
 
-      this.$element.data($.mask.dataName, $.proxy(function() {
+      this.$element.data("rawMaskFn", $.proxy(function() {
         return $.map(this.buffer, function(c, i) {
           return this.tests[i] && c != this.options.placeholder ? c : null
         }).join('')
@@ -2392,7 +2421,7 @@
     listen: function() {
       if (this.$element.attr("readonly")) return
 
-      var pasteEventName = ($.browser.msie ? 'paste' : 'input') + ".mask"
+      var pasteEventName = (navigator.userAgent.match(/msie/i) ? 'paste' : 'input') + ".mask"
 
       this.$element
         .on("unmask", $.proxy(this.unmask, this))
@@ -2640,7 +2669,14 @@
   }
 
   $.fn.inputmask.defaults = {
-    placeholder: "_"
+    mask: "",
+    placeholder: "_",
+    definitions: {
+      '9': "[0-9]",
+      'a': "[A-Za-z]",
+      '?': "[A-Za-z0-9]",
+      '*': "."
+    }
   }
 
   $.fn.inputmask.Constructor = Inputmask
@@ -2649,16 +2685,15 @@
  /* INPUTMASK DATA-API
   * ================== */
 
-  $(function () {
-    $('body').on('focus.inputmask.data-api', '[data-mask]', function (e) {
-      var $this = $(this)
-      if ($this.data('inputmask')) return
-      e.preventDefault()
-      $this.inputmask($this.data())
-    })
+  $(document).on('focus.inputmask.data-api', '[data-mask]', function (e) {
+    var $this = $(this)
+    if ($this.data('inputmask')) return
+    e.preventDefault()
+    $this.inputmask($this.data())
   })
 
-}(window.jQuery);/* ============================================================
+}(window.jQuery);
+/* ============================================================
  * bootstrap-rowlink.js j1
  * http://jasny.github.com/bootstrap/javascript.html#rowlink
  * ============================================================
@@ -2796,8 +2831,9 @@
     },
     
     change: function(e, invoked) {
-      var file = e.target.files !== undefined ? e.target.files[0] : (e.target.value ? { name: e.target.value.replace(/^.+\\/, '') } : null)
       if (invoked === 'clear') return
+      
+      var file = e.target.files !== undefined ? e.target.files[0] : (e.target.value ? { name: e.target.value.replace(/^.+\\/, '') } : null)
       
       if (!file) {
         this.clear()
@@ -2831,7 +2867,7 @@
       this.$input.attr('name', '')
 
       //ie8+ doesn't support changing the value of input with type=file so clone instead
-      if($.browser.msie){
+      if (navigator.userAgent.match(/msie/i)){ 
           var inputClone = this.$input.clone(true);
           this.$input.after(inputClone);
           this.$input.remove();
@@ -2884,24 +2920,21 @@
  /* FILEUPLOAD DATA-API
   * ================== */
 
-  $(function () {
-    $('body').on('click.fileupload.data-api', '[data-provides="fileupload"]', function (e) {
-      var $this = $(this)
-      if ($this.data('fileupload')) return
-      $this.fileupload($this.data())
+  $(document).on('click.fileupload.data-api', '[data-provides="fileupload"]', function (e) {
+    var $this = $(this)
+    if ($this.data('fileupload')) return
+    $this.fileupload($this.data())
       
-      var $target = $(e.target).is('[data-dismiss=fileupload],[data-trigger=fileupload]') ?
-        $(e.target) : $(e.target).parents('[data-dismiss=fileupload],[data-trigger=fileupload]').first()
-      if ($target.length > 0) {
-          $target.trigger('click.fileupload')
-          e.preventDefault()
-      }
-    })
+    var $target = $(e.target).closest('[data-dismiss="fileupload"],[data-trigger="fileupload"]');
+    if ($target.length > 0) {
+      $target.trigger('click.fileupload')
+      e.preventDefault()
+    }
   })
 
 }(window.jQuery);
 /* ==========================================================
- * bootstrap-affix.js v2.2.2
+ * bootstrap-affix.js v2.3.0
  * http://twitter.github.com/bootstrap/javascript.html#affix
  * ==========================================================
  * Copyright 2012 Twitter, Inc.
