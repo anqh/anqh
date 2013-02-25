@@ -101,7 +101,7 @@ class Anqh_Model_Image_Exif extends AutoModeler_ORM implements Permission_Interf
 	 *
 	 * @return  boolean
 	 */
-	public function save() {
+	public function save($validation = null) {
 
 		// If new EXIF data, try to read from image
 		if (!$this->loaded()) {
