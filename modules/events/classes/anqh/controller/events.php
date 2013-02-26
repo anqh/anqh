@@ -677,7 +677,8 @@ class Anqh_Controller_Events extends Controller_Page {
 				);
 			}
 			$edit = true;
-
+			$event->modifies++;
+			$event->modified = time();
 
 		} else {
 
