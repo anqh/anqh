@@ -1756,7 +1756,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$previous_month = $month - 1;
 		} else if (isset($months[$year - 1])) {
 			$previous_year  = $year - 1;
-			$previous_month = reset(array_keys($months[$previous_year]));
+			$_months        = array_keys($months[$previous_year]);
+			$previous_month = reset($_months);
 		} else {
 			$previous_year  = $previous_month = null;
 		}
