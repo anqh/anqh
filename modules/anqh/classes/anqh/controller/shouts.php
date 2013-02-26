@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Shouts extends Controller_Page {
@@ -27,8 +27,7 @@ class Anqh_Controller_Shouts extends Controller_Page {
 	 * Action: shout
 	 */
 	public function action_shout() {
-		$shout  = Model_Shout::factory();
-		$errors = array();
+		$shout = Model_Shout::factory();
 
 		if (Permission::has($shout, Permission_Interface::PERMISSION_CREATE) && Security::csrf_valid()) {
 			$shout->author_id = self::$user->id;
@@ -37,13 +36,13 @@ class Anqh_Controller_Shouts extends Controller_Page {
 			try {
 				$shout->save();
 			} catch (Validation_Exception $e) {
-				$errors = $e->array->errors('validate');
 			}
 		}
 
 		if ($this->ajax) {
-			echo new View_Index_Shouts();
-			exit;
+			$this->response->body($this->section_shouts());
+
+			return;
 		}
 
 		$this->request->redirect(Route::get('shouts')->uri());
@@ -53,11 +52,14 @@ class Anqh_Controller_Shouts extends Controller_Page {
 	/**
 	 * Get shouts.
 	 *
-	 * @return  View_Shouts
+	 * @return  View_Index_Shouts
 	 */
 	public function section_shouts() {
 		$section = new View_Index_Shouts();
-		$section->title = null;
+
+		if (!$this->ajax) {
+			$section->title = null;
+		}
 
 		return $section;
 	}
