@@ -5,7 +5,7 @@
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Model_Comment extends AutoModeler_ORM implements Permission_Interface {
@@ -32,12 +32,13 @@ abstract class Anqh_Model_Comment extends AutoModeler_ORM implements Permission_
 
 
 	/**
-	 * Add new comment
+	 * Add new comment.
 	 *
-	 * @param   integer  $author
-	 * @param   integer  $user     Target user, e.g. comment receiver
+	 * @param   integer  $author_id
+	 * @param   integer  $user_id  Target user, e.g. comment receiver
 	 * @param   string   $comment
 	 * @param   boolean  $private
+	 * @param   mixed    $model
 	 * @param   AutoModeler
 	 * @return  Model_Comment
 	 */

@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Blog_Comment extends Model_Comment {
@@ -23,15 +23,16 @@ class Anqh_Model_Blog_Comment extends Model_Comment {
 
 
 	/**
-	 * Add new comment
+	 * Add new comment.
 	 *
 	 * @param   integer           $author_id
-	 * @param   Model_Blog_Entry  $image
+	 * @param   integer           $user_id
 	 * @param   string            $comment
 	 * @param   boolean           $private
+	 * @param   Model_Blog_Entry  $blog_entry
 	 * @return  Model_Blog_Comment
 	 */
-	public function add($author_id, Model_Blog_Entry $blog_entry = null, $comment, $private = false) {
+	public function add($author_id, $user_id = null, $comment, $private = false, $blog_entry = null) {
 		$this->blog_entry_id = $blog_entry->id;
 
 		return parent::add($author_id, $blog_entry->author_id, $comment, $private);

@@ -93,7 +93,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 				// Handle comment
 				try {
 					$comment = Model_Blog_Comment::factory()->
-						add(self::$user->id, $entry, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
+						add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $entry);
 
 					$entry->comment_count++;
 					$entry->new_comment_count++;

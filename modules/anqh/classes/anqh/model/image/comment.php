@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Image_Comment extends Model_Comment implements Permission_Interface {
@@ -23,15 +23,16 @@ class Anqh_Model_Image_Comment extends Model_Comment implements Permission_Inter
 
 
 	/**
-	 * Add new comment
+	 * Add new comment.
 	 *
 	 * @param   integer      $author_id
-	 * @param   Model_Image  $image
+	 * @param   integer      $user_id
 	 * @param   string       $comment
 	 * @param   boolean      $private
+	 * @param   Model_Image  $image
 	 * @return  Model_Image_Comment
 	 */
-	public function add($author_id, Model_Image $image = null, $comment, $private = false) {
+	public function add($author_id, $user_id = null, $comment, $private = false, $image = null) {
 		$this->image_id = $image->id;
 
 		return parent::add($author_id, $image->author_id, $comment, $private);

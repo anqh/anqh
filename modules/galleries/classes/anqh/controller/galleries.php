@@ -381,7 +381,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENT, self::$user) && $_POST) {
 				try {
 					$comment = Model_Image_Comment::factory()
-						->add(self::$user->id, $image, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
+						->add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $image);
 
 					$image->comment_count++;
 					if ($image->author_id != self::$user->id) {
@@ -784,7 +784,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, self::$user) && $_POST) {
 					try {
 						$comment = Model_Image_Comment::factory()
-							->add(self::$user->id, $current, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
+							->add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $current);
 
 						$current->comment_count++;
 						if ($current->author_id != self::$user->id) {
