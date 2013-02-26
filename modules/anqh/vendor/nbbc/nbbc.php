@@ -1442,7 +1442,9 @@ $end = $this->Internal_CleanupWSByIteratingPointer(@$rule['before_endtag'], 0, $
 $this->Internal_CleanupWSByPoppingStack(@$rule['after_tag'], $output);
 $tag_body = $this->Internal_CollectTextReverse($output, count($output)-1, $end);
 $this->Internal_CleanupWSByPoppingStack(@$rule['before_tag'], $this->stack);
-$this->Internal_UpdateParamsForMissingEndTag(@$token[BBCODE_STACK_TAG]);
+$tmp = @$token[BBCODE_STACK_TAG];
+$this->Internal_UpdateParamsForMissingEndTag($tmp);
+$token[BBCODE_STACK_TAG] = $tmp;
 $tag_output = $this->DoTag(BBCODE_OUTPUT, $name,
 @$token[BBCODE_STACK_TAG]['_default'], @$token[BBCODE_STACK_TAG], $tag_body);
 $output = Array(Array(
