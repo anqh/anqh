@@ -41,6 +41,19 @@ class Anqh_Model_NewsfeedItem extends AutoModeler {
 		$query = DB::select_array($newsfeeditem->fields())->order_by('id', 'DESC');
 		if (is_array($users)) {
 			$query = $query->where('user_id', 'IN', $users);
+
+			// Include friend events
+			$friend_ids = array();
+			foreach ($users as $user_id) {
+				$friend_ids[] = json_encode(array('friend_id' => $user_id));
+			}
+			$query = $query
+				->or_where_open()
+				->where('class', '=', 'user')
+				->and_where('type', '=', 'friend')
+				->and_where('data', 'IN', $friend_ids)
+				->or_where_close();
+
 		}
 
 		return $newsfeeditem->load($query, $limit);
