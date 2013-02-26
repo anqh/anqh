@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Users_Ignores extends View_Section {
@@ -46,22 +46,25 @@ class View_Users_Ignores extends View_Section {
 
 ?>
 
-<ul class="unstyled">
+<ul class="media-list">
 	<?php foreach ($ignores as $ignore): ?>
 
-	<li class="row-fluid">
-		<?= HTML::avatar($ignore['avatar'], $ignore['username']) ?>
-		<?= HTML::user($ignore) ?><br />
-		<?= HTML::anchor(
-			URL::user($ignore, 'unignore') . '?token=' . Security::csrf(),
-			'<i class="icon-ban-circle icon-white"></i> ' . __('Unignore'),
-			array('class' => 'btn btn-inverse btn-small ignore-delete')
-		) ?>
+	<li class="media">
+		<div class="pull-left">
+			<?= HTML::avatar($ignore['avatar'], $ignore['username']) ?>
+		</div>
+		<div class="media-body">
+			<?= HTML::user($ignore) ?><br />
+			<?= HTML::anchor(
+				URL::user($ignore, 'unignore') . '?token=' . Security::csrf(),
+				'<i class="icon-ban-circle icon-white"></i> ' . __('Unignore'),
+				array('class' => 'btn btn-inverse btn-small ignore-delete')
+			) ?>
+		</div>
 	</li>
 	<?php endforeach; ?>
 
 </ul>
-
 
 <?php
 
