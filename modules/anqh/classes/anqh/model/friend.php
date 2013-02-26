@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Friend extends AutoModeler {
@@ -51,7 +51,7 @@ class Anqh_Model_Friend extends AutoModeler {
 	 * Find ids of users who have added the user as a friend.
 	 *
 	 * @static
-	 * @param   integr  $friend_id
+	 * @param   integer  $friend_id
 	 * @return  array
 	 */
 	public static function find_by_friend($friend_id) {

@@ -984,13 +984,16 @@ $(function() {
 
 	// Ajaxify actions
 	$(document).on('click', 'a.ajaxify', function _ajaxify() {
-		$(this).closest('section, article').ajaxify($(this).attr('href'));
+		var parent = $(this).attr('data-ajaxify-target');
+
+		$(this).closest('section, article' + (parent ? ', ' + parent : '')).ajaxify($(this).attr('href'));
 
 		return false;
 	});
+
 	$('form.ajaxify').live('submit', function() {
 		var $form = $(this);
-		$(this).closest('section.mod,section').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
+		$(this).closest('section').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
 
 		return false;
 	});

@@ -124,6 +124,13 @@ class Anqh_Controller_User extends Controller_Page {
 
 		}
 
+		// Ajax requests show friend
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body($this->section_friend($user));
+
+			return;
+		}
+
 		$this->request->redirect(URL::user($user));
 	}
 
@@ -136,9 +143,15 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Build page
 		$this->_set_page($user);
-		$this->view->tab = 'friends';
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, __('Friends')));
+		$this->view->tab       = 'friends';
+		$this->view->actions[] = array(
+			'link'  => URL::user($user, 'friends') . '?of=me',
+			'text'  => '<i class="icon-heart icon-white"></i> ' . __('Who friends me'),
+			'class' => 'btn-lovely'
+		);
+
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, Arr::get($_GET, 'of') == 'me'));
 	}
 
 
@@ -150,7 +163,9 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Hover card works only with ajax
 		if ($this->_request_type !== Controller::REQUEST_AJAX) {
-			return $this->action_index();
+			$this->action_index();
+
+			return;
 		}
 
 		if ($user = Model_User::find_user_light(urldecode((string)$this->request->param('username'))))	{
@@ -493,7 +508,7 @@ class Anqh_Controller_User extends Controller_Page {
 					$this->view->actions[] = array(
 						'link'  => URL::user($user, 'friend') . '?token=' . Security::csrf(),
 						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to friends'),
-						'class' => 'btn-primary friend-add'
+						'class' => 'btn-lovely friend-add'
 					);
 				}
 			}
@@ -616,13 +631,24 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
+	 * Get single friend from friend list.
+	 *
+	 * @param  Model_User  $user
+	 */
+	public function section_friend(Model_User $user) {
+		return new View_Users_Friend($user);
+	}
+
+
+	/**
 	 * Get friends list.
 	 *
 	 * @param   Model_User  $user
+	 * @param   boolean     $friended  People who friended user
 	 * @return  View_Users_Friends
 	 */
-	public function section_friends(Model_User $user) {
-		return new View_Users_Friends($user);
+	public function section_friends(Model_User $user, $friended = false) {
+		return new View_Users_Friends($user, $friended);
 	}
 
 
