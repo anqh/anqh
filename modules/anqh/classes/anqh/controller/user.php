@@ -147,6 +147,12 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->view->tab = 'friends';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, Arr::get($_GET, 'of') == 'me'));
+
+		// Show suggestions on our own page
+		if ($user->id === self::$user->id) {
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_friend_suggestions($user));
+		}
+
 	}
 
 
@@ -632,6 +638,17 @@ class Anqh_Controller_User extends Controller_Page {
 	 */
 	public function section_friend(Model_User $user) {
 		return new View_Users_Friend($user);
+	}
+
+
+	/**
+	 * Get friend suggestions.
+	 *
+	 * @param   Model_User  $user
+	 * @return  View_Users_FriendSuggestions
+	 */
+	public function section_friend_suggestions(Model_User $user) {
+		return new View_Users_FriendSuggestions($user);
 	}
 
 

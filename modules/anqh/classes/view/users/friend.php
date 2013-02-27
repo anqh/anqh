@@ -10,6 +10,11 @@
 class View_Users_Friend extends View_Base {
 
 	/**
+	 * @var  integer
+	 */
+	public $common;
+
+	/**
 	 * @var  array
 	 */
 	public $user;
@@ -18,16 +23,18 @@ class View_Users_Friend extends View_Base {
 	/**
 	 * Create new view.
 	 *
-	 * @param  mixed  $user  Light user array
+	 * @param  mixed    $user  Light user array
+	 * @param  integer  $common  Common friends
 	 */
-	public function __construct($user = null) {
+	public function __construct($user = null, $common = null) {
 		parent::__construct();
 
 		if ($user instanceof Model_User) {
 			$user = $user->light_array();
 		}
 
-		$this->user = $user;
+		$this->user   = $user;
+		$this->common = $common;
 	}
 
 
@@ -51,6 +58,9 @@ class View_Users_Friend extends View_Base {
 		<?php endif; ?>
 
 		<?= HTML::user($this->user) ?><br />
+		<?php if ($this->common): ?>
+		<small><?= __(':friends mutual friends', array(':friends' => $this->common)) ?></small><br />
+		<?php endif; ?>
 
 		<?php if (self::$_user && !self::$_user->is_friend($this->user)): ?>
 		<?= HTML::anchor(

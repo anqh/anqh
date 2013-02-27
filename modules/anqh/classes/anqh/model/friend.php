@@ -39,6 +39,8 @@ class Anqh_Model_Friend extends AutoModeler {
 
 			Anqh::cache_delete('friends_' . $user_id);
 			Anqh::cache_delete('friends_of_' . $friend_id);
+			Anqh::cache_delete('friends_suggestions_' . $user_id);
+			Anqh::cache_delete('friends_suggestions_' . $friend_id);
 
 			return true;
 		} catch (Exception $e) {
@@ -73,6 +75,57 @@ class Anqh_Model_Friend extends AutoModeler {
 		}
 
 		return $friends;
+	}
+
+
+	/**
+	 * Find ids of users the user hasn't added as a friend.
+	 *
+	 * @static
+	 * @param   integer  $user_id
+	 * @param   integer  $common_friends  Minimum number
+	 * @return  array
+	 */
+	public static function find_by_suggestion($user_id, $common_friends = 2) {
+		$user_id = (int)$user_id;
+		$ckey    = 'friends_suggestions_' . $user_id;
+
+		// Try static cache
+		$results = Anqh::cache_get($ckey);
+		if (is_null($results)) {
+
+			// Current friends
+			$friends = self::find_by_user($user_id);
+
+			// Load from DB
+			$suggestions = (array)DB::select('friend_id', array(DB::expr('SUM(1)'), 'score'))
+				->from('friends')
+
+				// Get our friend's friends
+				->where('user_id', 'IN', $friends)
+
+				// Who aren't my friends
+				->and_where('friend_id', 'NOT IN', $friends)
+
+				// And aren't me
+				->and_where('friend_id', '!=', $user_id)
+
+				->group_by('friend_id')
+				->having(DB::expr('SUM(1)'), '>', (int)$common_friends)
+				->order_by('score', 'DESC')
+				->limit(200)
+				->execute()
+				->as_array('friend_id', 'score');
+
+			$results = array();
+			foreach ($suggestions as $user_id => $score) {
+				$results[(int)$user_id] = (int)$score;
+			}
+
+			Anqh::cache_set($ckey, $results, Date::HOUR);
+		}
+
+		return $results;
 	}
 
 

@@ -15,6 +15,11 @@ class View_Users_Friends extends View_Section {
 	public $friended = false;
 
 	/**
+	 * @var  array
+	 */
+	public $friends = array();
+
+	/**
 	 * @var  Model_User
 	 */
 	public $user;
@@ -29,9 +34,17 @@ class View_Users_Friends extends View_Section {
 	public function __construct($user = null, $friended = false) {
 		parent::__construct();
 
-		$this->title    = $friended ? __('Friending me') : __('Friends');
 		$this->user     = $user;
 		$this->friended = $friended;
+
+		foreach ($this->user->find_friends($this->friended) as $friend_id) {
+		  $friend = Model_User::find_user_light($friend_id);
+		  $this->friends[$friend['username']] = $friend;
+    }
+		ksort($this->friends, SORT_LOCALE_STRING);
+
+		$this->title  = $friended ? __('Friending me') : __('Friends');
+		$this->title .= ' <small class="muted">(' . count($this->friends) . ')</small>';
 	}
 
 
@@ -43,18 +56,12 @@ class View_Users_Friends extends View_Section {
 	public function content() {
 		ob_start();
 
-		$friends = array();
-	  foreach ($this->user->find_friends($this->friended) as $friend_id) {
-		  $friend = Model_User::find_user_light($friend_id);
-		  $friends[$friend['username']] = $friend;
-	  }
-	  ksort($friends, SORT_LOCALE_STRING);
 
 
 ?>
 
 <ul class="media-list">
-	<?php foreach ($friends as $friend): ?>
+	<?php foreach ($this->friends as $friend): ?>
 
 	<?= new View_Users_Friend($friend) ?>
 

@@ -525,7 +525,17 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get user's friends
+	 * Get user's friend suggetions.
+	 *
+	 * @return  array
+	 */
+	public function find_friend_suggestions() {
+		return Model_Friend::find_by_suggestion($this->id);
+	}
+
+
+	/**
+	 * Get user's friends.
 	 *
 	 * @param   boolean  $frienders  true for frienders, false for friends
 	 * @return  array

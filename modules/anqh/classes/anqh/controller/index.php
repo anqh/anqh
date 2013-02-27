@@ -32,8 +32,12 @@ class Anqh_Controller_Index extends Controller_Page {
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed());
 
-		// Birthdays
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_birthdays());
+		// Birthdays or friend suggestions
+		if (self::$user && rand(0, 10) < 5) {
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_friend_suggestions());
+		} else {
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_birthdays());
+		}
 
 		// Shouts
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
@@ -53,6 +57,16 @@ class Anqh_Controller_Index extends Controller_Page {
 		$section = new View_Users_Birthdays();
 
 		return $section;
+	}
+
+
+	/**
+	 * Get friend suggestions.
+	 *
+	 * @return  View_Users_FriendSuggestions
+	 */
+	public function section_friend_suggestions() {
+		return new View_Users_FriendSuggestions(self::$user, 5);
 	}
 
 
