@@ -144,12 +144,7 @@ class Anqh_Controller_User extends Controller_Page {
 		// Build page
 		$this->_set_page($user);
 
-		$this->view->tab       = 'friends';
-		$this->view->actions[] = array(
-			'link'  => URL::user($user, 'friends') . '?of=me',
-			'text'  => '<i class="icon-heart icon-white"></i> ' . __('Who friends me'),
-			'class' => 'btn-lovely'
-		);
+		$this->view->tab = 'friends';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, Arr::get($_GET, 'of') == 'me'));
 	}

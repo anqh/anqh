@@ -66,4 +66,23 @@ class View_Users_Friends extends View_Section {
 		return ob_get_clean();
 	}
 
+
+	/**
+	 * Get tabs.
+	 *
+	 * @return  array
+	 */
+	public function tabs() {
+		return array(
+			array(
+				'selected' => !$this->friended,
+				'tab'      => HTML::anchor(URL::user($this->user, 'friends'), __('My friends')),
+			),
+			array(
+				'selected' => $this->friended,
+				'tab'      => HTML::anchor(URL::user($this->user, 'friends') . '?of=me', __('Friending me')),
+			)
+		);
+	}
+
 }
