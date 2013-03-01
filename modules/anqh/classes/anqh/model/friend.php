@@ -97,6 +97,11 @@ class Anqh_Model_Friend extends AutoModeler {
 			// Current friends
 			$friends = self::find_by_user($user_id);
 
+			// No friends?
+			if (!$friends) {
+				return array();
+			}
+
 			// Load from DB
 			$suggestions = (array)DB::select('friend_id', array(DB::expr('SUM(1)'), 'score'))
 				->from('friends')
