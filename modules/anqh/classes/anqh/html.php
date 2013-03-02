@@ -18,7 +18,11 @@ class Anqh_HTML extends Kohana_HTML {
 	 * @return  string
 	 */
 	public static function avatar($avatar, $title = '', $class = null) {
-		if (empty($avatar) || /*strpos($avatar, ':') ||*/ strpos($avatar, '/') === false) $avatar = 'avatar/unknown.png';
+		$placeholder = 'avatar/unknown.png';
+		$ajax        = Request::$current->is_ajax();
+		if (empty($avatar) || strpos($avatar, '/') === false) {
+			$avatar = 'avatar/unknown.png';
+		}
 		if (!$class) {
 			$class = 'avatar';
 		} else {
@@ -26,9 +30,15 @@ class Anqh_HTML extends Kohana_HTML {
 		}
 
 		if (empty($title)) {
-			return '<span class="' . $class . '">' . HTML::image($avatar, array('alt' => __('Avatar'))) . '</span>';
+			return '<span class="' . $class . '">' . ($ajax
+				? HTML::image($avatar, array('alt' => __('Avatar')))
+				: HTML::image($placeholder, array('alt' => __('Avatar'), 'class' => 'lazy', 'data-original' => $avatar))
+			) . '</span>';
 		} else {
-			return HTML::anchor(URL::user($title), HTML::image($avatar, array('title' => $title, 'alt' => $title)), array('class' => $class . ' hoverable'));
+			return HTML::anchor(URL::user($title), ($ajax
+				? HTML::image($avatar, array('title' => $title, 'alt' => $title))
+				: HTML::image($placeholder, array('title' => $title, 'alt' => $title, 'class' => 'lazy', 'data-original' => $avatar))
+			), array('class' => $class . ' hoverable'));
 		}
 	}
 

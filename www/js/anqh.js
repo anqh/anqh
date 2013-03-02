@@ -1096,4 +1096,10 @@ $(function() {
 		});
 	}
 
+
+	// Lady load images
+	$('img.lazy').lazyload({
+		failure_limit: 100
+	});
+
 });

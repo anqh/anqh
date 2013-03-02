@@ -247,7 +247,8 @@ class Anqh_View_Page extends View_Base {
 			{ 'jquery-form':        '<?= $this->base ?>js/jquery.form.js' },
 			{ 'jquery-imgarea':     '<?= $this->base ?>js/jquery.imgareaselect.js' },
 			{ 'jquery-fixedscroll': '<?= $this->base ?>js/jquery-scrolltofixed.js' },
-			{ 'anqh':               '<?= $this->base ?>js/anqh.js?2' },
+			{ 'jquery-lazyload':    '<?= $this->base ?>static/js/jquery.lazyload.min.js' },
+			{ 'anqh':               '<?= $this->base ?>js/anqh.js?_=<?= filemtime('js/anqh.js') ?>' },
 			function _loaded() {
 				Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
 			}
