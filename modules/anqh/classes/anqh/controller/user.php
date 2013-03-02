@@ -122,6 +122,9 @@ class Anqh_Controller_User extends Controller_Page {
 			// News feed
 			NewsfeedItem_User::friend(self::$user, $user);
 
+			// Notification
+			Notification_User::friend(self::$user, $user);
+
 		}
 
 		// Ajax requests show friend
