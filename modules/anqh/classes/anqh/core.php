@@ -220,6 +220,16 @@ class Anqh_Core {
 		}
 		unset($note_comments, $new_note_image_id);
 
+		// Notification system
+		$notifications = Notification::get_notifications($user);
+		if (count($notifications)) {
+			$new['new-notifications'] = HTML::anchor(
+				Route::url('notifications'),
+				'<i class="icon-bell icon-white"></i> ' . count($notifications),
+				array('class' => 'badge badge-info notifications', 'title' => __('New notifications'), 'onclick' => 'return false;')
+			);
+		}
+
 		return $new;
 	}
 

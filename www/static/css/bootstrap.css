@@ -7714,6 +7714,10 @@ legend .control-group {
   float: right;
 }
 
+.close {
+  color: #999999;
+}
+
 .media,
 .media .media {
   margin-top: 10px;

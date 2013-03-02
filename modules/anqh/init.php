@@ -93,6 +93,11 @@ Route::set('tags', 'tags')
 		'controller' => 'tags',
 		'action'     => 'index',
 	));
+Route::set('notifications', 'notifications')
+	->defaults(array(
+		'controller' => 'notifications',
+		'action'     => 'index',
+	));
 Route::set('developers', 'developers')
 	->defaults(array(
 		'controller' => 'developers',

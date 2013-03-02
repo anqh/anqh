@@ -819,19 +819,6 @@ $(function() {
 	*/
 
 
-	// Tooltips
-	/*
-	$('a[title], var[title], time[title]')
-		.tooltip({
-			effect: 'slide',
-			position: 'top center'
-		})
-		.dynamic({
-			bottom: { offset: [-10, 0] }
-		});
-	*/
-
-
 	// Hover card
 	var hoverTimeout;
 	$(document).on({
@@ -1100,6 +1087,23 @@ $(function() {
 	// Lady load images
 	$('img.lazy').lazyload({
 		failure_limit: 100
+	});
+
+
+	// Notifications
+	$('a.notifications').on('click', function _notifications(e) {
+		var $this = $(this);
+
+		$.get($this.attr('href'), function _loadNotifications(response) {
+			$this.off('click').popover({
+				content:   response,
+				html:      true,
+				placement: 'bottom',
+				trigger:   'click'
+			}).popover('show');
+		});
+
+		return false;
 	});
 
 });
