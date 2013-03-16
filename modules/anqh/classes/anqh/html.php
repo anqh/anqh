@@ -18,11 +18,12 @@ class Anqh_HTML extends Kohana_HTML {
 	 * @return  string
 	 */
 	public static function avatar($avatar, $title = '', $class = null) {
-		$placeholder = 'avatar/unknown.png';
+		$placeholder = URL::site('avatar/unknown.png');
 		$ajax        = Request::$current->is_ajax();
 		if (empty($avatar) || strpos($avatar, '/') === false) {
 			$avatar = 'avatar/unknown.png';
 		}
+		$avatar = URL::site($avatar);
 		if (!$class) {
 			$class = 'avatar';
 		} else {
