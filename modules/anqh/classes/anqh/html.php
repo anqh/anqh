@@ -23,7 +23,12 @@ class Anqh_HTML extends Kohana_HTML {
 		if (empty($avatar) || strpos($avatar, '/') === false) {
 			$avatar = 'avatar/unknown.png';
 		}
-		$avatar = URL::site($avatar);
+
+		// Absolute uri
+		if (strpos($avatar, '://') === false) {
+			$avatar = URL::site($avatar);
+		}
+		
 		if (!$class) {
 			$class = 'avatar';
 		} else {
