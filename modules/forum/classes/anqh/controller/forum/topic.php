@@ -556,6 +556,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$this->view->title = HTML::chars($area->name);
 			if ($this->private) {
 
+				// Private topic
 				$topic  = new Model_Forum_Private_Topic();
 				$post   = new Model_Forum_Private_Post();
 				$cancel = Route::url('forum_area', array('id' => 'private', 'action' => ''));
@@ -563,11 +564,14 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			} else {
 
+				// Public topic
 				$topic  = new Model_Forum_Topic();
 				$post   = new Model_Forum_Post();
 				$cancel = Route::model($area);
 
 			}
+			$topic->forum_area_id = $area->id;
+			$post->forum_area_id  = $area->id;
 
 		} else if ($topic_id) {
 
@@ -623,7 +627,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 				// New topic
 				$post->post          = $_POST['post'];
-				$post->forum_area_id = $area->id;
 				$post->author_id     = self::$user->id;
 				$post->author_name   = self::$user->username;
 				$post->author_ip     = Request::$client_ip;
@@ -638,7 +641,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				$topic->author_id     = self::$user->id;
 				$topic->author_name   = self::$user->username;
 				$topic->name          = $_POST['name'];
-				$topic->forum_area_id = $area->id;
 				$topic->created       = time();
 				try {
 					$topic->is_valid();
