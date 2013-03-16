@@ -26,7 +26,7 @@ class Anqh_Exception extends Kohana_Kohana_Exception {
 		try {
 
 			// Log errors
-			Kohana::$log->add(Log::ERROR, parent::text($e));
+			Kohana::$log->add(Log::ERROR, self::text($e));
 
 			// Figure out error page attributes
 			$params = array(
@@ -71,5 +71,25 @@ class Anqh_Exception extends Kohana_Kohana_Exception {
 	}
 
 
+	/**
+	 * Get a single line of text representing the exception:
+	 *
+	 * Error [ Code ]: Message ~ File [ Line ] (#id: username, ip: IP, uri: URI)
+	 *
+	 * @param   Exception   $e
+	 * @return  string
+	 */
+	public static function text(Exception $e) {
+		if ($user = Visitor::instance()->get_user()) {
+			$user_id  = $user->id;
+			$username = Text::clean($user->username);
+		} else {
+			$user_id  = 0;
+			$username = '';
+		}
+
+		return sprintf('%s [ %s ]: %s ~ %s [ %d ] (#%d: %s, ip: %s, uri: %s)',
+			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine(), $user_id, $username, Request::$client_ip, Text::clean(Request::current_uri()));
+	}
 
 }
