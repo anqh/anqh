@@ -417,7 +417,7 @@ endif; ?>
 ?>
 
 	<nav id="mainmenu" role="navigation">
-		<?= HTML::anchor($this->base, Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+		<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
 		<ul class="nav" role="menubar">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
