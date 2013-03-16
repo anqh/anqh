@@ -44,7 +44,7 @@ class View_Notifications extends View_Section {
 <ul class="unstyled">
 
 	<?php foreach ($this->notifications as $id => $notification): ?>
-	<li><?= HTML::anchor(Route::url('notifications') . '?dismiss=' . $id, '&times;', array('class' => 'close ajaxify')) ?><?= $notification ?></li>
+	<li><?= HTML::anchor(Route::url('notifications') . '?dismiss=' . $id, '&times;', array('class' => 'close notification')) ?><?= $notification ?></li>
 	<?php endforeach; ?>
 
 </ul>

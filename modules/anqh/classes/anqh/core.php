@@ -225,7 +225,7 @@ class Anqh_Core {
 		if (count($notifications)) {
 			$new['new-notifications'] = HTML::anchor(
 				Route::url('notifications'),
-				'<i class="icon-bell icon-white"></i> ' . count($notifications),
+				'<i class="icon-bell icon-white"></i> <span>' . count($notifications) . '</span>',
 				array('class' => 'badge badge-info notifications', 'title' => __('New notifications'), 'onclick' => 'return false;')
 			);
 		}

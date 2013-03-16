@@ -160,7 +160,7 @@ $.fn.dialogify = function() {
 
 
 // Ajaxified requests
-$.fn.ajaxify = function(url, data, type) {
+$.fn.ajaxify = function(url, data, type, success) {
 	var $target = $(this);
 
 	type = (type == 'post' || type == 'POST') ? 'POST' : 'GET';
@@ -173,6 +173,10 @@ $.fn.ajaxify = function(url, data, type) {
 			$target.slideUp('fast', function _replace() {
 				$target.replaceWith(data).slideDown('fast');
 			});
+
+			if (typeof success == 'function') {
+				success(data);
+			}
 		},
 		error: function(req, err) {
 			if (err === 'error') {
@@ -985,6 +989,26 @@ $(function() {
 		return false;
 	});
 
+	// Ajaxify nofitications
+	$(document).on('click', 'a.notification', function _ajaxify() {
+		var parent = $(this).attr('data-ajaxify-target');
+
+		$(this).closest('section, article' + (parent ? ', ' + parent : ''))
+			.ajaxify($(this).attr('href'), null, 'get', function _counter(response) {
+				var notifications  = $(response).find('li').length
+				  , $notifications = $('.menuitem-notifications a.notifications');
+
+				if ($notifications) {
+					if (notifications) {
+						$notifications.find('span').text(notifications);
+					} else {
+						$notifications.remove();
+					}
+				}
+			});
+
+		return false;
+	});
 
 	// Ajax dialogs
 	$('a.dialogify').live('click', function(e) {
