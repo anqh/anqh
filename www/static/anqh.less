@@ -99,6 +99,9 @@ blockquote                             { border-left-color: @grayDark; }
   .brand                               { margin-left: 0; }
   .menu-search label                   { margin-left: 0; }
   #visitor                             { clear: both;
+    li.menuitem-notifications          {
+      a.close                          { margin-left: 10px; }
+    }
     li.menuitem-profile                { width: 30px;
       a                                { height: auto; margin: 0; padding: 5px 0 0; width: auto; }
     }
@@ -160,10 +163,10 @@ footer.meta                            { color: @gray; }
 .ui-dialog                             { background: @grayDark; .background-clip(padding-box); border: 1px solid #999; border: 1px solid rgba(0, 0, 0, .3); border-radius: 6px; .box-shadow(0 3px 7px rgba(0, 0, 0, .3)); z-index: @zindexModal !important;
   &.fade                               { .transition(e('opacity .3s linear, top .3s ease-out')); top: -25%; }
   &.fade.in                            { top: 50%; }
-  .ui-dialog-titlebar                  { border-bottom: 1px solid rgba(0, 0, 0, .3); cursor: move; padding: 9px 15px;
+  .ui-dialog-titlebar                  { .popover-title; cursor: move;
     .ui-dialog-titlebar-close          { float: right; }
   }
-  .ui-dialog-content                   { padding: 15px; }
+  .ui-dialog-content                   { .popover-content; }
   .ui-dialog-buttonpane                { background-color: @grayDarker; border-radius: 0 0 6px 6px; border-top: 1px solid rgba(0, 0, 0, .3); .box-shadow(inset 0 1px 0 @black); margin-bottom: 0; padding: 14px 15px 15px; .clearfix();
     button                             { float: right; margin-left: 5px; margin-bottom: 0; }
   }
