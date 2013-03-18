@@ -18,9 +18,10 @@ abstract class Anqh_Notification {
 	 * @param   string      $class  e.g. 'user'
 	 * @param   string      $type   e.g. 'login'
 	 * @param   integer     $data_id
+	 * @param   string      $text   extra data
 	 * @return  boolean
 	 */
-	protected static function add(Model_User $user, Model_User $target, $class, $type, $data_id = null) {
+	protected static function add(Model_User $user, Model_User $target, $class, $type, $data_id = null, $text = null) {
 		$notification = new Model_Notification();
 		$notification->set_fields(array(
 			'user_id'   => $user->id,
@@ -28,6 +29,7 @@ abstract class Anqh_Notification {
 			'class'     => $class,
 			'type'      => $type,
 			'data_id'   => $data_id,
+			'text'      => $text,
 			'stamp'     => time(),
 		));
 
