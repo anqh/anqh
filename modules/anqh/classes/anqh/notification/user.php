@@ -9,6 +9,8 @@
  */
 class Anqh_Notification_User extends Notification {
 
+	const CLASS_USER = 'user';
+
 	/** Added as friends */
 	const TYPE_FRIEND = 'friend';
 
@@ -28,6 +30,8 @@ class Anqh_Notification_User extends Notification {
 				$friend = Model_User::find_user($notification->user_id);
 				if ($friend->loaded()) {
 					$text = __(':friend added you as a friend', array(':friend' => HTML::user($friend)));
+				} else {
+					$notification->delete();
 				}
 				break;
 
@@ -46,7 +50,7 @@ class Anqh_Notification_User extends Notification {
 	 */
 	public static function friend(Model_User $user = null, Model_User $friend = null) {
 		if ($user && $friend) {
-			parent::add($user, $friend, 'user', self::TYPE_FRIEND);
+			parent::add($user, $friend, self::CLASS_USER, self::TYPE_FRIEND);
 		}
 	}
 
