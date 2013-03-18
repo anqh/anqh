@@ -19,6 +19,7 @@ class Anqh_Model_Notification extends AutoModeler_ORM implements Permission_Inte
 		'stamp'     => null,
 		'class'     => null,
 		'type'      => null,
+		'text'      => null,
 	);
 
 	protected $_rules = array(
@@ -27,6 +28,7 @@ class Anqh_Model_Notification extends AutoModeler_ORM implements Permission_Inte
 		'data_id'   => array('digit'),
 		'class'     => array('max_length' => array(':value', 64)),
 		'type'      => array('max_length' => array(':value', 64)),
+		'text'      => array('max_length' => array(':value', 4096)),
 	);
 
 

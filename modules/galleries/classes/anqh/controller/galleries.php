@@ -874,7 +874,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-home icon-white"></i> ' . __('Set default'),
+					'text'  => '<i class="icon-home icon-white"></i> ' . __('Set gallery default'),
 					'class' => 'btn-inverse image-default'
 				);
 			}
@@ -883,6 +883,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete'),
 					'class' => 'btn-inverse image-delete'
+				);
+			}
+			if (Permission::has($current, Model_Image::PERMISSION_REPORT, self::$user)) {
+				$this->view->actions[] = array(
+					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'report')),
+					'text'  => '<i class="icon-warning-sign icon-white"></i> ' . __('Report'),
+					'class' => 'btn-inverse dialogify',
+					'data-dialog-title' => __('Report image')
 				);
 			}
 
@@ -1020,6 +1028,72 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->history = false;
 
 		return $this->action_gallery();
+	}
+
+
+	/**
+	 * Action: report
+	 */
+	public function action_report() {
+		$this->history = false;
+
+		$gallery_id = (int)$this->request->param('gallery_id');
+		$image_id   = $this->request->param('id');
+
+		/** @var  Model_Gallery  $gallery */
+		$gallery = Model_Gallery::factory($gallery_id);
+		if (!$gallery->loaded()) {
+			throw new Model_Exception($gallery, $gallery_id);
+		}
+
+		/** @var  Model_Image  $image */
+		$image = Model_Image::factory($image_id);
+		if (!$image->loaded()) {
+			throw new Model_Exception($image, $image_id);
+		}
+
+		Permission::required($image, Model_Image::PERMISSION_REPORT, self::$user);
+
+		$cancel_url = Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => ''));
+
+		// Handle report
+		if ($_POST && Security::csrf_valid()) {
+			$reason = trim(Arr::get($_POST, 'reason'));
+
+			Notification_Galleries::image_removal_request(self::$user, $image, $reason ? $reason : null);
+
+			if ($this->_request_type === Controller::REQUEST_AJAX) {
+				$this->response->body(new View_Alert(__('Report filed.'), null, View_Alert::SUCCESS));
+			} else {
+				$this->request->redirect($cancel_url);
+			}
+
+			return;
+		}
+
+		$section = $this->section_image_report($image);
+
+		// Show only the form is AJAX
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->body($section);
+
+			return;
+		}
+
+		// Build page
+		$this->view = View_Page::factory(__('Report image'));
+		$this->view->actions[] = array(
+			'link'  => $cancel_url,
+			'text'  => __('Cancel'),
+			'class' => 'btn-inverse'
+		);
+
+		// Image
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_image($image, $gallery, $cancel_url));
+
+		// Form
+		$this->view->add(View_Page::COLUMN_TOP, $section);
+
 	}
 
 
@@ -1718,6 +1792,16 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		return $section;
 	}
 
+
+	/**
+	 * Get image report form.
+	 *
+	 * @param   Model_Image  $image
+	 * @return  View_Image_Report
+	 */
+	public function section_image_report(Model_Image $image) {
+		return new View_Image_Report($image);
+	}
 
 
 	/**

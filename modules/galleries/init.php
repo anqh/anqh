@@ -39,7 +39,7 @@ Route::set('image_note', 'note/<id>(/<action>)', array('action' => 'unnote'))
 		'controller' => 'galleries',
 		'action'     => 'note'
 	));
-Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default|hover|note|unnote', 'id' => '\d+'))
+Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default|hover|note|unnote|report', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'image',

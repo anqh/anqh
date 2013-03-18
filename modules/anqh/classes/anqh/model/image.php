@@ -1,20 +1,21 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Image model
+ * Image model.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  *
  * @todo  Refactor to use uniqid instead of id_postfix for filename
  */
 class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
-	/**
-	 * Permission to add/edit notes
-	 */
-	const PERMISSION_NOTE = 'note';
+	/** Permission to add/edit notes */
+	const PERMISSION_NOTE   = 'note';
+
+	/** Permission to report image */
+	const PERMISSION_REPORT = 'report';
 
 	const DELETED      = 'd';
 	const HIDDEN       = 'h';
@@ -350,6 +351,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_NOTE:
+			case self::PERMISSION_REPORT:
 		    return (bool)$user;
 
 			case self::PERMISSION_DELETE:
