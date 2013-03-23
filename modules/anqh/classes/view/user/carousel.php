@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_Carousel extends View_Section {
@@ -67,7 +67,16 @@ class View_User_Carousel extends View_Section {
 				$active_id = $image->id;
 			endif;
 
+			$slide = 0;
 ?>
+
+	<ol class="carousel-indicators">
+
+		<?php foreach ($images as $image): ?>
+		<li data-target="#<?= $this->id ?>" data-slide-to="<?= $slide++ ?>"<?= $image->id == $active_id ? ' class="active"' : '' ?>></li>
+		<?php endforeach ?>
+
+	</ol>
 
 	<div class="carousel-inner">
 
