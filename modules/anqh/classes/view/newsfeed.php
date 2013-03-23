@@ -18,8 +18,9 @@ class View_Newsfeed extends View_Section {
 	/** Newsfeed from single user only */
 	const TYPE_PERSONAL = 'personal';
 
-	public $class = 'newsfeed';
-	public $id    = 'newsfeed';
+	public $class     = 'newsfeed border';
+	public $id        = 'newsfeed';
+	public $tab_style = self::TAB_TAB;
 
 	/**
 	 * @var  integer  Item limit

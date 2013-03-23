@@ -4,10 +4,14 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Section extends View_Base {
+
+	/** Tab/action styles */
+	const TAB_PILL = 'pills';
+	const TAB_TAB  = 'tabs';
 
 	/**
 	 * @var  array  View articles
@@ -23,6 +27,11 @@ class Anqh_View_Section extends View_Base {
 	 * @var  array  Section tabs
 	 */
 	public $tabs;
+
+	/**
+	 * @var  string  Section tab style
+	 */
+	public $tab_style = self::TAB_PILL;
 
 	/**
 	 * @var  string  Section title
@@ -67,35 +76,36 @@ class Anqh_View_Section extends View_Base {
 	public function header() {
 		$title = $this->title();
 		$tabs  = $this->tabs();
-		if ($title || $tabs) {
+		if ($title || $tabs):
 			ob_start();
 
 			$attributes = array();
-			if ($this->title_sticky) {
+			if ($this->title_sticky):
 				$attributes['class'] = 'sticky';
-			}
+			endif;
+
 ?>
 
-<header<?php echo HTML::attributes($attributes) ?>>
+<header<?= HTML::attributes($attributes) ?>>
 
-	<?php if ($title) { ?>
-	<h3><?php echo $title ?></h3>
-	<?php } ?>
+	<?php if ($title): ?>
+	<h3><?= $title ?></h3>
+	<?php endif; ?>
 
-	<?php if ($tabs) { ?>
-	<ul class="nav nav-pills">
-		<?php foreach ($tabs as $tab) { ?>
-		<li<?php echo !empty($tab['selected']) ? ' class="active"' : ''?>><?php echo $tab['tab'] ?></li>
-		<?php } ?>
+	<?php if ($tabs): ?>
+	<ul class="nav nav-<?= $this->tab_style ?>">
+		<?php foreach ($tabs as $tab): ?>
+		<li<?= !empty($tab['selected']) ? ' class="active"' : ''?>><?= $tab['tab'] ?></li>
+		<?php endforeach; ?>
 	</ul>
-	<?php } ?>
+	<?php endif; ?>
 
 </header>
 
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}
@@ -109,9 +119,9 @@ class Anqh_View_Section extends View_Base {
 	public function render() {
 
 		// Start benchmark
-		if (Kohana::$profiling === true and class_exists('Profiler', false)) {
+		if (Kohana::$profiling === true and class_exists('Profiler', false)):
 			$benchmark = Profiler::start('View', __METHOD__ . '(' . get_called_class() . ')');
-		}
+		endif;
 
 		ob_start();
 
@@ -123,12 +133,12 @@ class Anqh_View_Section extends View_Base {
 		);
 ?>
 
-<section<?php echo HTML::attributes($attributes) ?>>
+<section<?= HTML::attributes($attributes) ?>>
 
-	<?php echo $this->header() ?>
+	<?= $this->header() ?>
 
 	<div>
-		<?php echo $this->content() ?>
+		<?= $this->content() ?>
 	</div>
 
 </section>
@@ -138,9 +148,9 @@ class Anqh_View_Section extends View_Base {
 		$render = ob_get_clean();
 
 		// Stop benchmark
-		if (isset($benchmark)) {
+		if (isset($benchmark)):
 			Profiler::stop($benchmark);
-		}
+		endif;
 
 		return $render;
 	}

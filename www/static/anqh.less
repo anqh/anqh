@@ -121,7 +121,7 @@ blockquote                             { border-left-color: @grayDark; }
 #side > article + article              { margin-top: @gridGutterWidth; }
 
 .ad                                    {
-  &.ad140x350                          { height: 350px; width: 140px; }
+  &.ad140x350                          { height: 350px; margin-top: @gridGutterWidth; width: 140px; }
   &.ad728x90                           { margin: 10px auto; max-height: 90px; width: 728px; }
 }
 
@@ -132,10 +132,13 @@ section                                { overflow: hidden;
   li .transparent                      { opacity: .1; }
   li:hover .transparent                { opacity: 1; }
 }
+section.border,
 #side section:not(.full)               { border: 1px solid @grayDark;
   & > header                           { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDark; padding: 10px 10px 9px;
     h3                                 { margin: 0; }
     .nav                               { right: 3px; top: 3px; }
+    .nav-tabs                          { bottom: -1px; top: auto; }
+    .nav-tabs > .active > a            { background: @grayDarker; }
   }
   & > div                              { background: @grayDarker; padding: 10px; }
 }

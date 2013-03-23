@@ -7851,6 +7851,7 @@ blockquote {
 .ad.ad140x350 {
   width: 140px;
   height: 350px;
+  margin-top: 20px;
 }
 
 .ad.ad728x90 {
@@ -7882,25 +7883,41 @@ section li:hover .transparent {
   opacity: 1;
 }
 
+section.border,
 #side section:not(.full) {
   border: 1px solid #333333;
 }
 
+section.border > header,
 #side section:not(.full) > header {
   padding: 10px 10px 9px;
   background: rgba(34, 34, 34, 0.5);
   border-bottom: 1px solid #333333;
 }
 
+section.border > header h3,
 #side section:not(.full) > header h3 {
   margin: 0;
 }
 
+section.border > header .nav,
 #side section:not(.full) > header .nav {
   top: 3px;
   right: 3px;
 }
 
+section.border > header .nav-tabs,
+#side section:not(.full) > header .nav-tabs {
+  top: auto;
+  bottom: -1px;
+}
+
+section.border > header .nav-tabs > .active > a,
+#side section:not(.full) > header .nav-tabs > .active > a {
+  background: #222222;
+}
+
+section.border > div,
 #side section:not(.full) > div {
   padding: 10px;
   background: #222222;
