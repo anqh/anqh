@@ -579,13 +579,17 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view = View_Page::factory(__('Events'));
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_pagination());
+		$pagination = $this->section_pagination();
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
 		// Filters
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters());
 
 		// Event list
 		$this->view->add(View_Page::COLUMN_MAIN, $this->sections_events());
+
+		// Pagination
+		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
 		// Calendar
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_calendar());
