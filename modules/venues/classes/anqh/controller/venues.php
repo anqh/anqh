@@ -410,6 +410,9 @@ class Anqh_Controller_Venues extends Controller_Page {
 
 			$this->view = View_Page::factory($venue->name);
 
+			// Modified timestamp
+			$venue->modified = time();
+
 			// Set actions
 			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, self::$user)) {
 				$this->view->actions[] = array(
