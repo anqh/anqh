@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Filters extends View_Section {
@@ -24,6 +24,11 @@ class View_Generic_Filters extends View_Section {
 	public $base_url;
 
 	/**
+	 * @var  string  Section class
+	 */
+	public $class = 'filters';
+
+	/**
 	 * @var  boolean  Clear query string
 	 */
 	public $clear_query = false;
@@ -32,6 +37,11 @@ class View_Generic_Filters extends View_Section {
 	 * @var  array  Filters
 	 */
 	public $filters = array();
+
+	/**
+	 * @var  string  Section id
+	 */
+	public $id = 'filters';
 
 	/**
 	 * @var  boolean  Multiple filters per query
@@ -60,9 +70,6 @@ class View_Generic_Filters extends View_Section {
 	public function __construct(array $filters = null, $selected = null) {
 		parent::__construct();
 
-		$this->id    = 'filters';
-		$this->class = 'filters';
-
 		$this->filters  = $filters;
 		$this->selected = $selected;
 	}
@@ -80,6 +87,14 @@ class View_Generic_Filters extends View_Section {
 
 		ob_start();
 
+?>
+
+<button type="button" class="btn btn-<?= $this->selected ? 'info' : 'inverse' ?> btn-small filter" data-toggle="collapse" data-target="#<?= $this->id ?> .collapse">
+	<i class="icon-filter icon-white"></i> <?= __('Show') ?>: <span><?= $this->selected ? $this->selected : __('All') ?></span>
+</button>
+
+<?php
+
 		if ($this->type == self::TYPE_JAVASCRIPT):
 
 			// Filter with javascript
@@ -87,45 +102,35 @@ class View_Generic_Filters extends View_Section {
 
 ?>
 
-<div class="btn-toolbar filters">
-	<div class="btn-group" data-toggle="buttons-checkbox">
-		<a data-filter="all" class="btn btn-mini btn-inverse active"><?= __('All') ?></a>
-	</div>
+<div class="btn-toolbar filters collapse">
+	<a data-filter="all" data-toggle="button" class="btn btn-mini btn-inverse active"><?= __('All') ?></a>
 
-	<div class="btn-group" data-toggle="buttons-checkbox">
+	<?php foreach ($filter['filters'] as $key => $name): ?>
+	<a data-filter="<?= $type . '-' . $key ?>" data-toggle="button" class="btn btn-mini btn-inverse"><?= HTML::chars($name) ?></a>
+	<?php endforeach ?>
 
-		<?php foreach ($filter['filters'] as $key => $name) { ?>
-		<a data-filter="<?= $type . '-' . $key ?>" class="btn btn-mini btn-inverse"><?= HTML::chars($name) ?></a>
-		<?php } ?>
-
-	</div>
 </div>
 
 <?php
 
-			echo $this->javascript();
-
 			endforeach;
+
+			echo $this->javascript();
 
 		else:
 
 			// Filter with query
-			foreach ($this->filters as $type => $filter):
+			foreach ($this->filters as $filter):
 
 ?>
 
-<div class="btn-toolbar filters">
-	<div class="btn-group" data-toggle="buttons-checkbox">
-		<a href="<?= self::url(false) ?>" class="btn btn-mini btn-inverse <?= $this->selected ? '' : 'active' ?>"><?= __('All') ?></a>
-	</div>
+<div class="btn-toolbar filters collapse">
+	<a href="<?= self::url(false) ?>" data-toggle="button" class="btn btn-mini btn-inverse <?= $this->selected ? '' : 'active' ?>"><?= __('All') ?></a>
 
-	<div class="btn-group" data-toggle="buttons-checkbox">
+	<?php foreach ($filter['filters'] as $name): ?>
+	<a href="<?= self::url($name) ?>" data-toggle="button" class="btn btn-mini btn-inverse <?= $this->selected == $name ? 'active' : '' ?>"><?= HTML::chars($name) ?></a>
+	<?php endforeach; ?>
 
-		<?php foreach ($filter['filters'] as $key => $name): ?>
-		<a href="<?= self::url($name) ?>" class="btn btn-mini btn-inverse <?= $this->selected == $name ? 'active' : '' ?>"><?= HTML::chars($name) ?></a>
-		<?php endforeach; ?>
-
-	</div>
 </div>
 
 <?php
@@ -152,27 +157,30 @@ class View_Generic_Filters extends View_Section {
 (function() {
 
 	// Hook clicks
-	head.ready('jquery-ui', function hookFilters() {
-		$('.btn-toolbar.filters a').on('click', function filterClick() {
-			var activated = !$(this).hasClass('active'); // Class is toggled after this
-			var filter = $(this).data('filter');
+	head.ready('jquery-ui', function _hookFilters() {
+		var $filters = $('#<?= $this->id ?> .filters a')
+		  , $filter  = $('#<?= $this->id ?> .filter span');
+
+		$filters.on('click', function _filterClick() {
+			var activated = !$(this).hasClass('active') // Class is toggled after this
+			  , filter    = $(this).data('filter');
 
 			if (filter === 'all' && activated) {
 
 				// Show all
-				$('.btn-toolbar.filters a[data-filter!=all]').removeClass('active');
+				$filters.filter('[data-filter!=all]').removeClass('active');
 
 			} else if (filter !== 'all') {
 
 				// Individual filters, uncheck 'All'
-				$('.btn-toolbar.filters a[data-filter=all]').removeClass('active');
+				$filters.filter('[data-filter=all]').removeClass('active');
 
 			}
 
 			// Show/hide filtered items
-			$('.btn-toolbar.filters a').each(function filterToggle() {
-				var filtering = $(this).data('filter');
-				var active    = $(this).hasClass('active');
+			$filters.each(function _filterToggle() {
+				var filtering = $(this).data('filter')
+				  , active    = $(this).hasClass('active');
 
 				if (
 					(filter === 'all' && activated) ||     // All selected
@@ -184,6 +192,15 @@ class View_Generic_Filters extends View_Section {
 					$('.' + filtering + ':visible').slideUp('normal');
 				}
 			});
+
+			// Update button after class toggled
+			setTimeout(function _runNext() {
+				var filters = [];
+				$filters.filter('.active').each(function _filter() {
+					filters.push($(this).text());
+				});
+				$filter.text(filters.join(', '));
+			}, 0);
 
 		});
 	});
