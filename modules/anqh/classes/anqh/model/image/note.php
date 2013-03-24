@@ -23,11 +23,11 @@ class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interf
 		'width'             => null,
 		'height'            => null,
 
-		'new_comment_count' => null,
 		'created'           => null,
 
 		// Deprecated
 		'new_note'          => null,
+		'new_comment_count' => null,
 
 	);
 

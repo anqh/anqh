@@ -787,10 +787,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 							->add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $current);
 
 						$current->comment_count++;
-						if ($current->author_id != self::$user->id) {
-							$current->new_comment_count++;
-						}
 						$current->save();
+						if ($current->author_id != self::$user->id) {
+							$target = Model_User::find_user($current->author_id);
+							Notification_Galleries::image_comment(self::$user, $target, $current, $comment->comment);
+						}
 
 						$gallery->comment_count++;
 						$gallery->save();
@@ -799,9 +800,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 							// Noted users
 							foreach ($current->notes() as $note) {
-								$note->state(AutoModeler::STATE_LOADED);
-								$note->new_comment_count++;
-								$note->save();
+								if ($note->user_id) {
+									$target = Model_User::find_user($note->user_id);
+									Notification_Galleries::image_comment(self::$user, $target, $current, $comment->comment);
+								}
 							}
 
 							// Newsfeed
@@ -824,6 +826,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				} else if (self::$user) {
 
 					// Clear new comment count?
+					// @TODO: Remove, deprecated after new notification system
 					if ($current->author_id == self::$user->id && $current->new_comment_count > 0) {
 						$current->new_comment_count = 0;
 						$current->save();

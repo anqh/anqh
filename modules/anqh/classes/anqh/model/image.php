@@ -39,7 +39,6 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		'created'           => null,
 		'view_count'        => 0,
 		'comment_count'     => 0,
-		'new_comment_count' => 0,
 		'rate_count'        => 0,
 		'rate_total'        => 0,
 
@@ -54,9 +53,13 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		'postfix'           => null,
 		'file'              => null,
 		'remote'            => null,
-		'legacy_filename'   => null, // To be deprecated
 
 		'author_id'         => null,
+
+		// Deprecated
+		'new_comment_count' => 0,
+		'legacy_filename'   => null,
+		
 	);
 
 	protected $_rules = array(

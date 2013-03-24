@@ -11,11 +11,15 @@ class Anqh_Notification_Galleries extends Notification {
 
 	const CLASS_GALLERIES = 'galleries';
 
-	/** Image removal request */
-	const TYPE_IMAGE_REPORT = 'image_report';
+	/** New image note/tag */
+	const TYPE_IMAGE_COMMENT = 'image_comment';
 
 	/** New image note/tag */
 	const TYPE_IMAGE_NOTE = 'image_note';
+
+	/** Image removal request */
+	const TYPE_IMAGE_REPORT = 'image_report';
+
 
 	/**
 	 * Get notification as HTML.
@@ -27,6 +31,25 @@ class Anqh_Notification_Galleries extends Notification {
 	public static function get(Model_Notification $notification) {
 		$text = '';
 		switch ($notification->type) {
+
+			case self::TYPE_IMAGE_COMMENT:
+				$user  = Model_User::find_user($notification->user_id);
+				$image = Model_Image::factory($notification->data_id);
+				if ($user->loaded() && $image->loaded()) {
+					$gallery = $image->gallery();
+					$text   = __(':user commented your :photo: <em>:comment</em>', array(
+							':user'  => HTML::user($user),
+							':photo' => HTML::anchor(
+									Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
+									__('photo'),
+									array('class' => 'hoverable')
+								),
+							':comment' => Text::smileys(Text::auto_link_urls(HTML::chars($notification->text))),
+					));
+				} else {
+					$notification->delete();
+				}
+				break;
 
 			case self::TYPE_IMAGE_NOTE:
 				$user  = Model_User::find_user($notification->user_id);
@@ -72,7 +95,23 @@ class Anqh_Notification_Galleries extends Notification {
 
 
 	/**
-	 * Report image.
+	 * Comment an image.
+	 *
+	 * @static
+	 * @param  Model_User   $author
+	 * @param  Model_User   $user
+	 * @param  Model_Image  $image
+	 * @param  string       $comment
+	 */
+	public static function image_comment(Model_User $author, Model_User $user, Model_Image $image, $comment = null) {
+		if ($user && $author && $image) {
+			parent::add($author, $user, self::CLASS_GALLERIES, self::TYPE_IMAGE_COMMENT, $image->id, $comment);
+		}
+	}
+
+
+	/**
+	 * Tag an user to an image.
 	 *
 	 * @static
 	 * @param  Model_User   $author

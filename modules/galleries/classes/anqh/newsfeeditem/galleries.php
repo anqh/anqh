@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
@@ -53,7 +53,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				$gallery = Model_Gallery::factory($item->data['gallery_id']);
 				$image   = Model_Image::factory($item->data['image_id']);
 				if ($gallery->loaded() && $image->loaded()) {
-					$text = __('commented to an image<br />:gallery', array(
+					$text = __('commented a photo<br />:gallery', array(
 						':gallery' => HTML::anchor(
 							Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
 							'<i class="icon-camera icon-white"></i> ' . HTML::chars($gallery->name),
@@ -66,7 +66,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 			case self::TYPE_COMMENT_FLYER:
 				$flyer = Model_Flyer::factory($item->data['flyer_id']);
 				if ($flyer->loaded()) {
-					$text = __('commented to a flyer<br />:flyer', array(
+					$text = __('commented a flyer<br />:flyer', array(
 						':flyer' => HTML::anchor(
 							Route::url('flyer', array('id' => $flyer->id)),
 							'<i class="icon-picture icon-white"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
@@ -94,7 +94,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				$image   = Model_Image::factory($item->data['image_id']);
 				$user    = Model_User::find_user($item->data['user_id']);
 				if ($gallery->loaded() && $image->loaded() && $user->loaded()) {
-					$text = __('tagged :user to an image<br />:gallery', array(
+					$text = __('tagged :user to a photo<br />:gallery', array(
 						':user' => HTML::user($user),
 						':gallery' => HTML::anchor(
 							Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
