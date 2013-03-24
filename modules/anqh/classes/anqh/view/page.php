@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2012 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Page extends View_Base {
@@ -92,7 +92,9 @@ class Anqh_View_Page extends View_Base {
 	public function __construct($title = null) {
 		parent::__construct();
 
-		if ($title) $this->title = $title;
+		if ($title) {
+			$this->title = $title;
+		}
 
 		// Get base URL
 		$this->base = URL::base(!Request::current()->is_initial());
@@ -155,7 +157,7 @@ class Anqh_View_Page extends View_Base {
 
 				<?= Ads::slot($column) ?>
 
-			</div><!-- #<?php echo $column ?> -->
+			</div><!-- #<?= $column ?> -->
 
 <?php
 
@@ -178,19 +180,19 @@ class Anqh_View_Page extends View_Base {
 
 	<div id="content" class="container">
 
-		<?php echo $this->_title() ?>
+		<?= $this->_title() ?>
 
 		<div class="row">
 
-			<?php echo $this->content(self::COLUMN_TOP) ?>
+			<?= $this->content(self::COLUMN_TOP) ?>
 
 		</div>
 
 		<div class="row">
 
-			<?php echo $this->content(self::COLUMN_MAIN) ?>
+			<?= $this->content(self::COLUMN_MAIN) ?>
 
-			<?php echo $this->content(self::COLUMN_SIDE) ?>
+			<?= $this->content(self::COLUMN_SIDE) ?>
 
 		</div>
 
@@ -310,8 +312,8 @@ class Anqh_View_Page extends View_Base {
 
 		<section class="copyright">
 			<?= $this->_statistics() ?><br />
-			Copyright &copy; 2000&ndash;<?php echo date('Y')?> <?php echo Kohana::$config->load('site.site_name') ?> -
-			Powered by Anqh v<?php echo Anqh::VERSION ?> and Kohana v<?php echo Kohana::VERSION ?>
+			Copyright &copy; 2000&ndash;<?= date('Y')?> <?= Kohana::$config->load('site.site_name') ?> -
+			Powered by Anqh v<?= Anqh::VERSION ?> and Kohana v<?= Kohana::VERSION ?>
 		</section>
 
 	</footer><!-- #footer -->
@@ -343,12 +345,12 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <head>
-	<meta charset="<?php echo Kohana::$charset ?>" />
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo Kohana::$charset ?>" />
+	<meta charset="<?= Kohana::$charset ?>" />
+	<meta http-equiv="Content-Type" content="text/html; charset=<?= Kohana::$charset ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-	<title><?php echo ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::$config->load('site.site_name') ?></title>
-	<link rel="icon" type="image/png" href="<?php echo $this->base ?>ui/favicon.png" />
+	<title><?= $this->title ? HTML::chars($this->title) : Kohana::$config->load('site.site_name') ?></title>
+	<link rel="icon" type="image/png" href="<?= $this->base ?>ui/favicon.png" />
 
 	<?= $this->_styles() ?>
 
