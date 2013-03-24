@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_Group extends View_Section {
@@ -12,7 +12,7 @@ class View_Forum_Group extends View_Section {
 	/**
 	 * @var  string  Section class
 	 */
-	public $class = 'forum-groups';
+	public $class = 'forum-groups table';
 
 	/**
 	 * @var  Model_Forum_Group[]

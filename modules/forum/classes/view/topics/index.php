@@ -12,7 +12,7 @@ class View_Topics_Index extends View_Section {
 	/**
 	 * @var  string  View class
 	 */
-	public $class = 'forum-topics';
+	public $class = 'forum-topics table';
 
 	/**
 	 * @var  Model_Forum_Topic[]
@@ -44,10 +44,10 @@ class View_Topics_Index extends View_Section {
 
 ?>
 
-<table class="table">
+<table class="table table-condensed">
 	<thead>
 		<tr>
-			<th class="span4 topic"><?= __('Topic') ?></th>
+			<th class="span4 topic"><h3><?= __('Topic') ?></h3></th>
 			<th class="span1 replies"><?= __('Replies') ?></th>
 			<th class="span2 latest"><?= __('Latest post') ?></th>
 		</tr>
