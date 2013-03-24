@@ -550,7 +550,7 @@ class Anqh_Controller_User extends Controller_Page {
 			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
 				$this->view->tabs['ignores'] = array(
 					'link'  =>  URL::user($user, 'ignores'),
-					'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ingores'),
+					'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ignores'),
 				);
 				$this->view->tabs['settings'] = array(
 					'link'  =>  URL::user($user, 'settings'),

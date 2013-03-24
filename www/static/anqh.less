@@ -251,7 +251,8 @@ a.male                                 { color: @blueDark; }
 a.female                               { color: @pink; }
 a.user:hover                           { color: @anchorColorHover; }
 a.friend                               { font-weight: bold; }
-.avatar                                { display: inline-block; float: left; /*margin: 5px 10px 5px 0;*/ .square(50px); text-align: center;
+.avatar                                { display: inline-block; float: left; .square(50px); text-align: center;
+  &.small                              { .square(25px); }
   img                                  { max-height: 100%; max-width: 100% !important; /* !important needed for Jasny */ }
 }
 

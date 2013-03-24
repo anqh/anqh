@@ -114,7 +114,7 @@ class View_Generic_Comments extends View_Section {
 
 	<li class="<?= implode(' ', $classes) ?>" id="comment-<?= $comment->id ?>">
 		<div class="pull-left">
-			<?= HTML::avatar($author['avatar'], $author['username'], true) ?>
+			<?= HTML::avatar($author['avatar'], $author['username']) ?>
 		</div>
 		<div class="arrow"></div>
 		<div class="media-body">
