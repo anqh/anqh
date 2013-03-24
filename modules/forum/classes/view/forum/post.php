@@ -164,6 +164,13 @@ class View_Forum_Post extends View_Article {
 
 	<?= $bbcode->render($this->forum_post->post) ?>
 
+	<?php if ($this->forum_post->attachment):
+			$attachment = 'images/liitteet/' . $this->forum_post->attachment;
+			if (file_exists($attachment)):
+				echo HTML::image($attachment);
+			endif;
+		endif; ?>
+
 	<footer>
 		<?= $this->author && $this->author->signature ? $bbcode->render("\n--\n" . $this->author->signature, true) : '' ?>
 

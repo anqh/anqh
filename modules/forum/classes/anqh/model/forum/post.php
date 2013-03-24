@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Forum_Post extends AutoModeler_ORM implements Permission_Interface {
@@ -26,6 +26,10 @@ class Anqh_Model_Forum_Post extends AutoModeler_ORM implements Permission_Interf
 		'modified'       => null,
 		'modify_count'   => null,
 		'post'           => null,
+
+		// Deprecated
+		'attachment'     => null,
+
 	);
 
 	protected $_rules = array(
