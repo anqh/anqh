@@ -1007,8 +1007,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				$position = Arr::intersect($_POST, array('x', 'y', 'width', 'height'), true);
 				$image->add_note(self::$user->id, count($position) == 4 ? $position : null, $user ? $user : $username);
 
-				// Newsfeed
+				// Newsfeed & notification
 				if ($user) {
+					Notification_Galleries::image_note(self::$user, $user, $image);
 					NewsfeedItem_Galleries::note(self::$user, $gallery, $image, $user);
 				}
 

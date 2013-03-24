@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interface {
@@ -24,16 +24,19 @@ class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interf
 		'height'            => null,
 
 		'new_comment_count' => null,
-		'new_note'          => null,
 		'created'           => null,
+
+		// Deprecated
+		'new_note'          => null,
+
 	);
 
 	protected $_rules = array(
-		'name'              => array('not_empty', 'max_length' => array(':value', 30)),
-		'x'                 => array('digit'),
-		'y'                 => array('digit'),
-		'width'             => array('digit'),
-		'height'            => array('digit'),
+		'name'   => array('not_empty', 'max_length' => array(':value', 30)),
+		'x'      => array('digit'),
+		'y'      => array('digit'),
+		'width'  => array('digit'),
+		'height' => array('digit'),
 	);
 
 
@@ -49,6 +52,7 @@ class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interf
 	public function add($author_id, $image_id, array $position = null, $user = null) {
 		$this->author_id = $author_id;
 		$this->image_id  = $image_id;
+		$this->created   = time();
 
 		// Note position
 		if ($position) {
@@ -65,9 +69,6 @@ class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interf
 		} else if (is_string($user)) {
 			$this->name    = $user;
 		}
-
-		$this->created   = time();
-		$this->new_note  = true;
 
 		$this->save();
 
