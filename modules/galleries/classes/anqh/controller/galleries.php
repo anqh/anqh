@@ -435,6 +435,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 		// Set title
+		Anqh::page_meta('title', __('Flyer') . ': ' . $event->name);
+		Anqh::page_meta('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+		Anqh::page_meta('twitter:card', 'photo');
+		Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 		if ($event) {
 
 			// Flyer is linked to an event
@@ -442,10 +446,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$this->view->subtitle  = Controller_Events::_event_subtitle($event);
 
 			// Open graph
-			Anqh::page_meta('title', __('Flyer') . ': ' . $event->name);
-			Anqh::page_meta('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
 			Anqh::page_meta('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
-			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 
 		} else {
 
@@ -456,10 +457,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				: __('Date unknown');
 
 			// Open graph
-			Anqh::page_meta('title', __('Flyer') . ': ' . $flyer->name);
-			Anqh::page_meta('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
 			$flyer->has_full_date() and Anqh::page_meta('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
-			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 
 		}
 		Anqh::share(true);
@@ -930,6 +928,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				Anqh::page_meta('description', $current->description);
 			}
 			Anqh::page_meta('image', URL::site($current->get_url('thumbnail'), true));
+			Anqh::page_meta('twitter:card', 'photo');
 			Anqh::share(true);
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 

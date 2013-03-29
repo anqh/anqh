@@ -50,7 +50,6 @@ return array(
 	 * Twitter configs
 	 */
 	'twitter_username' => null,
-	'twitter_id'       => null,
 
 	/**
 	 * 3rd party share id

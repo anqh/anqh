@@ -257,11 +257,6 @@ class Anqh_Core {
 			'type'        => 'og:type',
 			'url'         => 'og:url',
 		);
-		static $twitter_tags = array(
-			'description' => 'twitter:description',
-			'image'       => 'twitter:image',
-			'title'       => 'twitter:title',
-		);
 
 		// Initialize required meta data when setting first value
 	  if ($value && empty($meta)) {
@@ -305,9 +300,6 @@ class Anqh_Core {
 				foreach ($meta as $_key => $_value) {
 					if (isset($opengraph_tags[$_key])) {
 						$combined[$opengraph_tags[$_key]] = $_value;
-					}
-					if (isset($twitter_tags[$_key])) {
-						$combined[$twitter_tags[$_key]] = $_value;
 					}
 					if (strpos($_key, 'og:') === 0) {
 						$combined[$_key] = $_value;
