@@ -62,7 +62,8 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'geo_city_id'          => array('digit'),
 		'geo_country_id'       => array('digit'),
 
-		'age'                  => array('range' => array(':value', 0, 99)),
+		'age'                  => array('digit', 'range' => array(':value', 0, 99)),
+		'price'                => array('numeric'),
 		'flyer_front_url'      => array('url'),
 		'flyer_back_url'       => array('url'),
 		'flyer_front_image_id' => array('digit'),
