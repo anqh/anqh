@@ -260,7 +260,6 @@ class Anqh_Core {
 		static $twitter_tags = array(
 			'description' => 'twitter:description',
 			'image'       => 'twitter:image',
-			'summary'     => 'twitter:card',
 			'title'       => 'twitter:title',
 		);
 
@@ -280,6 +279,7 @@ class Anqh_Core {
 		  }
 
 		  // Twitter
+		  $twitter['twitter:card'] = 'summary';
 		  if ($site = Kohana::$config->load('site.twitter_username')) {
 			  $twitter['twitter:site'] = $site;
 		  }
