@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Galleries extends Controller_Page {
@@ -439,7 +439,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			// Flyer is linked to an event
 			$this->view->title     = $event->name;
-			$this->view->subtitle  = HTML::time(date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin), $event->stamp_begin, true);
+			$this->view->subtitle  = Controller_Events::_event_subtitle($event);
 
 			// Facebook
 			if (Kohana::$config->load('site.facebook')) {
