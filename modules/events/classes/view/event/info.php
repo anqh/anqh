@@ -56,6 +56,7 @@ class View_Event_Info extends View_Section {
 		endif;
 		*/
 
+		/*
 		// Price
 		if ($this->event->price == 0):
 			echo '<i class="icon-shopping-cart icon-white"></i> ' . __('Free entry') . '<br />';
@@ -69,8 +70,9 @@ class View_Event_Info extends View_Section {
 		if ($this->event->age > 0):
 			echo '<i class="icon-user icon-white"></i> ' . __('Age limit') . ': ' . __(':years years', array(':years' => '<var>' . $this->event->age . '</var>')) . '<br />';
 		endif;
+		*/
 
-
+		/*
 		// Homepage
 		if (!empty($this->event->homepage)):
 			echo '<i class="icon-home icon-white"></i> ' . HTML::anchor($this->event->homepage, Text::limit_url($this->event->homepage, 25)) . '<br />';
@@ -83,6 +85,7 @@ class View_Event_Info extends View_Section {
 		elseif (!empty($this->event->music)):
 			echo '<i class="icon-music icon-white"></i> ' . $this->event->music . '<br />';
 		endif;
+		*/
 
 
 		/*

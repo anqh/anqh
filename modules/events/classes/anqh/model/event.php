@@ -35,6 +35,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'age'                  => null,
 		'price'                => null,
 		'price2'               => null,
+		'tickets_url'          => null,
 		'music'                => null,
 		'flyer_front_url'      => null,
 		'flyer_back_url'       => null,
@@ -64,6 +65,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 		'age'                  => array('digit', 'range' => array(':value', 0, 99)),
 		'price'                => array('numeric'),
+		'tickets_url'          => array('url'),
 		'flyer_front_url'      => array('url'),
 		'flyer_back_url'       => array('url'),
 		'flyer_front_image_id' => array('digit'),
@@ -81,7 +83,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public static $editable_fields = array(
 		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
-		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'dj', 'info',
+		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'tickets_url', 'dj', 'info',
 	);
 
 	/**

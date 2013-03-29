@@ -110,7 +110,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Build page
 		$this->view = View_Page::factory($event->name);
-		$this->view->subtitle = $this->_event_subtitle($event);
+		$this->view->subtitle = self::_event_subtitle($event);
 
 		// Set actions
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
@@ -133,6 +133,13 @@ class Anqh_Controller_Events extends Controller_Page {
 			'link' => Route::model($event),
 			'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event'),
 		);
+
+		if ($event->author_id) {
+			$this->view->tabs['organizer'] = array(
+				'link' => URL::user($event->author_id),
+				'text' => '<i class="icon-user icon-white"></i> ' . __('Organizer') . ' &raquo;',
+			);
+		}
 
 		// Link to gallery only after the event has begun
 		if ($event->stamp_begin < time()) {
@@ -180,7 +187,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_carousel($event));
 
 		// Event side info
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
+		//$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
 
 		// Favorites
 		if ($event->favorite_count) {
@@ -781,11 +788,10 @@ class Anqh_Controller_Events extends Controller_Page {
 			// Handle preview request
 			if ($preview) {
 				if ($this->ajax) {
-					$preview  = '<div id="main" class="span8">';
+					$preview  = '<div id="preview" class="span12">' . self::_event_subtitle($event) . '</div>';
+					$preview .= '<div id="main" class="span8">';
 					$preview .= $this->section_event_main($event);
-					$preview .= '</div><div id="side" class="span4">';
-					$preview .= $this->section_event_info($event);
-					$preview .= '</div>';
+					$preview .= '<hr /></div>';
 
 					$this->response->body($preview);
 				}
@@ -843,22 +849,49 @@ class Anqh_Controller_Events extends Controller_Page {
 	 * @param   Model_Event  $event
 	 * @return  string
 	 */
-	protected function _event_subtitle(Model_Event $event) {
+	public static function _event_subtitle(Model_Event $event) {
 		$subtitle = array();
 
 		// Date
-		$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', ' . Date::format(Date::DMY_LONG, $event->stamp_begin), $event->stamp_begin, true);
+		$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DMY_LONG, $event->stamp_begin) . '</strong>', $event->stamp_begin, true);
 
 		// Time
 		if ($event->stamp_begin != $event->stamp_end) {
 			$subtitle[] = $event->stamp_end ?
-				'<i class="icon-time icon-white"></i> ' . __(':from until :to', array(
-					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
-					':to'   => HTML::time(Date::format('HHMM', $event->stamp_end), $event->stamp_end)
+				'<i class="icon-time icon-white"></i> ' . __('From :from until :to', array(
+					':from' => '<strong>' . HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin) . '</strong>',
+					':to'   => '<strong>' . HTML::time(Date::format('HHMM', $event->stamp_end), $event->stamp_end) . '</strong>'
 				)) :
 				'<i class="icon-time icon-white"></i> ' . __('From :from onwards', array(
 					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
 				));
+		}
+
+		// Tickets
+		$tickets = '';
+		if ($event->price == 0 || $event->price > 0 || $event->tickets_url) {
+			$tickets = '<i class="icon-bookmark icon-white"></i> ';
+		}
+		if ($event->price == 0) {
+			$tickets .= '<strong>' . __('Free entry') . '</strong> ';
+		} else if ($event->price > 0) {
+			$tickets .= __('Tickets :price', array(':price' => '<strong>' . Num::currency($event->price, $event->stamp_begin) . '</strong>')) . ' ';
+		}
+		if ($event->tickets_url) {
+			$tickets .= HTML::anchor($event->tickets_url, __('Buy tickets'), array('target' => '_blank'));
+		}
+		if ($tickets) {
+			$subtitle[] = $tickets;
+		}
+
+		// Age limit
+		if ($event->age > 0) {
+			$subtitle[] = '<i class="icon-user icon-white"></i> ' . __('Age limit') . ': <strong>' . $event->age . '</strong>';
+		}
+
+		// Homepage
+		if (!empty($event->homepage)) {
+			$subtitle[] = '<i class="icon-home icon-white"></i> ' . HTML::anchor($event->homepage, Text::limit_url($event->homepage, 25));
 		}
 
 		// Venue
@@ -903,15 +936,20 @@ head.ready("anqh", function() {
 			$address = HTML::chars($event->city_name);
 
 		}
-		$subtitle[] = '<i class="icon-map-marker icon-white"></i> ' . $venue . ($address ? ', ' . $address : '');
-
+		$subtitle[] = '<br /><i class="icon-map-marker icon-white"></i> <strong>' . $venue . '</strong>' . ($address ? ', ' . $address : '');
 		if (isset($map)) {
 			$subtitle[] = HTML::anchor('#map', __('Show map'));
-
-			return implode(' &nbsp; ', $subtitle) . '<div id="map" style="display: none">' . __('Map loading') . '</div>';
 		}
 
-		return implode(' &nbsp; ', $subtitle);
+		// Tags
+		if ($tags = $event->tags()) {
+			$subtitle[] = '<br /><i class="icon-music icon-white"></i> <em>' . implode(', ', $tags) . '</em>';
+		} else if (!empty($event->music)) {
+			$subtitle[] = '<br /><i class="icon-music icon-white"></i> <em>' . $event->music . '</em>';
+		}
+
+		return implode(' &nbsp; ', $subtitle)
+			. (isset($map) ? '<div id="map" style="display: none">' . __('Map loading') . '</div>' : '');
 	}
 
 
@@ -1024,17 +1062,6 @@ head.ready("anqh", function() {
 		$section->actions = $actions;
 
 		return $section;
-	}
-
-
-	/**
-	 * Get event side info.
-	 *
-	 * @param   Model_Event  $event
-	 * @return  View_Event_Info
-	 */
-	public function section_event_info(Model_Event $event) {
-		return new View_Event_Info($event);
 	}
 
 

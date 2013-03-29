@@ -655,11 +655,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Event info
 		if ($event = $gallery->event()) {
 
+			// Event info
+			$this->view->subtitle = Controller_Events::_event_subtitle($event);
+
 			// Event flyer
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_image($event));
-
-			// Event info
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
 
 		}
 
@@ -1317,6 +1317,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 *
 	 * @param  integer  $gallery_id
 	 * @param  integer  $event_id
+	 *
+	 * @throws  Model_Exception
 	 */
 	protected function _edit_gallery($gallery_id = null, $event_id = null) {
 		$this->history = false;
@@ -1390,11 +1392,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$section = $this->section_gallery_edit(isset($event) ? $event : null);
 		$section->errors = $errors;
 		$this->view->add(View_Page::COLUMN_MAIN, $section);
-
-		// Gallery event info
-		if (isset($event) && $event->loaded()) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_event_info($event));
-		}
 
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_upload_help());
 	}
@@ -1541,17 +1538,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		return new View_Generic_SideImage($image, $link);
-	}
-
-
-	/**
-	 * Get event side info.
-	 *
-	 * @param   Model_Event  $event
-	 * @return  View_Event_Info
-	 */
-	public function section_event_info(Model_Event $event) {
-		return new View_Event_Info($event);
 	}
 
 

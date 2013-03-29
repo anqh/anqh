@@ -58,7 +58,7 @@ class View_Event_Edit extends View_Article {
 		echo Form::open(null, array('id' => 'form-event', 'class' => 'row'));
 ?>
 
-			<div class="placeholder"></div>
+			<div id="preview"></div>
 
 			<div class="span8">
 
@@ -98,7 +98,7 @@ class View_Event_Edit extends View_Article {
 					<?= Form::button('preview', __('Preview'), array(
 							'class'              => 'btn btn-inverse btn-large',
 							'data-content-class' => '*',
-							'data-prepend'       => '.placeholder'
+							'data-prepend'       => '#preview',
 						)) ?>
 					<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
@@ -167,7 +167,7 @@ class View_Event_Edit extends View_Article {
 						array('venue_name' => __('Venue')),
 						Arr::get($this->event_errors, 'venue_name'),
 						null,
-						array('id' => 'group-venue')) ?>
+						array('class' => 'group-venue')) ?>
 
 					<?= Form::control_group(
 						Form::input('city_name', $this->event->city_name, array('class' => 'input-block-level')),
@@ -199,7 +199,14 @@ class View_Event_Edit extends View_Article {
 						array('price' => __('Tickets')),
 						Arr::get($this->event_errors, 'price'),
 						null,
-						array('id' => 'group-price')) ?>
+						array('class' => 'group-price')) ?>
+
+					<?= Form::control_group(
+						Form::input('tickets_url', $this->event->tickets_url, array('class' => 'input-block-level', 'placeholder' => 'http://')),
+						array('tickets_url' => __('Buy tickets from')),
+						Arr::get($this->event_errors, 'tickets_url'),
+						null,
+						array('class' => 'group-price')) ?>
 
 					<?= Form::control_group(
 						'<div class="input-append">'
@@ -282,10 +289,10 @@ head.ready('anqh', function() {
 	$('#field-free').change(function _togglePrice() {
 		if (this.checked) {
 			$('input[name=price]').attr('disabled', 'disabled');
-			$('#group-price').slideUp();
+			$('.group-price').slideUp();
 		} else {
 			$('input[name=price]').removeAttr('disabled');
-			$('#group-price').slideDown();
+			$('.group-price').slideDown();
 		}
 	});
 
@@ -293,10 +300,10 @@ head.ready('anqh', function() {
 	$('#field-ug').change(function _toggleVenue() {
 		if (this.checked) {
 			$('input[name=venue_name]').attr('disabled', 'disabled');
-			$('#group-venue').slideUp();
+			$('.group-venue').slideUp();
 		} else {
 			$('input[name=venue_name]').removeAttr('disabled');
-			$('#group-venue').slideDown();
+			$('.group-venue').slideDown();
 		}
 	});
 });
