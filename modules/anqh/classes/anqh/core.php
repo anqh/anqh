@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Core {
@@ -235,46 +235,105 @@ class Anqh_Core {
 
 
 	/**
-	 * Get/set Open Graph tags
+	 * Get/set page meta data tags, Open Graph and Twitter Card
 	 *
 	 * @static
 	 * @param   string  $key    Null to get all
 	 * @param   string  $value  Null to get, false to clear
 	 * @return  mixed
 	 */
-	public static function open_graph($key = null, $value = null) {
-		static $og;
+	public static function page_meta($key = null, $value = null) {
+		static $meta    = array();
+		static $fb      = array();
+		static $twitter = array();
 
-		// Initialize required Open Graph tags when setting first value
-	  if ($value && !is_array($og)) {
-			$og = array(
-				'og:title'     => Kohana::$config->load('site.site_name'),
-				'og:type'      => 'article',
-				'og:image'     => URL::site('/ui/opengraph.jpg', true),
-				'og:url'       => URL::site('', true),
-				'og:site_name' => Kohana::$config->load('site.site_name'),
+		static $opengraph_tags = array(
+			'author'      => 'article:author',
+			'description' => 'og:description',
+			'image'       => 'og:image',
+			'site'        => 'og:site_name',
+			'summary'     => 'article:section',
+			'title'       => 'og:title',
+			'type'        => 'og:type',
+			'url'         => 'og:url',
+		);
+		static $twitter_tags = array(
+			'description' => 'twitter:description',
+			'image'       => 'twitter:image',
+			'summary'     => 'twitter:card',
+			'title'       => 'twitter:title',
+		);
+
+		// Initialize required meta data when setting first value
+	  if ($value && empty($meta)) {
+			$meta = array(
+				'title' => Kohana::$config->load('site.site_name'),
+				'type'  => 'article',
+				'image' => URL::site('/ui/opengraph.jpg', true),
+				'url'   => URL::site('', true),
+				'site'  => Kohana::$config->load('site.site_name'),
 			);
+
+		  // Facebook
 		  if ($app_id = Kohana::$config->load('site.facebook')) {
-			  $og['fb:app_id'] = $app_id;
+			  $fb['fb:app_id'] = $app_id;
 		  }
+
+		  // Twitter
+		  if ($site = Kohana::$config->load('site.twitter_username')) {
+			  $twitter['twitter:site'] = $site;
+		  }
+		  if ($site_id = Kohana::$config->load('site.twitter_id')) {
+			  $twitter['twitter:site:id'] = $site_id;
+		  }
+
 	  }
 
-	  if (is_null($value)) {
+		if (strpos($key, 'fb:') === 0) {
+			$data = &$fb;
+		} else if (strpos($key, 'twitter:') === 0) {
+			$data = &$twitter;
+		} else {
+			$data = &$meta;
+		}
 
-		  // Get
-		  return is_null($key) ? $og : Arr::get($og, 'og:' . $key);
+		if (is_null($value)) {
+			if (is_null($key)) {
+
+				// Get all
+				$combined = $fb + $twitter;
+				foreach ($meta as $_key => $_value) {
+					if (isset($opengraph_tags[$_key])) {
+						$combined[$opengraph_tags[$_key]] = $_value;
+					}
+					if (isset($twitter_tags[$_key])) {
+						$combined[$twitter_tags[$_key]] = $_value;
+					}
+					if (strpos($_key, 'og:') === 0) {
+						$combined[$_key] = $_value;
+					}
+				}
+
+				return $combined;
+
+			}	else {
+
+				// Get one key
+				return $data[$key];
+
+			}
 
 	  } else if ($value === false) {
 
-		  // Delete
-		  unset($og['og:' . $key]);
+	    // Delete
+	    unset($data[$key]);
 
-	  } else {
+    } else {
 
-		  // Set
-		  $og['og:' . $key] = $value;
+	    // Set
+	    $data[$key] = $value;
 
-	  }
+    }
 	}
 
 

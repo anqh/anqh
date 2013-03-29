@@ -150,8 +150,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			}
 
 			// Facebook
-			Anqh::open_graph('title', $topic->name);
-			Anqh::open_graph('url', URL::site(Route::url('forum_topic', array('id' => $topic->id, 'action' => '')), true));
+			Anqh::page_meta('title', $topic->name);
+			Anqh::page_meta('url', URL::site(Route::url('forum_topic', array('id' => $topic->id, 'action' => '')), true));
 			Anqh::share(true);
 
 			// Model binding

@@ -47,6 +47,12 @@ return array(
 	'foursquare_client_secret' => null,
 
 	/**
+	 * Twitter configs
+	 */
+	'twitter_username' => null,
+	'twitter_id'       => null,
+
+	/**
 	 * 3rd party share id
 	 */
 	'share' => false,

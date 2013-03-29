@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Share extends View_Section {
@@ -48,44 +48,44 @@ class View_Generic_Share extends View_Section {
 		$attributes = array();
 
 		// Custom URL
-		$url = $this->url ? $this->url : Anqh::open_graph('url');
-		if ($url) {
+		$url = $this->url ? $this->url : Anqh::page_meta('url');
+		if ($url):
 			$attributes['addthis:url'] = $url;
-		}
+		endif;
 
 		// Custom title
-		$title = $this->title ? $this->title : Anqh::open_graph('title');
-		if ($title) {
+		$title = $this->title ? $this->title : Anqh::page_meta('title');
+		if ($title):
 			$attributes['addthis:title'] = $title;
-		}
+		endif;
 
 		ob_start();
 
 ?>
 
-<div class="addthis_toolbox addthis_default_style addthis_32x32_style"<?php echo HTML::attributes($attributes) ?>>
+<div class="addthis_toolbox addthis_default_style addthis_32x32_style"<?= HTML::attributes($attributes) ?>>
 	<a class="addthis_button_facebook"></a>
 	<a class="addthis_button_twitter"></a>
-	<a class="addthis_button_google"><?php echo HTML::image('static/img/google-plus.png', array('alt' => 'Google +1', 'width' => 32, 'height' => 32)) ?></a>
+	<a class="addthis_button_google"><?= HTML::image('static/img/google-plus.png', array('alt' => 'Google +1', 'width' => 32, 'height' => 32)) ?></a>
 	<a class="addthis_button_email"></a>
 	<a class="addthis_button_compact"></a>
 	<a class="addthis_counter addthis_bubble_style"></a>
 </div>
 
-<?php if ($script) { ?>
-	<?php if (Kohana::$config->load('site.google_analytics')) { ?>
+<?php if ($script): ?>
+	<?php if (Kohana::$config->load('site.google_analytics')): ?>
 
 <script>
 	var addthis_config, addthis_share;
-	head.ready('google-analytics',	function() {
+	head.ready('google-analytics',	function _addThisGoogleAnalytics() {
 		addthis_config = {
 			data_ga_tracker: tracker,
 			data_track_clickback: true,
-			pubid: '<?php echo Kohana::$config->load('site.share') ?>'
+			pubid: '<?= Kohana::$config->load('site.share') ?>'
 		};
 		addthis_share = {
 			templates: {
-				twitter: '{{title}}: {{url}} (via @<?php echo Kohana::$config->load('site.share') ?>)'
+				twitter: '{{title}}: {{url}} (via @<?= Kohana::$config->load('site.share') ?>)'
 			}
 		};
 
@@ -95,13 +95,14 @@ class View_Generic_Share extends View_Section {
 	});
 </script>
 
-	<?php } else { ?>
+	<?php else: ?>
 
-<script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=<?php echo Kohana::$config->load('site.share') ?>"></script>
+<script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=<?= Kohana::$config->load('site.share') ?>"></script>
 
 <?php
-			}
-		}
+
+			endif;
+		endif;
 
 		// Add JavaScript only once
 		$script = false;

@@ -167,12 +167,12 @@ class Anqh_Controller_Events extends Controller_Page {
 
 
 		// Share
-		Anqh::open_graph('type', 'activity');
-		Anqh::open_graph('title', $event->name);
-		Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
-		Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
+		Anqh::page_meta('type', 'activity');
+		Anqh::page_meta('title', $event->name);
+		Anqh::page_meta('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
+		Anqh::page_meta('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
 		if ($event->flyer_front()) {
-			Anqh::open_graph('image', $event->flyer_front()->get_url('thumbnail'));
+			Anqh::page_meta('image', $event->flyer_front()->get_url('thumbnail'));
 		}
 		Anqh::share(true);
 

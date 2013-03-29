@@ -74,12 +74,14 @@ abstract class Anqh_Controller_Page extends Controller {
 
 
 			// Open Graph
-			$og = array();
-			foreach ((array)Anqh::open_graph() as $key => $value) {
-				$og[] = '<meta property="' . $key . '" content="' . HTML::chars($value) . '" />';
+			$meta = array();
+			foreach ((array)Anqh::page_meta() as $key => $value) {
+				$meta[] = strpos($key, 'twitter:') === 0
+					? '<meta name="' . $key . '" content="' . HTML::chars($value) . '" />'
+					: '<meta property="' . $key . '" content="' . HTML::chars($value) . '" />';
 			}
-			if (!empty($og)) {
-				Widget::add('head', implode("\n", $og));
+			if (!empty($meta)) {
+				Widget::add('head', implode("\n", $meta));
 			}
 
 

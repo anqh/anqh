@@ -168,12 +168,12 @@ class Anqh_Controller_Music extends Controller_Page {
 		}
 
 		// Share
-		Anqh::open_graph('type', $track->type == Model_Music_Track::TYPE_MIX ? 'album' : 'song');
-		Anqh::open_graph('title', $track->name);
-		Anqh::open_graph('url', URL::site(Route::model($track), true));
-		Anqh::open_graph('description', $track->description);
+		Anqh::page_meta('type', $track->type == Model_Music_Track::TYPE_MIX ? 'album' : 'song');
+		Anqh::page_meta('title', $track->name);
+		Anqh::page_meta('url', URL::site(Route::model($track), true));
+		Anqh::page_meta('description', $track->description);
 		if (Valid::url($track->cover)) {
-			Anqh::open_graph('image', $track->cover);
+			Anqh::page_meta('image', $track->cover);
 		}
 		Anqh::share(true);
 
