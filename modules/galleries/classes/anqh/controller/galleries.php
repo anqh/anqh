@@ -441,13 +441,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$this->view->title     = $event->name;
 			$this->view->subtitle  = Controller_Events::_event_subtitle($event);
 
-			// Facebook
-			if (Kohana::$config->load('site.facebook')) {
-				Anqh::open_graph('title', __('Flyer') . ': ' . $event->name);
-				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
-				Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
-				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
-			}
+			// Open graph
+			Anqh::open_graph('title', __('Flyer') . ': ' . $event->name);
+			Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+			Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
+			Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
 
 		} else {
 
@@ -457,13 +455,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				? HTML::time(date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin), $flyer->stamp_begin, true)
 				: __('Date unknown');
 
-			// Facebook
-			if (Kohana::$config->load('site.facebook')) {
-				Anqh::open_graph('title', __('Flyer') . ': ' . $flyer->name);
-				Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
-				$flyer->has_full_date() and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
-				Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
-			}
+			// Open graph
+			Anqh::open_graph('title', __('Flyer') . ': ' . $flyer->name);
+			Anqh::open_graph('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
+			$flyer->has_full_date() and Anqh::open_graph('description', date('l ', $flyer->stamp_begin) . Date::format(Date::DMY_SHORT, $flyer->stamp_begin));
+			Anqh::open_graph('image', URL::site($image->get_url('thumbnail'), true));
 
 		}
 		Anqh::share(true);
@@ -639,7 +635,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// Share
-		if ($this->request->action() !== 'pending' && Kohana::$config->load('site.facebook')) {
+		if ($this->request->action() !== 'pending') {
 			Anqh::open_graph('title', __('Gallery') . ': ' . $gallery->name);
 			Anqh::open_graph('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
 			Anqh::open_graph('description', __($gallery->image_count == 1 ? ':images image' : ':images images', array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
@@ -928,14 +924,12 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			}
 
 			// Share
-			if (Kohana::$config->load('site.facebook')) {
-				Anqh::open_graph('title', __('Image') . ': ' . $gallery->name);
-				Anqh::open_graph('url', URL::site(Route::url('gallery_image', array('id' => $current->id, 'gallery_id' => $gallery->id, 'action' => '')), true));
-				if ($current->description) {
-					Anqh::open_graph('description', $current->description);
-				}
-				Anqh::open_graph('image', URL::site($current->get_url('thumbnail'), true));
+			Anqh::open_graph('title', __('Image') . ': ' . $gallery->name);
+			Anqh::open_graph('url', URL::site(Route::url('gallery_image', array('id' => $current->id, 'gallery_id' => $gallery->id, 'action' => '')), true));
+			if ($current->description) {
+				Anqh::open_graph('description', $current->description);
 			}
+			Anqh::open_graph('image', URL::site($current->get_url('thumbnail'), true));
 			Anqh::share(true);
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 

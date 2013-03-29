@@ -247,25 +247,19 @@ class Anqh_Core {
 
 		// Initialize required Open Graph tags when setting first value
 	  if ($value && !is_array($og)) {
+			$og = array(
+				'og:title'     => Kohana::$config->load('site.site_name'),
+				'og:type'      => 'article',
+				'og:image'     => URL::site('/ui/opengraph.jpg', true),
+				'og:url'       => URL::site('', true),
+				'og:site_name' => Kohana::$config->load('site.site_name'),
+			);
 		  if ($app_id = Kohana::$config->load('site.facebook')) {
-				$og = array(
-					'og:title'     => Kohana::$config->load('site.site_name'),
-					'og:type'      => 'article',
-					'og:image'     => URL::site('/ui/opengraph.jpg', true),
-					'og:url'       => URL::site('', true),
-					'og:site_name' => Kohana::$config->load('site.site_name'),
-					'fb:app_id'    => $app_id,
-				);
+			  $og['fb:app_id'] = $app_id;
 		  }
 	  }
 
-	  if (!is_array($og)) {
-
-		  // Facebook/Open Graph disabled
-		  return;
-
-
-	  } else if (is_null($value)) {
+	  if (is_null($value)) {
 
 		  // Get
 		  return is_null($key) ? $og : Arr::get($og, 'og:' . $key);

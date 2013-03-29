@@ -150,10 +150,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			}
 
 			// Facebook
-			if (Kohana::$config->load('site.facebook')) {
-				Anqh::open_graph('title', $topic->name);
-				Anqh::open_graph('url', URL::site(Route::url('forum_topic', array('id' => $topic->id, 'action' => '')), true));
-			}
+			Anqh::open_graph('title', $topic->name);
+			Anqh::open_graph('url', URL::site(Route::url('forum_topic', array('id' => $topic->id, 'action' => '')), true));
 			Anqh::share(true);
 
 			// Model binding

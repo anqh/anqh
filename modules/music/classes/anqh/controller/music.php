@@ -4,7 +4,7 @@
  *
  * @package    Music
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Music extends Controller_Page {
@@ -168,14 +168,12 @@ class Anqh_Controller_Music extends Controller_Page {
 		}
 
 		// Share
-		if (Kohana::$config->load('site.facebook')) {
-			Anqh::open_graph('type', $track->type == Model_Music_Track::TYPE_MIX ? 'album' : 'song');
-			Anqh::open_graph('title', $track->name);
-			Anqh::open_graph('url', URL::site(Route::model($track), true));
-			Anqh::open_graph('description', $track->description);
-			if (Valid::url($track->cover)) {
-				Anqh::open_graph('image', $track->cover);
-			}
+		Anqh::open_graph('type', $track->type == Model_Music_Track::TYPE_MIX ? 'album' : 'song');
+		Anqh::open_graph('title', $track->name);
+		Anqh::open_graph('url', URL::site(Route::model($track), true));
+		Anqh::open_graph('description', $track->description);
+		if (Valid::url($track->cover)) {
+			Anqh::open_graph('image', $track->cover);
 		}
 		Anqh::share(true);
 

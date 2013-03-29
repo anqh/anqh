@@ -167,14 +167,12 @@ class Anqh_Controller_Events extends Controller_Page {
 
 
 		// Share
-		if (Kohana::$config->load('site.facebook')) {
-			Anqh::open_graph('type', 'activity');
-			Anqh::open_graph('title', $event->name);
-			Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
-			Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
-			if ($event->flyer_front()) {
-				Anqh::open_graph('image', $event->flyer_front()->get_url('thumbnail'));
-			}
+		Anqh::open_graph('type', 'activity');
+		Anqh::open_graph('title', $event->name);
+		Anqh::open_graph('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
+		Anqh::open_graph('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
+		if ($event->flyer_front()) {
+			Anqh::open_graph('image', $event->flyer_front()->get_url('thumbnail'));
 		}
 		Anqh::share(true);
 
