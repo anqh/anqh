@@ -967,6 +967,12 @@ $(function() {
 			// Add to view
 			$form.find(prepend).prepend($preview);
 
+			// Scroll
+			var $header = $('#header');
+			$('html, body').animate({
+				scrollTop: $form.find(prepend).offset().top - ($header ? $header.height() : 0)
+			}, 250);
+
 			// Remove loader
 			$post.loading(true);
 
