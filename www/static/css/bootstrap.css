@@ -8602,9 +8602,46 @@ div.loading {
   text-align: center;
 }
 
-.thumbnails h4 {
-  height: 36px;
+.thumbnails .thumbnail {
+  position: relative;
+}
+
+.thumbnails h4,
+.thumbnails .description {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+  padding: 2px;
+  margin: 0;
   overflow: hidden;
+  background: rgba(0, 0, 0, 0.75);
+  -webkit-transition: all 0.2s ease-in-out;
+     -moz-transition: all 0.2s ease-in-out;
+       -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+}
+
+.thumbnails .stats {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 0 2px;
+  text-shadow: 1px 1px 1px black;
+  -webkit-transition: all 0.2s ease-in-out;
+     -moz-transition: all 0.2s ease-in-out;
+       -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+}
+
+.thumbnails a:hover {
+  text-decoration: none;
+}
+
+.thumbnails a:hover h4,
+.thumbnails a:hover .description,
+.thumbnails a:hover .stats {
+  opacity: 0;
 }
 
 .thumbnails i + i {
@@ -8620,6 +8657,48 @@ div.loading {
 
 .months li.selected li.selected {
   font-weight: bold;
+}
+
+.exif {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  text-align: right;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.exif:hover dl {
+  display: block;
+}
+
+.exif dl {
+  display: none;
+  margin: 0;
+}
+
+.exif dt,
+.exif dd {
+  text-align: left;
+}
+
+.exif dt {
+  width: 100px;
+  font-weight: normal;
+}
+
+.exif dd {
+  margin-left: 120px;
+  font-weight: bold;
+}
+
+.exif i,
+.exif span {
+  line-height: 15px;
+}
+
+.exif .iso {
+  font-variant: small-caps;
 }
 
 div.image {

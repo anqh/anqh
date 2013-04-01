@@ -341,7 +341,15 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
 
 // Galleries
 .thumbnails                            {
-  h4                                   { height: 2 * @baseLineHeight; overflow: hidden; }
+  .thumbnail                           { position: relative; }
+  h4,
+  .description                         { background: rgba(0, 0, 0, .75); bottom: 4px; left: 4px; margin: 0; overflow: hidden; padding: 2px; position: absolute; right: 4px; .transition(all .2s ease-in-out); }
+  .stats                               { position: absolute; padding: 0 2px; right: 4px; text-shadow: 1px 1px 1px black; top: 4px; .transition(all .2s ease-in-out); }
+  a:hover                              { text-decoration: none;
+    h4,
+    .description,
+    .stats                             { opacity: 0; }
+  }
   i + i                                { margin-left: 10px; }
   i.icon-star + i.icon-star,
   i.icon-star + i.icon-star-empty,
@@ -349,6 +357,17 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
   i.icon-star-empty + i.icon-star-empty { margin-left: 0; }
 }
 .months li.selected li.selected        { font-weight: bold; }
+.exif                                  { background: rgba(0, 0, 0, .75); padding: 5px; position: absolute; right: 0; text-align: right; top: 0;
+  &:hover dl                           { display: block; }
+  dl                                   { display: none; margin: 0; }
+  dt,
+  dd                                   { text-align: left; }
+  dt                                   { font-weight: normal; width: 100px; }
+  dd                                   { font-weight: bold; margin-left: 120px; }
+  i,
+  span                                 { line-height: 15px; }
+  .iso                                 { font-variant: small-caps; }
+}
 
 // Notes
 div.image                              { text-align: center;

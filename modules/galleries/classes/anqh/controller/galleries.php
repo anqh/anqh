@@ -903,6 +903,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photo')
 			);
 
+			// Event info
+			if ($event = $gallery->event()) {
+				$this->view->subtitle = Controller_Events::_event_subtitle($event);
+			}
 
 			// Pagination
 			$previous_url = $previous ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
@@ -931,9 +935,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			Anqh::page_meta('twitter:card', 'photo');
 			Anqh::share(true);
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
-
-			// Image info
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_image_info($current));
 
 		}
 

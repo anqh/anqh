@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Gallery_Thumbs extends View_Section {
@@ -46,15 +46,15 @@ class View_Gallery_Thumbs extends View_Section {
 		ob_start();
 
 		// Get shown images
-		if ($this->show_pending) {
+		if ($this->show_pending):
 
 			// Show pending images
 			$images = $this->gallery->find_images_pending($this->can_approve ? null : self::$_user);
 
 			$radios = array();
-			if ($this->can_approve) {
+			if ($this->can_approve):
 				$radios['approve'] = __('Approve');
-			}
+			endif;
 			$radios['deny'] = $this->can_approve ? __('Deny') : __('Delete');
 			$radios['wait'] = __('Wait');
 
@@ -62,43 +62,39 @@ class View_Gallery_Thumbs extends View_Section {
 
 	<header class="well sticky">
 
-<?php
-
-			if ($this->can_approve) {
-				echo __('Approve'), ': <var class="approve"">0</var>, ';
-				echo __('Deny'), ': <var class="deny"">0</var>, ';
-			} else {
-				echo __('Delete'), ': <var class="deny"">0</var>, ';
-			}
-			echo __('Wait'), ': <var class="wait">', count($images), '</var><br />';
-
-?>
+	<?php if ($this->can_approve): ?>
+		<?= __('Approve') ?>: <var class="approve">0</var>,
+		<?= __('Deny') ?>: <var class="deny">0</var>
+	<?php else: ?>
+		<?= __('Delete') ?>': <var class="deny">0</var>,
+	<?php endif; ?>
+	<?= __('Wait') ?>: <var class="wait"><?= count($images) ?></var><br />
 
 	</header>
 
 <?php
 
-		} else {
+		else:
 
 			// Show approved images
 			$images = $this->gallery->images();
 
-		}
+		endif;
 
 
 		// Add pending images form?
-		if ($this->show_pending) {
+		if ($this->show_pending):
 			echo Form::open(null, array('id' => 'form-image-approval', 'class' => 'form-horizontal'));
-		}
+		endif;
 
 		$copyright = $multiple = null;
 
-		foreach ($images as $image) {
+		foreach ($images as $image):
 
 			// Add copyright
-			if ($image->author_id != $copyright) {
+			if ($image->author_id != $copyright):
 				$copyright = $image->author_id;
-				if ($multiple) {
+				if ($multiple):
 
 					// Not first copyright
 
@@ -108,57 +104,57 @@ class View_Gallery_Thumbs extends View_Section {
 
 <?php
 
-				} else {
+				else:
 
 					// First copyright
 					$multiple = true;
 
-				}
+				endif;
 
 ?>
 
 	<header>&copy; <?= HTML::user($copyright) ?></header>
 	<ul class="thumbnails">
 
-<?php } // Copyright ?>
+<?php endif; // Copyright ?>
 
 		<li class="span2">
 
-<?php
+			<a class="thumbnail" href="<?= Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $image->id, 'action' => $this->show_pending ? 'approve' : '')) ?>">
+				<?= HTML::image($image->get_url('thumbnail', $this->gallery->dir)) ?>
 
-			echo HTML::anchor(
-				Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $image->id, 'action' => $this->show_pending ? 'approve' : '')),
-				HTML::image($image->get_url('thumbnail', $this->gallery->dir)),
-				$image->description
-					? array('class' => 'thumbnail', 'title' => HTML::chars($image->description))
-					: array('class' => 'thumbnail')
-			);
+				<?php if (!$this->show_pending): ?>
 
-			if (!$this->show_pending) {
+					<?php if ($image->description): ?>
+				<p class="description"><?= HTML::chars($image->description) ?></p>
+					<?php endif; ?>
 
-				// Info
-				echo '<i class="icon-comment icon-white"></i> ' . (int)$image->comment_count;
-				echo '<i class="icon-eye-open icon-white"></i> ' . (int)$image->view_count;
+				<span class="stats">
+					<?php if ($image->comment_count): ?>
+					<i class="icon-comment icon-white"></i> <?= (int)$image->comment_count ?>
+					<?php endif; ?>
+					<i class="icon-eye-open icon-white"></i> <?= (int)$image->view_count ?>
+				</span>
+			</a>
 
-			} else {
+			<?php else: ?>
 
-				// Pending image form
-				echo Form::radios_wrap('image_id[' . $image->id . ']', $radios, 'wait');
+			</a>
 
-			}
+			<?= Form::radios_wrap('image_id[' . $image->id . ']', $radios, 'wait') ?>
 
-?>
+			<?php endif; ?>
 
 		</li>
 
-<?php	} // Images ?>
+<?php	endforeach; ?>
 
 	</ul>
 
 <?php
 
 		// Form controls
-		if ($this->show_pending) {
+		if ($this->show_pending):
 
 ?>
 
@@ -213,7 +209,7 @@ head.ready('jquery', function() {
 
 <?php
 
-		}
+		endif;
 
 		return ob_get_clean();
 	}

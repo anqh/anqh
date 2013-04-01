@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Image_Full extends View_Section {
@@ -75,12 +75,24 @@ class View_Image_Full extends View_Section {
 				array('title' => __('Back to gallery'), 'class' => 'image'));
 		endif; ?>
 
+		<?php if ($exif = $this->exif()): ?>
+
+			<div class="exif">
+				<i class="iconic-camera"></i>
+				<dl class="dl-horizontal">
+					<?php foreach ($exif as $term => $definition) if (!is_null($definition)): ?>
+					<dt><?= $term ?></dt><dd><?= $definition ?></dd>
+					<?php endif; ?>
+				</dl>
+			</div>
+
+		<?php endif; ?>
+
 		<?php if ($this->can_note): ?>
 
 			<?= Form::open(
-					Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $this->image->id, 'action' => 'note')),
-					array('id' => 'form-note'/*, 'class' => 'ajaxify'*/)
-				) ?>
+				Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $this->image->id, 'action' => 'note')),
+				array('id' => 'form-note')) ?>
 
 			<fieldset>
 				<?= Form::control_group(Form::input('name')) ?>
@@ -107,6 +119,46 @@ class View_Image_Full extends View_Section {
 <?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Render EXIF info.
+	 *
+	 * @return  array
+	 */
+	public function exif() {
+
+		// Basic info
+		$info = array(
+			'<span>&copy;</span> ' . __('Copyright')  => $this->image->author_id ? HTML::user($this->image->author_id) : null,
+			'<i class="iconic-upload"></i> '  . __('Added')      => HTML::time(Date::format('DMYYYY_HM', $this->image->created), $this->image->created),
+			'<i class="iconic-comment"></i> ' . __('Comments') => (int)$this->image->comment_count,
+			'<i class="iconic-eye"></i> '     . __('Views') => (int)$this->image->view_count,
+		);
+
+		// EXIF info
+		if ($exif = $this->image->exif()) {
+			if ($exif->make || $exif->model) {
+				$info['<i class="iconic-camera"></i> ' . __('Camera')] =
+					($exif->make ? HTML::chars($exif->make) : '') .
+					($exif->model ? ($exif->make ? '<br />' : '') . HTML::chars($exif->model) : '');
+			};
+			if ($exif->exposure)  $info['<i class="iconic-sun-stroke"></i> '      . __('Shutter Speed')] = HTML::chars($exif->exposure);
+			if ($exif->aperture)  $info['<i class="iconic-aperture-alt"></i> '    . __('Aperture')]      = HTML::chars($exif->aperture);
+			if ($exif->focal)     $info['<i class="iconic-layers-alt"></i> '      . __('Focal Length')]  = HTML::chars($exif->focal);
+			if ($exif->iso)       $info['<span class="iso">iso</span> '           . __('ISO Speed')]     = HTML::chars($exif->iso);
+			if ($exif->lens)      $info['<i class="iconic-cd"></i> '              . __('Lens')]          = HTML::chars($exif->lens);
+			if ($exif->flash)     $info['<i class="iconic-bolt"></i> '            . __('Flash')]         = HTML::chars($exif->flash);
+			if ($exif->program)   $info['<i class="iconic-cloud"></i> '           . __('Program')]       = HTML::chars($exif->program);
+			if ($exif->metering)  $info['<i class="iconic-target"></i> '          . __('Metering')]      = HTML::chars($exif->metering);
+			if ($exif->latitude)  $info['<i class="iconic-move-horizontal"></i> ' . __('Latitude')]      = HTML::chars($exif->latitude);
+			if ($exif->longitude) $info['<i class="iconic-move-vertical"></i> '   . __('Longitude')]     = HTML::chars($exif->longitude);
+			if ($exif->altitude)  $info['<i class="iconic-arrow-up"></i> '        . __('Altitude')]      = HTML::chars($exif->altitude) . 'm';
+			if ($exif->taken)     $info['<i class="iconic-clock"></i> '           . __('Taken')]         = Date::format('DMYYYY_HM', $exif->taken);
+		}
+
+		return $info;
 	}
 
 

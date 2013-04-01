@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Galleries_Thumbs extends View_Section {
@@ -51,26 +51,19 @@ class View_Galleries_Thumbs extends View_Section {
 
 	<?php foreach ($this->galleries as $gallery): $default_image = $gallery->default_image(); ?>
 	<li class="span2">
-		<?= HTML::anchor(
-			Route::model($gallery, $this->show_pending ? 'pending' : null),
-			$default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('Thumbnail pending'),
-			array('class' => 'thumbnail')
-		) ?>
+		<a class="thumbnail" href="<?= Route::model($gallery, $this->show_pending ? 'pending' : null) ?>">
 
-		<h4><?= HTML::anchor(Route::model($gallery, $this->show_pending ? 'pending' : null), HTML::chars($gallery->name)) ?></h4>
+			<?= $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('Thumbnail pending') ?>
+
+			<h4><?= HTML::chars($gallery->name) ?></h4>
 
 <?php
 
 			if ($this->show_pending):
 
 				// Approval process
-				$copyrights = array();
 				$pending_images = $gallery->find_images_pending($this->can_approve ? null : self::$_user);
-				foreach ($pending_images as $image) $copyrights[$image->author_id] = $image->author();
-				foreach ($copyrights as &$copyright) $copyright = HTML::user($copyright);
-
-				echo '&copy; ', implode(', ', $copyrights), '<br />';
-				echo '<i class="icon-camera icon-white"></i> ', count($pending_images);
+				echo '<span class="stats"><i class="icon-camera icon-white"></i> ' . count($pending_images) . '</span>';
 
 			else:
 
@@ -78,6 +71,8 @@ class View_Galleries_Thumbs extends View_Section {
 				if ($gallery->rate_count > 0):
 					echo HTML::rating($gallery->rate_total, $gallery->rate_count, false, true, true), '<br />';
 				endif;
+
+				echo '<span class="stats">';
 
 				// Image count
 				echo '<i class="icon-camera icon-white"></i> ', $gallery->image_count;
@@ -87,17 +82,13 @@ class View_Galleries_Thumbs extends View_Section {
 					echo '<i class="icon-comment icon-white"></i> ', $gallery->comment_count;
 				endif;
 
-				// Copyright
-				if ($gallery->copyright):
-					$copyrights = explode(',', $gallery->copyright);
-					foreach ($copyrights as &$copyright) $copyright = HTML::user(trim($copyright));
-					echo '<br />&copy; ', implode(', ', $copyrights);
-				endif;
+				echo '</span>';
 
 			endif;
 
 ?>
 
+		</a>
 	</li>
 	<?php endforeach; ?>
 

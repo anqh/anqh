@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Flyers_Thumbs extends View_Section {
@@ -42,12 +42,13 @@ class View_Flyers_Thumbs extends View_Section {
 	<?php foreach ($this->flyers as $flyer): $name = $flyer->event ? $flyer->event->name : $flyer->name ?>
 
 	<li class="span2">
-		<?php echo HTML::anchor(
+		<?= HTML::anchor(
 			Route::get('flyer')->uri(array('id' => $flyer->id)),
-			HTML::image($flyer->image->get_url('thumbnail')),
-			array('class' => 'thumbnail')
+			HTML::image($flyer->image->get_url('thumbnail'))
+				. '<h4>' . HTML::chars($name) . '</h4>',
+			array('class' => 'thumbnail', 'title' => HTML::chars($name))
 		) ?>
-		<h4><?= HTML::anchor(Route::get('flyer')->uri(array('id' => $flyer->id)), HTML::chars($name), array('title' => HTML::chars($name))) ?></h4>
+
 	</li>
 
 	<?php endforeach ?>
