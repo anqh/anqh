@@ -618,6 +618,42 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
 
+			// External links
+			$link_add = trim(Arr::get($_POST, 'link'));
+			$link_del = Arr::get($_GET, 'delete_link');
+			if ($link_add || is_numeric($link_del)) {
+				if (Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user) && Security::csrf_valid()) {
+					$links  = $gallery->links;
+
+					if ($link_add && Valid::url($link_add)) {
+
+						// Add new link
+						$links .= ($links ? "\n" : '') . self::$user->id . ',' . $link_add;
+
+					} else if (is_numeric($link_del)) {
+
+						// Remove link
+						$old_links = explode("\n", $links);
+						if ($old_links[$link_del]) {
+							list($user_id, $url) = explode(',', $old_links[$link_del]);
+							if (self::$user->id == $user_id || Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+								unset($old_links[$link_del]);
+								$links = implode("\n", $old_links);
+							}
+						}
+
+					}
+
+					$gallery->links = $links;
+					try {
+						$gallery->save();
+					} catch (Validation_Exception $e) {
+					}
+				}
+
+				$this->request->redirect(Route::model($gallery));
+			}
+
 		}
 
 
@@ -659,6 +695,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Pictures
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_thumbs($gallery, $this->request->action() == 'pending', isset($approve) ? $approve : null));
+
+		// External links
+		if ($gallery->links || Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_links($gallery));
+		}
 
 	}
 
@@ -1656,6 +1697,17 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		);
 
 		return $section;
+	}
+
+
+	/**
+	 * Get external links.
+	 *
+	 * @param   Model_Gallery  $gallery
+	 * @return  View_Gallery_Links
+	 */
+	public function section_gallery_links(Model_Gallery $gallery) {
+		return new View_Gallery_Links($gallery);
 	}
 
 
