@@ -40,12 +40,21 @@ class Anqh_Model_Notification extends AutoModeler_ORM implements Permission_Inte
 	 * @return  Model_Notification[]
 	 */
 	public function find_by_target(Model_User $target) {
-		return $this->load(
-			DB::select_array($this->fields())
-				->where('target_id', '=', $target->id)
-				->order_by('id', 'DESC'),
-			0
-		);
+
+		// User notifications
+		$query = DB::select_array($this->fields())
+			->where('target_id', '=', $target->id)
+			->order_by('id', 'DESC');
+
+		// Admin notifications
+		if ($target->has_role('admin', 'photo moderator')) {
+			$query = $query->or_where_open()
+				->where('class', '=', Notification_Galleries::CLASS_GALLERIES)
+				->and_where('type', '=', Notification_Galleries::TYPE_IMAGE_REPORT)
+				->or_where_close();
+		}
+
+		return $this->load($query, 0);
 	}
 
 
