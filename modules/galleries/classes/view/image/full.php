@@ -78,7 +78,7 @@ class View_Image_Full extends View_Section {
 		<?php if ($exif = $this->exif()): ?>
 
 			<div class="exif">
-				<i class="iconic-camera"></i>
+				<i class="iconic-camera toggle"></i>
 				<dl class="dl-horizontal">
 					<?php foreach ($exif as $term => $definition) if (!is_null($definition)): ?>
 					<dt><?= $term ?></dt><dd><?= $definition ?></dd>

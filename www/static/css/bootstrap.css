@@ -7603,14 +7603,12 @@ legend {
 h1 {
   font-size: 24px;
   font-weight: normal;
-  line-height: 32px;
   letter-spacing: 1px;
   text-shadow: 0 3px 0 rgba(153, 153, 153, 0.2);
 }
 
 h2 {
   font-size: 20px;
-  line-height: 32px;
 }
 
 h3 {
@@ -8668,6 +8666,10 @@ div.loading {
   padding: 5px;
   text-align: right;
   background: rgba(0, 0, 0, 0.75);
+}
+
+.exif .toggle {
+  float: right;
 }
 
 .exif:hover dl {

@@ -66,7 +66,8 @@ class View_Gallery_Links extends View_Section {
 
 		// Add new link
 		if (Permission::has($this->gallery, Model_Gallery::PERMISSION_CREATE, self::$_user)):
-			echo '<hr />' . $this->form();
+			echo HTML::anchor('#add-link', '<i class="icon-plus-sign icon-white"></i> ' . __('Add link'), array('data-toggle' => 'collapse', 'data-target' => '#form-link'));
+			echo $this->form();
 		endif;
 
 		return ob_get_clean();
@@ -81,7 +82,9 @@ class View_Gallery_Links extends View_Section {
 	public function form() {
 		ob_start();
 
-		echo Form::open();
+		echo Form::open(null, array('id' => 'form-link', 'class' => 'collapse'));
+
+		echo '<hr />';
 
 		echo Form::control_group(
 			Form::input('link', null, array('class'=> 'input-block-level', 'placeholder' => __('http://'))),
