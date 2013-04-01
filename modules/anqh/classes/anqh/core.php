@@ -151,6 +151,7 @@ class Anqh_Core {
 			}
 		}
 
+		/** @Deprecated */
 		// Flyer comments
 		$flyer_comments = Model_Flyer::factory()->find_new_comments($user);
 		$flyers = array();
@@ -168,6 +169,7 @@ class Anqh_Core {
 		}
 		unset($flyer_comments);
 
+		/** @Deprecated */
 		// Image comments
 		$image_comments = Model_Image::factory()->find_new_comments($user);
 		$note_comments  = Model_Image_Note::factory()->find_new_comments($user);
@@ -198,6 +200,7 @@ class Anqh_Core {
 		}
 		unset($image_comments, $note_comments, $new_image);
 
+		/** @Deprecated */
 		// Image tags
 		$notes  = Model_Image_Note::factory()->find_new_notes($user);
 		if (count($notes)) {
