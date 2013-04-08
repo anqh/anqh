@@ -79,6 +79,13 @@ class Anqh_Controller_Events extends Controller_Page {
 			$this->request->redirect(Route::model($event));
 		}
 
+		// Delete flyers
+		if ($flyers = $event->flyers()) {
+			foreach ($flyers as $flyer) {
+				$flyer->delete();
+			}
+		}
+
 		$date = $event->stamp_begin;
 		$event->delete();
 
