@@ -558,6 +558,11 @@ class Anqh_Controller_User extends Controller_Page {
 				);
 			}
 
+			// Image search
+			$this->view->tabs['images'] = array(
+				'link' => Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode(self::$user->username),
+				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photos') . ' &raquo;',
+			);
 		}
 
 	}

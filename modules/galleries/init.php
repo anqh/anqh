@@ -50,7 +50,7 @@ Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|uploa
 		'controller' => 'galleries',
 		'action'     => 'gallery',
 	));
-Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'browse|upload|approval', 'year' => '\d{4}', 'month' => '\d{1,2}'))
+Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'search|browse|upload|approval', 'year' => '\d{4}', 'month' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'galleries',
 	));

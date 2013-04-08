@@ -59,7 +59,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		// Deprecated
 		'new_comment_count' => 0,
 		'legacy_filename'   => null,
-		
+
 	);
 
 	protected $_rules = array(
@@ -192,6 +192,31 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * Find by user id.
+	 *
+	 * @param   integer  $user_id
+	 * @return  Model_Image[]
+	 */
+	public function find_by_user($user_id) {
+		$images = array();
+
+		if ($notes = Model_Image_Note::factory()->find_by_user($user_id)) {
+			$stamps = array();
+			foreach ($notes as $note) {
+				$images[] = $image = $note->image();
+				$stamps[] = $image->created;
+			}
+
+			// Sort by date
+			array_multisort($stamps, SORT_DESC, $images);
+
+		}
+
+		return $images;
 	}
 
 

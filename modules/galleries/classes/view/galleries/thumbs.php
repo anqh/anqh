@@ -68,9 +68,9 @@ class View_Galleries_Thumbs extends View_Section {
 			else:
 
 				// Rating
-				if ($gallery->rate_count > 0):
-					echo HTML::rating($gallery->rate_total, $gallery->rate_count, false, true, true), '<br />';
-				endif;
+//				if ($gallery->rate_count > 0):
+//					echo HTML::rating($gallery->rate_total, $gallery->rate_count, false, true, true), '<br />';
+//				endif;
 
 				echo '<span class="stats">';
 

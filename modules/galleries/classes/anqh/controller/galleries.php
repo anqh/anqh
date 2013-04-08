@@ -1137,6 +1137,44 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 	/**
+	 * Action: search
+	 */
+	public function action_search() {
+		$images   = array();
+		$username = Arr::get($_GET, 'user');
+
+		$this->view = View_Page::factory(__('Search'));
+
+		if ($username) {
+
+			// Search user's images
+			if ($user = Model_User::find_user($username)) {
+				$this->view->title = __("Search results for ':query'", array(':query' => HTML::chars($user->username)));
+				$images = Model_Image::factory()->find_by_user($user->id);
+			} else {
+				$this->view->title = __("Search results for ':query'", array(':query' => HTML::chars($username)));
+			}
+
+			// Build page
+			$this->view->subtitle = __(':count images', array(':count' => count($images)));
+			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+
+			if (count($images)) {
+				$this->view->add(View_Page::COLUMN_MAIN, $this->section_search_results($images));
+			} else {
+				$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(__('No images found.'), null, View_Alert::INFO));
+			}
+
+			return;
+
+		}
+
+		// No results
+
+	}
+
+
+	/**
 	 * Action: remove note
 	 */
 	public function action_unnote() {
@@ -1909,6 +1947,17 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					))
 				: false,
 		));
+	}
+
+
+	/**
+	 * Get image search results.
+	 *
+	 * @param   array  $images
+	 * @return  View_Galleries_Search
+	 */
+	public function section_search_results(array $images = null) {
+		return new View_Galleries_Search($images);
 	}
 
 

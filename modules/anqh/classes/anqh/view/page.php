@@ -742,6 +742,19 @@ endif; ?>
 							</label>
 							<?= Form::close(); ?>
 						</li>
+						<li role="menuitem">
+							<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
+							<label class="span2">
+								<i class="icon-camera icon-white"></i>
+								<?= Form::input('search-images', null, array(
+										'class'         => 'input-small search-query',
+										'placeholder'   => __('Search images..'),
+										'title'         => __('Enter at least 2 characters'),
+										'data-redirect' => Route::url('galleries', array('action' => 'search')) . '?user=:value'
+									)); ?>
+							</label>
+							<?= Form::close(); ?>
+						</li>
 					</ul>
 			</li>
 

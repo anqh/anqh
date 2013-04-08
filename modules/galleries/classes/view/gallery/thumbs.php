@@ -113,7 +113,7 @@ class View_Gallery_Thumbs extends View_Section {
 
 ?>
 
-	<header><h4>&copy; <?= HTML::user($copyright) ?></h4></header>
+	<header><h3>&copy; <?= HTML::user($copyright) ?></h3></header>
 	<ul class="thumbnails">
 
 <?php endif; // Copyright ?>

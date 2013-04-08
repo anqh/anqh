@@ -464,7 +464,7 @@ $.fn.autocompleteGeo = function(options) {
 
 // User autocomplete
 $.fn.autocompleteUser = function(options) {
-	var field = $(this);
+	var $field = $(this);
 	var cache = {};
 	var lastXhr;
 
@@ -485,12 +485,12 @@ $.fn.autocompleteUser = function(options) {
 
 	// Facebook style tokenized list
 	if (options.tokenized) {
-		var width = field.width();
-		field.wrap('<div class="tokenized" />');
-		field.parent()
+		var width = $field.width();
+		$field.wrap('<div class="tokenized" />');
+		$field.parent()
 			.width(width)
 			.click(function() {
-				field.focus();
+				$field.focus();
 			});
 	}
 
@@ -601,15 +601,26 @@ $.fn.autocompleteUser = function(options) {
 
 							// Single user
 							$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
-							field.val(ui.item.value);
+							$field.val(ui.item.value);
 
 						}
 						break;
 
 					// Navigate URL
 					case 'redirect':
-						window.location = ui.item.url;
+						var location = $field.attr('data-redirect') || ui.item.url;
+						$.each(ui.item, function _replace(key, value) {
+							location = location.replace(':' + key, value);
+						});
+						window.location = location;
 						break;
+
+					// Execute action
+					default:
+						if (typeof options.action == 'function') {
+							options.action(event, ui);
+						}
+
 
 				}
 			}
@@ -1100,7 +1111,7 @@ $(function() {
 
 
 	// Search
-	var $search = $('#form-search-events, #form-search-users');
+	var $search = $('#form-search-events, #form-search-users, #form-search-images');
 	if ($search.length) {
 		$search.on('submit', function _disable(event) {
 			event.preventDefault();
@@ -1110,6 +1121,10 @@ $(function() {
 			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
 		});
 		$search.find('[name=search-users]').autocompleteUser({
+			action:   'redirect',
+			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
+		});
+		$search.find('[name=search-images]').autocompleteUser({
 			action:   'redirect',
 			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
 		});

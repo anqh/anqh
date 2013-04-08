@@ -77,6 +77,21 @@ class Anqh_Model_Image_Note extends AutoModeler_ORM implements Permission_Interf
 
 
 	/**
+	 * Find by user id.
+	 *
+	 * @param   integer  $user_id
+	 * @return  Model_Image_Note[]
+	 */
+	public function find_by_user($user_id) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('user_id', '=', (int)$user_id),
+			null
+		);
+	}
+
+
+	/**
 	 * Get notes with new comments
 	 *
 	 * @param   Model_User  $user
