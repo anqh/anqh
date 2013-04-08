@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Image_HoverCard extends View_Section {
@@ -46,12 +46,17 @@ class View_Image_HoverCard extends View_Section {
 		echo '<figure>', HTML::image($this->image->get_url(Model_Image::SIZE_THUMBNAIL)), '</figure>';
 
 		// Tagged people
-		if ($this->image->description):
+		$notes = $this->image->notes();
+		if (count($notes)):
 			$names = array();
-			foreach (explode(',', $this->image->description) as $name):
-				$names[] = HTML::user(trim($name));
+
+				/** @var  Model_Image_Note  $note */
+			foreach ($notes as $note):
+				$user    = $note->user();
+				$names[] = $user ? HTML::user($user['username']) : HTML::chars($note->name);
 			endforeach;
-			echo __('In picture: :users', array(':users' => implode(', ', $names)));
+
+			echo implode(', ', $names);
 		endif;
 
 		// Copyright
