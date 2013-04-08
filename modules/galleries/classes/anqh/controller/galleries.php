@@ -1000,7 +1000,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// Latest flyers
-		$flyers = Model_Flyer::factory()->find_latest(6);
+		$flyers = Model_Flyer::factory()->find_latest(8);
 		if (count($flyers)) {
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_flyers_latest($flyers));
 		}
@@ -1629,10 +1629,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @return  View_Flyers_Latest
 	 */
 	public function section_flyers_latest($flyers) {
-		$section = new View_Flyers_Latest($flyers);
-		$section->title = __('Latest flyers');
-
-		return $section;
+		return new View_Flyers_Latest($flyers);
 	}
 
 

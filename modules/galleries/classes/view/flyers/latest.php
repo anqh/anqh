@@ -7,7 +7,9 @@
  * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class View_Flyers_Latest extends View_Article {
+class View_Flyers_Latest extends View_Section {
+
+	public $class = 'full';
 
 	/**
 	 * @var  Model_Flyer[]
