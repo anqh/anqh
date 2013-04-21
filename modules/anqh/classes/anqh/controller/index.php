@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Index extends Controller_Page {
@@ -32,15 +32,15 @@ class Anqh_Controller_Index extends Controller_Page {
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed());
 
+		// Shouts
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
+
 		// Birthdays or friend suggestions
 		if (self::$user && rand(0, 10) < 5) {
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_friend_suggestions());
 		} else {
 			$this->view->add(View_Page::COLUMN_SIDE, $this->section_birthdays());
 		}
-
-		// Shouts
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
 
 		// Online
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_online());
