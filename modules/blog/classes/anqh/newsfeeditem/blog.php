@@ -23,6 +23,11 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 	 */
 	const TYPE_ENTRY = 'entry';
 
+	/**
+	 * @var  array  Aggregate types
+	 */
+	public static $aggregate = array(self::TYPE_COMMENT, self::TYPE_ENTRY);
+
 
 	/**
 	 * Get newsfeed item as HTML
@@ -31,33 +36,49 @@ class Anqh_NewsfeedItem_Blog extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsfeedItem $item) {
+		$link = $item->is_aggregate() ? Text::implode_and(self::get_links($item)) : self::get_link($item);
+		if (!$link) {
+			return '';
+		}
+
+		$text = '';
+		switch ($item->type) {
+
+			case self::TYPE_COMMENT:
+				$text = $item->is_aggregate() ? __('commented to blogs') : __('commented to a blog');
+				break;
+
+			case self::TYPE_ENTRY:
+				$text = $item->is_aggregate() ? __('wrote new blog entries') : __('wrote a new blog entry');
+				break;
+
+		}
+
+		return $text . '<br />' . $link;
+	}
+
+
+	/**
+	 * Get anchor to newsfeed item target.
+	 *
+	 * @static
+	 * @param   Model_NewsfeedItem  $item
+	 * @return  string
+	 */
+	public static function get_link(Model_NewsfeedItem $item) {
 		$text = '';
 
 		switch ($item->type) {
 
 			case self::TYPE_COMMENT:
-				$entry = Model_Blog_Entry::factory($item->data['entry_id']);
-				if ($entry->loaded()) {
-					$text = __('commented to blog<br />:blog', array(
-						':blog' => HTML::anchor(
-							Route::model($entry),
-							'<i class="icon-book icon-white"></i> ' . HTML::chars($entry->name),
-							array('title' => $entry->name)
-						)
-					));
-				}
-				break;
-
 			case self::TYPE_ENTRY:
 				$entry = Model_Blog_Entry::factory($item->data['entry_id']);
 				if ($entry->loaded()) {
-					$text = __('wrote a new blog entry<br />:blog', array(
-						':blog' => HTML::anchor(
-							Route::model($entry),
-							'<i class="icon-book icon-white"></i> ' . HTML::chars($entry->name),
-							array('title' => $entry->name)
-						)
-					));
+					$text = HTML::anchor(
+						Route::model($entry),
+						'<i class="icon-book icon-white"></i> ' . HTML::chars($entry->name),
+						array('title' => $entry->name)
+					);
 				}
 				break;
 

@@ -27,6 +27,11 @@ class Anqh_Model_NewsfeedItem extends AutoModeler {
 		'type'    => array('max_length' => array(':value', 64)),
 	);
 
+	/**
+	 * @var  boolean  Aggregated pseudo model
+	 */
+	protected $_aggregate = false;
+
 
 	/**
 	 * Find Newsfeed items.
@@ -67,7 +72,7 @@ class Anqh_Model_NewsfeedItem extends AutoModeler {
 	 * @return  mixed
 	 */
 	public function __get($key) {
-		if ($key == 'data' && $this->_data['data']) {
+		if ($key == 'data' && $this->_data['data'] && !$this->is_aggregate()) {
 			return json_decode($this->_data['data'], true);
 		}
 
@@ -82,11 +87,26 @@ class Anqh_Model_NewsfeedItem extends AutoModeler {
 	 * @param   mixed   $value
 	 */
 	public function __set($key, $value) {
-		if ($key == 'data' && is_array($value)) {
+		if ($key == 'data' && is_array($value) && !$this->is_aggregate()) {
 			$value = @json_encode($value);
 		}
 
 		parent::__set($key, $value);
+	}
+
+
+	/**
+	 * Get or set item aggregate pseudo status.
+	 *
+	 * @param   boolean  $aggregate
+	 * @return  boolean
+	 */
+	public function is_aggregate($aggregate = null) {
+		if (is_bool($aggregate)) {
+			$this->_aggregate = $aggregate;
+		}
+
+		return $this->_aggregate;
 	}
 
 }

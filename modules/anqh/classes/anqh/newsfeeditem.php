@@ -11,6 +11,12 @@
 abstract class Anqh_NewsfeedItem implements NewsfeedItem_Interface {
 
 	/**
+	 * @var  array  Aggregate types
+	 */
+	public static $aggregate = array();
+
+
+	/**
 	 * Add a Newsfeed item.
 	 *
 	 * @static
@@ -50,6 +56,26 @@ abstract class Anqh_NewsfeedItem implements NewsfeedItem_Interface {
 		$item->save();
 
 		return $item->loaded();
+	}
+
+
+	/**
+	 * Get anchors to aggregated newsfeed item targets.
+	 *
+	 * @static
+	 * @param   Model_NewsfeedItem  $item
+	 * @return  string
+	 */
+	public static function get_links($item) {
+		$links = array();
+
+		foreach ($item->data as $aggregated) {
+			if ($link = static::get_link($aggregated)) {
+				$links[] = $link;
+			}
+		}
+
+		return $links;
 	}
 
 }

@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
@@ -23,6 +23,11 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 	 */
 	const TYPE_TOPIC = 'topic';
 
+	/**
+	 * @var  array  Aggregate types
+	 */
+	public static $aggregate = array(self::TYPE_REPLY, self::TYPE_TOPIC);
+
 
 	/**
 	 * Get newsfeed item as HTML
@@ -32,6 +37,36 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsFeedItem $item) {
+		$link = $item->is_aggregate() ? Text::implode_and(self::get_links($item)) : self::get_link($item);
+		if (!$link) {
+			return '';
+		}
+
+		$text = '';
+		switch ($item->type) {
+
+			case self::TYPE_REPLY:
+				$text = $item->is_aggregate() ? __('replied to topics') : __('replied to a topic');
+				break;
+
+			case self::TYPE_TOPIC:
+				$text = $item->is_aggregate() ? __('started new topics') : __('started a new topic');
+				break;
+
+		}
+
+		return $text . '<br />' . $link;
+	}
+
+
+	/**
+	 * Get anchor to newsfeed item target.
+	 *
+	 * @static
+	 * @param   Model_NewsfeedItem  $item
+	 * @return  string
+	 */
+	public static function get_link(Model_NewsfeedItem $item) {
 		$text = '';
 
 		switch ($item->type) {
@@ -39,26 +74,22 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 			case self::TYPE_REPLY:
 				$topic = Model_Forum_Topic::factory($item->data['topic_id']);
 				if ($topic->loaded()) {
-					$text = __('replied to topic<br />:topic', array(
-						':topic' => HTML::anchor(
-							Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $item->data['post_id'])) . '#post-' . $item->data['post_id'],
-							'<i class="icon-comment icon-white"></i> ' . HTML::chars($topic->name),
-							array('title' => $topic->name)
-						)
-					));
+					$text = HTML::anchor(
+						Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $item->data['post_id'])) . '#post-' . $item->data['post_id'],
+						'<i class="icon-comment icon-white"></i> ' . HTML::chars($topic->name),
+						array('title' => $topic->name)
+					);
 				}
 				break;
 
 			case self::TYPE_TOPIC:
 				$topic = Model_Forum_Topic::factory($item->data['topic_id']);
 				if ($topic->loaded()) {
-					$text = __('started a new topic<br />:topic', array(
-						':topic' => HTML::anchor(
-							Route::model($topic),
-							'<i class="icon-comment icon-white"></i> ' . HTML::chars($topic->name),
-							array('title' => $topic->name)
-						)
-					));
+					$text = HTML::anchor(
+						Route::model($topic),
+						'<i class="icon-comment icon-white"></i> ' . HTML::chars($topic->name),
+						array('title' => $topic->name)
+					);
 				}
 				break;
 

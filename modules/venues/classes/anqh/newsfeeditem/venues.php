@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
@@ -23,6 +23,11 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 	 */
 	const TYPE_VENUE_EDIT = 'venue_edit';
 
+	/**
+	 * @var  array  Aggregate types
+	 */
+	public static $aggregate = array(self::TYPE_VENUE, self::TYPE_VENUE_EDIT);
+
 
 	/**
 	 * Get newsfeed item as HTML
@@ -32,32 +37,48 @@ class Anqh_NewsfeedItem_Venues extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsFeedItem $item) {
+		$link = $item->is_aggregate() ? Text::implode_and(self::get_links($item)) : self::get_link($item);
+		if (!$link) {
+			return '';
+		}
+
 		$text = '';
 		switch ($item->type) {
 
 			case self::TYPE_VENUE:
-		    $venue = Model_Venue::factory($item->data['venue_id']);
-		    if ($venue->loaded()) {
-			    $text = __('added new venue<br />:venue', array(
-				    ':venue' => HTML::anchor(
-					    Route::model($venue),
-				      '<i class="icon-map-marker icon-white"></i> ' . HTML::chars($venue->name),
-					    array('class' => 'venue')
-				    )
-			    ));
-		    }
+				$text = $item->is_aggregate() ?  __('added new venues') : __('added a new venue');
 		    break;
 
 			case self::TYPE_VENUE_EDIT:
+				$text = $item->is_aggregate() ? __('updated venues') : __('updated a venue');
+		    break;
+
+		}
+
+		return $text . '<br />' . $link;
+	}
+
+
+	/**
+	 * Get anchor to newsfeed item target.
+	 *
+	 * @static
+	 * @param   Model_NewsfeedItem  $item
+	 * @return  string
+	 */
+	public static function get_link(Model_NewsfeedItem $item) {
+		$text = '';
+		switch ($item->type) {
+
+			case self::TYPE_VENUE:
+			case self::TYPE_VENUE_EDIT:
 		    $venue = Model_Venue::factory($item->data['venue_id']);
 		    if ($venue->loaded()) {
-			    $text = __('updated venue<br />:venue', array(
-				    ':venue' => HTML::anchor(
-					    Route::model($venue),
-				     '<i class="icon-map-marker icon-white"></i> ' . HTML::chars($venue->name),
-					    array('class' => 'venue')
-				    )
-			    ));
+			    $text = HTML::anchor(
+				    Route::model($venue),
+			     '<i class="icon-map-marker icon-white"></i> ' . HTML::chars($venue->name),
+				    array('class' => 'venue')
+			    );
 		    }
 		    break;
 

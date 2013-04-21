@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_User extends NewsfeedItem {
@@ -28,6 +28,11 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem {
 	 */
 	const TYPE_LOGIN = 'login';
 
+	/**
+	 * @var  array  Aggregate types
+	 */
+	public static $aggregate = array(self::TYPE_FRIEND);
+
 
 	/**
 	 * Get newsfeed item as HTML
@@ -48,14 +53,41 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem {
 		    break;
 
 			case self::TYPE_FRIEND:
-				$friend = Model_User::find_user($item->data['friend_id']);
-				if ($friend->loaded()) {
-					$text = __('added :friend as a friend', array(':friend' => HTML::user($friend)));
+				if ($item->is_aggregate()) {
+					if ($links = self::get_links($item)) {
+						$text = __('added :friends as friends', array(':friends' => Text::implode_and($links)));
+					}
+				} else if ($link = self::get_link($item)) {
+					$text = __('added :friend as a friend', array(':friend' => $item));
 				}
 				break;
 
 			case self::TYPE_LOGIN:
 				$text = __('logged in');
+				break;
+
+		}
+
+		return $text;
+	}
+
+
+	/**
+	 * Get anchor to newsfeed item target.
+	 *
+	 * @static
+	 * @param   Model_NewsfeedItem  $item
+	 * @return  string
+	 */
+	public static function get_link(Model_NewsfeedItem $item) {
+		$text = '';
+		switch ($item->type) {
+
+			case self::TYPE_FRIEND:
+				$friend = Model_User::find_user($item->data['friend_id']);
+				if ($friend->loaded()) {
+					$text = HTML::user($friend);
+				}
 				break;
 
 		}

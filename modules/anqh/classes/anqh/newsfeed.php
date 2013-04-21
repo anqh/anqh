@@ -73,6 +73,82 @@ class Anqh_Newsfeed {
 
 
 	/**
+	 * Aggregate repeating items, daily.
+	 *
+	 * @param   Model_NewsfeedItem[]  $items
+	 * @return  Model_NewsfeedItem[]
+	 */
+	protected function aggregate($items = null) {
+		$aggregated      = array();
+		$aggregate_types = array();
+
+		foreach ($items as $item) {
+
+			// Check if item type is aggregateable
+			$class = 'Newsfeeditem_' . $item->class;
+			if (!isset($aggregate_types[$class])) {
+				$aggregate_types[$class] = class_exists($class) ? Arr::get(get_class_vars($class), 'aggregate', array()) : array();
+			}
+			if (!in_array($item->type, $aggregate_types[$class])) {
+
+				// Not aggregateable
+				$aggregated[] = $item;
+				continue;
+
+			}
+
+			// Generate key
+			$key = $item->user_id . $item->class . $item->type . date('Ymd', $item->stamp);
+			if (isset($aggregated[$key])) {
+
+				// Aggregate to existing key
+
+				/** @var  Model_NewsfeedItem  $aggregate */
+				$aggregate = clone $aggregated[$key];
+
+				// Make it aggregated pseudo item if necessary
+				if (!$aggregate->is_aggregate()) {
+					$_aggregate = new Model_NewsfeedItem;
+					$_aggregate->is_aggregate(true);
+					$_aggregate->set_fields(array(
+						'user_id' => $aggregate->user_id,
+						'stamp'   => $aggregate->stamp,
+						'class'   => $aggregate->class,
+						'type'    => $aggregate->type,
+						'data'    => array(clone $aggregate),
+					));
+					$aggregate = $_aggregate;
+				}
+
+				// Add current item
+				$data      = $aggregate->data;
+				$duplicate = false;
+				foreach ($data as $_item) {
+					if ($_item->data == $item->data) {
+						$duplicate = true;
+						break;
+					}
+				}
+				if (!$duplicate) {
+					$data[]           = $item;
+					$aggregate->data  = $data;
+					$aggregated[$key] = $aggregate;
+				}
+
+			} else {
+
+				// New aggregateable key
+				$aggregated[$key] = $item;
+
+			}
+
+		}
+
+		return $aggregated;
+	}
+
+
+	/**
 	 * Get news feed as array
 	 *
 	 * @return  array
@@ -84,7 +160,7 @@ class Anqh_Newsfeed {
 			// Ignore
 			if ($this->_user && $this->_user->is_ignored($item->user_id)) continue;
 
-			$class = 'Newsfeeditem_' . $item->class;
+			$class  = 'Newsfeeditem_' . $item->class;
 			if (method_exists($class, 'get') && $text = call_user_func(array($class, 'get'), $item)) {
 				$feed[] = array(
 					'user'  => Model_User::find_user_light((int)$item->user_id),
@@ -99,7 +175,7 @@ class Anqh_Newsfeed {
 
 
 	/**
-	 * Load newsfeed items
+	 * Load newsfeed items.
 	 *
 	 * @return  Model_NewsfeedItem[]
 	 */
@@ -109,24 +185,28 @@ class Anqh_Newsfeed {
 
 				// Personal newsfeed
 		    case self::PERSONAL:
-			    $this->_items = Model_NewsfeedItem::find_items($this->max_items, $this->_user ? array($this->_user->id) : null);
+			    $this->_items = array();
+			    foreach (Model_NewsfeedItem::find_items($this->max_items, $this->_user ? array($this->_user->id) : null) as $item) {
+				    $this->_items[] = $item;
+			    }
 	        break;
 
 				// Multiple user newsfeed
 				case self::USERS:
-					$this->_items = empty($this->users) ? array() : Model_NewsfeedItem::find_items($this->max_items, $this->users);
+					$this->_items = $this->aggregate(empty($this->users) ? array() : Model_NewsfeedItem::find_items($this->max_items * 2, $this->users));
 			    break;
 
 				// All users
 		    case self::ALL:
 		    default:
-					$this->_items = Model_NewsfeedItem::find_items($this->max_items);
+					$this->_items = $this->aggregate(Model_NewsfeedItem::find_items($this->max_items * 2));
 			    break;
 
 			}
+
 		}
 
-		return $this->_items;
+		return (count($this->_items) > $this->max_items) ? array_slice($this->_items, 0, $this->max_items) : $this->_items;
 	}
 
 }
