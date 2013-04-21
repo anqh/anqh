@@ -76,6 +76,19 @@ abstract class Anqh_Text extends Kohana_Text {
 
 
 	/**
+	 * Implode strings with commans and an and.
+	 *
+	 * @param   array  $array
+	 * @return  string
+	 */
+	public static function implode_and(array $array) {
+		$last = array_pop($array);
+
+		return implode(', ', $array) . ' ' . __('and') . ' ' . $last;
+	}
+
+
+	/**
 	 * Limit URL to maximum length, cutting from the middle.
 	 *
 	 * @static
