@@ -4,24 +4,21 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Newsfeed {
 
-	/**
-	 * All users newsfeed
-	 */
+	/** All users newsfeed */
 	const ALL = 'default';
 
-	/**
-	 * Personal newsfeed
-	 */
+	/** Personal newsfeed */
 	const PERSONAL = 'personal';
 
-	/**
-	 * Multiple user newsfeed
-	 */
+	/** Update old item instead of adding new, parsed via strtotime() */
+	const UPDATE_WINDOW = '6 hours ago';
+
+	/** Multiple user newsfeed */
 	const USERS = 'users';
 
 	/**
@@ -30,7 +27,7 @@ class Anqh_Newsfeed {
 	protected $_item_count;
 
 	/**
-	 * @var  Database_Result  Feed items
+	 * @var  Model_NewsfeedItem[]  Feed items
 	 */
 	protected $_items;
 
@@ -104,7 +101,7 @@ class Anqh_Newsfeed {
 	/**
 	 * Load newsfeed items
 	 *
-	 * @return  Database_Result
+	 * @return  Model_NewsfeedItem[]
 	 */
 	protected function get_items() {
 		if (empty($this->_items)) {

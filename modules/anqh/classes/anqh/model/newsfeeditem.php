@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_NewsfeedItem extends AutoModeler {
@@ -34,11 +34,11 @@ class Anqh_Model_NewsfeedItem extends AutoModeler {
 	 * @static
 	 * @param   integer  $limit
 	 * @param   array    $users  User ids
-	 * @return  Database_Result
+	 * @return  Model_NewsfeedItem[]
 	 */
 	public static function find_items($limit = 20, array $users = null) {
 		$newsfeeditem = new Model_NewsfeedItem();
-		$query = DB::select_array($newsfeeditem->fields())->order_by('id', 'DESC');
+		$query = DB::select_array($newsfeeditem->fields())->order_by('stamp', 'DESC');
 		if (is_array($users)) {
 			$query = $query->where('user_id', 'IN', $users);
 
