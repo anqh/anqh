@@ -383,7 +383,9 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed($user));
 
 		// Comments
-		$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+		if (isset($section_comments)) {
+			$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+		}
 
 		// Portrait
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_carousel($user));
@@ -560,7 +562,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 			// Image search
 			$this->view->tabs['images'] = array(
-				'link' => Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode(self::$user->username),
+				'link' => Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode($user->username),
 				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photos') . ' &raquo;',
 			);
 		}
