@@ -55,7 +55,10 @@ class Anqh_Model_Blog_Entry extends AutoModeler_ORM implements Permission_Interf
 	 * @return  Database_Result
 	 */
 	public function comments(Model_User $viewer = null) {
-		$query = Model_Comment::query_viewer(DB::select_array(Model_Blog_Comment::factory()->fields()), $viewer);
+		$query = Model_Comment::query_viewer(
+			DB::select_array(Model_Blog_Comment::factory()->fields())
+				->order_by('id', 'DESC'),
+			$viewer);
 
 		return $this->find_related('blog_comments', $query);
 	}

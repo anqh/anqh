@@ -103,7 +103,10 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  Database_Result
 	 */
 	public function comments(Model_User $viewer = null) {
-		$query = Model_Comment::query_viewer(DB::select_array(Model_Image_Comment::factory()->fields()), $viewer);
+		$query = Model_Comment::query_viewer(
+			DB::select_array(Model_Image_Comment::factory()->fields())
+				->order_by('id', 'DESC'),
+			$viewer);
 
 		return $this->find_related('image_comments', $query);
 	}
