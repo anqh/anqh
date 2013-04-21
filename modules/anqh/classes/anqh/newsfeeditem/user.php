@@ -58,7 +58,7 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem {
 						$text = __('added :friends as friends', array(':friends' => Text::implode_and($links)));
 					}
 				} else if ($link = self::get_link($item)) {
-					$text = __('added :friend as a friend', array(':friend' => $item));
+					$text = __('added :friend as a friend', array(':friend' => $link));
 				}
 				break;
 
