@@ -1883,10 +1883,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param   string   $action
 	 * @param   integer  $year
 	 * @param   integer  $month
-	 * @return  View_Galleries_Months
+	 * @return  View_Generic_Months
 	 */
 	public function section_month_browser(array $months, $route = 'galleries', $action = 'browse', $year = null, $month = null) {
-		$section = new View_Galleries_Months($months, $route, $action);
+		$section = new View_Generic_Months($months, $route, $action);
 		$section->year  = $year;
 		$section->month = $month;
 

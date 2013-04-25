@@ -1,13 +1,13 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Galleries_Months
+ * Generic months brorwser.
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class View_Galleries_Months extends View_Section {
+class View_Generic_Months extends View_Section {
 
 	/**
 	 * @var  string  Browse action
