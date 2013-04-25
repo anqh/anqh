@@ -258,6 +258,7 @@ a.friend                               { font-weight: bold; }
 
 div.loading                            { .ajax; position: absolute; right: 5px; .square(16px); top: 5px; }
 
+.months li.selected li.selected        { font-weight: bold; }
 
 .popover                               {
   h3,
@@ -356,7 +357,6 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
   i.icon-star-empty + i.icon-star,
   i.icon-star-empty + i.icon-star-empty { margin-left: 0; }
 }
-.months li.selected li.selected        { font-weight: bold; }
 .exif                                  { background: rgba(0, 0, 0, .75); padding: 5px; position: absolute; right: 0; text-align: right; top: 0;
   .toggle                              { float: right; }
   &:hover dl                           { display: block; }
@@ -397,8 +397,8 @@ div.image                              { text-align: center;
 .imgareaselect-border2,
 .imgareaselect-border3,
 .imgareaselect-border4                 { .opacity(50); }
-.imgareaselect-handle                  { background-color: #fff; border: solid 1px #000; .opacity(50); }
-.imgareaselect-outer                   { background-color: #000; .opacity(50); }
+.imgareaselect-handle                  { background-color: white; border: solid 1px white; .opacity(50); }
+.imgareaselect-outer                   { background-color: black; .opacity(50); }
 .imgareaselect-selection               { }
 
 // Charts
@@ -413,6 +413,14 @@ div.image                              { text-align: center;
   td.track                             { .text-overflow(); }
 }
 
+// Blog
+#blogs                                 {
+  #main .blog-entry                    { padding-bottom: 10px;
+    header h3                          { margin-top: 0; }
+    .body                              { font-family: @altFontFamily; }
+  }
+  #main .blog-entry + .blog-entry      { border-top: 1px solid @grayDark; padding-top: 10px; }
+}
 
 /**
  * Loaned from Foundation by ZURB, http://foundation.zurb.com

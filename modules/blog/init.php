@@ -18,8 +18,15 @@ Route::set('blog_entry', 'blog/<id>(/<action>)', array('action' => 'edit|delete'
 		'controller' => 'blog',
 		'action'     => 'entry',
 	));
+Route::set('blog_user', 'member/<username>/blog(/<year>(/<month>))', array(
+	'year'     => '\d{4}',
+	'month'    => '\d{1,2}',
+	'username' => '[^/]+')
+)->defaults(array(
+		'action'     => 'user',
+		'controller' => 'blog',
+	));
 Route::set('blogs', 'blogs(/<action>)', array('action' => 'add'))
 	->defaults(array(
 		'controller' => 'blog',
 	));
-

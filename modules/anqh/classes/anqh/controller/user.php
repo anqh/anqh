@@ -565,6 +565,12 @@ class Anqh_Controller_User extends Controller_Page {
 				'link' => Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode($user->username),
 				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photos') . ' &raquo;',
 			);
+
+			// Blog
+			$this->view->tabs['blog'] = array(
+				'link' => Route::url('blog_user', array('username' => urlencode($user->username))),
+				'text' => '<i class="icon-book icon-white"></i> ' . __('Blog') . ' &raquo;',
+			);
 		}
 
 	}

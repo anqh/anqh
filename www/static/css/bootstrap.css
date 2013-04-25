@@ -8395,6 +8395,10 @@ div.loading {
   background-repeat: no-repeat;
 }
 
+.months li.selected li.selected {
+  font-weight: bold;
+}
+
 .popover h3,
 .popover p {
   color: #999999;
@@ -8655,10 +8659,6 @@ div.loading {
   margin-left: 0;
 }
 
-.months li.selected li.selected {
-  font-weight: bold;
-}
-
 .exif {
   position: absolute;
   top: 0;
@@ -8800,14 +8800,14 @@ div.image #form-note {
 }
 
 .imgareaselect-handle {
-  background-color: #fff;
-  border: solid 1px #000;
+  background-color: white;
+  border: solid 1px white;
   opacity: 0.5;
   filter: alpha(opacity=50);
 }
 
 .imgareaselect-outer {
-  background-color: #000;
+  background-color: black;
   opacity: 0.5;
   filter: alpha(opacity=50);
 }
@@ -8841,6 +8841,23 @@ div.image #form-note {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#blogs #main .blog-entry {
+  padding-bottom: 10px;
+}
+
+#blogs #main .blog-entry header h3 {
+  margin-top: 0;
+}
+
+#blogs #main .blog-entry .body {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+#blogs #main .blog-entry + .blog-entry {
+  padding-top: 10px;
+  border-top: 1px solid #333333;
 }
 
 /**

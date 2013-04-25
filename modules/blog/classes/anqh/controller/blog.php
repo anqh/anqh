@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Blog extends Controller_Page {
@@ -133,11 +133,12 @@ class Anqh_Controller_Blog extends Controller_Page {
 		}
 
 
+
 		// Build page
 		$this->view           = new View_Page($entry->name);
-		$this->view->subtitle = __('By :user :ago', array(
-			':user'  => HTML::user($entry->author()),
-			':ago'   => HTML::time(Date::fuzzy_span($entry->created), $entry->created)
+		$this->view->subtitle = __('By :user, :date', array(
+			':user' => HTML::user($entry->author()),
+			':date' => date('l ', $entry->created) . Date::format(Date::DMY_SHORT, $entry->created)
 		));
 
 		// Set actions
@@ -170,6 +171,13 @@ class Anqh_Controller_Blog extends Controller_Page {
 			$entry->save();
 		}
 
+		// Month browser
+		$author = Model_User::find_user($entry->author_id);
+		if ($months = $this->_build_months(Model_Blog_Entry::factory()->find_by_user($author))) {
+			$params = array('username' => urlencode($author->username));
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'blog_user', $params, date('Y', $entry->created), date('n', $entry->created)));
+		}
+
 	}
 
 
@@ -177,7 +185,6 @@ class Anqh_Controller_Blog extends Controller_Page {
 	 * Controller default action
 	 */
 	public function action_index() {
-
 		$this->view = new View_Page(__('Blogs'));
 
 		// Set actions
@@ -189,15 +196,106 @@ class Anqh_Controller_Blog extends Controller_Page {
 			);
 		}
 
+		foreach (Model_Blog_Entry::factory()->find_new(20) as $entry) {
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_entry($entry, true));
+		}
+	}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_blogs(Model_Blog_Entry::factory()->find_new(20)));
+
+	/**
+	 * Action: user's blog
+	 */
+	public function action_user() {
+		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
+		if (!$user) {
+			$this->request->redirect(Route::url('blogs'));
+
+			return;
+		}
+
+		$blogs = Model_Blog_Entry::factory()->find_by_user($user);
+		if ($months = $this->_build_months($blogs)) {
+
+			// Default to last month
+			$year  = (int)$this->request->param('year');
+			$month = (int)$this->request->param('month');
+			if (!$year) {
+				$year  = max(array_keys($months));
+				$month = max(array_keys($months[$year]));
+			} else if (!$month) {
+				$month = isset($months[$year]) ? min(array_keys($months[$year])) : 1;
+			}
+
+			$year  = min($year, date('Y'));
+			$month = min(12, max(1, $month));
+
+			// Build page
+			$this->view = View_Page::factory(HTML::chars($user->username) . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))));
+
+			// Pagination
+			$params = array('username' => urlencode($user->username));
+			$this->view->add(View_Page::COLUMN_MAIN, $this->section_month_pagination($months, 'blog_user', $params, $year, $month));
+
+			// Entries
+			if (isset($months[$year]) && isset($months[$year][$month])) {
+				foreach ($months[$year][$month] as $entry) {
+					$this->view->add(View_Page::COLUMN_MAIN, $this->section_entry($entry, true));
+				}
+			}
+
+			// Month browser
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'blog_user', $params, $year, $month));
+
+		} else {
+
+			// No entires found
+			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(__('Alas, the quill seems to be dry, no blog entries found.'), View_Alert::INFO));
+
+		}
+	}
+
+
+	/**
+	 * Build month browser compatible months.
+	 *
+	 * @param   Model_Blog_Entry[]  $blog_entries
+	 * @return  array
+	 */
+	protected function _build_months($blog_entries = null) {
+		$months = array();
+
+		if ($blog_entries && count($blog_entries)) {
+			foreach ($blog_entries as $entry) {
+				list($year, $month) = explode(' ', date('Y n', $entry->created));
+
+				if (!isset($months[$year])) {
+					$months[$year] = array();
+				}
+				if (!isset($months[$year][$month])) {
+					$months[$year][$month] = array();
+				}
+
+				$months[$year][$month][] = $entry;
+			}
+
+			// Sort years
+			krsort($months);
+			foreach ($months as &$year) {
+				krsort($year);
+			}
+
+		}
+
+		return $months;
 	}
 
 
 	/**
 	 * Edit entry
 	 *
-	 * @param  integer  $entry_id
+	 * @param   integer  $entry_id
+	 *
+	 * @throws  Model_Exception
 	 */
 	protected function _edit_entry($entry_id = null) {
 		$this->history = false;
@@ -271,28 +369,6 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 
 	/**
-	 * Get blog entry view.
-	 *
-	 * @param   Model_Blog_Entry  $blog_entry
-	 * @return  View_Blog_Entry
-	 */
-	public function section_entry(Model_Blog_Entry $blog_entry) {
-		return new View_Blog_Entry($blog_entry);
-	}
-
-
-	/**
-	 * Get blog entry edit view.
-	 *
-	 * @param   Model_Blog_Entry  $blog_entry
-	 * @return  View_Blog_Edit
-	 */
-	public function section_entry_edit(Model_Blog_Entry $blog_entry) {
-		return new View_Blog_Edit($blog_entry);
-	}
-
-
-	/**
 	 * Get comments section.
 	 *
 	 * @param   Model_Blog_Entry  $blog_entry
@@ -316,6 +392,107 @@ class Anqh_Controller_Blog extends Controller_Page {
 	 */
 	public function section_comments_teaser($comment_count = 0) {
 		return new View_Generic_CommentsTeaser($comment_count);
+	}
+
+
+	/**
+	 * Get blog entry view.
+	 *
+	 * @param   Model_Blog_Entry  $blog_entry
+	 * @param   boolean           $show_title
+	 * @return  View_Blog_Entry
+	 */
+	public function section_entry(Model_Blog_Entry $blog_entry, $show_title = false) {
+		return new View_Blog_Entry($blog_entry, $show_title);
+	}
+
+
+	/**
+	 * Get blog entry edit view.
+	 *
+	 * @param   Model_Blog_Entry  $blog_entry
+	 * @return  View_Blog_Edit
+	 */
+	public function section_entry_edit(Model_Blog_Entry $blog_entry) {
+		return new View_Blog_Edit($blog_entry);
+	}
+
+
+	/**
+	 * Get months browser.
+	 *
+	 * @param   array    $months
+	 * @param   string   $route
+	 * @param   array    $params
+	 * @param   integer  $year
+	 * @param   integer  $month
+	 * @return  View_Generic_Months
+	 */
+	public function section_month_browser(array $months, $route = 'blog_user', array $params = null, $year = null, $month = null) {
+		$section = new View_Generic_Months($months, $route, $params);
+		$section->year  = $year;
+		$section->month = $month;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get pagination.
+	 *
+	 * @param   array    $months
+	 * @param   string   $route
+	 * @param   array    $params
+	 * @param   integer  $year
+	 * @param   integer  $month
+	 * @return  View_Generic_Pagination
+	 */
+	public function section_month_pagination(array $months, $route, array $params = null, $year, $month) {
+
+		// Previous
+		$all_years  = array_keys($months);
+		$all_year   = array_search($year, $all_years);
+		$all_months = array_keys($months[$year]);
+		$all_month  = array_search($month, $all_months);
+		if ($all_month < count($all_months) - 1) {
+			$previous_year  = $year;
+			$previous_month = $all_months[$all_month + 1];
+		} else if ($all_year < count($all_years) - 1) {
+			$previous_year  = $all_years[$all_year + 1];
+			$previous_month = array_keys($months[$previous_year]);
+			$previous_month = $previous_month[count($previous_month) - 1];
+		} else {
+			$previous_year  = $previous_month = null;
+		}
+
+		// Next
+		if ($all_month > 0) {
+			$next_year  = $year;
+			$next_month = $all_months[$all_month - 1];
+		} else if ($all_year > 0) {
+			$next_year  = $all_years[$all_year - 1];
+			$_months    = array_keys($months[$next_year]);
+			$next_month = reset($_months);
+		} else {
+			$next_year  = $next_month = null;
+		}
+
+		return new View_Generic_Pagination(array(
+			'previous_text' => '&laquo; ' . __('Previous month'),
+			'next_text'     => __('Next month') . ' &raquo;',
+			'previous_url'  => $previous_month
+				? Route::url($route, array_merge((array)$params, array(
+						'year'   => $previous_year,
+						'month'  => $previous_month,
+					)))
+				: false,
+			'next_url'      => $next_month
+				? Route::url($route, array_merge((array)$params, array(
+						'year'   => $next_year,
+						'month'  => $next_month,
+					)))
+				: false,
+		));
 	}
 
 }

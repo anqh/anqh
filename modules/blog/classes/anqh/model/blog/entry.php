@@ -65,6 +65,22 @@ class Anqh_Model_Blog_Entry extends AutoModeler_ORM implements Permission_Interf
 
 
 	/**
+	 * Get all blog entries by user.
+	 *
+	 * @param   Model_User  $user
+	 * @return  Model_Blog_Entry[]
+	 */
+	public function find_by_user(Model_User $user) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('author_id', '=', $user->id)
+				->order_by('id', 'DESC'),
+			null
+		);
+	}
+
+
+	/**
 	 * Find latest blog entries.
 	 *
 	 * @param   integer  $limit
@@ -109,9 +125,13 @@ class Anqh_Model_Blog_Entry extends AutoModeler_ORM implements Permission_Interf
 		    return true;
 
 			case self::PERMISSION_CREATE:
+				return (bool)$user;
+
 			case self::PERMISSION_COMMENT:
 			case self::PERMISSION_COMMENTS:
-		    return (bool)$user;
+				$author = Model_User::find_user($this->author_id);
+
+		    return $user && ($this->author_id == $user->id || (!$author->is_ignored($user) && !$author->is_ignored($user, true)));
 
 			case self::PERMISSION_DELETE:
 			case self::PERMISSION_UPDATE:
