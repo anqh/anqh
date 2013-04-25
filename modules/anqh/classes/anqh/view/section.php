@@ -19,9 +19,19 @@ class Anqh_View_Section extends View_Base {
 	public $articles = array();
 
 	/**
+	 * @var  string  Section avatar
+	 */
+	public $avatar;
+
+	/**
 	 * @var  string  ARIA role
 	 */
 	public $role;
+
+	/**
+	 * @var  string  Section subtitle
+	 */
+	public $subtitle;
 
 	/**
 	 * @var  array  Section tabs
@@ -55,6 +65,16 @@ class Anqh_View_Section extends View_Base {
 
 
 	/**
+	 * Get section avatar.
+	 *
+	 * @return  string
+	 */
+	public function avatar() {
+		return $this->avatar;
+	}
+
+
+	/**
 	 * Render content.
 	 *
 	 * @return  string
@@ -74,22 +94,35 @@ class Anqh_View_Section extends View_Base {
 	 * @return  string
 	 */
 	public function header() {
-		$title = $this->title();
-		$tabs  = $this->tabs();
-		if ($title || $tabs):
+		$title    = $this->title();
+		$subtitle = $this->subtitle();
+		$tabs     = $this->tabs();
+		if ($title || $subtitle || $tabs):
 			ob_start();
 
 			$attributes = array();
 			if ($this->title_sticky):
 				$attributes['class'] = 'sticky';
 			endif;
+			if ($avatar = $this->avatar()):
+				$attributes['class'] .= ' media';
+			endif;
 
 ?>
 
 <header<?= HTML::attributes($attributes) ?>>
 
+	<?php if ($avatar): ?>
+	<div class="pull-left"><?= $avatar ?></div>
+	<div class="media-body">
+	<?php endif; ?>
+
 	<?php if ($title): ?>
 	<h3><?= $title ?></h3>
+	<?php endif; ?>
+
+	<?php if ($subtitle): ?>
+	<p><?= $subtitle ?></p>
 	<?php endif; ?>
 
 	<?php if ($tabs): ?>
@@ -98,6 +131,10 @@ class Anqh_View_Section extends View_Base {
 		<li<?= !empty($tab['selected']) ? ' class="active"' : ''?>><?= $tab['tab'] ?></li>
 		<?php endforeach; ?>
 	</ul>
+	<?php endif; ?>
+
+	<?php if ($avatar): ?>
+	</div>
 	<?php endif; ?>
 
 </header>
@@ -137,7 +174,7 @@ class Anqh_View_Section extends View_Base {
 
 	<?= $this->header() ?>
 
-	<div>
+	<div class="body">
 		<?= $this->content() ?>
 	</div>
 
@@ -153,6 +190,16 @@ class Anqh_View_Section extends View_Base {
 		endif;
 
 		return $render;
+	}
+
+
+	/**
+	 * Get section title.
+	 *
+	 * @return  string
+	 */
+	public function subtitle() {
+		return $this->subtitle;
 	}
 
 
