@@ -1886,12 +1886,13 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @return  View_Generic_Months
 	 */
 	public function section_month_browser(array $months, $route = 'galleries', $action = 'browse', $year = null, $month = null) {
-		$section = new View_Generic_Months($months, $route, $action);
+		$section = new View_Generic_Months($months, $route, array('action' => $action));
 		$section->year  = $year;
 		$section->month = $month;
 
 		return $section;
 	}
+
 
 	/**
 	 * Get pagination.

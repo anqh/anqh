@@ -10,11 +10,6 @@
 class View_Generic_Months extends View_Section {
 
 	/**
-	 * @var  string  Browse action
-	 */
-	public $action;
-
-	/**
 	 * @var  string  View class
 	 */
 	public $class = 'months';
@@ -28,6 +23,11 @@ class View_Generic_Months extends View_Section {
 	 * @var  array
 	 */
 	public $months;
+
+	/**
+	 * @var  array  Route params
+	 */
+	public $params;
 
 	/**
 	 * @var  string  Browse route
@@ -45,14 +45,14 @@ class View_Generic_Months extends View_Section {
 	 *
 	 * @param  array   $months
 	 * @param  string  $route
-	 * @param  string  $action
+	 * @param  array   $params
 	 */
-	public function __construct(array $months, $route, $action) {
+	public function __construct(array $months, $route, array $params = null) {
 		parent::__construct();
 
 		$this->months = $months;
 		$this->route  = $route;
-		$this->action = $action;
+		$this->params = $params;
 	}
 
 
@@ -71,24 +71,22 @@ class View_Generic_Months extends View_Section {
 
 	<?php foreach ($this->months as $years => $y): ?>
 		<li<?= $this->year == $years ? ' class="selected"' : '' ?>>
-			<h4><?php echo HTML::anchor(
-				Route::get($this->route)->uri(array(
-					'action' => $this->action,
+			<h4><?= HTML::anchor(
+				Route::get($this->route)->uri(array_merge((array)$this->params, array(
 					'year'   => $years,
-				)),
+				))),
 				$years == 1970 ? __('Unknown') : $years
 			) ?></h4>
 			<ol class="unstyled">
 
 			<?php foreach ($y as $m => $count): ?>
-				<li<?= $this->year == $years && $this->month == $m ? ' class="selected"' : '' ?>><?php echo HTML::anchor(
-					Route::get($this->route)->uri(array(
-						'action' => $this->action,
+				<li<?= $this->year == $years && $this->month == $m ? ' class="selected"' : '' ?>><?= HTML::anchor(
+					Route::get($this->route)->uri(array_merge((array)$this->params, array(
 						'year'   => $years,
 						'month'  => $m
-					)),
+					))),
 					$m > 0 ? strftime('%b', strtotime("$years-$m-1")) : '???'
-				) ?> (<?= $count ?>)</li>
+				) ?> (<?= is_array($count) ? count($count) : $count ?>)</li>
 			<?php endforeach ?>
 
 			</ol><br />
