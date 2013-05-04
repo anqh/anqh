@@ -49,25 +49,25 @@ class View_Music_Edit extends View_Article {
 
 ?>
 
-			<div class="span8">
+			<div class="span7">
 				<fieldset>
 					<?= Form::control_group(
-						Form::input('name', $this->track->name, array('class' => 'span8')),
+						Form::input('name', $this->track->name, array('class' => 'input-block-level')),
 						array('name' => __('Name')),
 						Arr::get($this->errors, 'name')) ?>
 
 					<?= Form::control_group(
-						Form::input('url', $this->track->url, array('class' => 'span8', 'placeholder' => 'http://')),
+						Form::input('url', $this->track->url, array('class' => 'input-block-level', 'placeholder' => 'http://')),
 						array('url' => __('URL')),
 						Arr::get($this->errors, 'url')) ?>
 
 					<?= Form::control_group(
-						Form::textarea_editor('description', $this->track->description, array('class' => 'span8'), true),
+						Form::textarea_editor('description', $this->track->description, array('class' => 'input-block-level'), true),
 						array('description' => __('Description')),
 						Arr::get($this->errors, 'description')) ?>
 
 					<?php if ($this->track->type == Model_Music_Track::TYPE_MIX) echo Form::control_group(
-						Form::textarea('tracklist', $this->track->tracklist, array('class' => 'span8'), true),
+						Form::textarea('tracklist', $this->track->tracklist, array('class' => 'input-block-level'), true),
 						array('tracklist' => __('Tracklist')),
 						Arr::get($this->errors, 'tracklist')) ?>
 
@@ -81,11 +81,11 @@ class View_Music_Edit extends View_Article {
 				</fieldset>
 			</div>
 
-			<div class="span4">
+			<div class="span3">
 				<fieldset>
 
 					<?= Form::control_group(
-						Form::input('cover', $this->track->cover, array('class' => 'span4', 'placeholder' => 'http://')),
+						Form::input('cover', $this->track->cover, array('class' => 'input-block-level', 'placeholder' => 'http://')),
 						array('cover' => __('Cover')),
 						Arr::get($this->errors, 'cover')) ?>
 

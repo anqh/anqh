@@ -85,7 +85,7 @@ class View_User_Settings extends View_Section {
 	</fieldset>
 </div>
 
-<div class="span4">
+<div class="span3">
 	<fieldset id="fields-contact">
 		<legend><?php echo __('Contact information') ?></legend>
 
@@ -117,7 +117,7 @@ class View_User_Settings extends View_Section {
 	</fieldset>
 </div>
 
-<fieldset class="span8 form-actions">
+<fieldset class="span7 form-actions">
 	<?= Form::hidden('latitude', $this->user->latitude) ?>
 	<?= Form::hidden('longitude', $this->user->longitude) ?>
 

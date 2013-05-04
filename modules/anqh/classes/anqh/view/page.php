@@ -12,6 +12,10 @@ class Anqh_View_Page extends View_Base {
 	const COLUMN_MAIN = 'main';
 	const COLUMN_SIDE = 'side';
 	const COLUMN_TOP  = 'top';
+	const SPANS_82    = '8+2';
+	const SPANS_73    = '7+3';
+	const SPANS_64    = '6+4';
+	const SPANS_55    = '5+5';
 
 	/**
 	 * @var  array  Page actions
@@ -52,6 +56,11 @@ class Anqh_View_Page extends View_Base {
 	 * @var  array  Skinned stylesheets
 	 */
 	public $skins = array();
+
+	/**
+	 * @var  string  Content column span sizes
+	 */
+	public $spans = self::SPANS_73;
 
 	/**
 	 * @var  array  Basic stylesheets
@@ -142,9 +151,10 @@ class Anqh_View_Page extends View_Base {
 		if (!empty($this->_content[$column])):
 			ob_start();
 
+			$spans = explode('+', $this->spans);
 			switch ($column):
-				case self::COLUMN_MAIN: $class = 'span7'; break;
-				case self::COLUMN_SIDE: $class = 'span3'; break;
+				case self::COLUMN_MAIN: $class = 'span' . $spans[0]; break;
+				case self::COLUMN_SIDE: $class = 'span' . $spans[1]; break;
 				case self::COLUMN_TOP:  $class = 'span10'; break;
 				default:                $class = '';
 			endswitch;
@@ -155,7 +165,7 @@ class Anqh_View_Page extends View_Base {
 
 				<?= implode("\n", $this->_content[$column]) ?>
 
-				<?= Ads::slot($column) ?>
+				<?= $column === self::COLUMN_SIDE ? '' : Ads::slot($column) ?>
 
 			</div><!-- #<?= $column ?> -->
 

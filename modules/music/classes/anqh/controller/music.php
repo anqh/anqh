@@ -195,32 +195,34 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view->tab = 'charts';
 		$this->_set_page_actions();
 
-		$this->view->add(View_Page::COLUMN_MAIN, '<div class="row">');
+		$this->view->add(View_Page::COLUMN_TOP, '<div class="row">');
 
 		// Top charts
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_charts(
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_charts(
 			Model_Music_Track::factory()->find_top_weekly(Model_Music_Track::TYPE_MIX, 10),
 			__('Top :top Mixtapes', array(':top' => 10))
 		));
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_charts(
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_charts(
 			Model_Music_Track::factory()->find_top_weekly(Model_Music_Track::TYPE_TRACK, 10),
 			__('Top :top Tracks', array(':top' => 10))
 		));
 
-		$this->view->add(View_Page::COLUMN_MAIN, '</div>');
+		$this->view->add(View_Page::COLUMN_TOP, '</div><div class="row">');
 
 
 		// New
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_list(
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_list(
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_MIX, 10),
 			__('New mixtapes')
 		));
 
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_list(
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_list(
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_TRACK, 10),
 			__('New tracks')
 		));
+
+		$this->view->add(View_Page::COLUMN_TOP, '</div>');
 	}
 
 
@@ -328,7 +330,7 @@ class Anqh_Controller_Music extends Controller_Page {
 	public function section_charts($tracks, $title) {
 		$view = new View_Music_Charts($tracks);
 		$view->title = $title;
-		$view->class = 'span4';
+		$view->class = 'span5';
 
 		return $view;
 	}
@@ -363,6 +365,7 @@ class Anqh_Controller_Music extends Controller_Page {
 	public function section_list($tracks, $title) {
 		$view = new View_Music_List($tracks);
 		$view->title = $title;
+		$view->class = 'span5';
 
 		return $view;
 	}

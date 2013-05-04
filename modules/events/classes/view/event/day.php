@@ -170,7 +170,7 @@ class View_Event_Day extends View_Article {
 
 	</div>
 
-	<div class="span7">
+	<div class="span6">
 
 		<?= $this->header() ?>
 

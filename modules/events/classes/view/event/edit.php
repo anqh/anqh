@@ -60,7 +60,7 @@ class View_Event_Edit extends View_Article {
 
 			<div id="preview"></div>
 
-			<div class="span8">
+			<div class="span7">
 
 				<?php if ($this->event_errors || $this->venue_errors): ?>
 				<div class="alert alert-error">
@@ -109,7 +109,7 @@ class View_Event_Edit extends View_Article {
 				</fieldset>
 			</div>
 
-			<div class="span4">
+			<div class="span3">
 
 				<fieldset id="fields-when" class="row">
 					<?= Form::control_group(
@@ -219,7 +219,7 @@ class View_Event_Edit extends View_Article {
 
 				<fieldset id="fields-music">
 					<legend><?= __('Music') ?></legend>
-					<?= Form::checkboxes_wrap('tag', $this->tags(), $this->event->tags(), null, $this->event_errors, null, 'block-grid three-up') ?>
+					<?= Form::checkboxes_wrap('tag', $this->tags(), $this->event->tags(), null, $this->event_errors, null, 'block-grid two-up') ?>
 				</fieldset>
 			</div>
 

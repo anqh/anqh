@@ -67,7 +67,7 @@ class View_Generic_Months extends View_Section {
 ?>
 
 <nav>
-	<ol class="block-grid four-up">
+	<ol class="block-grid three-up">
 
 	<?php foreach ($this->months as $years => $y): ?>
 		<li<?= $this->year == $years ? ' class="selected"' : '' ?>>
