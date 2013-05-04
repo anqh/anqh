@@ -7808,9 +7808,17 @@ blockquote {
   text-align: right;
 }
 
+#mainmenu .brand i {
+  visibility: hidden;
+}
+
 #mainmenu .brand:hover {
   color: #999999;
   text-decoration: none;
+}
+
+#mainmenu .brand:hover i {
+  visibility: visible;
 }
 
 #mainmenu .nav-list {

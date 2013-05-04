@@ -446,7 +446,7 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 	<nav id="mainmenu" role="navigation">
-		<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+		<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
 		<ul class="nav nav-list" role="menubar">
 			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
