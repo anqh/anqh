@@ -8039,11 +8039,6 @@ section.border > header .nav-tabs,
   bottom: -1px;
 }
 
-section.border > header .nav-tabs > .active > a,
-#side section:not(.full) > header .nav-tabs > .active > a {
-  background: #222222;
-}
-
 section.border > div,
 #side section:not(.full) > div {
   padding: 10px;
