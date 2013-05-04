@@ -45,7 +45,7 @@ abstract class Anqh_Controller_Page extends Controller {
 			// Stylesheets
 			$styles = array(
 				'ui/jquery-ui.css', // Deprecated
-				'http://fonts.googleapis.com/css?family=Terminal+Dosis'
+//				'http://fonts.googleapis.com/css?family=Terminal+Dosis'
 			);
 
 			$skins = array(

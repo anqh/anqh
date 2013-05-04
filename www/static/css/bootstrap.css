@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:900,100);
+
 /*!
  * Bootstrap v2.3.0
  *
@@ -7576,7 +7578,7 @@ body > .container.tabs-right.tabbable-bodered > .tab-content {
 }
 
 body {
-  padding-top: 50px;
+  padding-top: 10px;
   background: #1a1a1a url(../img/background.png);
 }
 
@@ -7785,10 +7787,118 @@ blockquote {
   border-left-color: #333333;
 }
 
+#mainmenu {
+  background: rgba(34, 34, 34, 0.75);
+  border-radius: 4px;
+}
+
+#mainmenu .brand {
+  display: block;
+  padding-bottom: 10px;
+  font: small-caps 900 28px/28px Roboto, "Helvetica Neue", Helvetica, Arial, sans-seif;
+  letter-spacing: -1px;
+  color: white;
+  text-align: right;
+}
+
+#mainmenu .brand:hover {
+  text-decoration: none;
+}
+
+#mainmenu .nav-list {
+  padding: 0;
+}
+
+#mainmenu .nav-list li a {
+  margin: 0;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+#mainmenu .nav-list .active a {
+  background: rgba(0, 0, 0, 0.5);
+  border-right: 4px solid #0088cc;
+}
+
+#mainmenu .nav-list li:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.75);
+}
+
+#mainmenu .nav-list li + li {
+  border-top: 1px solid rgba(51, 51, 51, 0.75);
+}
+
+#mainmenu .nav-list li.menuitem-notifications {
+  text-align: center;
+  border: 0 none;
+}
+
+#mainmenu .nav-list li.menuitem-notifications .close {
+  margin-left: 10px;
+}
+
+#mainmenu .nav-list li.menuitem-profile {
+  overflow: hidden;
+  border-top: 0 none;
+}
+
+#mainmenu .nav-list li.menuitem-profile a {
+  padding: 0;
+}
+
+#mainmenu .nav-list li.menuitem-profile a.avatar {
+  padding: 4px;
+}
+
+#mainmenu .nav-list li.menuitem-profile a.user {
+  line-height: 33px;
+}
+
+#mainmenu .nav-list li.menuitem-profile .caret {
+  margin: 12px 0 0 2px;
+  border-top-color: #c6c6c6;
+}
+
+#mainmenu .nav-list li.collapse {
+  border: 0 none;
+}
+
+#mainmenu .nav-list li.collapse .nav-list {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+#mainmenu .nav-list li.collapse .nav-list li {
+  border: 0 none;
+}
+
+#mainmenu .nav-list li.collapse .nav-list li a {
+  padding-left: 32px;
+}
+
 #header {
-  background: #161616;
-  border-bottom: 1px solid #1f1f1f;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  *zoom: 1;
+}
+
+#header:before,
+#header:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+#header:after {
+  clear: both;
+}
+
+#header .section-title {
+  padding-bottom: 10px;
+  margin-left: -20px;
+  font: 100 24px/30px Roboto, "Helvetica Neue", Helvetica, Arial, sans-seif;
+  color: white;
+  text-transform: lowercase;
+}
+
+#header .section-title:hover {
+  text-decoration: none;
 }
 
 .navbar {

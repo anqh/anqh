@@ -134,20 +134,20 @@ class Anqh_View_Page extends View_Base {
 	 * @see  COLUMN_*
 	 */
 	public function content($column) {
-		if ($deprecated = Widget::get($column)) {
+		if ($deprecated = Widget::get($column)):
 			$this->_content[$column] = (array)$this->_content[$column];
 			array_unshift($this->_content[$column], $deprecated);
-		}
+		endif;
 
-		if (!empty($this->_content[$column])) {
+		if (!empty($this->_content[$column])):
 			ob_start();
 
-			switch ($column) {
-				case self::COLUMN_MAIN: $class = 'span8'; break;
-				case self::COLUMN_SIDE: $class = 'span4'; break;
-				case self::COLUMN_TOP:  $class = 'span12'; break;
+			switch ($column):
+				case self::COLUMN_MAIN: $class = 'span7'; break;
+				case self::COLUMN_SIDE: $class = 'span3'; break;
+				case self::COLUMN_TOP:  $class = 'span10'; break;
 				default:                $class = '';
-			}
+			endswitch;
 
 ?>
 
@@ -162,7 +162,7 @@ class Anqh_View_Page extends View_Base {
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}
@@ -178,25 +178,21 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<div id="content" class="container">
+	<?= $this->_title() ?>
 
-		<?= $this->_title() ?>
+	<div class="row">
 
-		<div class="row">
+		<?= $this->content(self::COLUMN_TOP) ?>
 
-			<?= $this->content(self::COLUMN_TOP) ?>
+	</div>
 
-		</div>
+	<div class="row">
 
-		<div class="row">
+		<?= $this->content(self::COLUMN_MAIN) ?>
 
-			<?= $this->content(self::COLUMN_MAIN) ?>
+		<?= $this->content(self::COLUMN_SIDE) ?>
 
-			<?= $this->content(self::COLUMN_SIDE) ?>
-
-		</div>
-
-	</div><!-- #content -->
+	</div>
 
 <?php
 
@@ -380,26 +376,21 @@ class Anqh_View_Page extends View_Base {
 	protected function _header() {
 		ob_start();
 
+		$menu = Kohana::$config->load('site.menu.' . $this->id);
+
 ?>
 
-	<header id="header" class="navbar navbar-fixed-top navbar-inverse">
-		<div class="container">
-			<div class="pull-left">
+	<header id="header">
+		<div class="pull-left">
 
-<?= $this->_mainmenu() ?>
+			<?= $menu ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
 
-			</div>
-			<div class="pull-right">
-
-<?php if (self::$_user_id):
-	echo $this->_visitor();
-else:
-	echo $this->_signin();
-endif; ?>
-
-			</div>
 		</div>
+		<div class="pull-right navbar">
 
+			<?= $this->_search() ?>
+
+		</div>
 	</header><!-- #header -->
 
 <?php
@@ -435,6 +426,34 @@ endif; ?>
 
 
 	/**
+	 * Render main menu.
+	 *
+	 * @return  string
+	 */
+	protected function _menu() {
+		ob_start();
+
+?>
+
+	<nav id="mainmenu" role="navigation">
+		<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+
+		<ul class="nav nav-list" role="menubar">
+			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
+
+			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
+			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white"></i> ' . $item['text']) ?></li>
+			<?php endforeach; ?>
+		</ul>
+	</nav><!-- #mainmenu -->
+
+<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
 	 * Render page.
 	 *
 	 * @return  string
@@ -451,22 +470,52 @@ endif; ?>
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
+	<div id="body" class="container">
+		<div class="row">
 
-	<!-- HEADER -->
+			<div id="sidebar" class="span2">
 
-	<?= $this->_header() ?>
+				<!-- MENU -->
 
-	<!-- /HEADER -->
+				<?= $this->_menu() ?>
+
+				<!-- /MENU -->
 
 
-	<?= Ads::slot(Ads::TOP) ?>
+				<!-- ADS -->
+
+				<?= Ads::slot(Ads::SIDE) ?>
+
+				<!-- /ADS -->
+
+			</div><!-- /#sidebar -->
+
+			<div id="content" class="span10">
+
+				<!-- HEADER -->
+
+				<?= $this->_header() ?>
+
+				<!-- /HEADER -->
 
 
-	<!-- CONTENT -->
+				<!-- ADS -->
 
-	<?= $this->_content() ?>
+				<?= Ads::slot(Ads::TOP) ?>
 
-	<!-- /CONTENT -->
+				<!-- /ADS -->
+
+
+				<!-- CONTENT -->
+
+				<?= $this->_content() ?>
+
+				<!-- /CONTENT -->
+
+			</div><!-- /#content -->
+
+		</div>
+	</div>
 
 
 	<!-- FOOTER -->
@@ -489,6 +538,58 @@ endif; ?>
 
 
 	/**
+	 * Search form.
+	 *
+	 * @return  string
+	 */
+	protected function _search() {
+		ob_start();
+
+?>
+
+<ul class="nav">
+
+	<li role="menuitem">
+		<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
+		<label class="span2">
+			<i class="icon-calendar icon-white"></i>
+			<?= Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters'))); ?>
+		</label>
+		<?= Form::close(); ?>
+	</li>
+
+	<li role="menuitem">
+		<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
+		<label class="span2">
+			<i class="icon-user icon-white"></i>
+			<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
+		</label>
+		<?= Form::close(); ?>
+	</li>
+
+	<li role="menuitem">
+		<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
+		<label class="span2">
+			<i class="icon-camera icon-white"></i>
+			<?= Form::input('search-images', null, array(
+					'class'         => 'input-small search-query',
+					'placeholder'   => __('Search images..'),
+					'title'         => __('Enter at least 2 characters'),
+					'data-redirect' => Route::url('galleries', array('action' => 'search')) . '?user=:value'
+				)); ?>
+		</label>
+		<?= Form::close(); ?>
+	</li>
+
+</ul>
+
+<?php
+
+		return ob_get_clean();
+	}
+
+
+	/**
 	 * Login form.
 	 *
 	 * @return  string
@@ -498,7 +599,7 @@ endif; ?>
 
 ?>
 
-	<nav id="visitor">
+	<li>
 		<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'navbar-form form-inline')) ?>
 		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
 		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
@@ -510,7 +611,7 @@ endif; ?>
 				array('class' => 'btn btn-lovely', 'title' => __("Did we mention it's FREE!"))
 			) ?>
 		<?= Form::close(); ?>
-	</nav>
+	</li>
 
 <?php
 
@@ -695,73 +796,30 @@ endif; ?>
 
 ?>
 
-	<nav id="visitor" class="navbar-text">
-		<ul class="nav" role="menubar">
-			<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
-			<li role="menuitem" class="menuitem-profile"><?= HTML::avatar(self::$_user->avatar, self::$_user->username, true) ?></li>
+	<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
+	<li class="menuitem-profile" role="menuitem">
+		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small pull-left') ?>
+		<a class="user" href="#menu-profile" data-toggle="collapse"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
+	</li>
 
-			<li class="dropdown menu-me" role="menuitem" aria-haspopup="true">
-				<a class="dropdown-toggle" href="#" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
-				<ul class="dropdown-menu pull-right" role="menu">
-					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user icon-white"></i> ' . __('Profile')) ?><li>
-					<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope icon-white"></i> ' . __('Private messages')) ?></li>
-					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar icon-white"></i> ' . __('Favorites')) ?></li>
-					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart icon-white"></i> ' . __('Friends')) ?></li>
-					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle icon-white"></i> ' . __('Ignores')) ?></li>
-					<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog icon-white"></i> ' . __('Settings')) ?></li>
-					<?php if (self::$_user->has_role('admin')) { ?>
-					<li class="divider"></li>
-					<li class="nav-header"><?= __('Admin functions') ?></li>
-					<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk icon-white"></i> ' . __('Roles')) ?></li>
-					<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags icon-white"></i> ' . __('Tags')) ?></li>
-					<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal icon-white"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
-					<?php } ?>
-					<li class="divider"></li>
-					<li role="menuitem">
-						<?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-off icon-white"></i> ' . __('Sign out')) ?>
-					</li>
-				</ul>
-			</li>
-
-			<li class="dropdown menu-search" role="menuitem" aria-haspopup="true">
-					<a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon-search icon-white"></i> <b class="caret"></b></a>
-					<ul class="dropdown-menu pull-right" role="menu">
-						<li role="menuitem">
-							<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
-							<label class="span2">
-								<i class="icon-calendar icon-white"></i>
-								<?= Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters'))); ?>
-							</label>
-							<?= Form::close(); ?>
-						</li>
-						<li role="menuitem">
-							<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
-							<label class="span2">
-								<i class="icon-user icon-white"></i>
-								<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
-							</label>
-							<?= Form::close(); ?>
-						</li>
-						<li role="menuitem">
-							<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
-							<label class="span2">
-								<i class="icon-camera icon-white"></i>
-								<?= Form::input('search-images', null, array(
-										'class'         => 'input-small search-query',
-										'placeholder'   => __('Search images..'),
-										'title'         => __('Enter at least 2 characters'),
-										'data-redirect' => Route::url('galleries', array('action' => 'search')) . '?user=:value'
-									)); ?>
-							</label>
-							<?= Form::close(); ?>
-						</li>
-					</ul>
-			</li>
-
-
+	<li id="menu-profile" class="menu-me collapse" role="menuitem">
+		<ul class="nav nav-list" role="menu">
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user icon-white"></i> ' . __('Profile')) ?><li>
+			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope icon-white"></i> ' . __('Private messages')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar icon-white"></i> ' . __('Favorites')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart icon-white"></i> ' . __('Friends')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle icon-white"></i> ' . __('Ignores')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog icon-white"></i> ' . __('Settings')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-off icon-white"></i> ' . __('Sign out')) ?></li>
+			<?php if (self::$_user->has_role('admin')): ?>
+<!--			<li class="divider"></li>-->
+			<li class="nav-header"><?= __('Admin functions') ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk icon-white"></i> ' . __('Roles')) ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags icon-white"></i> ' . __('Tags')) ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal icon-white"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
+			<?php endif; ?>
 		</ul>
-	</nav><!-- #visitor -->
-
+	</li>
 
 <?php
 
