@@ -1117,16 +1117,16 @@ $(function() {
 			event.preventDefault();
 		});
 		$search.find('[name=search-events]').autocompleteEvent({
-			action:   'redirect',
-			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
+			action:   'redirect'/*,
+			position: { my: 'right top', at: 'left top', of: '#form-search-events', collision: 'flip' }*/
 		});
 		$search.find('[name=search-users]').autocompleteUser({
-			action:   'redirect',
-			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
+			action:   'redirect'/*,
+			position: { my: 'right top', at: 'right bottom', of: '#form-search-users', collision: 'flip' }*/
 		});
 		$search.find('[name=search-images]').autocompleteUser({
 			action:   'redirect',
-			position: { my: 'right top', at: 'left top', of: '.menu-search ul', collision: 'flip' }
+			position: { my: 'right top', at: 'right bottom', of: '#form-search-images', collision: 'flip' }
 		});
 	}
 

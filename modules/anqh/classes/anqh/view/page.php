@@ -386,7 +386,7 @@ class Anqh_View_Page extends View_Base {
 			<?= $menu ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
 
 		</div>
-		<div class="pull-right navbar">
+		<div class="pull-right">
 
 			<?= $this->_search() ?>
 
@@ -547,9 +547,9 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<ul class="nav">
+<ul id="search" class="nav nav-pills">
 
-	<li role="menuitem">
+	<li>
 		<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
 		<label class="span2">
 			<i class="icon-calendar icon-white"></i>
@@ -558,7 +558,7 @@ class Anqh_View_Page extends View_Base {
 		<?= Form::close(); ?>
 	</li>
 
-	<li role="menuitem">
+	<li
 		<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
 		<label class="span2">
 			<i class="icon-user icon-white"></i>
@@ -567,7 +567,7 @@ class Anqh_View_Page extends View_Base {
 		<?= Form::close(); ?>
 	</li>
 
-	<li role="menuitem">
+	<li>
 		<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
 		<label class="span2">
 			<i class="icon-camera icon-white"></i>
