@@ -7802,7 +7802,7 @@ blockquote {
 #mainmenu .brand {
   display: block;
   padding-bottom: 10px;
-  font: small-caps 900 28px/28px Roboto, "Helvetica Neue", Helvetica, Arial, sans-seif;
+  font: small-caps 900 28px/28px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: -1px;
   color: white;
   text-align: right;
@@ -7841,6 +7841,14 @@ blockquote {
 
 #mainmenu .nav-list li + li {
   border-top: 1px solid rgba(51, 51, 51, 0.75);
+}
+
+#mainmenu .nav-list li.login {
+  padding: 0 10px 10px;
+}
+
+#mainmenu .nav-list li.login input {
+  margin-bottom: 0;
 }
 
 #mainmenu .nav-list li.menuitem-notifications {
@@ -7908,7 +7916,7 @@ blockquote {
 #header .section-title {
   padding-bottom: 10px;
   margin-left: -20px;
-  font: 100 24px/30px Roboto, "Helvetica Neue", Helvetica, Arial, sans-seif;
+  font: 100 24px/30px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: white;
   text-transform: lowercase;
 }
@@ -7916,42 +7924,6 @@ blockquote {
 #header .section-title:hover {
   color: #999999;
   text-decoration: none;
-}
-
-.navbar {
-  margin-bottom: 0;
-  background: #111111;
-}
-
-.navbar .brand {
-  margin-left: 0;
-}
-
-.navbar .menu-search label {
-  margin-left: 0;
-}
-
-.navbar #visitor {
-  clear: both;
-}
-
-.navbar #visitor li.menuitem-notifications a.close {
-  margin-left: 10px;
-}
-
-.navbar #visitor li.menuitem-profile {
-  width: 30px;
-}
-
-.navbar #visitor li.menuitem-profile a {
-  width: auto;
-  height: auto;
-  padding: 5px 0 0;
-  margin: 0;
-}
-
-.navbar form {
-  margin: 5px 20px;
 }
 
 #title {
