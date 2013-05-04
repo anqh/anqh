@@ -84,9 +84,10 @@ legend .control-group                  { float: right; }
 
 .nav > li > a:hover                    { background-color: @grayDarker; }
 .nav-tabs                              { border-bottom-color: @grayDark; }
-.nav-tabs > li > a:hover               { border-color: @grayDarker @grayDarker @grayDark; }
+.nav-tabs > li > a                     { border-width: 0 0 4px 0; padding-bottom: 5px; }
+.nav-tabs > li > a:hover               { background-color: transparent; border-color: @grayDark; }
 .nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover        { border-color: @grayDark; border-bottom-color: transparent; color: @white; }
+.nav-tabs > li.active > a:hover        { background-color: transparent; border-color: @linkColor; border-width: 0 0 4px 0; color: @white; }
 .nav-tabs .open .dropdown-toggle,
 .nav-pills .open .dropdown-toggle,
 .nav > li.dropdown.open.active > a:hover { background-color: @grayDark; border-color: @grayDark; }
@@ -99,7 +100,7 @@ blockquote                             { border-left-color: @grayDark; }
 // Main menu
 #mainmenu                              { background: fadeout(@grayDarker, 25%); border-radius: 4px;
   .brand                               { color: white; display: block; font: small-caps @customFontWeightBold 28px/28px @customFontFamily; letter-spacing: -1px; padding-bottom: 10px; text-align: right; }
-  .brand:hover                         { text-decoration: none; }
+  .brand:hover                         { color: @textColor; text-decoration: none; }
   .nav-list                            { padding: 0;
     li a                               { margin: 0; text-shadow: 0 -1px 0 rgba(0, 0, 0, .25); }
     .active a                          { background: rgba(0, 0, 0, .5); border-right: 4px solid @linkColor; }
@@ -125,7 +126,7 @@ blockquote                             { border-left-color: @grayDark; }
 
 #header                                { .clearfix;
   .section-title                       { color: white; font: @customFontWeightLight 24px/30px @customFontFamily; margin-left: -@gridGutterWidth; padding-bottom: 10px; text-transform: lowercase; }
-  .section-title:hover                 { text-decoration: none; }
+  .section-title:hover                 { color: @textColor; text-decoration: none; }
 }
 //.navbar-fixed-top                      { background: rgba(0, 0, 0, .8); border-bottom: 1px solid #1f1f1f; box-shadow: 0 0 5px rgba(0, 0, 0, .8); }
 //#header .container                     { #grid > .core > .span(@gridColumns); }

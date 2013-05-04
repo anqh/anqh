@@ -7761,15 +7761,22 @@ legend .control-group {
   border-bottom-color: #333333;
 }
 
+.nav-tabs > li > a {
+  padding-bottom: 5px;
+  border-width: 0 0 4px 0;
+}
+
 .nav-tabs > li > a:hover {
-  border-color: #222222 #222222 #333333;
+  background-color: transparent;
+  border-color: #333333;
 }
 
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover {
   color: #ffffff;
-  border-color: #333333;
-  border-bottom-color: transparent;
+  background-color: transparent;
+  border-color: #0088cc;
+  border-width: 0 0 4px 0;
 }
 
 .nav-tabs .open .dropdown-toggle,
@@ -7802,6 +7809,7 @@ blockquote {
 }
 
 #mainmenu .brand:hover {
+  color: #999999;
   text-decoration: none;
 }
 
@@ -7898,6 +7906,7 @@ blockquote {
 }
 
 #header .section-title:hover {
+  color: #999999;
   text-decoration: none;
 }
 
