@@ -236,10 +236,8 @@ class Anqh_Controller_Events extends Controller_Page {
 	/**
 	 * Action: import flyers
 	 */
-	public function action_flyers() {
+	public function _deprecated_action_flyers() {
 		$this->history = false;
-
-		Permission::required(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user);
 
 		// Action
 		if ($event_ids = (array)Arr::get($_REQUEST, 'event_id')) {
@@ -594,12 +592,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_updated());
 
 		// Set actions
-		if (Permission::has(new Model_Flyer, Model_Flyer::PERMISSION_IMPORT, self::$user)) {
-			$this->view->actions[] = array(
-				'link' => Route::url('events', array('action' => 'flyers')),
-				'text' => '<i class="icon-download-alt icon-white"></i> ' . __('Import flyers'),
-			);
-		}
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::get('events')->uri(array('action' => 'add')),

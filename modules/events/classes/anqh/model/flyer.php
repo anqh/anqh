@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
@@ -18,11 +18,6 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	 * Permission to read comments
 	 */
 	const PERMISSION_COMMENTS = 'comments';
-
-	/**
-	 * Permission to import flyers from flyer_url
-	 */
-	const PERMISSION_IMPORT = 'import';
 
 	protected $_table_name = 'flyers';
 
@@ -248,7 +243,6 @@ GROUP BY 1
 	public function has_permission($permission, $user) {
 		switch ($permission) {
 			case self::PERMISSION_DELETE:
-			case self::PERMISSION_IMPORT:
 				return $user && $user->has_role(array('admin', 'photo moderator'));
 
 			case self::PERMISSION_COMMENT:
