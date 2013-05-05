@@ -74,7 +74,7 @@ class View_Event_Carousel extends View_Section {
 
 		<div class="item<?= $flyer->image_id == $active_id ? ' active' : '' ?>">
 
-			<?= HTML::image($flyer->image()->get_url(), array('width' => 290)) ?>
+			<?= HTML::anchor(Route::model($flyer), HTML::image($flyer->image()->get_url(), array('width' => 290))) ?>
 
 			<?php if (isset($action_uri)): ?>
 
