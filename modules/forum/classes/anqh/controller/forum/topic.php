@@ -124,6 +124,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Build page
 		$this->view             = new View_Page();
+		$this->view->title      = $topic->name;
 		$this->view->title_html = Forum::topic($topic);
 		$this->view->subtitle   = __($topic->post_count == 1 ? ':posts post' : ':posts posts', array(':posts' => Num::format($topic->post_count, 0)));
 		$this->view->tab        = 'topic';
@@ -518,6 +519,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Build page
 		$this->view = new View_Page();
+		$this->view->title      = $topic->name;
 		$this->view->title_html = Forum::topic($topic);
 
 		$this->view->add(View_Page::COLUMN_MAIN, $section);
@@ -588,6 +590,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				$recipients = $topic->find_recipient_names();
 			}
 
+			$this->view->title      = $topic->name;
 			$this->view->title_html = Forum::topic($topic);
 			$cancel = Route::model($topic);
 

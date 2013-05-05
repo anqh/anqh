@@ -686,7 +686,7 @@ class Anqh_View_Page extends View_Base {
 	 * @return  string
 	 */
 	protected function _title() {
-		if ($this->title || $this->actions || $this->breadcrumbs || $this->tabs) {
+		if ($this->title || $this->title_html || $this->actions || $this->breadcrumbs || $this->tabs) {
 			ob_start();
 
 ?>

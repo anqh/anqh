@@ -175,13 +175,15 @@ class View_Image_Full extends View_Section {
 			foreach ($notes as $note) {
 				$note_user    = $note->user();
 				$note_array[] = array(
-					'id'     => (int)$note->id,
-					'x'      => (int)$note->x,
-					'y'      => (int)$note->y,
-					'width'  => (int)$note->width,
-					'height' => (int)$note->height,
-					'name'   => $note_user ? $note_user['username'] : $note->name,
-					'url'    => $note_user ? URL::base() . URL::user($note_user) : null
+					'id'          => (int)$note->id,
+					'x'           => (int)$note->x,
+					'y'           => (int)$note->y,
+					'width'       => (int)$note->width,
+					'height'      => (int)$note->height,
+					'imageWidth'  => (int)$this->image->width,
+					'imageHeight' => (int)$this->image->height,
+					'name'        => $note_user ? $note_user['username'] : $note->name,
+					'url'         => $note_user ? URL::base() . URL::user($note_user) : null
 				);
 			}
 		}
@@ -244,54 +246,75 @@ class View_Image_Full extends View_Section {
 
 <script>
 head.ready('anqh', function() {
+	var $image      = $('a.image')
+	  , $form       = $('#form-note')
+	  , imageWidth  = $image.width()
+	  , imageHeight = $image.height()
+	  , formWidth   = $form.outerWidth()
+	  , formHeight  = $form.outerHeight();
 
 	// Add notes
-	$('a.image').notes(<?= json_encode($note_array) ?>);
+	$image.notes(<?= json_encode($note_array) ?>);
 
 	// Autocomplete
 	$('input[name=name]').autocompleteUser();
 
+	// Cancel note edit
+	function cancelForm() {
+		$image.find('img').imgAreaSelect({ remove: true });
+		$form.hide();
+
+		return false;
+	}
+
+	// Update form location and contents
+	function updateForm(img, area) {
+
+		// Selection might be scaled
+		var scaleX = imageWidth / <?= $this->image->width ?>
+		  , scaleY = imageHeight / <?= $this->image->height ?>
+		  , x      = area.x1 * scaleX
+		  , y      = area.y1 * scaleY
+		  , height = area.height * scaleY;
+
+		$form
+			.css({
+				left: ((x + formWidth) > imageWidth ? imageWidth - formWidth : x) + 'px',
+				top:  ((y + height + 5 + formHeight) > imageHeight ? (y - 5 - formHeight) : (y + height + 5)) + 'px'
+			})
+			.show();
+
+		$form.find('input[name=x]').val(area.x1);
+		$form.find('input[name=y]').val(area.y1);
+		$form.find('input[name=width]').val(area.width);
+		$form.find('input[name=height]').val(area.height);
+	}
+
 	// Hook new note
 	$('a.note-add').on('click', function onNoteAdd() {
+		$image.find('img').imgAreaSelect({ remove: true });
 
-		function updateForm(img, area) {
-			$('#form-note')
-				.css({
-					left: area.x1 + "px",
-					top: area.y1 + area.height + 5 + "px"
-				})
-				.show();
-
-			$('#form-note input[name=x]').val(area.x1);
-			$('#form-note input[name=y]').val(area.y1);
-			$('#form-note input[name=width]').val(area.width);
-			$('#form-note input[name=height]').val(area.height);
-		}
-
-		$('a.image img').imgAreaSelect({
+		$image.find('img').imgAreaSelect({
 			onInit:         updateForm,
 			onSelectChange: updateForm,
 			handles:        true,
 			persistent:     true,
+			imageWidth:     <?= $this->image->width ?>,
+			imageHeight:    <?= $this->image->height ?>,
 			minWidth:       50,
 			minHeight:      50,
 			maxWidth:       150,
 			maxHeight:      150,
-			x1:             parseInt($('a.image').width() / 2) - 50,
-			y1:             parseInt($('a.image').height() / 2) - 50,
-			x2:             parseInt($('a.image').width() / 2) + 50,
-			y2:             parseInt($('a.image').height() / 2) + 50
+			x1:             parseInt(imageWidth / 2) - 50,
+			y1:             parseInt(imageHeight / 2) - 50,
+			x2:             parseInt(imageWidth / 2) + 50,
+			y2:             parseInt(imageHeight / 2) + 50
 		});
 
 		return false;
 	});
 
-	$('#form-note a.cancel').on('click', function onNoteCancel() {
-		$('a.image img').imgAreaSelect({ hide: true });
-		$('#form-note').hide();
-
-		return false;
-	});
+	$form.on('click', 'a.cancel', cancelForm);
 
 });
 </script>

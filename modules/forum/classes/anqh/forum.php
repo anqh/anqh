@@ -63,7 +63,7 @@ class Anqh_Forum {
 			$prefix = '<span class="label label-info">' . __('Sticky') . '</span> ' . $prefix;
 		}
 
-		return $prefix . HTML::chars($topic->name());
+		return $prefix . HTML::chars($topic->name);
 	}
 
 }

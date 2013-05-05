@@ -763,13 +763,11 @@ $.fn.foursquareVenue = function(options) {
 
 // Image notes
 $.fn.notes = function(n) {
-	var notes;
-	var image = this;
-	var imageOffset = $(image).position();
-
-	if (undefined != n) {
-		notes = n;
-	}
+	var notes       = n || {}
+	  , $image      = $(this)
+	  , imageOffset = $image.position()
+	  , imageWidth  = $image.width()
+	  , imageHeight = $image.height();
 
 	$(notes).each(function() {
 		add(this);
@@ -778,43 +776,40 @@ $.fn.notes = function(n) {
 	$(window).resize(function() {
 		$('.note').remove();
 
+		imageOffset = $image.position();
+    imageWidth  = $image.width();
+    imageHeight = $image.height();
 		$(notes).each(function() {
 			add(this);
 		});
 	});
 
 
-	function add(note_data){
-		var note_left = parseInt(imageOffset.left) + parseInt(note_data.x);
-		var note_top  = parseInt(imageOffset.top) + parseInt(note_data.y);
+	function add(note_data) {
+		var scaleX = imageWidth / note_data.imageWidth || 1
+		  , scaleY = imageHeight / note_data.imageHeight || 1
+		  , noteX  = parseInt(imageOffset.left) + parseInt(note_data.x)
+			, noteY  = parseInt(imageOffset.top) + parseInt(note_data.y);
 
-		var note = $('<div class="note" id="note-' + note_data.id + '"></div>').css({
-			'left': note_left + 'px',
-			'top': note_top + 'px'
+		var $note = $('<div class="note" id="note-' + note_data.id + '" />').css({
+			left: noteX * scaleX + 'px',
+			top:  noteY * scaleY + 'px'
 		});
-		var area = $('<div class="notea"></div>').css({
-			'width': note_data.width + 'px',
-			'height': note_data.height + 'px'
+		var $area = $('<div class="notea" />').css({
+			width:  note_data.width * scaleX + 'px',
+			height: note_data.height * scaleY + 'px'
 		});
-		var text = $('<div class="notet label label-inverse"></div>');
-		if (note_data.url) {
-			text.append($('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>'));
-		} else {
-			text.append(note_data.name);
-		}
+		var $text = $('<div class="notet label label-inverse" />')
+			.append(note_data.url ? $('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>') : note_data.name);
 
-		note
-			.append(area)
-			.append(text);
-		image.after(note);
+		$note
+			.append($area)
+			.append($text);
+		$image.after($note);
 
 		$('[data-note-id=' + note_data.id + ']') && $('[data-note-id=' + note_data.id + ']').hover(
-			function() {
-				area.css({ 'visibility': 'visible' });
-			},
-			function() {
-				area.css({ 'visibility': 'hidden' });
-			}
+			function _show() { $area.css({ visibility: 'visible' }); },
+			function _hide() { $area.css({ visibility: 'hidden' }); }
 		);
 	}
 
