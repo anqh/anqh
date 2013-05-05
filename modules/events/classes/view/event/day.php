@@ -124,8 +124,6 @@ class View_Event_Day extends View_Article {
 	public function flyer() {
 		if ($image = $this->event->flyer_front()):
 			$icon = $image->get_url($image::SIZE_ICON);
-		elseif ($image = $this->event->flyer_back()):
-			$icon = $image->get_url($image::SIZE_ICON);
 		elseif (count($flyers = $this->event->flyers())):
 			$image = $flyers[0]->image();
 			$icon  = $image->get_url($image::SIZE_ICON);

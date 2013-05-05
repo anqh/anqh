@@ -412,26 +412,14 @@ class Anqh_Controller_Events extends Controller_Page {
 			$this->page_title = HTML::chars($event->name);
 		}
 
-		if (isset($_REQUEST['front'])) {
+		if (isset($_REQUEST['default'])) {
 
 			// Change front flyer
 			/** @var  Model_Flyer  $flyer */
-			$flyer = Model_Flyer::factory()->find_by_image((int)$_REQUEST['front']);
+			$flyer = Model_Flyer::factory()->find_by_image((int)$_REQUEST['default']);
 			if (Security::csrf_valid() && $flyer->loaded() && $flyer->event_id == $event->id) {
 				$event->flyer_front_image_id = $flyer->image_id;
 				$event->flyer_front_url      = $flyer->image()->get_url();
-				$event->save();
-			}
-			$cancel = true;
-
-		} else if (isset($_REQUEST['back'])) {
-
-			// Change back flyer
-			/** @var  Model_Flyer  $flyer */
-			$flyer = Model_Flyer::factory()->find_by_image((int)$_REQUEST['back']);
-			if (Security::csrf_valid() && $flyer->loaded() && $flyer->event_id == $event->id) {
-				$event->flyer_back_image_id = $flyer->image_id;
-				$event->flyer_back_url      = $flyer->image()->get_url();
 				$event->save();
 			}
 			$cancel = true;
@@ -445,7 +433,7 @@ class Anqh_Controller_Events extends Controller_Page {
 				if ($flyer->image_id == $event->flyer_front_image_id) {
 					$event->flyer_front_image_id = null;
 					$event->flyer_front_url      = null;
-				} else if ($flyer->image_id == $event->flyer_back_image_id->id) {
+				} else if ($flyer->image_id == $event->flyer_back_image_id) {
 					$event->flyer_back_image_id = null;
 					$event->flyer_back_url      = null;
 				}
@@ -499,20 +487,10 @@ class Anqh_Controller_Events extends Controller_Page {
 //					$event->add('flyers', $image);
 				}
 
-				if ($event->flyer_front_image_id) {
-					if (!$event->flyer_back_image_id) {
-
-						// Back flyer not set, set it
-						$event->flyer_back_image_id = $image->id;
-						$event->flyer_back_url      = $image->get_url();
-
-					}
-				} else {
-
-					// Front flyer not set, set it
+				// Front flyer not set, set it
+				if (!$event->flyer_front_image_id) {
 					$event->flyer_front_image_id = $image->id;
 					$event->flyer_front_url      = $image->get_url();
-
 				}
 				$event->save();
 
@@ -1021,50 +999,6 @@ head.ready("anqh", function() {
 	public function section_event_favorites(Model_Event $event) {
 		$section = new View_Users_List($favorites = $event->find_favorites());
 		$section->title = __('Favorites') . ' <small><i class="icon-heart icon-white"></i> ' . count($favorites) . '</small>';
-
-		return $section;
-	}
-
-
-	/**
-	 * Get side image.
-	 *
-	 * @param   Model_Event  $event
-	 * @return  View_Generic_SideImage
-	 */
-	protected function section_event_image(Model_Event $event) {
-
-		// Display front flyer by default
-		if ($image = $event->flyer_front()) {
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
-			$link  = Route::model($flyer);
-		} else if ($image = $event->flyer_back()) {
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
-			$link  = Route::model($flyer);
-		} else if (count($flyers = $event->flyers())) {
-			$flyer = $flyers[0];
-			$image = $flyer->image();
-			$link  = Route::model($flyer);
-		} else {
-			$image = null;
-			$link  = null;
-		}
-
-		if (Permission::has($event, Model_User::PERMISSION_UPDATE, self::$user)) {
-			$uri     = Route::model($event, 'image');
-			$actions = array();
-			$actions[] = HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' . __('Add flyer'), array('class' => 'btn btn-small btn-primary image-add ajaxify'));
-			if ($image) {
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&front=' . $image->id,  __('As front'), array('class' => 'btn btn-small btn-inverse image-change' . ($event->flyer_front_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'front'));
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&back=' . $image->id,   __('As back'),  array('class' => 'btn btn-small btn-inverse image-change' . ($event->flyer_back_image_id == $image->id ? ' disabled' : ''), 'data-change' => 'back'));
-				$actions[] = HTML::anchor($uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-small btn-inverse image-delete'));
-			}
-		} else {
-			$actions = null;
-		}
-
-		$section = new View_Generic_SideImage($image, $link);
-		$section->actions = $actions;
 
 		return $section;
 	}

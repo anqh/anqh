@@ -52,8 +52,6 @@ class View_Event_HoverCard extends View_Section {
 		// Flyer
 		if ($this->event->flyer_front):
 			echo '<figure>', HTML::image($this->event->flyer_front->get_url(Model_Image::SIZE_THUMBNAIL)), '</figure>';
-		elseif ($this->event->flyer_back):
-			echo '<figure>', HTML::image($this->event->flyer_back->get_url(Model_Image::SIZE_THUMBNAIL)), '</figure>';
 		elseif (Valid::url($this->event->flyer_front_url)):
 			echo '<br /><figure>', HTML::image($this->event->flyer_front_url, array('width' => 160)), '</figure>';
 		endif;

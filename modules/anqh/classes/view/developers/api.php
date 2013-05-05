@@ -140,9 +140,6 @@ $.ajax({
 				"flyer_front":null,
 				"flyer_front_thumb":null,
 				"flyer_front_icon":null,
-				"flyer_back":null,
-				"flyer_back_thumb":null,
-				"flyer_back_icon":null,
 				"favorite_count":"0",
 				"music":"kiksu, pesukonetechno, progepsyketechnohouse, polkka, chill..",
 				"url":"http://alpha.klubitus.org/event/1501-massive-the-birthday-bash"

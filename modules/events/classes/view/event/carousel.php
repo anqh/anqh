@@ -80,14 +80,9 @@ class View_Event_Carousel extends View_Section {
 
 			<div class="btn-group">
 				<?php if ($flyer->image_id == $this->event->flyer_front_image_id):
-					echo HTML::anchor('#', __('As front'), array('class' => 'btn btn-mini image-change disabled'));
-					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&back=' . $flyer->image_id, __('As back'), array('class' => 'btn btn-mini image-change'));
-				elseif ($flyer->image_id == $this->event->flyer_back_image_id):
-					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&front=' . $flyer->image_id, __('As front'), array('class' => 'btn btn-mini image-change'));
-					echo HTML::anchor('#', __('As back'), array('class' => 'btn btn-mini image-change disabled'));
+					echo HTML::anchor('#', '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn btn-mini image-change disabled'));
 				else:
-					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&front=' . $flyer->image_id, __('As front'), array('class' => 'btn btn-mini image-change'));
-					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&back=' . $flyer->image_id, __('As back'), array('class' => 'btn btn-mini image-change'));
+					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $flyer->image_id, '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn btn-mini image-change'));
 				endif; ?>
 				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=' . $flyer->image_id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-mini image-delete')) ?>
 			</div>

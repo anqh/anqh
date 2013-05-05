@@ -1601,9 +1601,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if ($image = $event->flyer_front()) {
 			$flyer = Model_Flyer::factory()->find_by_image($image->id);
 			$link  = Route::model($flyer);
-		} else if ($image = $event->flyer_back()) {
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
-			$link  = Route::model($flyer);
 		} else if (count($flyers = $event->flyers())) {
 			$flyer = $flyers[0];
 			$image = $flyer->image();
