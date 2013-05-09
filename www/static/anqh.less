@@ -103,7 +103,7 @@ blockquote                             { border-left-color: @grayDark; }
   .brand i                             { visibility: hidden; }
   .brand:hover                         { color: @textColor; text-decoration: none; }
   .brand:hover i                       { visibility: visible; }
-  .mainmenu                            { background: fadeout(@grayDarker, 25%); border-radius: 4px; overflow: hidden;
+  .mainmenu                            { background: fadeout(@grayDarker, 25%); border-radius: 4px; overflow: hidden; }
   .nav-list                            { padding: 0;
     li a                               { margin: 0; text-shadow: 0 -1px 0 rgba(0, 0, 0, .25); }
     .active a                          { background: rgba(0, 0, 0, .5); border-right: 4px solid @linkColor; }
@@ -113,6 +113,7 @@ blockquote                             { border-left-color: @grayDark; }
       input                            { margin-bottom: 0; }
     }
     li.menuitem-notifications          { border: 0 none; text-align: center;
+      & > span > a                     { margin: 5px 3px; }
       .close                           { margin-left: 10px; }
     }
     li.menuitem-profile                { border-top: 0 none; overflow: hidden;

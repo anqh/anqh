@@ -7817,16 +7817,9 @@ blockquote {
 }
 
 #mainmenu .mainmenu {
+  overflow: hidden;
   background: rgba(34, 34, 34, 0.75);
   border-radius: 4px;
-}
-
-#mainmenu .mainmenu > li:first-child a {
-  border-radius: 4px 4px 0 0;
-}
-
-#mainmenu .mainmenu > li:last-child a {
-  border-radius: 0 0 4px 4px;
 }
 
 #mainmenu .nav-list {
@@ -7862,6 +7855,10 @@ blockquote {
 #mainmenu .nav-list li.menuitem-notifications {
   text-align: center;
   border: 0 none;
+}
+
+#mainmenu .nav-list li.menuitem-notifications > span > a {
+  margin: 5px 3px;
 }
 
 #mainmenu .nav-list li.menuitem-notifications .close {

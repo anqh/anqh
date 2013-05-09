@@ -807,7 +807,8 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 	<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
-	<li class="menuitem-profile" role="menuitem">
+
+		<li class="menuitem-profile" role="menuitem">
 		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small pull-left') ?>
 		<a class="user" href="#menu-profile" data-toggle="collapse"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
 	</li>
@@ -822,7 +823,6 @@ class Anqh_View_Page extends View_Base {
 			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog icon-white"></i> ' . __('Settings')) ?></li>
 			<li role="menuitem"><?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-off icon-white"></i> ' . __('Sign out')) ?></li>
 			<?php if (self::$_user->has_role('admin')): ?>
-<!--			<li class="divider"></li>-->
 			<li class="nav-header"><?= __('Admin functions') ?></li>
 			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk icon-white"></i> ' . __('Roles')) ?></li>
 			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags icon-white"></i> ' . __('Tags')) ?></li>
