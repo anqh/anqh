@@ -363,6 +363,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					// Newsfeed
 					NewsfeedItem_Galleries::flyer_edit(self::$user, $flyer);
 
+					if ($event_id && $event->loaded() && !$event->flyer_front_image_id) {
+						$event->flyer_front_image_id = $flyer->image_id;
+						$event->flyer_front_url      = $flyer->image()->get_url();
+						$event->save();
+					}
 				}
 
 			  $this->request->redirect(Route::get('flyer')->uri(array('id' => $flyer->id)));

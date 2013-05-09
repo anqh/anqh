@@ -7794,11 +7794,6 @@ blockquote {
   border-left-color: #333333;
 }
 
-#mainmenu {
-  background: rgba(34, 34, 34, 0.75);
-  border-radius: 4px;
-}
-
 #mainmenu .brand {
   display: block;
   padding-bottom: 10px;
@@ -7819,6 +7814,19 @@ blockquote {
 
 #mainmenu .brand:hover i {
   visibility: visible;
+}
+
+#mainmenu .mainmenu {
+  background: rgba(34, 34, 34, 0.75);
+  border-radius: 4px;
+}
+
+#mainmenu .mainmenu > li:first-child a {
+  border-radius: 4px 4px 0 0;
+}
+
+#mainmenu .mainmenu > li:last-child a {
+  border-radius: 0 0 4px 4px;
 }
 
 #mainmenu .nav-list {

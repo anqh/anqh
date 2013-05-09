@@ -57,7 +57,7 @@ class View_Index_Shouts extends View_Section {
 
 	<?php foreach (array_reverse($shouts) as $shout) { ?>
 	<li>
-		<?= HTML::time(Date::format('HHMM', $shout['created']), $shout['created']) ?>
+		<?= HTML::time(Date::format('HHMM', $shout['created']), array('datetime' => $shout['created'], 'class' => 'muted')) ?>
 		<?= HTML::user($shout['user_id']) ?>:
 		<?= Text::smileys(Text::auto_link_urls(HTML::chars($shout['shout']))) ?>
 	</li>

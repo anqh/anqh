@@ -448,7 +448,7 @@ class Anqh_View_Page extends View_Base {
 	<nav id="mainmenu" role="navigation">
 		<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
-		<ul class="nav nav-list" role="menubar">
+		<ul class="nav nav-list mainmenu" role="menu">
 			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
 
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
