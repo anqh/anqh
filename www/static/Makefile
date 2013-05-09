@@ -1,8 +1,8 @@
 BOOTSTRAP = ./css/bootstrap.css
 BOOTSTRAP_LESS = ./bootstrap.less
 BOOTSTRAP_RESPONSIVE = ./css/bootstrap-responsive.css
-BOOTSTRAP_RESPONSIVE_LESS = ./bootstrap-j/less/responsive.less
-JASNY_BOOTSTRAP_RESPONSIVE_LESS = ./bootstrap-j/less/jasny-responsive.less
+BOOTSTRAP_RESPONSIVE_LESS = ./responsive.less
+JASNY_BOOTSTRAP_RESPONSIVE_LESS = ./jasny-responsive.less
 IMG = img/
 JS = js/
 FONT = css/
