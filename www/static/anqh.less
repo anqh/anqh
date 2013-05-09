@@ -42,7 +42,7 @@ form                                   {
   &:only-child                         { margin-top: 0; }
 }
 
-legend                                 { border-bottom: 1px solid #111; box-shadow: 0 1px 0 @grayDarker; color: @grayLighter; }
+legend                                 { border-bottom: 1px solid @grayDarkest; box-shadow: 0 1px 0 @grayDarker; color: @grayLighter; }
 textarea,
 input[type="text"],
 input[type="password"],
@@ -58,12 +58,23 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"],
-.uneditable-input                      { box-shadow: inset 0 1px 7px rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .1); color: @white; }
+.uneditable-input                      { box-shadow: inset 0 2px 2px rgba(0, 0, 0, .25), 0 1px 0 rgba(255, 255, 255, .1); color: @white; }
 select                                 { color: @white; }
-.form-actions                          { border-top: #111; margin: 0; }
+.form-actions                          { border-top: @grayDarkest; margin: 0; }
 .input-append .add-on,
 .input-prepend .add-on                 { background: @grayDarker; border-color: @inputBorder; text-shadow: 0 1px 0 @black; }
 legend .control-group                  { float: right; }
+
+.label-special                         { background-color: @purple; }
+.label-special:hover                   { background-color: darken(@purple, 10%); }
+.btn-lovely                            { .buttonBackground(lighten(@pink, 15%), @pink); }
+.btn-special                           { .buttonBackground(lighten(@purple, 15%), @purple); }
+.btn-lovely,
+.btn-lovely:hover,
+.btn-special,
+.btn-special:hover                     { color: @white; text-shadow: 0 -1px 0 rgba(0, 0, 0, .25); }
+.bth-lovely.active,
+.btn-special.active                    { color: rgba(255, 255, 255, .75); }
 
 .close                                 { color: @textColor; }
 
@@ -92,7 +103,9 @@ legend .control-group                  { float: right; }
 .nav-pills .open .dropdown-toggle,
 .nav > li.dropdown.open.active > a:hover { background-color: @grayDark; border-color: @grayDark; }
 
-.thumbnail                             { border: 1px solid @grayDark; }
+.table:last-child                      { margin-bottom: 0; }
+
+.thumbnail                             { border: 1px solid @grayDarkest; }
 
 blockquote                             { border-left-color: @grayDark; }
 
@@ -103,27 +116,31 @@ blockquote                             { border-left-color: @grayDark; }
   .brand i                             { visibility: hidden; }
   .brand:hover                         { color: @textColor; text-decoration: none; }
   .brand:hover i                       { visibility: visible; }
-  .mainmenu                            { background: fadeout(@grayDarker, 25%); border-radius: 4px; overflow: hidden; }
+  .mainmenu                            { background: fadeout(@grayDarker, 25%); border: 1px solid @grayDarkest; border-radius: 4px; box-shadow: 0 0 3px rgba(0, 0, 0, .25); overflow: hidden; }
   .nav-list                            { padding: 0;
     li a                               { margin: 0; text-shadow: 0 -1px 0 rgba(0, 0, 0, .25); }
     .active a                          { background: rgba(0, 0, 0, .5); border-right: 4px solid @linkColor; }
     li:not(:last-child)                { border-bottom: 1px solid rgba(0, 0, 0, .75); }
     li + li                            { border-top: 1px solid fadeout(@grayDark, 25%); }
-    li.login                           { padding: 0 10px 10px;
+    li.login,
+    li.menuitem-notifications,
+    li.menuitem-profile,
+    li.menuitem-me                     { background: rgba(0, 0, 0, .25); }
+    li.login                           { padding: 10px;
       input                            { margin-bottom: 0; }
     }
     li.menuitem-notifications          { border: 0 none; text-align: center;
       & > span > a                     { margin: 5px 3px; }
       .close                           { margin-left: 10px; }
     }
-    li.menuitem-profile                { border-top: 0 none; overflow: hidden;
+    li.menuitem-profile                { border-bottom: 0 none; overflow: hidden;
       a                                { padding: 0; }
       a.avatar                         { padding: 4px; }
       a.user                           { line-height: 33px; }
       .caret                           { border-top-color: @anchorColor; margin: 12px 0 0 2px; }
     }
     li.collapse                        { border: 0 none;
-      .nav-list                        { background: rgba(0, 0, 0, .25);
+      .nav-list                        { background: transparent; /*rgba(0, 0, 0, .25);*/
         li                             { border: 0 none; }
         li a                           { padding-left: 32px; }
       }
@@ -148,8 +165,8 @@ blockquote                             { border-left-color: @grayDark; }
 #side > article + article              { margin-top: @gridGutterWidth; }
 
 .ad                                    {
-  &.ad140x350                          { height: 350px; margin-top: @gridGutterWidth; width: 140px; }
-  &.ad728x90                           { margin: 10px auto; max-height: 90px; width: 728px; }
+  &.ad140x350                          { margin-top: @gridGutterWidth; max-height: 350px; max-width: 140px; }
+  &.ad728x90                           { margin: 10px auto; max-height: 90px; max-width: 728px; }
 }
 
 section                                { overflow: hidden;
@@ -160,17 +177,17 @@ section                                { overflow: hidden;
   li:hover .transparent                { opacity: 1; }
 }
 section.border,
-#side section:not(.full)               { border: 1px solid @grayDark;
-  & > header                           { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDark; padding: 10px 10px 9px;
+#side section:not(.full)               { border: 1px solid @grayDarkest; box-shadow: 0 0 3px rgba(0, 0, 0, .25);
+  & > header                           { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDarkest; padding: 10px 10px 9px;
     h3                                 { margin: 0; }
     .nav                               { right: 3px; top: 3px; }
     .nav-tabs                          { bottom: -1px; top: auto; }
   }
   & > div                              { background: @grayDarker; padding: 10px; }
 }
-section.table                          { margin-bottom: 0;
-  table                                { border: 1px solid @grayDark; }
-  thead                                { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDark;
+section.table                          { box-shadow: 0 0 3px rgba(0, 0, 0, .25); margin-bottom: 0;
+  table                                { border: 1px solid @grayDarkest; }
+  thead                                { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDarkest;
     h3                                 { padding: 5px; }
   }
   tbody                                { background: @grayDarker; }
@@ -250,17 +267,6 @@ footer.meta                            { color: @gray; }
 .ie .droparea                          { display: none; }
 
 // Miscellaneous
-.label-special                         { background-color: @purple; }
-.label-special:hover                   { background-color: darken(@purple, 10%); }
-.btn-lovely                            { .buttonBackground(lighten(@pink, 15%), @pink); }
-.btn-special                           { .buttonBackground(lighten(@purple, 15%), @purple); }
-.btn-lovely,
-.btn-lovely:hover,
-.btn-special,
-.btn-special:hover                     { color: @white; text-shadow: 0 -1px 0 rgba(0,0,0,.25); }
-.bth-lovely.active,
-.btn-special.active                    { color: rgba(255, 255, 255, .75); }
-
 .input-max                             { width: 100%; }
 input.date                             { width: 62px; }
 select.time                            { width: 75px; }

@@ -449,11 +449,11 @@ class Anqh_View_Page extends View_Base {
 		<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
 		<ul class="nav nav-list mainmenu" role="menu">
-			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
-
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
 			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white"></i> ' . $item['text']) ?></li>
 			<?php endforeach; ?>
+
+			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
 		</ul>
 	</nav><!-- #mainmenu -->
 
@@ -806,14 +806,12 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
-
-		<li class="menuitem-profile" role="menuitem">
+	<li class="menuitem-profile" role="menuitem">
 		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small pull-left') ?>
 		<a class="user" href="#menu-profile" data-toggle="collapse"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
 	</li>
 
-	<li id="menu-profile" class="menu-me collapse" role="menuitem">
+	<li id="menu-profile" class="menuitem-me collapse" role="menuitem">
 		<ul class="nav nav-list" role="menu">
 			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user icon-white"></i> ' . __('Profile')) ?><li>
 			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope icon-white"></i> ' . __('Private messages')) ?></li>
@@ -830,6 +828,8 @@ class Anqh_View_Page extends View_Base {
 			<?php endif; ?>
 		</ul>
 	</li>
+
+	<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
 
 <?php
 
