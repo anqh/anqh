@@ -2018,7 +2018,7 @@ table {
   line-height: 18px;
   text-align: left;
   vertical-align: top;
-  border-top: 1px solid #111111;
+  border-top: 1px solid #333333;
 }
 
 .table th {
@@ -2039,7 +2039,7 @@ table {
 }
 
 .table tbody + tbody {
-  border-top: 2px solid #111111;
+  border-top: 2px solid #333333;
 }
 
 .table .table {
@@ -2052,7 +2052,7 @@ table {
 }
 
 .table-bordered {
-  border: 1px solid #111111;
+  border: 1px solid #333333;
   border-collapse: separate;
   *border-collapse: collapse;
   border-left: 0;
@@ -2063,7 +2063,7 @@ table {
 
 .table-bordered th,
 .table-bordered td {
-  border-left: 1px solid #111111;
+  border-left: 1px solid #333333;
 }
 
 .table-bordered caption + thead tr:first-child th,
@@ -8091,7 +8091,7 @@ section li:hover .transparent {
 
 section.border,
 #side section:not(.full) {
-  border: 1px solid #111111;
+  border: 1px solid #333333;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
 }
 
@@ -8099,7 +8099,7 @@ section.border > header,
 #side section:not(.full) > header {
   padding: 10px 10px 9px;
   background: rgba(34, 34, 34, 0.5);
-  border-bottom: 1px solid #111111;
+  border-bottom: 1px solid #333333;
 }
 
 section.border > header h3,
@@ -8131,12 +8131,12 @@ section.table {
 }
 
 section.table table {
-  border: 1px solid #111111;
+  border: 1px solid #333333;
 }
 
 section.table thead {
   background: rgba(34, 34, 34, 0.5);
-  border-bottom: 1px solid #111111;
+  border-bottom: 1px solid #333333;
 }
 
 section.table thead h3 {
