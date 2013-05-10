@@ -37,7 +37,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsFeedItem $item) {
-		$link = $item->is_aggregate() ? Text::implode_and(self::get_links($item)) : self::get_link($item);
+		$link = $item->is_aggregate() ? implode('<br />', self::get_links($item)) : self::get_link($item);
 		if (!$link) {
 			return '';
 		}
