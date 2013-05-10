@@ -132,9 +132,9 @@ class View_Image_Full extends View_Section {
 		// Basic info
 		$info = array(
 			'<span>&copy;</span> ' . __('Copyright')  => $this->image->author_id ? HTML::user($this->image->author_id) : null,
-			'<i class="iconic-upload"></i> '  . __('Added')      => HTML::time(Date::format('DMYYYY_HM', $this->image->created), $this->image->created),
+			'<i class="iconic-upload"></i> '  . __('Added')    => HTML::time(Date::format('DMYYYY_HM', $this->image->created), $this->image->created),
 			'<i class="iconic-comment"></i> ' . __('Comments') => (int)$this->image->comment_count,
-			'<i class="iconic-eye"></i> '     . __('Views') => (int)$this->image->view_count,
+			'<i class="iconic-eye"></i> '     . __('Views')    => (int)$this->image->view_count,
 		);
 
 		// EXIF info
@@ -157,6 +157,13 @@ class View_Image_Full extends View_Section {
 			if ($exif->altitude)  $info['<i class="iconic-arrow-up"></i> '        . __('Altitude')]      = HTML::chars($exif->altitude) . 'm';
 			if ($exif->taken)     $info['<i class="iconic-clock"></i> '           . __('Taken')]         = Date::format('DMYYYY_HM', $exif->taken);
 		}
+
+		// Original image
+		$info['<i class="iconic-fullscreen"></i> ' . __('Original')] = HTML::anchor(
+			$this->image->get_url(Model_Image::SIZE_ORIGINAL),
+			sprintf('%d&times;%d <small>(%s)</small>', $this->image->original_width, $this->image->original_height, Text::bytes($this->image->original_size, 'kB')),
+			array('target' => '_blank', 'title' => __('Open in new tab'))
+		);
 
 		return $info;
 	}
