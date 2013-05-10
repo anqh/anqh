@@ -314,7 +314,11 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
 // Image carousel
 #carousel                              {
   img                                  { width: 100%; }
-  .carousel-control                    { top: 50px; }
+  .carousel-control                    { border-width: 2px; font-size: 20px; height: 20px; line-height: 18px; opacity: .25; margin-top: 0; top: 8px; width: 20px; }
+  .carousel-control:hover              { opacity: .9; }
+  .carousel-control.left               { left: 8px; }
+  .carousel-control.right              { left: 37px; }
+  .carousel-indicators li              { cursor: pointer; }
   .btn-group                           { bottom: 5px; left: 5px; position: absolute; }
 }
 

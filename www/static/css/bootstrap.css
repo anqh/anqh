@@ -8570,7 +8570,30 @@ div.loading {
 }
 
 #carousel .carousel-control {
-  top: 50px;
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  margin-top: 0;
+  font-size: 20px;
+  line-height: 18px;
+  border-width: 2px;
+  opacity: .25;
+}
+
+#carousel .carousel-control:hover {
+  opacity: .9;
+}
+
+#carousel .carousel-control.left {
+  left: 8px;
+}
+
+#carousel .carousel-control.right {
+  left: 37px;
+}
+
+#carousel .carousel-indicators li {
+  cursor: pointer;
 }
 
 #carousel .btn-group {
