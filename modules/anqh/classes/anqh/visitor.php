@@ -123,19 +123,12 @@ class Anqh_Visitor {
 	/**
 	 * Attempt to login with 3rd party account
 	 *
-	 * @return  bool
+	 * @param   Model_User_External  $external
+	 * @return  boolean
 	 */
-	public function external_login($provider) {
-		if ($provider == Model_User_External::PROVIDER_FACEBOOK && $fb_uid = FB::instance()->get_loggedin_user()) {
-
-			// Load the external user
-			$user = Model_User::find_user_by_external($fb_uid, $provider);
-
-			if ($user->loaded() && $this->complete_login($user)) {
-				$this->_session->set($this->_config['session_key'] . '_provider', $provider);
-
-				return true;
-			}
+	public function external_login(Model_User_External $external) {
+		if ($external->loaded() && $user = new Model_User($external->user_id)) {
+			return $user->loaded() && $this->complete_login($user);
 		}
 
 		return false;
@@ -260,8 +253,9 @@ class Anqh_Visitor {
 	 * Creates a hashed password from a plaintext password, inserting salt
 	 * based on the configured salt pattern.
 	 *
-	 * @param   string  $password  plaintext
-	 * @return  string  hashed password
+	 * @param   string           $password  plaintext
+	 * @param   string|boolean   $salt
+	 * @return  string           hashed password
 	 */
 	public function hash_password($password, $salt = false) {
 

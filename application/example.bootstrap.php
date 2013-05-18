@@ -108,6 +108,7 @@ Kohana::modules(array(
 	'database'     => MODPATH . 'database',     // Database access
 	'email'        => MODPATH . 'email',        // Email module
 	'image'        => MODPATH . 'image',        // Image manipulation
+	'oauth2'       => MODPATH . 'oauth2',       // OAuth 2.0
 	'pagination'   => MODPATH . 'pagination',   // Paging of results
 	'postgresql'   => MODPATH . 'postgresql',   // PostgreSQL
 

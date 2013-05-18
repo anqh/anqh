@@ -41,20 +41,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 			if (!$success) {
 				Request::current()->redirect(Route::url('password'));
 			}
-
-		} else {
-
-			// 3rd party sign in
-			/*
-			if (FB::enabled()) {
-				$this->visitor->external_login(User_External_Model::PROVIDER_FACEBOOK);
-			}
-			*/
-
 		}
-
-		// Add newsfeed item
-		// newsfeeditem_user::login($this->visitor->get_user());
 
 		Request::back();
 	}
