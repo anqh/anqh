@@ -245,7 +245,7 @@ class Anqh_View_Page extends View_Base {
 
 	<script>
 		head.js(
-			{ 'google-maps':        'http://maps.google.com/maps/api/js?sensor=false&callback=isNaN' }, // Use callback hack to initialize correctly
+//			{ 'google-maps':        'http://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=isNaN' }, // Use callback hack to initialize correctly
 			{ 'jquery':             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
 			{ 'jquery-ui':          'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
 			{ 'bootstrap':          '<?= $this->base ?>static/js/bootstrap.js' },
@@ -365,6 +365,7 @@ class Anqh_View_Page extends View_Base {
 	<?= HTML::style('ui/site.css') ?>
 
 	<?= HTML::script(Kohana::$environment == Kohana::PRODUCTION ? 'js/head.min.js' : 'js/head.js') ?>
+	<?= HTML::script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places') ?>
 
 	<?= $this->head(); ?>
 
@@ -613,13 +614,21 @@ class Anqh_View_Page extends View_Base {
 		<?= Form::open(Route::url('sign', array('action' => 'in'))) ?>
 		<?= Form::input('username', null, array('class' => 'input-block-level', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
 		<?= Form::password('password', null, array('class' => 'input-block-level', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
-		<?= Form::button(null, __('Sign in'), array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
+		<?= Form::button(null, __('Sign in') . ' <i class="icon-signin"></i>', array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
 		<?= Form::hidden('remember', 'true') ?>
 		<?= HTML::anchor(
 				Route::url('sign', array('action' => 'up')),
-				__('Sign up') . ' <i class="icon-heart icon-white"></i>',
+				__('Sign up') . ' <i class="icon-heart"></i>',
 				array('class' => 'btn btn-block btn-lovely', 'title' => __("Did we mention it's FREE!"))
 			) ?>
+		<!--
+		<p class="text-center">- <?= __('or') ?> -</p>
+		<?= HTML::anchor(
+				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+				__('Sign in with') . ' <i class="icon-facebook"></i>',
+				array('class' => 'btn btn-block btn-primary', 'title' => __('Sign in with your Facebook account'))
+			) ?>
+		-->
 		<?= Form::close(); ?>
 	</li>
 
@@ -813,18 +822,18 @@ class Anqh_View_Page extends View_Base {
 
 	<li id="menu-profile" class="menuitem-me collapse" role="menuitem">
 		<ul class="nav nav-list" role="menu">
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user icon-white"></i> ' . __('Profile')) ?><li>
-			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope icon-white"></i> ' . __('Private messages')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar icon-white"></i> ' . __('Favorites')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart icon-white"></i> ' . __('Friends')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle icon-white"></i> ' . __('Ignores')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog icon-white"></i> ' . __('Settings')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-off icon-white"></i> ' . __('Sign out')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user"></i> ' . __('Profile')) ?><li>
+			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope"></i> ' . __('Private messages')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar"></i> ' . __('Favorites')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart"></i> ' . __('Friends')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle"></i> ' . __('Ignores')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog"></i> ' . __('Settings')) ?></li>
+			<li role="menuitem"><?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-signout"></i> ' . __('Sign out')) ?></li>
 			<?php if (self::$_user->has_role('admin')): ?>
 			<li class="nav-header"><?= __('Admin functions') ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk icon-white"></i> ' . __('Roles')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags icon-white"></i> ' . __('Tags')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal icon-white"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk"></i> ' . __('Roles')) ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags"></i> ' . __('Tags')) ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
 			<?php endif; ?>
 		</ul>
 	</li>

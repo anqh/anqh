@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_Settings extends View_Section {
@@ -42,82 +42,81 @@ class View_User_Settings extends View_Section {
 	public function content() {
 		ob_start();
 
-		echo Form::open(null, array('class' => 'row'));
+		echo Form::open();
 
 ?>
 
-<div class="span4">
-	<fieldset id="fields-basic">
-		<legend><?php echo __('Basic information') ?></legend>
+<div class="row">
 
-		<?php echo Form::control_group(
-			Form::input('name', $this->user->name, array('class' => 'input-large')),
-			array('name' => __('Name')),
-			Arr::get($this->errors, 'name')) ?>
+	<div class="span5">
+		<fieldset id="fields-basic">
+			<legend><?= __('Basic information') ?></legend>
 
-		<?= Form::control_group(
-			Form::input('email', $this->user->email, array('class' => 'input-large')),
-			array('email' => __('Email')),
-			Arr::get($this->errors, 'email')) ?>
+			<?= Form::control_group(
+				Form::input('name', $this->user->name, array('class' => 'input-block-level')),
+				array('name' => __('Name')),
+				Arr::get($this->errors, 'name')) ?>
 
-		<?= Form::control_group(
-			Form::input('homepage', $this->user->homepage, array('class' => 'input-large')),
-			array('homepage' => __('Homepage')),
-			Arr::get($this->errors, 'homepage')) ?>
+			<?= Form::control_group(
+				Form::input('email', $this->user->email, array('class' => 'input-block-level')),
+				array('email' => __('Email')),
+				Arr::get($this->errors, 'email')) ?>
 
-		<?php echo Form::radios_wrap('gender', array('f' => __('Female'), 'm' => __('Male')), $this->user, null, __('Gender'), $this->errors) ?>
+			<?= Form::control_group(
+				Form::input('homepage', $this->user->homepage, array('class' => 'input-block-level')),
+				array('homepage' => __('Homepage')),
+				Arr::get($this->errors, 'homepage')) ?>
 
-		<?php echo Form::control_group(
-			Form::input('dob', Date::format('DMYYYY', $this->user->dob), array('class' => 'date input-small', 'maxlengt' => 10, 'placeholder' => __('d.m.yyyy'))),
-			array('dob' => __('Date of Birth')),
-			Arr::get($this->errors, 'dob')) ?>
+			<?= Form::radios_wrap('gender',
+				array('f' => __('Female'), 'm' => __('Male')),
+				$this->user,
+				null,
+				__('Gender'),
+				$this->errors,
+				null,
+				'inline') ?>
 
-		<?php echo Form::control_group(
-			Form::input('title', $this->user->title, array('class' => 'input-large')),
-			array('title' => __('Title')),
-			Arr::get($this->errors, 'title')) ?>
+			<?= Form::control_group(
+				'<div class="input-prepend"><span class="add-on"><i class="icon-calendar"></i></span>'
+					. Form::input('dob', Date::format('DMYYYY', $this->user->dob), array('class' => 'date input-small', 'maxlength' => 10, 'placeholder' => __('d.m.yyyy')))
+					. '</div>',
+				array('dob' => __('Date of Birth')),
+				Arr::get($this->errors, 'dob')) ?>
 
-		<?php echo Form::control_group(
-			Form::textarea('description', $this->user->description, array('class' => 'input-large', 'rows' => 3), true),
-			array('description' => __('Description')),
-			Arr::get($this->errors, 'description')) ?>
+			<?= Form::control_group(
+				Form::input('title', $this->user->title, array('class' => 'input-block-level')),
+				array('title' => __('Title')),
+				Arr::get($this->errors, 'title')) ?>
 
-	</fieldset>
+		</fieldset>
+	</div>
+
+	<div class="span5">
+		<fieldset id="fields-contact">
+			<legend><?= __('Location') ?></legend>
+
+			<?= Form::control_group(
+				Form::input('location', $this->user->location, array('id' => 'location', 'class' => 'input-block-level')),
+				array('location' => __('Where are you')),
+				Arr::get($this->errors, 'location'),
+				__('e.g. <em>"Helsinki"</em> or <em>"Asema-aukio, Helsinki"</em>')) ?>
+
+			<div id="map"></div>
+		</fieldset>
+
+		<fieldset id="fields-forum">
+			<legend><?= __('Forum settings') ?></legend>
+
+			<?= Form::control_group(
+				Form::textarea('signature', $this->user->signature, array('class' => 'input-block-level', 'rows' => 5), true),
+				array('signature' => __('Signature')),
+				Arr::get($this->errors, 'signature')) ?>
+
+		</fieldset>
+	</div>
 </div>
 
-<div class="span3">
-	<fieldset id="fields-contact">
-		<legend><?php echo __('Contact information') ?></legend>
-
-		<?= Form::control_group(
-			Form::input('address_street', $this->user->address_street),
-			array('address_street' => __('Street address')),
-			Arr::get($this->errors, 'address_street')) ?>
-
-		<?= Form::control_group(
-			Form::input('address_zip', $this->user->address_zip),
-			array('address_zip' => __('Zip code')),
-			Arr::get($this->errors, 'address_zip')) ?>
-
-		<?= Form::control_group(
-			Form::input('address_city', $this->user->address_city),
-			array('address_city' => __('City')),
-			Arr::get($this->errors, 'address_city')) ?>
-
-	</fieldset>
-
-	<fieldset id="fields-forum">
-		<legend><?php echo __('Forum settings') ?></legend>
-
-		<?php echo Form::control_group(
-			Form::textarea('signature', $this->user->signature, array('class' => 'input-large', 'rows' => 5), true),
-			array('signature' => __('Signature')),
-			Arr::get($this->errors, 'signature')) ?>
-
-	</fieldset>
-</div>
-
-<fieldset class="span7 form-actions">
+<fieldset class="form-actions">
 	<?= Form::hidden('latitude', $this->user->latitude) ?>
 	<?= Form::hidden('longitude', $this->user->longitude) ?>
 
@@ -174,45 +173,80 @@ class View_User_Settings extends View_Section {
 			'yearRange'       => '1900:+0',
 		);
 
-		return HTML::script_source('
+		ob_start();
 
-		// Date picker
-		head.ready("jquery-ui", function() {
-			$("input[name=dob]").datepicker(' . json_encode($options) . ');
-		});
+?>
+<script>
 
-		// Maps
-		head.ready("jquery", function() {
-			$("#fields-contact").append("<div id=\"map\">' . __('Loading map..') . '</div>");
-		});
+	// Date picker
+	head.ready('jquery-ui', function _datePicker() {
+		$('input[name=dob]').datepicker(<?= json_encode($options) ?>);
+	});
 
-		head.ready("anqh", function() {
-			$("#map").googleMap(' . ($this->user->latitude ? json_encode(array('marker' => true, 'lat' => $this->user->latitude, 'long' => $this->user->longitude)) : '') . ');
-
-			$("input[name=address_city]").autocompleteGeo();
-
-			$("input[name=address_street], input[name=address_city]").blur(function(event) {
-				var address = $("input[name=address_street]").val()
-				  , city    = $("input[name=address_city]").val();
-
-				if (address != "" && city != "") {
-					var geocode = address + ", " + city;
-					Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
-						if (status == google.maps.GeocoderStatus.OK && results.length) {
-						  Anqh.map.setCenter(results[0].geometry.location);
-						  $("input[name=latitude]").val(results[0].geometry.location.lat());
-						  $("input[name=longitude]").val(results[0].geometry.location.lng());
-						  var marker = new google.maps.Marker({
-						    position: results[0].geometry.location,
-						    map: Anqh.map
-						  });
-						}
-					});
+	// Maps
+	head.ready('jquery-ui', function() {
+		var center       = new google.maps.LatLng(<?= $this->user->latitude ? $this->user->latitude . ', ' . $this->user->longitude : '60.1695, 24.9355' ?>)
+		  , mapOptions   = {
+					center:                center,
+					mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+					mapTypeId:             google.maps.MapTypeId.ROADMAP,
+					zoom:                  14
 				}
-			});
+		  , map          = new google.maps.Map(document.getElementById('map'), mapOptions)
+		  , marker       = new google.maps.Marker({
+					map:      map,
+					position: center
+				})
+		  , $input       = $('input[name=location]')
+		  , $group       = $input.closest('.control-group')
+		  , autocomplete = new google.maps.places.Autocomplete($input.get(0));
 
+		// Disable submit on enter
+		$input.on('keydown', function _select(e) {
+			if (e.which == $.ui.keyCode.ENTER) {
+				return false;
+			}
 		});
-		');
 
+		autocomplete.bindTo('bounds', map);
+
+		google.maps.event.addListener(autocomplete, 'place_changed', function _redrawMap() {
+			$group.removeClass('warning');
+			marker.setVisible(false);
+
+			// Get location
+			var place = autocomplete.getPlace();
+			if (!place.geometry) {
+
+				// Location not found
+				$group.addClass('warning');
+
+				return;
+			}
+
+			// Center map
+			if (place.geometry.viewport) {
+				map.fitBounds(place.geometry.viewport);
+			} else {
+				map.setCenter(place.geometry.location);
+				map.setZoom(14);
+			}
+
+			var center = map.getCenter();
+			$('input[name=latitude]').val(center.lat());
+			$('input[name=longitude]').val(center.lng());
+
+			// Show marker
+			marker.setPosition(place.geometry.location);
+			marker.setVisible(true);
+		});
+
+	});
+
+</script>
+
+<?php
+
+		return ob_get_clean();
 	}
 }

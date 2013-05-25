@@ -51,10 +51,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'default_image_id'   => null,
 
 		// Location
-		'address_street'     => null,
-		'address_zip'        => null,
-		'address_city'       => null,
-		'geo_city_id'        => null,
+		'location'           => null,
 		'latitude'           => null,
 		'longitude'          => null,
 
@@ -90,10 +87,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'homepage'           => array('url'),
 		'default_image_id'   => array('digit'),
 
-		'address_street'     => array('max_length' => array(':value', 50)),
-		'address_zip'        => array('digit', 'length' => array(':value', 4, 5)),
-		'address_city'       => array('max_length' => array(':value', 50)),
-		'city_id'            => array('digit'),
+		'location'           => array('max_length' => array(':value', 250)),
 		'latitude'           => array('numeric'),
 		'longitude'          => array('numeric'),
 
@@ -125,9 +119,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage',
-		'image', 'name', 'picture', 'signature',
-		'address_street', 'address_zip', 'address_city', 'title',
+		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage', 'title',
+		'image', 'picture', 'signature', 'location', 'latitude', 'longitude',
 	);
 
 

@@ -424,7 +424,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->_set_page($user);
 		$this->view->tab = 'settings';
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_settings($user, $errors));
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_settings($user, $errors));
 	}
 
 
