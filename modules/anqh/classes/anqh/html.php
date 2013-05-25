@@ -28,7 +28,7 @@ class Anqh_HTML extends Kohana_HTML {
 		if (strpos($avatar, '://') === false) {
 			$avatar = URL::site($avatar);
 		}
-		
+
 		if (!$class) {
 			$class = 'avatar';
 		} else {
@@ -202,16 +202,16 @@ class Anqh_HTML extends Kohana_HTML {
 	 *
 	 *  echo HTML::style('media/css/screen.css');
 	 *
-	 * @param   string   file name
-	 * @param   array    default attributes
-	 * @param   mixed    protocol to pass to URL::base()
-	 * @param   boolean  include the index page
+	 * @param   string   $file
+	 * @param   array    $attributes
+	 * @param   mixed    $protocol    to pass to URL::base()
+	 * @param   boolean  $index       include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
 	public static function style($file, array $attributes = null, $protocol = null, $index = false) {
-		if (strpos($file, '://') === false) {
+		if (strpos($file, '//') === false) {
 			// Add the base URL
 			$file = URL::base($protocol, $index).$file;
 		}
