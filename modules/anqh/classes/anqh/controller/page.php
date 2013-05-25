@@ -51,6 +51,7 @@ abstract class Anqh_Controller_Page extends Controller {
 			$skins = array(
 				HTML::style('static/css/bootstrap.css'),
 				HTML::style('static/css/bootstrap-responsive.css'),
+				HTML::style('//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css'),
 			);
 
 			// Footer
