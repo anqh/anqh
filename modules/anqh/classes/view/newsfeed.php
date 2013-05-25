@@ -103,7 +103,9 @@ class View_Newsfeed extends View_Section {
 			// Friend newsfeed
 			case self::TYPE_FRIENDS:
 				$newsfeed = new Newsfeed(self::$_user, Newsfeed::USERS);
-				$newsfeed->users = self::$_user->find_friends(0, 0);
+				if (self::$_user_id) {
+					$newsfeed->users = self::$_user->find_friends(0, 0);
+				}
 		    break;
 
 			// Single user newsfeed

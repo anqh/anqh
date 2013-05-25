@@ -84,8 +84,7 @@ class Anqh_NewsfeedItem_User extends NewsfeedItem {
 		switch ($item->type) {
 
 			case self::TYPE_FRIEND:
-				$friend = Model_User::find_user($item->data['friend_id']);
-				if ($friend->loaded()) {
+				if ($friend = Model_User::find_user($item->data['friend_id'])) {
 					$text = HTML::user($friend);
 				}
 				break;
