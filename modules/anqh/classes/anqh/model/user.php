@@ -52,6 +52,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 		// Location
 		'location'           => null,
+		'city_name'          => null,
 		'latitude'           => null,
 		'longitude'          => null,
 
@@ -88,6 +89,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'default_image_id'   => array('digit'),
 
 		'location'           => array('max_length' => array(':value', 250)),
+		'city_name'          => array('max_length' => array(':value', 50)),
 		'latitude'           => array('numeric'),
 		'longitude'          => array('numeric'),
 
@@ -120,7 +122,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public static $editable_fields = array(
 		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage', 'title',
-		'image', 'picture', 'signature', 'location', 'latitude', 'longitude',
+		'image', 'picture', 'signature', 'location', 'city_name', 'latitude', 'longitude',
 	);
 
 

@@ -96,10 +96,15 @@ class View_User_Settings extends View_Section {
 			<legend><?= __('Location') ?></legend>
 
 			<?= Form::control_group(
-				Form::input('location', $this->user->location, array('id' => 'location', 'class' => 'input-block-level')),
+				Form::input('location', $this->user->location, array('class' => 'input-block-level')),
 				array('location' => __('Where are you')),
 				Arr::get($this->errors, 'location'),
 				__('e.g. <em>"Helsinki"</em> or <em>"Asema-aukio, Helsinki"</em>')) ?>
+
+			<?= Form::control_group(
+				Form::input('city_name', $this->user->city_name, array('class' => 'input-block-level')),
+				array('city_name' => __('City')),
+				Arr::get($this->errors, 'city_name')) ?>
 
 			<div id="map"></div>
 		</fieldset>
@@ -232,13 +237,25 @@ class View_User_Settings extends View_Section {
 				map.setZoom(14);
 			}
 
+			// Show marker
+			marker.setPosition(place.geometry.location);
+			marker.setVisible(true);
+
+			// Coordinates
 			var center = map.getCenter();
 			$('input[name=latitude]').val(center.lat());
 			$('input[name=longitude]').val(center.lng());
 
-			// Show marker
-			marker.setPosition(place.geometry.location);
-			marker.setVisible(true);
+			// City
+			if (place.address_components) {
+				for (var i in place.address_components) {
+					var component = place.address_components[i];
+					if (component.types[0] == 'locality' || component.types[1] == 'locality') {
+						$('input[name=city_name]').val(component.long_name);
+					}
+				}
+			}
+
 		});
 
 	});
