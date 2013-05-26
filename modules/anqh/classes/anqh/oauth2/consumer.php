@@ -12,9 +12,9 @@ class Anqh_OAuth2_Consumer extends Kohana_OAuth2_Consumer {
 	/**
 	 * Make an API call.
 	 *
-	 * @param   $call
-	 * @param   array     $params
-	 * @return  Response
+	 * @param   string  $call
+	 * @param   array   $params
+	 * @return  array
 	 */
 	public function api_call($call, array $params = null) {
 		if (!$params) {
