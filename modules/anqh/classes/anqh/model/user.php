@@ -86,6 +86,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'dob'                => array('date'),
 		'gender'             => array('in_array' => array(':value', array('f', 'm'))),
 		'homepage'           => array('url'),
+		'picture'            => array('url'),
 		'default_image_id'   => array('digit'),
 
 		'location'           => array('max_length' => array(':value', 250)),
@@ -122,7 +123,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public static $editable_fields = array(
 		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage', 'title',
-		'image', 'picture', 'signature', 'location', 'city_name', 'latitude', 'longitude',
+		'picture', 'signature', 'location', 'city_name', 'latitude', 'longitude',
 	);
 
 

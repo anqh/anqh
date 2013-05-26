@@ -10,9 +10,19 @@
 class View_User_Settings extends View_Section {
 
 	/**
+	 * @var  OAuth2_Consumer
+	 */
+	public $consumer;
+
+	/**
 	 * @var  array
 	 */
 	public $errors;
+
+	/**
+	 * @var  Model_User_External
+	 */
+	public $external;
 
 	/**
 	 * @var  Model_User
@@ -29,8 +39,12 @@ class View_User_Settings extends View_Section {
 	public function __construct(Model_User $user, array $errors = null) {
 		parent::__construct();
 
-		$this->user   = $user;
-		$this->errors = $errors;
+		$this->user     = $user;
+		$this->errors   = $errors;
+		$this->external = Model_User_External::factory()->find_by_user_id($this->user->id, 'facebook');
+		if ($this->external && $this->external->loaded()) {
+			$this->consumer = new OAuth2_Consumer('facebook', $this->external->access_token());
+		}
 	}
 
 
@@ -41,6 +55,8 @@ class View_User_Settings extends View_Section {
 	 */
 	public function content() {
 		ob_start();
+
+		$facebook = $this->consumer ? $this->load_facebook() : false;
 
 		echo Form::open();
 
@@ -83,10 +99,20 @@ class View_User_Settings extends View_Section {
 				array('dob' => __('Date of Birth')),
 				Arr::get($this->errors, 'dob')) ?>
 
+		</fieldset>
+
+		<fieldset id="fields-forum">
+			<legend><?= __('Forum settings') ?></legend>
+
 			<?= Form::control_group(
 				Form::input('title', $this->user->title, array('class' => 'input-block-level')),
 				array('title' => __('Title')),
 				Arr::get($this->errors, 'title')) ?>
+
+			<?= Form::control_group(
+				Form::textarea('signature', $this->user->signature, array('class' => 'input-block-level', 'rows' => 5), true),
+				array('signature' => __('Signature')),
+				Arr::get($this->errors, 'signature')) ?>
 
 		</fieldset>
 	</div>
@@ -109,13 +135,44 @@ class View_User_Settings extends View_Section {
 			<div id="map"></div>
 		</fieldset>
 
-		<fieldset id="fields-forum">
-			<legend><?= __('Forum settings') ?></legend>
+		<fieldset id="fields-connections">
+			<legend>Facebook</legend>
 
-			<?= Form::control_group(
-				Form::textarea('signature', $this->user->signature, array('class' => 'input-block-level', 'rows' => 5), true),
-				array('signature' => __('Signature')),
-				Arr::get($this->errors, 'signature')) ?>
+		<?php if (!$this->external || !$this->external->loaded()): ?>
+
+			<?= HTML::anchor(
+					Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+					'<i class="icon-facebook"></i> ' . __('Connect to Facebook'),
+					array('class' => 'btn btn-primary', 'title' => __('Connect with your Facebook account'))
+				) ?>
+
+		<?php elseif (is_array($facebook)): $avatar = 'https://graph.facebook.com/' . $facebook['id'] . '/picture'; ?>
+
+			<div class="media">
+				<?= HTML::avatar($avatar, null, 'pull-left facebook') ?>
+				<div class="media-body">
+					<?= HTML::anchor($facebook['link'], HTML::chars($facebook['name']), array('target' => '_blank')) ?>
+					<?= Form::checkbox_wrap('avatar', $avatar, $this->user->avatar == $avatar, null, __('Set as your avatar')) ?>
+					<?= Form::checkbox_wrap('picture', $avatar . '?type=large', $this->user->picture == $avatar . '?type=large', null, __('Set as your profile image')) ?>
+					<?= HTML::anchor(
+								Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),
+								'<i class="icon-facebook"></i> ' . __('Disconnect your Facebook account'),
+								array('class' => 'btn btn-danger facebook-delete', 'title' => __('Disconnect your Facebook account'))
+							) ?>
+				</div>
+			</div>
+
+		<?php elseif ($facebook): ?>
+
+			<?= $facebook ?>
+
+			<?= HTML::anchor(
+						Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),
+						'<i class="icon-facebook"></i> ' . __('Disconnect your Facebook account'),
+						array('class' => 'btn btn-danger facebook-delete', 'title' => __('Disconnect your Facebook account'))
+					) ?>
+
+		<?php endif; ?>
 
 		</fieldset>
 	</div>
@@ -266,4 +323,59 @@ class View_User_Settings extends View_Section {
 
 		return ob_get_clean();
 	}
+
+
+	/**
+	 * Load Facebook data.
+	 *
+	 * @return  View_Alert|array
+	 */
+	public function load_facebook() {
+		if (!$this->consumer) {
+			return '';
+		}
+
+		try {
+			if ($response = $this->consumer->api_call('/' . $this->external->external_user_id . '?fields=id,name,link')) {
+
+				// Received a response from 3rd party
+				if ($error = Arr::get($response, 'error')) {
+
+					Kohana::$log->add(Log::NOTICE, 'OAuth2: Failed to load Facebook profile: :error', array(':error' => $error->message));
+
+					// .. but it was an error
+					return new View_Alert(
+						__('They said ":error"', array(':error' => HTML::chars($error->message))),
+						__('Failed to load your profile :('),
+						View_Alert::ERROR);
+
+
+				} else {
+
+					return $response;
+
+				}
+
+			} else {
+
+				// No data received, this should be handled by exceptions
+				return new View_Alert(
+					__('No data received'),
+					__('Failed to load your profile :('),
+					View_Alert::ERROR);
+
+			}
+
+		} catch (Kohana_Exception $e) {
+
+			Kohana::$log->add(Log::NOTICE, 'OAuth2: Exception: :error', array(':error' => $e->getMessage()));
+
+			return new View_Alert(
+				HTML::chars($e->getMessage()),
+				__('Failed to load your profile :('),
+				View_Alert::ERROR);
+
+		}
+	}
+
 }

@@ -235,17 +235,30 @@ class Anqh_Controller_User extends Controller_Page {
 		}
 
 		// Delete existing
-		if ($image_id = (int)Arr::get($_REQUEST, 'delete')) {
-			/** @var  Model_Image  $image */
-			$image = Model_Image::factory($image_id);
-			if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image->id)) {
-				$user->remove('image', $image->id);
-				if ($image->id === $user->default_image_id) {
-					$user->default_image_id = null;
-					$user->picture          = null;
+		if ($image_id = Arr::get($_REQUEST, 'delete')) {
+			if ($image_id === 'facebook') {
+
+				// Clear Facebook image
+				if (Security::csrf_valid()) {
+					$user->picture = null;
+					$user->save();
 				}
-				$user->save();
-				$image->delete();
+
+			} else if ((int)$image_id) {
+
+				// Delete normal profile image
+				/** @var  Model_Image  $image */
+				$image = Model_Image::factory((int)$image_id);
+				if (Security::csrf_valid() && $image->loaded() && $user->has('images', $image->id)) {
+					$user->remove('image', $image->id);
+					if ($image->id === $user->default_image_id) {
+						$user->default_image_id = null;
+						$user->picture          = null;
+					}
+					$user->save();
+					$image->delete();
+				}
+
 			}
 			$cancel = true;
 		}
@@ -409,6 +422,12 @@ class Anqh_Controller_User extends Controller_Page {
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
 			$user->set_fields(Arr::intersect($_POST, Model_User::$editable_fields));
+
+			// Clear default image id if Facebook image is set
+			if (Arr::get($_POST, 'picture')) {
+				$user->default_image_id = null;
+			}
+
 			$user->modified = time();
 
 			try {
