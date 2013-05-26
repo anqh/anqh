@@ -51,6 +51,19 @@ class Anqh_Model_User_External extends AutoModeler_ORM {
 
 
 	/**
+	 * Get access token array.
+	 *
+	 * @return  array
+	 */
+	public function access_token() {
+		return array(
+			'access_token' => $this->token,
+			'expires'      => $this->expires - $this->modified ? $this->modified : $this->created
+		);
+	}
+
+
+	/**
 	 * Find by external user.
 	 *
 	 * @param   integer  $user_id

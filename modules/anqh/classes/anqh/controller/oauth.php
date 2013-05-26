@@ -14,6 +14,11 @@ class Anqh_Controller_OAuth extends Controller_Page {
 	 */
 	public $consumer;
 
+	/**
+	 * @var  Model_User_External
+	 */
+	public $external;
+
 
 	/**
 	 * Construct controller.
@@ -27,10 +32,10 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 		// See if we already have a token
 		$provider = $this->request->param('provider');
-		if (self::$user && $external = Model_User_External::factory()->find_by_user_id(self::$user->id, $provider)) {
+		if (self::$user && $this->external = Model_User_External::factory()->find_by_user_id(self::$user->id, $provider)) {
 
 			// Access token should be available
-			$this->consumer = new OAuth2_Consumer($provider, $external->loaded() ? $external->token : false);
+			$this->consumer = new OAuth2_Consumer($provider, $this->external->loaded() ? $this->external->access_token() : false);
 
 		} else {
 
@@ -38,6 +43,20 @@ class Anqh_Controller_OAuth extends Controller_Page {
 			$this->consumer = new OAuth2_Consumer($provider, false);
 
 		}
+	}
+
+
+	/**
+	 * Action: Login with 3rd party credentials.
+	 */
+	public function action_disconnect() {
+		if ($this->external && $this->external->loaded()) {
+			$this->external->delete();
+
+			$this->request->redirect(URL::user(self::$user, 'settings'));
+		}
+
+		Request::back();
 	}
 
 
@@ -103,7 +122,8 @@ class Anqh_Controller_OAuth extends Controller_Page {
 					if ($this->_update_token($external, $token)) {
 
 						// Already paired with local user
-						Request::back();
+						$this->request->redirect(URL::user(self::$user, 'settings'));
+						//Request::back();
 
 					} else {
 
@@ -135,7 +155,8 @@ class Anqh_Controller_OAuth extends Controller_Page {
 								));
 								$external->save();
 
-								Request::back();
+								$this->request->redirect(URL::user(self::$user, 'settings'));
+								//Request::back();
 
 							}
 
