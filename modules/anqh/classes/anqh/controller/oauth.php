@@ -237,7 +237,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 		} else {
 
 			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
-					__('Did not receive rqeuired code from3rd party'),
+					__('Did not receive required code from 3rd party'),
 					__('Failed to load your profile :('),
 					View_Alert::ERROR));
 
