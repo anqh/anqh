@@ -4,20 +4,15 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_ErrorPage extends Anqh_View_Page {
 
-	/**
-	 * @var  array  Basic stylesheets
-	 */
 	public $styles = array(
-		'http://fonts.googleapis.com/css?family=Terminal+Dosis',
-    'static/css/bootstrap.css',
-	  'static/css/bootstrap-responsive.css',
-	  'static/site.css',
-	  'ui/site.css',
+		'static/css/bootstrap.css',
+		'static/css/bootstrap-responsive.css',
+		'//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css',
 	);
 
 
@@ -26,7 +21,7 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 	 *
 	 * @return  string
 	 */
-	protected function _head() {
+	protected function __head() {
 		ob_start();
 
 ?>
@@ -36,10 +31,13 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 	<meta http-equiv="Content-Type" content="text/html; charset=<?= Kohana::$charset ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-	<title><?= ($this->title ? HTML::chars($this->title) . ' | ' : '') . Kohana::$config->load('site.site_name') ?></title>
+	<title><?= $this->title ? HTML::chars($this->title) : Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="<?= $this->base ?>ui/favicon.png" />
 
 	<?= $this->_styles() ?>
+
+	<?= HTML::style('ui/site.css') ?>
+
 </head>
 
 <?php
@@ -59,25 +57,46 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 ?>
 
 <!doctype html>
-<html lang="<?php echo $this->language ?>">
+<html lang="<?= $this->language ?>">
 
-<?php echo $this->_head() ?>
+<?= $this->_head() ?>
 
-<body id="<?php echo $this->id ?>" class="<?php echo $this->class ?>">
+<body id="<?= $this->id ?>" class="<?= $this->class ?>">
+
+	<div id="body" class="container">
+		<div class="row">
+
+			<div id="sidebar" class="span2">
+
+				<!-- MENU -->
+
+				<?= $this->_menu() ?>
+
+				<!-- /MENU -->
+
+			</div><!-- /#sidebar -->
+
+			<div id="content" class="span10">
+
+				<!-- HEADER -->
+
+				<?= $this->_header() ?>
+
+				<!-- /HEADER -->
 
 
-	<!-- HEADER -->
+				<!-- CONTENT -->
 
-	<?php echo $this->_header() ?>
+				<?= $this->_content() ?>
 
-	<!-- /HEADER -->
+				<!-- /CONTENT -->
 
+			</div><!-- /#content -->
 
-	<!-- CONTENT -->
+		</div>
+	</div>
 
-	<?php echo $this->_content() ?>
-
-	<!-- /CONTENT -->
+	<?= $this->_foot() ?>
 
 </body>
 
