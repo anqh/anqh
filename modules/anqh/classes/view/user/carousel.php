@@ -48,13 +48,13 @@ class View_User_Carousel extends View_Section {
 		// Load images
 		$images = $this->user->images();
 
-		// Legacy support
-		if ($this->user->picture && !count($images)):
-			echo HTML::image($this->user->picture);
-		endif;
-
 		// Is Facebook image set
 		$facebook = !!strpos($this->user->picture, 'facebook.com');
+
+		// Legacy support
+		if ($this->user->picture && !count($images) && !$facebook):
+			echo HTML::image($this->user->picture);
+		endif;
 
 		if (count($images) || $facebook):
 
