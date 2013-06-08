@@ -94,7 +94,7 @@ class View_User_Settings extends View_Section {
 
 			<?= Form::control_group(
 				'<div class="input-prepend"><span class="add-on"><i class="icon-calendar"></i></span>'
-					. Form::input('dob', Date::format('DMYYYY', $this->user->dob), array('class' => 'date input-small', 'maxlength' => 10, 'placeholder' => __('d.m.yyyy')))
+					. Form::input('dob', $this->user->dob ? Date::format('DMYYYY', $this->user->dob) : null, array('class' => 'date input-small', 'maxlength' => 10, 'placeholder' => __('d.m.yyyy')))
 					. '</div>',
 				array('dob' => __('Date of Birth')),
 				Arr::get($this->errors, 'dob')) ?>

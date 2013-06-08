@@ -162,7 +162,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 			// Date of birth
 			case 'dob':
-				$value = Date::format(Date::DATE_SQL, $value);
+				$value = $value ? Date::format(Date::DATE_SQL, $value) : null;
 				break;
 
 			// Always lowercase e-mail
