@@ -621,14 +621,12 @@ class Anqh_View_Page extends View_Base {
 				__('Sign up') . ' <i class="icon-heart"></i>',
 				array('class' => 'btn btn-block btn-lovely', 'title' => __("Did we mention it's FREE!"))
 			) ?>
-		<!--
 		<p class="text-center">- <?= __('or') ?> -</p>
 		<?= HTML::anchor(
 				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
 				__('Sign in with') . ' <i class="icon-facebook"></i>',
 				array('class' => 'btn btn-block btn-primary', 'title' => __('Sign in with your Facebook account'))
 			) ?>
-		-->
 		<?= Form::close(); ?>
 	</li>
 

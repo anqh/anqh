@@ -173,7 +173,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			// Hash password
 			case 'password':
 				$visitor = Visitor::instance();
-				$value   = $visitor->hash_password($value);
+				$value   = $value ? $visitor->hash_password($value) : null;
 				break;
 
 			// Set cleaned username when setting username

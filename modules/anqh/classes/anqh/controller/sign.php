@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Sign extends Controller_Page {
@@ -31,15 +31,54 @@ class Anqh_Controller_Sign extends Controller_Page {
 			$visitor = Visitor::instance();
 
 			// Require valid user for login logging
-			$user    = Model_User::find_user($_POST['username']);
+			$user = Model_User::find_user($_POST['username']);
+
+			// Get external account data
+			$token = $external_user_id = null;
+			if ($provider = Arr::get($_POST, 'external')) {
+				$consumer         = new OAuth2_Consumer($provider);
+				$token            = $consumer->get_token();
+				$external_user_id = Session::instance()->get('oauth2.' . $provider . '.id');
+			}
 			$success = ($user && $visitor->login($user, $_POST['password'], isset($_POST['remember'])));
 
 			// Log login attempt
 			Model_Login::log($success, $user ? $user : $_POST['username'], isset($_POST['password']) && $_POST['password'] != '');
 
-			// Redirect to lost password page on fail
 			if (!$success) {
+
+				// Redirect to lost password page on fail
 				Request::current()->redirect(Route::url('password'));
+
+			} else if ($token && $external_user_id) {
+
+				// Connect to external account
+				$external = Model_User_External::factory()->find_by_user_id($user->id, $provider);
+
+				// Check for already connected account
+				if ($external && $external->loaded()) {
+
+					// Already connected, do nuthin'
+					Kohana::$log->add(Log::DEBUG, 'OAuth2: Sign in, already connected accounts');
+
+				} else {
+
+					Kohana::$log->add(Log::DEBUG, 'OAuth2: Sign in and connect accounts');
+
+					// Not connected, connect!
+					$external = new Model_User_External();
+					$external->set_fields(array(
+						'token'            => $token['access_token'],
+						'user_id'          => $user->id,
+						'external_user_id' => $external_user_id,
+						'created'          => time(),
+						'expires'          => time() + (int)$token['expires'],
+						'provider'         => $provider,
+					));
+					$external->save();
+
+				}
+
 			}
 		}
 
@@ -119,6 +158,13 @@ class Anqh_Controller_Sign extends Controller_Page {
 
 		$this->view = View_Page::factory(__('Sign up'));
 
+		// Check external provider
+		if ($provider = Arr::get($_REQUEST, 'provider')) {
+			if ($response = Session::instance()->get('oauth2.' . $provider . '.response')) {
+				return $this->_join(null, $response, $provider);
+			}
+		}
+
 		// Check invitation code
 		$code = trim(Arr::get($_REQUEST, 'code'));
 		if ($code) {
@@ -197,25 +243,69 @@ class Anqh_Controller_Sign extends Controller_Page {
 	 * Register with code
 	 *
 	 * @param  Model_Invitation  $invitation
+	 * @param  array             $external
+	 * @param  string            $provider
 	 */
-	public function _join(Model_Invitation $invitation) {
+	public function _join(Model_Invitation $invitation = null, array $external = null, $provider = null) {
 		$user = new Model_User();
-		$user->email = $invitation->email;
+
+		if ($invitation) {
+			$user->email = $invitation->email;
+		} else if ($external) {
+			$user->email    = Arr::get($external, 'email');
+			$user->name     = Arr::get($external, 'name');
+			$user->username = Arr::get($external, 'username', $user->name);
+			$user->avatar   = 'https://graph.facebook.com/' . $external['id'] . '/picture';
+			$user->picture  = 'https://graph.facebook.com/' . $external['id'] . '/picture?type=large';
+			if ($location = Arr::get($external, 'location')) {
+				$user->location  = $location->name;
+				$user->city_name = $location->name;
+			}
+			if ($gender = Arr::get($external, 'gender')) {
+				switch ($gender) {
+					case 'male':   $user->gender = 'm'; break;
+					case 'female': $user->gender = 'f'; break;
+				}
+			}
+			if ($birthday = Arr::get($external, 'birthday')) {
+				$user->dob = $birthday;
+			}
+		}
 
 		// Handle post
 		$errors = array();
 		if ($_POST && !Arr::get($_POST, 'signup')) {
 			$post = Arr::extract($_POST, array('username', 'password', 'password_confirm'));
-			$validation = new Validation($post);
-			$validation->rule('password_confirm', 'matches', array(':validation', 'password', 'password_confirm'));
 			try {
 				$user->username = $post['username'];
 				$user->password = $post['password'];
 				$user->created  = time();
-				$user->save($validation);
+				$user->save();
 
 				// Delete used invitation
-				$invitation->delete();
+				if ($invitation) {
+					$invitation->delete();
+				}
+
+				// Connect accounts
+				if ($external && $provider) {
+					$consumer         = new OAuth2_Consumer($provider);
+					$token            = $consumer->get_token();
+					$external_user_id = $external['id'];
+
+					if ($token && $external_user_id) {
+						$external = new Model_User_External();
+						$external->set_fields(array(
+							'token'            => $token['access_token'],
+							'user_id'          => $user->id,
+							'external_user_id' => $external_user_id,
+							'created'          => time(),
+							'expires'          => time() + (int)$token['expires'],
+							'provider'         => $provider,
+						));
+						$external->save();
+					}
+				}
 
 				// Login user
 				$user->add_role('login');
@@ -227,7 +317,6 @@ class Anqh_Controller_Sign extends Controller_Page {
 				$errors = $e->array->errors('validation');
 			}
 		}
-
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_register($user, $errors, $invitation->code));
 	}

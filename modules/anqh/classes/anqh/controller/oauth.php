@@ -170,7 +170,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 				} else {
 
-					// No local user available, register
+					// No signed in user available
 					if ($response = $this->consumer->api_call('/me')) {
 
 						// Received a response from 3rd party
@@ -187,7 +187,8 @@ class Anqh_Controller_OAuth extends Controller_Page {
 						} else {
 
 							// Received required information
-							$external = Model_User_External::factory()->find_by_external_user_id(Arr::get($response, 'id'), $provider);
+							$external_user_id = Arr::get($response, 'id');
+							$external         = Model_User_External::factory()->find_by_external_user_id($external_user_id, $provider);
 							if ($this->_update_token($external, $token)) {
 
 								// Already paired with local user, login
@@ -199,8 +200,26 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 							} else {
 
-								// New user
-								Kohana::$log->add(Log::DEBUG, 'OAuth2: Starting new user registration');
+								// Not paired with a local user, check if we have unpaired user available
+								$email = Arr::get($response, 'email');
+
+								// Store external user id in session data, token should be stored in OAuth2
+								Session::instance()->set('oauth2.' . $provider . '.id', $external_user_id);
+								if ($user = Model_User::find_user($email)) {
+
+									// User with same email found, ask to sign in
+									Kohana::$log->add(Log::DEBUG, 'OAuth2: Existing user with same email found');
+									$this->view->add(View_Page::COLUMN_MAIN, $this->section_signin($user, $response));
+
+								} else {
+
+									// No user with same email found, start registering
+									Kohana::$log->add(Log::DEBUG, 'OAuth2: Starting new user registration');
+
+									Session::instance()->set('oauth2.' . $provider . '.response', $response);
+									$this->request->redirect(Route::url('sign', array('action' => 'up')) . '?provider=' . $provider);
+								}
+
 
 							}
 						}
@@ -264,6 +283,18 @@ class Anqh_Controller_OAuth extends Controller_Page {
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Get password view.
+	 *
+	 * @param   Model_User  $user
+	 * @param   array       $external_user
+	 * @return  View_User_OAuth
+	 */
+	public function section_signin(Model_User $user, array $external_user) {
+		return new View_User_OAuth($user, $external_user);
 	}
 
 

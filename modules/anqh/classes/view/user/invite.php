@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_Invite extends View_Section {
@@ -56,10 +56,10 @@ class View_User_Invite extends View_Section {
 	<legend><?= __('Not yet invited?') ?></legend>
 
 	<?php echo Form::control_group(
-		Form::input('email', $this->invitation->email, array('class' => 'input-xxlarge', 'placeholder' => __('john.doe@domain.tld'))),
+		Form::input('email', $this->invitation->email, array('class' => 'input-block-level', 'placeholder' => __('john.doe@domain.tld'))),
 		array('email' => __('Send an invitation to')),
 		Arr::get($this->errors, 'email'),
-		__('Please remember: sign up is available only with a valid, invited email.')
+		__('Please remember: sign up is available only with a valid, invited email. You can invite yourself too!')
 	) ?>
 
 </fieldset>
@@ -83,7 +83,7 @@ class View_User_Invite extends View_Section {
 	<legend><?= __('Got my invitation!') ?></legend>
 
 	<?php echo Form::control_group(
-		Form::input('code', null, array('class' => 'input-xxlarge', 'placeholder' => __('M0573XC3LL3N751R'))),
+		Form::input('code', null, array('class' => 'input-block-level', 'placeholder' => __('M0573XC3LL3N751R'))),
 		array('code' => __('Enter your invitation code')),
 		Arr::get($this->errors, 'code'),
 	__('Your invitation code is included in the mail you received, 16 characters.')
