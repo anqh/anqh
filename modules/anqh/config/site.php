@@ -105,7 +105,7 @@ return array(
 	'smiley' => array(
 		'dir' => 'smiley',
 		'smileys' => array(
-			'smileyname'     => array('src' => 'smileyname.gif'),
+//			'smileyname'     => array('src' => 'smileyname.gif'),
 		),
 	),
 

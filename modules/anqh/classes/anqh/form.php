@@ -436,8 +436,10 @@ class Anqh_Form extends Kohana_Form {
 			$element = 'textarea[name=' . $name . ']';
 		}
 
-		return Form::textarea($name, $body, $attributes, $double_encode)
-			. HTML::script_source('head.ready("bbcode", function initMarkItUp() { $("' . $element . '").markItUp(bbCodeSettings); });');
+		return
+			new View_Generic_Smileys($element)
+				. Form::textarea($name, $body, $attributes, $double_encode)
+				. HTML::script_source('head.ready("bbcode", function initMarkItUp() { $("' . $element . '").markItUp(bbCodeSettings); });');
 	}
 
 

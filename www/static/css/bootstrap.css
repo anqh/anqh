@@ -7959,6 +7959,10 @@ div.loading {
   list-style-type: none;
 }
 
+.markItUpHeader .btn {
+  text-shadow: none;
+}
+
 #map {
   width: 100%;
   height: 250px;
