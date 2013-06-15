@@ -232,6 +232,39 @@ $.fn.slideshow = function() {
 };
 
 
+// Add smiley to input
+$.fn.smiley = function(smiley) {
+	var $input = $(this)
+	  , input  = $(this).get(0);
+
+	if (document.selection) {
+
+		// IE
+		$input.focus();
+		var range = document.selection.createRange();
+		range.text = smiley;
+		$input.focus();
+
+	} else if (input.selectionStart || input.selectionStart == '0') {
+
+	 // Others
+		var from = input.selectionStart
+		  , to   = input.selectionEnd
+		  , text = input.value;
+		input.value = text.substring(0, from) + smiley + text.substring(to, text.length);
+		$input.focus();
+		input.selectionStart = input.selectionEnd = from + smiley.length;
+
+	} else {
+
+		// Fallback
+		input.value += smiley;
+		$input.focus();
+
+	}
+};
+
+
 // City autocomplete
 $.fn.autocompleteCity = function(options) {
 	var defaults = {

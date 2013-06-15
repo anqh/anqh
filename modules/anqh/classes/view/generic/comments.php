@@ -162,6 +162,8 @@ class View_Generic_Comments extends View_Section {
 	public function form() {
 		ob_start();
 
+		echo new View_Generic_Smileys('input[name=comment]');
+
 		echo Form::open(null, array('class' => 'form-inline'));
 
 		// Private message?
@@ -172,7 +174,8 @@ class View_Generic_Comments extends View_Section {
 				Arr::get($this->values, 'private'),
 				array(
 					'id'       => 'field-private',
-					'onchange' => "\$('input[name=comment]').toggleClass('private', this.checked);")
+					'onchange' => "\$('input[name=comment]').toggleClass('private', this.checked);"
+				)
 			);
 
 			echo Form::label(
@@ -182,8 +185,11 @@ class View_Generic_Comments extends View_Section {
 			);
 		}
 
-		echo Form::input('comment', Arr::get($this->values, 'comment'), array('class' => 'input-xlarge', 'maxlength' => 300)), ' ';
-		echo Form::submit(false, __('Comment'), array('class' => 'btn btn-primary'));
+		echo '<div class="input-append">';
+		echo Form::input('comment', Arr::get($this->values, 'comment'), array('class' => 'span5', 'maxlength' => 300));
+		echo Form::button('smileys', '<i class="icon-smile"></i>', array('class' => 'btn btn-inverse', 'title' => __('Show smileys'), 'type' => 'button', 'data-toggle' => 'collapse', 'data-target' => '.smileys'));
+		echo Form::button(false, '<i class="icon-comment"></i>', array('class' => 'btn btn-primary', 'title' => __('Comment'), 'type' => 'submit'));
+		echo '</div>';
 		echo Form::csrf();
 
 		echo Form::close();

@@ -64,7 +64,9 @@ class View_Generic_Smileys extends View_Base {
 		  , target   = $smileys.attr('data-target');
 
 		$smileys.on('click', 'img', function _smiley() {
-			$.markItUp({ target: target, replaceWith: $(this).attr('title') });
+			$(target).smiley($(this).attr('title'));
+// Does not work with input fields
+//			$.markItUp({ target: target, replaceWith: $(this).attr('title') });
 		});
 	});
 </script>
