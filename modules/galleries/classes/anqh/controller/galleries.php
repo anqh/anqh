@@ -959,7 +959,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			// Pagination
 			$previous_url = $previous ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
 			$next_url     = $next     ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
-			$this->view->add(View_Page::COLUMN_TOP, $this->section_image_pagination($previous_url, $next_url, $i, count($images)));
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_image_pagination($previous_url, $next_url));
 
 			// Image
 			if (!isset($approve)) {
@@ -1856,12 +1856,12 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param   integer  $total
 	 * @return  View_Generic_Pagination
 	 */
-	public function section_image_pagination($previous_url, $next_url, $current = null, $total = null) {
+	public function section_image_pagination($previous_url, $next_url) {
 		$section = new View_Generic_Pagination(array(
 			'previous_url'  => $previous_url,
 			'next_url'      => $next_url,
-			'current_page'  => $current,
-			'total_pages'   => $total,
+			'previous_text' => '&lsaquo; ' . __('Previous image'),
+			'next_text'     => __('Next image') . ' &rsaquo;',
 		));
 		$section->class = 'sticky';
 
