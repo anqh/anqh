@@ -1002,15 +1002,15 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->_set_flyer_actions();
 
 		// Galleries with latest images
-		$galleries = Model_Gallery::factory()->find_latest(15);
+		$galleries = Model_Gallery::factory()->find_latest(20);
 		if (count($galleries)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries));
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_galleries_thumbs($galleries));
 		}
 
 		// Latest flyers
-		$flyers = Model_Flyer::factory()->find_latest(10);
+		$flyers = Model_Flyer::factory()->find_latest(20);
 		if (count($flyers)) {
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_flyers_latest($flyers));
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_flyers_latest($flyers));
 		}
 
 	}

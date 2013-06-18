@@ -55,7 +55,7 @@ class View_Galleries_Thumbs extends View_Section {
 
 			<?= $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('Thumbnail pending') ?>
 
-			<h4><?= HTML::chars($gallery->name) ?></h4>
+			<p class="description"><?= HTML::chars($gallery->name) ?></p>
 
 <?php
 

@@ -26,6 +26,7 @@ class View_Flyers_Latest extends View_Section {
 		parent::__construct();
 
 		$this->flyers = $flyers;
+		$this->title  = __('Latest flyers');
 	}
 
 
@@ -47,7 +48,7 @@ class View_Flyers_Latest extends View_Section {
 		<?= HTML::anchor(
 			Route::get('flyer')->uri(array('id' => $flyer->id)),
 			HTML::image($flyer->image->get_url('thumbnail'))
-				. '<h4>' . HTML::chars($name) . '</h4>',
+				. '<p class="description">' . HTML::chars($name) . '</p>',
 			array('class' => 'thumbnail', 'title' => HTML::chars($name))
 		) ?>
 
