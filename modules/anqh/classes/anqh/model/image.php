@@ -29,6 +29,10 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	const SIZE_THUMBNAIL = 'thumbnail';
 	const SIZE_WIDE      = 'wide';
 
+	const TOP_COMMENTED  = 'commented';
+	const TOP_RATED      = 'rated';
+	const TOP_VIEWED     = 'viewed';
+
 	protected $_table_name = 'images';
 
 	protected $_data = array(
@@ -236,6 +240,55 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 				->and_where('new_comment_count', '>', 0),
 			null
 		);
+	}
+
+
+	/**
+	 * Get top images.
+	 *
+	 * @param   string   $type  see TOP_*
+	 * @param   integer  $top
+	 * @param   integer  $year  false for all
+	 * @return  Model_Image[]
+	 */
+	public function find_top($type, $top = 10, $year = null) {
+		$query         = DB::select_array($this->fields());
+		$query_gallery = DB::select('image_id')
+			->from('galleries_images')
+			->join('galleries', 'INNER')
+			->on('galleries.id', '=', 'gallery_id');
+
+		// Load only for a specific year?
+		if ((int)$year) {
+			$start = mktime(0, 0, 0, 1, 1, $year);
+			$end   = mktime(23, 59, 59, 31, 12, $year);
+			$query_gallery->where('date', 'BETWEEN', array($start, $end));
+		}
+
+		$query->where('id', 'IN', $query_gallery);
+
+		switch ($type) {
+
+			case self::TOP_COMMENTED:
+				$query->order_by('comment_count', 'DESC');
+				break;
+
+			case self::TOP_RATED:
+				$query
+					->where('rate_count', '>', 4)
+					->order_by(DB::expr('100 * images.rate_total / images.rate_count'), 'DESC');
+				break;
+
+			case self::TOP_VIEWED:
+				$query->order_by('view_count', 'DESC');
+				break;
+
+			default:
+				return null;
+
+		}
+
+		return $this->load($query, $top);
 	}
 
 

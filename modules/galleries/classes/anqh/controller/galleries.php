@@ -289,7 +289,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			// Set actions
 			$this->page_actions[] = array(
 				'link' => Route::model($event),
-				'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;'
+				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
 			);
 
 			$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_empty($event));
@@ -671,7 +671,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($gallery, 'update'),
-				'text'  => '<i class="icon-refresh icon-white"></i> ' . __('Update gallery'),
+				'text'  => '<i class="icon-refresh"></i> ' . __('Update gallery'),
 			);
 		}
 
@@ -919,21 +919,21 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-home icon-white"></i> ' . __('Set gallery default'),
+					'text'  => '<i class="icon-home"></i> ' . __('Set gallery default'),
 					'class' => 'btn-inverse image-default'
 				);
 			}
 			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete'),
+					'text'  => '<i class="icon-trash"></i> ' . __('Delete'),
 					'class' => 'btn-inverse image-delete'
 				);
 			}
 			if (Permission::has($current, Model_Image::PERMISSION_REPORT, self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'report')),
-					'text'  => '<i class="icon-warning-sign icon-white"></i> ' . __('Report'),
+					'text'  => '<i class="icon-warning-sign"></i> ' . __('Report'),
 					'class' => 'btn-inverse dialogify',
 					'data-dialog-title' => __('Report image')
 				);
@@ -948,7 +948,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			));
 			$this->view->tabs['gallery'] = array(
 				'link' => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id)),
-				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photo')
+				'text' => '<i class="icon-camera"></i> ' . __('Photo')
 			);
 
 			// Event info
@@ -995,9 +995,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	public function action_index() {
 
 		// Build page
-		$this->view        = View_Page::factory(__('Galleries'));
-		$this->view->spans = View_Page::SPANS_64;
-		$this->view->tab   = 'latest';
+		$this->view      = View_Page::factory(__('Galleries'));
+		$this->view->tab = 'latest';
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_flyer_actions();
 
@@ -1178,6 +1177,26 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// No results
+
+	}
+
+
+	/**
+	 * Action: top images
+	 */
+	public function action_top() {
+
+		// Build page
+		$this->view        = View_Page::factory(__('Top 10'));
+		$this->view->spans = View_Page::SPANS_64;
+		$this->view->tab   = 'top';
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_flyer_actions();
+
+		// Top images
+		foreach (array(Model_Image::TOP_RATED, Model_Image::TOP_COMMENTED, Model_Image::TOP_VIEWED) as $type) {
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_top($type, 10));
+		}
 
 	}
 
@@ -1486,11 +1505,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function _set_flyer_actions(Model_Flyer $flyer = null) {
 		$this->view->tabs[] = array(
 			'link' => Route::get('flyer')->uri(array('id' => 'undated')),
-			'text' => '<i class="icon-random icon-white"></i> ' . __('Random undated flyer'),
+			'text' => '<i class="icon-random"></i> ' . __('Random undated flyer'),
 		);
 		$this->view->tabs[] = array(
 			'link' => Route::get('flyer')->uri(array('id' => 'random')),
-			'text' => '<i class="icon-random icon-white"></i> ' . __('Random flyer'),
+			'text' => '<i class="icon-random"></i> ' . __('Random flyer'),
 		);
 
 		if ($flyer) {
@@ -1511,7 +1530,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if ($event = $flyer->event()) {
 				$this->view->tabs[] = array(
 					'link'  => Route::model($event),
-					'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;',
+					'text'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
 				);
 			}
 		}
@@ -1526,21 +1545,25 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function _set_page_actions($upload = false) {
 		$this->view->tabs['latest'] = array(
 			'link' => Route::url('galleries'),
-			'text' => '<i class="icon-camera icon-white"></i> ' . __('Latest updates')
+			'text' => '<i class="icon-camera"></i> ' . __('Latest updates')
 		);
 		$this->view->tabs['galleries'] = array(
 			'link' => Route::url('galleries', array('action' => 'browse')),
-			'text' => '<i class="icon-camera icon-white"></i> ' . __('Galleries')
+			'text' => '<i class="icon-camera"></i> ' . __('Galleries')
+		);
+		$this->view->tabs['top'] = array(
+			'link' => Route::url('galleries', array('action' => 'top')),
+			'text' => '<i class="icon-camera"></i> ' . __('Top 10')
 		);
 		$this->view->tabs['flyers'] = array(
 			'link' => Route::url('flyers', array('action' => '')),
-			'text' => '<i class="icon-picture icon-white"></i> ' . __('Flyers')
+			'text' => '<i class="icon-picture"></i> ' . __('Flyers')
 		);
 
 		if ($upload) {
 			$this->view->actions['upload'] = array(
 				'link'  => Route::url('galleries', array('action' => 'upload')),
-				'text'  => '<i class="icon-upload icon-white"></i> ' . __('Upload images'),
+				'text'  => '<i class="icon-upload"></i> ' . __('Upload images'),
 				'class' => 'btn-primary images-add'
 			);
 		}
@@ -1567,12 +1590,12 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 		$this->view->tabs['gallery'] = array(
 			'link' => Route::model($gallery),
-			'text' => '<i class="icon-camera icon-white"></i> ' . __('Gallery')
+			'text' => '<i class="icon-camera"></i> ' . __('Gallery')
 		);
 		if ($event = $gallery->event()) {
 			$this->view->tabs[] = array(
 				'link' => Route::model($event),
-				'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event') . ' &raquo;'
+				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
 			);
 		}
 
@@ -1585,11 +1608,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function _set_random_actions() {
 		$this->page_actions[] = array(
 			'link' => Route::url('flyer', array('id' => 'undated')),
-			'text' => '<i class="icon-random icon-white"></i> ' . __('Random undated flyer')
+			'text' => '<i class="icon-random"></i> ' . __('Random undated flyer')
 		);
 		$this->page_actions[] = array(
 			'link' => Route::url('flyer', array('id' => 'random')),
-			'text' => '<i class="icon-random icon-white"></i> ' . __('Random flyer')
+			'text' => '<i class="icon-random"></i> ' . __('Random flyer')
 		);
 	}
 
@@ -1728,7 +1751,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			. ($can_upload
 				? '<br /><br />' . HTML::anchor(
 						Route::url('galleries', array('action' => 'upload')) . '?from=' . $event->id,
-						'<i class="icon-upload icon-white"></i> ' . __('Upload images'),
+						'<i class="icon-upload"></i> ' . __('Upload images'),
 						array('class' => 'btn btn-primary')
 					)
 				: ''),
@@ -1953,6 +1976,18 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					))
 				: false,
 		));
+	}
+
+
+	/**
+	 * Get top images.
+	 *
+	 * @param   string   $type
+	 * @param   integer  $top
+	 * @return  View_Gallery_Top
+	 */
+	public function section_top($type, $top = 10) {
+		return new View_Gallery_Top($type, Model_Image::factory()->find_top($type, $top));
 	}
 
 
