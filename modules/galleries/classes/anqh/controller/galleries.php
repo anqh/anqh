@@ -1992,16 +1992,16 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		return new View_Generic_Pagination(array(
-			'previous_text' => '&laquo; ' . __('Previous month'),
-			'next_text'     => __('Next month') . ' &raquo;',
-			'previous_url'  => $previous_month
+			'next_text'     => __('Previous month') . ' &raquo;',
+			'previous_text' => '&laquo; ' . __('Next month'),
+			'next_url'      => $previous_month
 				? Route::url($route, array(
 						'action' => $action,
 						'year'   => $previous_year,
 						'month'  => $previous_month,
 					))
 				: false,
-			'next_url'      => $next_month
+			'previous_url'  => $next_month
 				? Route::url($route, array(
 						'action' => $action,
 						'year'   => $next_year,
