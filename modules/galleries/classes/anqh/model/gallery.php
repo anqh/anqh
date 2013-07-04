@@ -137,7 +137,7 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 	 * Find multiple galleries by image ids
 	 *
 	 * @param   array  $image_ids
-	 * @return  Database_Result
+	 * @return  Model_Gallery[]
 	 */
 	public function find_by_images($image_ids) {
 		return $this->load(
@@ -155,7 +155,7 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 	 *
 	 * @param   integer  $year
 	 * @param   integer  $month
-	 * @return  Database_Result
+	 * @return  Model_Gallery[]
 	 */
 	public function find_by_month($year, $month) {
 		$start = mktime(0, 0, 0, $month, 1, $year);
@@ -172,10 +172,31 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 
 
 	/**
+	 * Find galleries by author.
+	 *
+	 * @param   integer  $user_id
+	 * @return  Model_Gallery[]
+	 */
+	public function find_by_user($user_id) {
+		$query_gallery = DB::select('gallery_id')
+			->from('galleries_images')
+			->join('images', 'INNER')
+			->on('images.id', '=', 'image_id')
+			->where('images.author_id', '=', (int)$user_id);
+
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('id', 'IN', $query_gallery)
+				->order_by('date', 'DESC'),
+			null);
+	}
+
+
+	/**
 	 * Get gallery images waiting for approval.
 	 *
 	 * @param   Model_User  $user  image owner or null for all
-	 * @return  Database_Result
+	 * @return  Model_Image[]
 	 */
 	public function find_images_pending(Model_User $user = null) {
 		$query = DB::select_array(Model_Image::factory()->fields())

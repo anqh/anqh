@@ -24,6 +24,11 @@ class View_Galleries_Thumbs extends View_Section {
 	 */
 	public $show_pending = false;
 
+	/**
+	 * @var  boolean  Display year titles
+	 */
+	public $years = false;
+
 
 	/**
 	 * Create new view.
@@ -45,11 +50,44 @@ class View_Galleries_Thumbs extends View_Section {
 	public function content() {
 		ob_start();
 
+		$current_year = 0;
+		foreach ($this->galleries as $gallery):
+			$default_image = $gallery->default_image();
+
+			if (!$this->years && !$current_year):
+
+				// No titles
+
 ?>
 
 <ul class="thumbnails">
 
-	<?php foreach ($this->galleries as $gallery): $default_image = $gallery->default_image(); ?>
+<?php
+
+				$current_year = true;
+
+			elseif ($this->years):
+
+				// Display year titles
+				$year = date('Y', $gallery->date);
+				if ($year !== $current_year):
+					if ($current_year): ?>
+
+</ul>
+
+<?php     endif; ?>
+
+<header><h3><?= $year ?></h3></header>
+<ul class="thumbnails">
+
+<?php
+
+				$current_year = $year;
+			endif;
+		endif;
+
+?>
+
 	<li class="span2">
 		<a class="thumbnail" href="<?= Route::model($gallery, $this->show_pending ? 'pending' : null) ?>">
 
@@ -90,7 +128,8 @@ class View_Galleries_Thumbs extends View_Section {
 
 		</a>
 	</li>
-	<?php endforeach; ?>
+
+<?php endforeach; ?>
 
 </ul>
 

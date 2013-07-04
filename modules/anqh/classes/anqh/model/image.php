@@ -246,12 +246,13 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	/**
 	 * Get top images.
 	 *
-	 * @param   string   $type  see TOP_*
+	 * @param   string   $type     see TOP_*
 	 * @param   integer  $top
-	 * @param   integer  $year  false for all
+	 * @param   integer  $year     false for all
+	 * @param   integer  $user_id
 	 * @return  Model_Image[]
 	 */
-	public function find_top($type, $top = 10, $year = null) {
+	public function find_top($type, $top = 10, $year = null, $user_id = null) {
 		$query         = DB::select_array($this->fields());
 		$query_gallery = DB::select('image_id')
 			->from('galleries_images')
@@ -260,12 +261,18 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 		// Load only for a specific year?
 		if ((int)$year) {
-			$start = mktime(0, 0, 0, 1, 1, $year);
-			$end   = mktime(23, 59, 59, 31, 12, $year);
+			$start = mktime(0, 0, 0, 1, 1, (int)$year);
+			$end   = mktime(23, 59, 59, 31, 12, (int)$year);
 			$query_gallery->where('date', 'BETWEEN', array($start, $end));
 		}
 
+		// Load only for specific user?
+		if ((int)$user_id) {
+			$query->where('author_id', '=', (int)$user_id);
+		}
+
 		$query->where('id', 'IN', $query_gallery);
+
 
 		switch ($type) {
 

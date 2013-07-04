@@ -230,7 +230,9 @@ class Anqh_Controller_Blog extends Controller_Page {
 			$month = min(12, max(1, $month));
 
 			// Build page
-			$this->view = View_Page::factory(HTML::chars($user->username) . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))));
+			$this->view        = Controller_User::_set_page($user);
+			$this->view->tab   = 'blog';
+			$this->view->add(View_Page::COLUMN_MAIN, '<h2>' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) . '</h2>');
 
 			// Pagination
 			$params = array('username' => urlencode($user->username));

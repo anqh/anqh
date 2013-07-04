@@ -1078,6 +1078,37 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 	/**
+	 * Action: photographer profile
+	 */
+	public function action_photographer() {
+		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
+		if (!$user) {
+			$this->request->redirect(Route::url('galleries'));
+
+			return;
+		}
+
+		// Build page
+		$this->view        = Controller_User::_set_page($user);
+		$this->view->spans = View_Page::SPANS_64;
+		$this->view->tab   = 'photographer';
+
+		// Galleries
+		$galleries = Model_Gallery::factory()->find_by_user($user->id);
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries, false, false, true));
+
+		// Top images
+		foreach (array(Model_Image::TOP_RATED, Model_Image::TOP_COMMENTED, Model_Image::TOP_VIEWED) as $type) {
+			$section = $this->section_top($type, 6, $user->id);
+			$section->class = 'full';
+
+			$this->view->add(View_Page::COLUMN_SIDE, $section);
+		}
+
+	}
+
+
+	/**
 	 * Action: report
 	 */
 	public function action_report() {
@@ -1705,12 +1736,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param   Model_Gallery[]  $galleries
 	 * @param   boolean          $pending    List pending thumbs
 	 * @param   boolean          $approve    Permission to approve
+	 * @param   boolean          $years      Show year titles
 	 * @return  View_Galleries_Thumbs
 	 */
-	public function section_galleries_thumbs($galleries, $pending = false, $approve = false) {
+	public function section_galleries_thumbs($galleries, $pending = false, $approve = false, $years = false) {
 		$section = new View_Galleries_Thumbs($galleries);
 		$section->show_pending = $pending;
 		$section->can_approve  = $approve;
+		$section->years        = $years;
 
 		return $section;
 	}
@@ -1984,10 +2017,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 *
 	 * @param   string   $type
 	 * @param   integer  $top
+	 * @param   integer  $user_id
 	 * @return  View_Gallery_Top
 	 */
-	public function section_top($type, $top = 10) {
-		return new View_Gallery_Top($type, Model_Image::factory()->find_top($type, $top));
+	public function section_top($type, $top = 10, $user_id = null) {
+		return new View_Gallery_Top($type, Model_Image::factory()->find_top($type, $top, null, $user_id));
 	}
 
 
