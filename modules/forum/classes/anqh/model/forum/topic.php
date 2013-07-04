@@ -233,16 +233,16 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		switch ($permission) {
 
 			case self::PERMISSION_DELETE:
-				return $user && $user->has_role('admin');
+				return $user && $user->has_role(array('admin', 'forum moderator'));
 
 			case self::PERMISSION_POST:
-		    return $user && ($this->status !== self::STATUS_LOCKED || $user->has_role('admin'));
+				return $user && ($this->status !== self::STATUS_LOCKED || $user->has_role(array('admin', 'forum moderator')));
 
 			case self::PERMISSION_READ:
 				return Permission::has($this->area(), Model_Forum_Area::PERMISSION_READ, $user);
 
 			case self::PERMISSION_UPDATE:
-				return $user && (($this->status !== self::STATUS_LOCKED && $user->id == $this->author_id) || $user->has_role('admin'));
+				return $user && (($this->status !== self::STATUS_LOCKED && $user->id == $this->author_id) || $user->has_role(array('admin', 'forum moderator')));
 
 		}
 
