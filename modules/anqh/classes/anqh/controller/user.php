@@ -58,12 +58,12 @@ class Anqh_Controller_User extends Controller_Page {
 		$user = $this->_get_user();
 
 		// Build page
-		$this->_set_page($user);
+		$this->view = self::_set_page($user);
 
 		$this->view->tab       = 'favorites';
 		$this->view->actions[] = array(
 			'link'  => URL::site(Route::url('ical_favorites', array('username' => urlencode($user->username))), 'webcal'),
-			'text'  => '<i class="icon-download-alt icon-white"></i> ' . __('Download as .ics'),
+			'text'  => '<i class="icon-download-alt"></i> ' . __('Download as .ics'),
 		);
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_favorites($user));
@@ -145,7 +145,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$user = $this->_get_user();
 
 		// Build page
-		$this->_set_page($user);
+		$this->view = self::_set_page($user);
 
 		$this->view->tab = 'friends';
 
@@ -205,7 +205,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$user = $this->_get_user();
 
 		// Build page
-		$this->_set_page($user);
+		$this->view = self::_set_page($user);
 		$this->view->tab = 'ignores';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_ignores($user));
@@ -306,7 +306,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 		// Build page
-		$this->_set_page($user);
+		$this->view = self::_set_page($user);
 		$this->view->tab = 'profile';
 
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_upload(URL::user($user), $errors));
@@ -381,14 +381,14 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 		// Build page
-		$this->_set_page($user);
+		$this->view = self::_set_page($user);
 		$this->view->tab = 'profile';
 
 		// Owner / admin actions
 		if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => URL::user($user, 'image'),
-				'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add image'),
+				'text'  => '<i class="icon-picture"></i> ' . __('Add image'),
 			);
 		}
 
@@ -440,7 +440,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 		// Build page
-		$this->_set_page($user);
+		$this->view = self::_set_page($user);
 		$this->view->tab = 'settings';
 
 		$this->view->add(View_Page::COLUMN_TOP, $this->section_settings($user, $errors));
@@ -503,19 +503,20 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
-	 * Set generic page parameters
+	 * Build user page with generic parameters.
 	 *
 	 * @param   Model_User  $user
+	 * @return  View_Page
 	 */
-	protected function _set_page(Model_User $user) {
+	public static function _set_page(Model_User $user) {
 
 		// Build page
-		$this->view = new View_Page($user->username);
+		$view = new View_Page($user->username);
 		if ($user->name) {
 //			$this->view->title_html = HTML::chars($user->username) . ' <small>' . HTML::chars($user->name) . '</small>';
 		}
 		if ($user->title) {
-			$this->view->subtitle = HTML::chars($user->title);
+			$view->subtitle = HTML::chars($user->title);
 		}
 
 		// Set actions
@@ -524,15 +525,15 @@ class Anqh_Controller_User extends Controller_Page {
 			// Friend actions
 			if (Permission::has($user, Model_User::PERMISSION_FRIEND, self::$user)) {
 				if (self::$user->is_friend($user)) {
-					$this->view->actions[] = array(
+					$view->actions[] = array(
 						'link'  => URL::user($user, 'unfriend') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Remove friend'),
+						'text'  => '<i class="icon-heart"></i> ' . __('Remove friend'),
 						'class' => 'btn-inverse friend-delete'
 					);
 				} else {
-					$this->view->actions[] = array(
+					$view->actions[] = array(
 						'link'  => URL::user($user, 'friend') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to friends'),
+						'text'  => '<i class="icon-heart"></i> ' . __('Add to friends'),
 						'class' => 'btn-lovely friend-add'
 					);
 				}
@@ -541,57 +542,58 @@ class Anqh_Controller_User extends Controller_Page {
 			// Ignore actions
 			if (Permission::has($user, Model_User::PERMISSION_IGNORE, self::$user)) {
 				if (self::$user->is_ignored($user)) {
-					$this->view->actions[] = array(
+					$view->actions[] = array(
 						'link'  => URL::user($user, 'unignore') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Unignore'),
+						'text'  => '<i class="icon-ban-circle"></i> ' . __('Unignore'),
 						'class' => 'btn-inverse ignore-delete'
 					);
 				} else {
-					$this->view->actions[] = array(
+					$view->actions[] = array(
 						'link'  => URL::user($user, 'ignore') . '?token=' . Security::csrf(),
-						'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ignore'),
+						'text'  => '<i class="icon-ban-circle"></i> ' . __('Ignore'),
 					);
 				}
 			}
 
-			$this->view->tabs['profile'] = array(
+			$view->tabs['profile'] = array(
 				'link'  =>  URL::user($user),
-				'text'  => '<i class="icon-user icon-white"></i> ' . __('Profile'),
+				'text'  => '<i class="icon-user"></i> ' . __('Profile'),
 			);
-			$this->view->tabs['favorites'] = array(
+			$view->tabs['favorites'] = array(
 				'link'  =>  URL::user($user, 'favorites'),
-				'text'  => '<i class="icon-calendar icon-white"></i> ' . __('Favorites'),
+				'text'  => '<i class="icon-calendar"></i> ' . __('Favorites'),
 			);
-			$this->view->tabs['friends'] = array(
+			$view->tabs['friends'] = array(
 				'link'  =>  URL::user($user, 'friends'),
-				'text'  => '<i class="icon-heart icon-white"></i> ' . __('Friends'),
+				'text'  => '<i class="icon-heart"></i> ' . __('Friends'),
 			);
 
 			// Owner / admin actions
 			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
-				$this->view->tabs['ignores'] = array(
+				$view->tabs['ignores'] = array(
 					'link'  =>  URL::user($user, 'ignores'),
-					'text'  => '<i class="icon-ban-circle icon-white"></i> ' . __('Ignores'),
+					'text'  => '<i class="icon-ban-circle"></i> ' . __('Ignores'),
 				);
-				$this->view->tabs['settings'] = array(
+				$view->tabs['settings'] = array(
 					'link'  =>  URL::user($user, 'settings'),
-					'text'  => '<i class="icon-cog icon-white"></i> ' . __('Settings'),
+					'text'  => '<i class="icon-cog"></i> ' . __('Settings'),
 				);
 			}
 
-			// Image search
-			$this->view->tabs['images'] = array(
-				'link' => Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode($user->username),
-				'text' => '<i class="icon-camera icon-white"></i> ' . __('Photos') . ' &raquo;',
+			// Photographer profile
+			$view->tabs['photographer'] = array(
+				'link' => Route::url('photographer', array('username' => urlencode($user->username))),
+				'text' => '<i class="icon-camera"></i> ' . __('Photographer') . ' &raquo;',
 			);
 
 			// Blog
-			$this->view->tabs['blog'] = array(
+			$view->tabs['blog'] = array(
 				'link' => Route::url('blog_user', array('username' => urlencode($user->username))),
-				'text' => '<i class="icon-book icon-white"></i> ' . __('Blog') . ' &raquo;',
+				'text' => '<i class="icon-book"></i> ' . __('Blog') . ' &raquo;',
 			);
 		}
 
+		return $view;
 	}
 
 

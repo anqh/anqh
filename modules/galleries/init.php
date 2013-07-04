@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -52,5 +52,11 @@ Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|uploa
 	));
 Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'search|browse|upload|approval|top', 'year' => '\d{4}', 'month' => '\d{1,2}'))
 	->defaults(array(
+		'controller' => 'galleries',
+	));
+Route::set('photographer', 'member/<username>/photographer', array(
+	'username' => '[^/]+')
+)->defaults(array(
+		'action'     => 'photographer',
 		'controller' => 'galleries',
 	));

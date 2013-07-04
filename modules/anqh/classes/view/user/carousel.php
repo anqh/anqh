@@ -125,6 +125,7 @@ class View_User_Carousel extends View_Section {
 			<?php endforeach; ?>
 
 </div>
+<br />
 
 <a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev">&lsaquo;</a>
 <a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next">&rsaquo;</a>
@@ -132,6 +133,13 @@ class View_User_Carousel extends View_Section {
 <?php
 
 		endif;
+
+		// Image search
+		echo HTML::anchor(
+			Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode($this->user->username),
+			'<i class="icon-picture"></i> ' . __('Search from galleries'),
+			array('class' => 'btn btn-inverse btn-block')
+		);
 
 		return ob_get_clean();
 	}
