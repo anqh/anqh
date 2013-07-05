@@ -140,30 +140,6 @@ class Anqh_HTML extends Kohana_HTML {
 	}
 
 
-	/**
-	 * Ratings.
-	 *
-	 * @static
-	 * @param   integer  $total
-	 * @param   integer  $count
-	 * @param   boolean  $rate   allow rating
-	 * @param   boolean  $score  show score
-	 * @param   boolean  $new    new style
-	 * @return  string
-	 */
-	public static function rating($total, $count, $rate = false, $score = true, $new = false) {
-		if ($new) {
-			return new View_Generic_Rating($total, $count, $score);
-		}
-
-		return View::factory('generic/rating', array(
-			'total' => $total,
-			'count' => $count,
-			'rate'  => $rate,
-			'score' => $score,
-		));
-	}
-
 
 	/**
 	 * JavaScript source code block

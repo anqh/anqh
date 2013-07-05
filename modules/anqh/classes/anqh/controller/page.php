@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Controller_Page extends Controller {
@@ -138,8 +138,8 @@ head.js(
 
 
 			// And finally the profiler stats
-			if (self::$user && self::$user->has_role('admin')) { //in_array(Kohana::$environment, array(Kohana::DEVELOPMENT, Kohana::TESTING))) {
-				Widget::add('foot', View::factory('generic/debug'));
+			if (self::$user && self::$user->has_role('admin')) {
+				Widget::add('foot', new View_Generic_Debug());
 				Widget::add('foot', View::factory('profiler/stats'));
 			}
 

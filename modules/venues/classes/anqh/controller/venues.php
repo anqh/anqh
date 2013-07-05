@@ -23,11 +23,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 	 * Action: add venue
 	 */
 	public function action_add() {
-		if (!$this->request->param('id') && $this->ajax) {
-			return $this->_edit_venue_dialog();
-		} else {
-			return $this->_edit_venue();
-		}
+		return $this->_edit_venue();
 	}
 
 
@@ -366,16 +362,6 @@ class Anqh_Controller_Venues extends Controller_Page {
 			}
 		}
 
-		// Slideshow
-		if (count($venue->images) > 1) {
-			$images = array();
-			foreach ($venue->images as $image) $images[] = $image;
-			Widget::add('side', View_Module::factory('generic/image_slideshow', array(
-				'images'     => array_reverse($images),
-				'default_id' => $venue->default_image->id,
-			)));
-		}
-
 		// Default image
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_image($venue));
 
@@ -454,16 +440,6 @@ class Anqh_Controller_Venues extends Controller_Page {
 		$section->errors = $errors;
 		$section->cancel = $cancel;
 		$this->view->add(View_Page::COLUMN_TOP, $section);
-	}
-
-
-	/**
-	 * Edit venue data in dialog
-	 */
-	protected function _edit_venue_dialog() {
-		echo View_Module::factory('venues/edit_dialog', array(
-
-		));
 	}
 
 
