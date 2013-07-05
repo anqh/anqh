@@ -44,7 +44,7 @@ class View_Flyers_Latest extends View_Section {
 
 	<?php foreach ($this->flyers as $flyer): $name = $flyer->event ? $flyer->event->name : $flyer->name ?>
 
-	<li class="span2">
+	<li>
 		<?= HTML::anchor(
 			Route::get('flyer')->uri(array('id' => $flyer->id)),
 			HTML::image($flyer->image->get_url('thumbnail'))

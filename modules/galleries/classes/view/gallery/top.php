@@ -54,7 +54,7 @@ class View_Gallery_Top extends View_Section {
 
 	<?php foreach($this->images as $image): $gallery = $image->gallery(); ?>
 
-		<li class="span2">
+		<li>
 			<a class="thumbnail" href="<?= Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id)) ?>">
 
 				<?= HTML::image($image->get_url('thumbnail', $gallery->dir)) ?>

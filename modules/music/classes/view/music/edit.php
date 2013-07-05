@@ -45,11 +45,11 @@ class View_Music_Edit extends View_Article {
 	public function content() {
 		ob_start();
 
-		echo Form::open(null, array('id' => 'form-music', 'class' => 'row'));
+		echo Form::open(null, array('id' => 'form-music', 'class' => 'row-fluid'));
 
 ?>
 
-			<div class="span7">
+			<div class="span8">
 				<fieldset>
 					<?= Form::control_group(
 						Form::input('name', $this->track->name, array('class' => 'input-block-level')),
@@ -81,7 +81,7 @@ class View_Music_Edit extends View_Article {
 				</fieldset>
 			</div>
 
-			<div class="span3">
+			<div class="span4">
 				<fieldset>
 
 					<?= Form::control_group(

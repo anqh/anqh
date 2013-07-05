@@ -178,8 +178,8 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<fieldset class="row">
-	<div class="span3">
+<fieldset class="row-fluid">
+	<div class="span4">
 		<?= Form::control_group(
 					Form::select('status', array(
 						Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
@@ -190,7 +190,7 @@ class View_Forum_PostEdit extends View_Article {
 					Arr::get($this->errors, 'status')); ?>
 	</div>
 
-	<div class="span3">
+	<div class="span4">
 		<?= Form::control_group(
 			Form::select('sticky', array(
 				Model_Forum_Topic::STICKY_NORMAL => __('Normal'),

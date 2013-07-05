@@ -6979,7 +6979,6 @@ body > .container.tabs-right.tabbable-bodered > .tab-content {
 }
 
 body {
-  padding-top: 10px;
   background: #1a1a1a url(../img/background.png);
 }
 
@@ -7045,18 +7044,6 @@ h3 small {
 
 h4 small {
   font-size: 12px;
-}
-
-h1,
-h2,
-h3 {
-  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .5);*/
-
-}
-
-table h3,
-table h4 {
-  margin: 0;
 }
 
 dl:last-child,
@@ -7294,34 +7281,71 @@ blockquote {
   border-left-color: #333333;
 }
 
-#mainmenu .brand {
+#body {
+  width: 100%;
+  min-height: 100%;
+}
+
+#body.wide td.left {
+  width: 150px;
+}
+
+#body.narrow td.left {
+  width: 40px;
+}
+
+#body #topbar {
+  background: rgba(17, 17, 17, 0.9);
+}
+
+#body #topbar td.left {
+  width: 40px;
+}
+
+#body #maincontent td.left,
+#body #maincontent td.center {
+  height: 100%;
+  vertical-align: top;
+}
+
+#body #maincontent td.left {
+  background: rgba(17, 17, 17, 0.9);
+}
+
+#topbar .brand {
   display: block;
-  padding-bottom: 10px;
   font: small-caps 900 28px/28px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: -1px;
   color: white;
   text-align: right;
 }
 
-#mainmenu .brand i {
+#topbar .brand i {
   visibility: hidden;
 }
 
-#mainmenu .brand:hover {
+#topbar .brand:hover {
   color: #999999;
   text-decoration: none;
 }
 
-#mainmenu .brand:hover i {
+#topbar .brand:hover i {
   visibility: visible;
+}
+
+#topbar .section-title {
+  font: 100 24px/30px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: white;
+  text-transform: lowercase;
+}
+
+#topbar .section-title:hover {
+  color: #999999;
+  text-decoration: none;
 }
 
 #mainmenu .mainmenu {
   overflow: hidden;
-  background: rgba(34, 34, 34, 0.75);
-  border: 1px solid #111111;
-  border-radius: 4px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
 }
 
 #mainmenu .nav-list {
@@ -7333,17 +7357,9 @@ blockquote {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
-#mainmenu .nav-list .active a {
+#mainmenu .nav-list li.active a {
   background: rgba(0, 0, 0, 0.5);
   border-right: 4px solid #0088cc;
-}
-
-#mainmenu .nav-list li:not(:last-child) {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.75);
-}
-
-#mainmenu .nav-list li + li {
-  border-top: 1px solid rgba(51, 51, 51, 0.75);
 }
 
 #mainmenu .nav-list li.login,
@@ -7412,34 +7428,6 @@ blockquote {
 
 #mainmenu .nav-list li.collapse .nav-list li a {
   padding-left: 32px;
-}
-
-#header {
-  *zoom: 1;
-}
-
-#header:before,
-#header:after {
-  display: table;
-  line-height: 0;
-  content: "";
-}
-
-#header:after {
-  clear: both;
-}
-
-#header .section-title {
-  padding-bottom: 10px;
-  margin-left: -20px;
-  font: 100 24px/30px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: white;
-  text-transform: lowercase;
-}
-
-#header .section-title:hover {
-  color: #999999;
-  text-decoration: none;
 }
 
 #title {

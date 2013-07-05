@@ -527,7 +527,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				($month ? HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) : (__('Date unknown') . ($year == 1970 ? '' : ' ' . $year)))
 		);
 		$this->view->tab   = 'flyers';
-		$this->view->spans = View_Page::SPANS_64;
+		$this->view->spans = View_Page::SPANS_84;
 		$this->_set_page_actions();
 		$this->_set_flyer_actions();
 
@@ -665,7 +665,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Build page
 		$this->view        = View_Page::factory(__('Gallery'));
-		$this->view->spans = View_Page::SPANS_64;
+		$this->view->spans = View_Page::SPANS_84;
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_gallery($gallery);
 		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
@@ -1090,7 +1090,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Build page
 		$this->view        = Controller_User::_set_page($user);
-		$this->view->spans = View_Page::SPANS_64;
+		$this->view->spans = View_Page::SPANS_84;
 		$this->view->tab   = 'photographer';
 
 		// Galleries
@@ -1219,7 +1219,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Build page
 		$this->view        = View_Page::factory(__('Top 10'));
-		$this->view->spans = View_Page::SPANS_64;
+		$this->view->spans = View_Page::SPANS_84;
 		$this->view->tab   = 'top';
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_flyer_actions();

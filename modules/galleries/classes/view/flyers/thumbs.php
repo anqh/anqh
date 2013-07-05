@@ -41,11 +41,11 @@ class View_Flyers_Thumbs extends View_Section {
 
 	<?php foreach ($this->flyers as $flyer): $name = $flyer->event ? $flyer->event->name : $flyer->name ?>
 
-	<li class="span2">
+	<li>
 		<?= HTML::anchor(
 			Route::get('flyer')->uri(array('id' => $flyer->id)),
 			HTML::image($flyer->image->get_url('thumbnail'))
-				. '<h4>' . HTML::chars($name) . '</h4>',
+				. '<p class="description">' . HTML::chars($name) . '</p>',
 			array('class' => 'thumbnail', 'title' => HTML::chars($name))
 		) ?>
 

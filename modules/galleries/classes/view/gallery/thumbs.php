@@ -118,7 +118,7 @@ class View_Gallery_Thumbs extends View_Section {
 
 <?php endif; // Copyright ?>
 
-		<li class="span2">
+		<li>
 
 			<a class="thumbnail" href="<?= Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $image->id, 'action' => $this->show_pending ? 'approve' : '')) ?>">
 				<?= HTML::image($image->get_url('thumbnail', $this->gallery->dir)) ?>

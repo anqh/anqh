@@ -60,12 +60,13 @@ class View_Event_Edit extends View_Article {
 	public function content() {
 		ob_start();
 
-		echo Form::open(null, array('id' => 'form-event', 'class' => 'row'));
 ?>
 
 <div id="preview"></div>
 
-<div class="span7">
+<?= Form::open(null, array('id' => 'form-event', 'class' => 'row-fluid')) ?>
+
+<div class="span8">
 
 	<?php if ($this->event_errors || $this->venue_errors): ?>
 	<div class="alert alert-error">
@@ -114,9 +115,9 @@ class View_Event_Edit extends View_Article {
 	</fieldset>
 </div>
 
-<div class="span3">
+<div class="span4">
 
-	<fieldset id="fields-when" class="row">
+	<fieldset id="fields-when" class="row-fluid">
 		<?= Form::control_group(
 			Form::input(
 				'stamp_begin[date]',
@@ -125,7 +126,7 @@ class View_Event_Edit extends View_Article {
 			array('stamp_begin[date]' => __('Date')),
 			Arr::get($this->event_errors, 'stamp_begin'),
 			null,
-			array('class' => 'span1')) ?>
+			array('class' => 'span4')) ?>
 
 		<?= Form::control_group(
 			Form::select(
@@ -136,7 +137,7 @@ class View_Event_Edit extends View_Article {
 			array('stamp_begin[time]' => __('From')),
 			Arr::get($this->event_errors, 'stamp_begin'),
 			null,
-			array('class' => 'span1')) ?>
+			array('class' => 'span4')) ?>
 
 		<?= Form::control_group(
 			Form::select(
@@ -147,7 +148,7 @@ class View_Event_Edit extends View_Article {
 			array('stamp_end[time]' => __('To')),
 			Arr::get($this->event_errors, 'stamp_end'),
 			null,
-			array('class' => 'span1')) ?>
+			array('class' => 'span4')) ?>
 	</fieldset>
 
 	<?php if (!$this->event->flyer_front_image_id) echo Form::control_group(

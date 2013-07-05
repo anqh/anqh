@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2012 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Event_Day extends View_Article {
@@ -86,7 +86,7 @@ class View_Event_Day extends View_Article {
 				// Favorite event, click to unfavorite
 				return HTML::anchor(
 					Route::model($this->event, 'unfavorite') . '?token=' . Security::csrf(),
-					'<i class="icon-heart icon-white"></i> ' . $this->event->favorite_count,
+					'<i class="icon-heart"></i> ' . $this->event->favorite_count,
 					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-small btn-lovely active')
 				);
 
@@ -96,13 +96,13 @@ class View_Event_Day extends View_Article {
 				if ($this->event->favorite_count):
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
-						'<i class="icon-heart icon-white"></i> ' . $this->event->favorite_count,
+						'<i class="icon-heart"></i> ' . $this->event->favorite_count,
 						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
 					);
 				else:
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
-						'<i class="icon-heart"></i>',
+						'<i class="muted icon-heart"></i>',
 						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
 					);
 				endif;
@@ -154,21 +154,21 @@ class View_Event_Day extends View_Article {
 		// Section attributes
 		$attributes = array(
 			'id'    => $this->id,
-			'class' => 'row ' . $this->class,
+			'class' => 'media ' . $this->class,
 		);
 
 ?>
 
-<article<?php echo HTML::attributes($attributes) ?>>
-	<div class="span1">
+<article<?= HTML::attributes($attributes) ?>>
+	<div class="pull-left">
 
 		<?= $this->flyer() ?>
-
+		<br>
 		<?= $this->favorites() ?>
 
 	</div>
 
-	<div class="span6">
+	<div class="media-body">
 
 		<?= $this->header() ?>
 

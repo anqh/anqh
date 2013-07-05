@@ -62,9 +62,9 @@ class View_User_Settings extends View_Section {
 
 ?>
 
-<div class="row">
+<div class="row-fluid">
 
-	<div class="span5">
+	<div class="span6">
 		<fieldset id="fields-basic">
 			<legend><?= __('Basic information') ?></legend>
 
@@ -117,7 +117,7 @@ class View_User_Settings extends View_Section {
 		</fieldset>
 	</div>
 
-	<div class="span5">
+	<div class="span6">
 		<fieldset id="fields-contact">
 			<legend><?= __('Location') ?></legend>
 

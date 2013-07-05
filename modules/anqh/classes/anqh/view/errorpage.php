@@ -63,40 +63,53 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
-	<div id="body" class="container">
-		<div class="row">
+	<table id="body" class="wide">
+		<thead>
+			<tr id="topbar">
 
-			<div id="sidebar" class="span2">
+				<td class="left">
+					<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+				</td><!-- /.left -->
 
-				<!-- MENU -->
+				<td class="center">
 
-				<?= $this->_menu() ?>
+					<?= $this->_header() ?>
 
-				<!-- /MENU -->
+				</td><!-- /.center -->
 
-			</div><!-- /#sidebar -->
+			</tr><!-- /#topbar -->
+		</thead>
 
-			<div id="content" class="span10">
+		<tbody>
+			<tr id="maincontent">
 
-				<!-- HEADER -->
+				<td class="left">
 
-				<?= $this->_header() ?>
+					<!-- MENU -->
 
-				<!-- /HEADER -->
+					<?= $this->_menu() ?>
 
+					<!-- /MENU -->
 
-				<!-- CONTENT -->
+				</td><!-- /.left -->
 
-				<?= $this->_content() ?>
+				<td class="center">
+					<div class="container-fluid">
 
-				<!-- /CONTENT -->
+						<!-- CONTENT -->
 
-			</div><!-- /#content -->
+						<?= $this->_content() ?>
 
-		</div>
-	</div>
+						<!-- /CONTENT -->
+					</div>
 
-	<?= $this->_foot() ?>
+					<?= $this->_foot() ?>
+
+				</td><!-- /.center -->
+
+			</tr><!-- /#maincontent -->
+		</tbody>
+	</table>
 
 </body>
 

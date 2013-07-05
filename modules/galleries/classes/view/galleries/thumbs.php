@@ -88,7 +88,7 @@ class View_Galleries_Thumbs extends View_Section {
 
 ?>
 
-	<li class="span2">
+	<li>
 		<a class="thumbnail" href="<?= Route::model($gallery, $this->show_pending ? 'pending' : null) ?>">
 
 			<?= $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('Thumbnail pending') ?>

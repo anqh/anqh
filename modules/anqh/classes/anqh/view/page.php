@@ -12,8 +12,11 @@ class Anqh_View_Page extends View_Base {
 	const COLUMN_MAIN = 'main';
 	const COLUMN_SIDE = 'side';
 	const COLUMN_TOP  = 'top';
+	const SPANS_93    = '9+3';
+	const SPANS_84    = '8+4';
 	const SPANS_82    = '8+2';
 	const SPANS_73    = '7+3';
+	const SPANS_66    = '6+6';
 	const SPANS_64    = '6+4';
 	const SPANS_55    = '5+5';
 
@@ -60,7 +63,7 @@ class Anqh_View_Page extends View_Base {
 	/**
 	 * @var  string  Content column span sizes
 	 */
-	public $spans = self::SPANS_73;
+	public $spans = self::SPANS_84;
 
 	/**
 	 * @var  array  Basic stylesheets
@@ -155,7 +158,7 @@ class Anqh_View_Page extends View_Base {
 			switch ($column):
 				case self::COLUMN_MAIN: $class = 'span' . $spans[0]; break;
 				case self::COLUMN_SIDE: $class = 'span' . $spans[1]; break;
-				case self::COLUMN_TOP:  $class = 'span10'; break;
+				case self::COLUMN_TOP:  $class = 'span12'; break;
 				default:                $class = '';
 			endswitch;
 
@@ -190,13 +193,13 @@ class Anqh_View_Page extends View_Base {
 
 	<?= $this->_title() ?>
 
-	<div class="row">
+	<div class="row-fluid">
 
 		<?= $this->content(self::COLUMN_TOP) ?>
 
 	</div>
 
-	<div class="row">
+	<div class="row-fluid">
 
 		<?= $this->content(self::COLUMN_MAIN) ?>
 
@@ -306,7 +309,7 @@ class Anqh_View_Page extends View_Base {
 				</ul>
 			</nav>
 
-			<div class="row">
+			<div class="row-fluid">
 
 				<?= $this->footer() ?>
 
@@ -391,7 +394,7 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<header id="header">
+	<header>
 		<div class="pull-left">
 
 			<?= $menu ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
@@ -402,7 +405,7 @@ class Anqh_View_Page extends View_Base {
 			<?= $this->_search() ?>
 
 		</div>
-	</header><!-- #header -->
+	</header>
 
 <?php
 
@@ -447,8 +450,6 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 	<nav id="mainmenu" role="navigation">
-		<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-
 		<ul class="nav nav-list mainmenu" role="menu">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
 			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white"></i> ' . $item['text']) ?></li>
@@ -481,62 +482,74 @@ class Anqh_View_Page extends View_Base {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
-	<div id="body" class="container">
-		<div class="row">
+	<table id="body" class="wide">
+		<thead>
+			<tr id="topbar">
 
-			<div id="sidebar" class="span2">
+				<td class="left">
+					<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+				</td><!-- /.left -->
 
-				<!-- MENU -->
+				<td class="center">
 
-				<?= $this->_menu() ?>
+					<?= $this->_header() ?>
 
-				<!-- /MENU -->
+				</td><!-- /.center -->
 
+			</tr><!-- /#topbar -->
+		</thead>
 
-				<!-- ADS -->
+		<tbody>
+			<tr id="maincontent">
 
-				<?= Ads::slot(Ads::SIDE) ?>
+				<td class="left">
 
-				<!-- /ADS -->
+					<!-- MENU -->
 
-			</div><!-- /#sidebar -->
+					<?= $this->_menu() ?>
 
-			<div id="content" class="span10">
-
-				<!-- HEADER -->
-
-				<?= $this->_header() ?>
-
-				<!-- /HEADER -->
-
-
-				<!-- ADS -->
-
-				<?= Ads::slot(Ads::TOP) ?>
-
-				<!-- /ADS -->
+					<!-- /MENU -->
 
 
-				<!-- CONTENT -->
+					<!-- ADS -->
 
-				<?= $this->_content() ?>
+					<?= Ads::slot(Ads::SIDE) ?>
 
-				<!-- /CONTENT -->
+					<!-- /ADS -->
 
-			</div><!-- /#content -->
+				</td><!-- /.left -->
 
-		</div>
-	</div>
+				<td class="center">
+					<div class="container-fluid">
+
+						<!-- ADS -->
+
+						<?= Ads::slot(Ads::TOP) ?>
+
+						<!-- /ADS -->
 
 
-	<!-- FOOTER -->
+						<!-- CONTENT -->
 
-	<?= $this->_footer() ?>
+						<?= $this->_content() ?>
 
-	<!-- /FOOTER -->
+						<!-- /CONTENT -->
+					</div>
+
+					<!-- FOOTER -->
+
+					<?= $this->_footer() ?>
+
+					<!-- /FOOTER -->
 
 
-	<?= $this->_foot() ?>
+					<?= $this->_foot() ?>
+
+				</td><!-- /.center -->
+
+			</tr><!-- /#maincontent -->
+		</tbody>
+	</table>
 
 </body>
 

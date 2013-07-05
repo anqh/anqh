@@ -195,7 +195,7 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view->tab = 'charts';
 		$this->_set_page_actions();
 
-		$this->view->add(View_Page::COLUMN_TOP, '<div class="row">');
+		$this->view->add(View_Page::COLUMN_TOP, '<div class="row-fluid">');
 
 		// Top charts
 		$this->view->add(View_Page::COLUMN_TOP, $this->section_charts(
@@ -208,7 +208,7 @@ class Anqh_Controller_Music extends Controller_Page {
 			__('Top :top Tracks', array(':top' => 10))
 		));
 
-		$this->view->add(View_Page::COLUMN_TOP, '</div><div class="row">');
+		$this->view->add(View_Page::COLUMN_TOP, '</div><div class="row-fluid">');
 
 
 		// New
@@ -330,7 +330,7 @@ class Anqh_Controller_Music extends Controller_Page {
 	public function section_charts($tracks, $title) {
 		$view = new View_Music_Charts($tracks);
 		$view->title = $title;
-		$view->class = 'span5';
+		$view->class = 'span6';
 
 		return $view;
 	}
@@ -365,7 +365,7 @@ class Anqh_Controller_Music extends Controller_Page {
 	public function section_list($tracks, $title) {
 		$view = new View_Music_List($tracks);
 		$view->title = $title;
-		$view->class = 'span5';
+		$view->class = 'span6';
 
 		return $view;
 	}

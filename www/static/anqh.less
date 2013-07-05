@@ -13,7 +13,8 @@
 .ajax                                  { background-image: url("@{iconAjaxPath}"); background-position: right top; background-repeat: no-repeat; }
 
 // Bootstrap overrides
-body                                   { background: @bodyBackground url(../img/background.png); padding-top: 10px; }
+html                                   { height: 100%; }
+body                                   { background: @bodyBackground url(../img/background.png); }
 article                                { position: relative; }
 a                                      { color: @anchorColor; }
 a:hover                                { color: @anchorColorHover; }
@@ -29,11 +30,6 @@ h1 small                               { font-size: 18px; }
 h2 small                               { font-size: 14px; }
 h3 small                               { font-size: 12px; }
 h4 small                               { font-size: 12px; }
-h1,
-h2,
-h3                                     { /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 255, 255, .5);*/ }
-table h3,
-table h4                               { margin: 0; }
 
 dl,
 ul,
@@ -108,22 +104,46 @@ i[class*=" icon-"]                     { font-size: 14px; display: inline-block 
 .table:last-child                      { margin-bottom: 0; }
 
 .thumbnail                             { border: 1px solid @grayDarkest; }
+//.thumbnail > img                       { max-width: auto: width: 100% }
 
 blockquote                             { border-left-color: @grayDark; }
 
 
+// Layout
+#body                                  { min-height: 100%; width: 100%;
+  &.wide                               {
+    td.left                            { width: 150px; }
+  }
+  &.narrow                             {
+    td.left                            { width: 40px; }
+  }
+  td.left                              { }
+  td.center                            { }
+  #topbar                              { background: fadeout(@navbarInverseBackground, 10%);
+    td.left                            { width: 40px; }
+  }
+  #maincontent                         {
+    td.left,
+    td.center                          { height: 100%; vertical-align: top; }
+    td.left                            { background: fadeout(@navbarInverseBackground, 10%); }
+  }
+}
+
+
 // Main menu
-#mainmenu                              {
-  .brand                               { color: white; display: block; font: small-caps @customFontWeightBold 28px/28px @customFontFamily; letter-spacing: -1px; padding-bottom: 10px; text-align: right; }
+#topbar                                {
+  .brand                               { color: white; display: block; font: small-caps @customFontWeightBold 28px/28px @customFontFamily; letter-spacing: -1px; text-align: right; }
   .brand i                             { visibility: hidden; }
   .brand:hover                         { color: @textColor; text-decoration: none; }
   .brand:hover i                       { visibility: visible; }
-  .mainmenu                            { background: fadeout(@grayDarker, 25%); border: 1px solid @grayDarkest; border-radius: 4px; box-shadow: 0 0 3px rgba(0, 0, 0, .25); overflow: hidden; }
+  .section-title                       { color: white; font: @customFontWeightLight 24px/30px @customFontFamily; text-transform: lowercase; }
+  .section-title:hover                 { color: @textColor; text-decoration: none; }
+}
+#mainmenu                              {
+  .mainmenu                            { overflow: hidden; }
   .nav-list                            { padding: 0;
     li a                               { margin: 0; text-shadow: 0 -1px 0 rgba(0, 0, 0, .25); }
-    .active a                          { background: rgba(0, 0, 0, .5); border-right: 4px solid @linkColor; }
-    li:not(:last-child)                { border-bottom: 1px solid rgba(0, 0, 0, .75); }
-    li + li                            { border-top: 1px solid fadeout(@grayDark, 25%); }
+    li.active a                        { background: rgba(0, 0, 0, .5); border-right: 4px solid @linkColor; }
     li.login,
     li.menuitem-notifications,
     li.menuitem-profile,
@@ -148,11 +168,6 @@ blockquote                             { border-left-color: @grayDark; }
       }
     }
   }
-}
-
-#header                                { .clearfix;
-  .section-title                       { color: white; font: @customFontWeightLight 24px/30px @customFontFamily; margin-left: -@gridGutterWidth; padding-bottom: 10px; text-transform: lowercase; }
-  .section-title:hover                 { color: @textColor; text-decoration: none; }
 }
 
 
