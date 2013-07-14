@@ -116,7 +116,7 @@ blockquote                             { border-left-color: @grayDark; }
   #sidebar,
   #topbar                              { background: fadeout(@navbarInverseBackground, 10%); padding: 0; }
   #sidebar                             { .size(100%, @sidebarWidth); vertical-align: top; }
-  #maincontent                         { .square(100%); vertical-align: top; }
+  #maincontent                         { height: 100%; vertical-align: top; }
   #maincontent > .container-fluid      { margin: 0 auto; max-width: 980px; padding-left: 10px; padding-right: 10px; }
 }
 
@@ -137,10 +137,11 @@ blockquote                             { border-left-color: @grayDark; }
 
   #visitor                             { float: right; line-height: @topbarHeight; margin-right: 10px;
     li                                 { text-align: left; }
+    .avatar                            { float: none; }
     a:hover                            { text-decoration: none; }
   }
 }
-#mainmenu                              {
+#mainmenu                              { left: 0; position: fixed; top: 0;
   .nav-list                            { padding: 0;
     li a                               { margin: 0; .muted; padding: 4px; text-shadow: none; }
     li:hover a                         { color: white; }

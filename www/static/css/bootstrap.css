@@ -7308,7 +7308,6 @@ blockquote {
 }
 
 #body #maincontent {
-  width: 100%;
   height: 100%;
   vertical-align: top;
 }
@@ -7368,8 +7367,18 @@ blockquote {
   text-align: left;
 }
 
+#topbar #visitor .avatar {
+  float: none;
+}
+
 #topbar #visitor a:hover {
   text-decoration: none;
+}
+
+#mainmenu {
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 #mainmenu .nav-list {

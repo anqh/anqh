@@ -805,9 +805,11 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <div id="visitor">
+	<span class="menuitem-notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
+
 	<span class="profile dropdown">
 
-		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small pull-left') ?>
+		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
 
 		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <i class="icon-caret-down"></i></a>
 		<ul class="dropdown-menu pull-right" role="menu">
@@ -826,8 +828,6 @@ class Anqh_View_Page extends View_Base {
 			<?php endif; ?>
 		</ul>
 	</span>
-
-	<span class="menuitem-notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
 </div>
 
 <?php
