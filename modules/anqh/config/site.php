@@ -60,7 +60,7 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-//		'home'      => array('url' => URL::site(),                          'text' => __('Home')),
+		'home'       => array('url' => URL::site(),                          'text' => '',               'icon' => 'icon-home'),
 		'events'     => array('url' => URL::site(Route::url('events')),      'text' => __('Events'),     'icon' => 'icon-calendar'),
 		'forum'      => array('url' => URL::site(Route::url('forum_group')), 'text' => __('Forum'),      'icon' => 'icon-comment'),
 		'galleries'  => array('url' => URL::site(Route::url('galleries')),   'text' => __('Galleries'),  'icon' => 'icon-picture'),

@@ -6978,6 +6978,10 @@ body > .container.tabs-right.tabbable-bodered > .tab-content {
   background-repeat: no-repeat;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   background: #1a1a1a url(../img/background.png);
 }
@@ -7273,6 +7277,11 @@ i[class*=" icon-"] {
   margin-bottom: 0;
 }
 
+.thumbnails > li {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
 .thumbnail {
   border: 1px solid #111111;
 }
@@ -7286,66 +7295,81 @@ blockquote {
   min-height: 100%;
 }
 
-#body.wide td.left {
-  width: 150px;
-}
-
-#body.narrow td.left {
-  width: 40px;
-}
-
+#body #sidebar,
 #body #topbar {
+  padding: 0;
   background: rgba(17, 17, 17, 0.9);
 }
 
-#body #topbar td.left {
+#body #sidebar {
   width: 40px;
-}
-
-#body #maincontent td.left,
-#body #maincontent td.center {
   height: 100%;
   vertical-align: top;
 }
 
-#body #maincontent td.left {
-  background: rgba(17, 17, 17, 0.9);
+#body #maincontent {
+  width: 100%;
+  height: 100%;
+  vertical-align: top;
+}
+
+#body #maincontent > .container-fluid {
+  max-width: 980px;
+  padding-right: 10px;
+  padding-left: 10px;
+  margin: 0 auto;
 }
 
 #topbar .brand {
-  display: block;
-  font: small-caps 900 28px/28px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: small-caps 900 28px/32px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: -1px;
   color: white;
-  text-align: right;
-}
-
-#topbar .brand i {
-  visibility: hidden;
-}
-
-#topbar .brand:hover {
-  color: #999999;
-  text-decoration: none;
-}
-
-#topbar .brand:hover i {
-  visibility: visible;
 }
 
 #topbar .section-title {
-  font: 100 24px/30px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 100 24px/32px Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: white;
   text-transform: lowercase;
 }
 
+#topbar .brand:hover,
 #topbar .section-title:hover {
   color: #999999;
   text-decoration: none;
 }
 
-#mainmenu .mainmenu {
-  overflow: hidden;
+#topbar #search {
+  float: left;
+}
+
+#topbar #search form {
+  float: left;
+  margin: 0 10px 0 0;
+}
+
+#topbar #search label {
+  line-height: 40px;
+}
+
+#topbar #signin {
+  float: left;
+  margin-right: 10px;
+  font-weight: normal;
+  line-height: 40px;
+}
+
+#topbar #visitor {
+  float: right;
+  margin-right: 10px;
+  line-height: 40px;
+}
+
+#topbar #visitor li {
+  text-align: left;
+}
+
+#topbar #visitor a:hover {
+  text-decoration: none;
 }
 
 #mainmenu .nav-list {
@@ -7353,28 +7377,33 @@ blockquote {
 }
 
 #mainmenu .nav-list li a {
+  padding: 4px;
   margin: 0;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  color: #999999;
+  color: #555555;
+  text-shadow: none;
+}
+
+#mainmenu .nav-list li:hover a {
+  color: white;
 }
 
 #mainmenu .nav-list li.active a {
+  padding-right: 0;
+  color: white;
   background: rgba(0, 0, 0, 0.5);
   border-right: 4px solid #0088cc;
 }
 
-#mainmenu .nav-list li.login,
-#mainmenu .nav-list li.menuitem-notifications,
-#mainmenu .nav-list li.menuitem-profile,
-#mainmenu .nav-list li.menuitem-me {
-  background: rgba(0, 0, 0, 0.25);
+#mainmenu .nav-list li.active.menu-home a {
+  border-right-color: transparent;
 }
 
-#mainmenu .nav-list li.login {
-  padding: 10px;
-}
-
-#mainmenu .nav-list li.login input {
-  margin-bottom: 0;
+#mainmenu .nav-list li i {
+  width: 32px;
+  margin: 0;
+  font-size: 21px;
+  line-height: 32px;
 }
 
 #mainmenu .nav-list li.menuitem-notifications {
@@ -7388,46 +7417,6 @@ blockquote {
 
 #mainmenu .nav-list li.menuitem-notifications .close {
   margin-left: 10px;
-}
-
-#mainmenu .nav-list li.menuitem-profile {
-  overflow: hidden;
-  border-bottom: 0 none;
-}
-
-#mainmenu .nav-list li.menuitem-profile a {
-  padding: 0;
-}
-
-#mainmenu .nav-list li.menuitem-profile a.avatar {
-  padding: 4px;
-}
-
-#mainmenu .nav-list li.menuitem-profile a.user {
-  line-height: 33px;
-}
-
-#mainmenu .nav-list li.menuitem-profile .caret {
-  margin: 12px 0 0 2px;
-  border-top-color: #c6c6c6;
-}
-
-#mainmenu .nav-list li.collapse {
-  border: 0 none;
-}
-
-#mainmenu .nav-list li.collapse .nav-list {
-  background: transparent;
-  /*rgba(0, 0, 0, .25);*/
-
-}
-
-#mainmenu .nav-list li.collapse .nav-list li {
-  border: 0 none;
-}
-
-#mainmenu .nav-list li.collapse .nav-list li a {
-  padding-left: 32px;
 }
 
 #title {

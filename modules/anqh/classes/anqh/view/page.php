@@ -168,7 +168,7 @@ class Anqh_View_Page extends View_Base {
 
 				<?= implode("\n", $this->_content[$column]) ?>
 
-				<?= $column === self::COLUMN_SIDE ? '' : Ads::slot($column) ?>
+				<?= /*$column === self::COLUMN_SIDE ? '' :*/ Ads::slot($column) ?>
 
 			</div><!-- #<?= $column ?> -->
 
@@ -296,7 +296,7 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<footer id="footer" class="container">
+	<footer id="footer" class="container-fluid">
 
 		<section>
 
@@ -396,14 +396,14 @@ class Anqh_View_Page extends View_Base {
 
 	<header>
 		<div class="pull-left">
-
+			<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 			<?= $menu ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
-
 		</div>
-		<div class="pull-right">
 
+		<div class="pull-right">
 			<?= $this->_search() ?>
 
+			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
 		</div>
 	</header>
 
@@ -452,10 +452,8 @@ class Anqh_View_Page extends View_Base {
 	<nav id="mainmenu" role="navigation">
 		<ul class="nav nav-list mainmenu" role="menu">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white"></i> ' . $item['text']) ?></li>
+			<li role="menuitem" class="menu-<?= $id ?><?= $id == $this->id ? ' active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i>', array('title' => HTML::chars($item['text']), 'data-toggle' => 'tooltip', 'data-placement' => 'right')) ?></li>
 			<?php endforeach; ?>
-
-			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
 		</ul>
 	</nav><!-- #mainmenu -->
 
@@ -482,27 +480,11 @@ class Anqh_View_Page extends View_Base {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
-	<table id="body" class="wide">
-		<thead>
-			<tr id="topbar">
-
-				<td class="left">
-					<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-				</td><!-- /.left -->
-
-				<td class="center">
-
-					<?= $this->_header() ?>
-
-				</td><!-- /.center -->
-
-			</tr><!-- /#topbar -->
-		</thead>
-
+	<table id="body">
 		<tbody>
-			<tr id="maincontent">
+			<tr>
 
-				<td class="left">
+				<th id="sidebar" rowspan="2">
 
 					<!-- MENU -->
 
@@ -510,16 +492,18 @@ class Anqh_View_Page extends View_Base {
 
 					<!-- /MENU -->
 
+				</th><!-- /#sidebar -->
 
-					<!-- ADS -->
+				<th id="topbar">
 
-					<?= Ads::slot(Ads::SIDE) ?>
+					<?= $this->_header() ?>
 
-					<!-- /ADS -->
+				</th><!-- /#topbar -->
 
-				</td><!-- /.left -->
+			</tr>
+			<tr>
 
-				<td class="center">
+				<td id="maincontent">
 					<div class="container-fluid">
 
 						<!-- ADS -->
@@ -534,7 +518,9 @@ class Anqh_View_Page extends View_Base {
 						<?= $this->_content() ?>
 
 						<!-- /CONTENT -->
+
 					</div>
+
 
 					<!-- FOOTER -->
 
@@ -545,9 +531,9 @@ class Anqh_View_Page extends View_Base {
 
 					<?= $this->_foot() ?>
 
-				</td><!-- /.center -->
+				</td><!-- /#maincontent -->
 
-			</tr><!-- /#maincontent -->
+			</tr>
 		</tbody>
 	</table>
 
@@ -571,30 +557,18 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<ul id="search" class="nav nav-pills">
+<div id="search">
 
-	<li>
-		<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
-		<label class="span2">
-			<i class="icon-calendar icon-white"></i>
+	<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
+		<label>
+			<i class="icon-calendar"></i>
 			<?= Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters'))); ?>
 		</label>
-		<?= Form::close(); ?>
-	</li>
+	<?= Form::close(); ?>
 
-	<li
-		<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
-		<label class="span2">
-			<i class="icon-user icon-white"></i>
-			<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
-		</label>
-		<?= Form::close(); ?>
-	</li>
-
-	<li>
-		<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
-		<label class="span2">
-			<i class="icon-camera icon-white"></i>
+	<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
+		<label>
+			<i class="icon-camera"></i>
 			<?= Form::input('search-images', null, array(
 					'class'         => 'input-small search-query',
 					'placeholder'   => __('Search images..'),
@@ -602,10 +576,16 @@ class Anqh_View_Page extends View_Base {
 					'data-redirect' => Route::url('galleries', array('action' => 'search')) . '?user=:value'
 				)); ?>
 		</label>
-		<?= Form::close(); ?>
-	</li>
+	<?= Form::close(); ?>
 
-</ul>
+	<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
+		<label>
+			<i class="icon-user"></i>
+			<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
+		</label>
+	<?= Form::close(); ?>
+
+</div>
 
 <?php
 
@@ -623,25 +603,23 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<li class="login">
-		<?= Form::open(Route::url('sign', array('action' => 'in'))) ?>
-		<?= Form::input('username', null, array('class' => 'input-block-level', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
-		<?= Form::password('password', null, array('class' => 'input-block-level', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
-		<?= Form::button(null, __('Sign in') . ' <i class="icon-signin"></i>', array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
+	<?= Form::open(Route::url('sign', array('action' => 'in')), array('id' => 'signin', 'class' => 'form-inline')) ?>
+		<?= HTML::anchor(
+				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+				__('Sign in with') . ' <i class="icon-facebook"></i>',
+				array('class' => 'btn btn-primary', 'title' => __('Sign in with your Facebook account'))
+			) ?>
+
+		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
+		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
+		<?= Form::button(null, __('Sign in') . ' <i class="icon-signin"></i>', array('class' => 'btn btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
 		<?= Form::hidden('remember', 'true') ?>
 		<?= HTML::anchor(
 				Route::url('sign', array('action' => 'up')),
 				__('Sign up') . ' <i class="icon-heart"></i>',
-				array('class' => 'btn btn-block btn-lovely', 'title' => __("Did we mention it's FREE!"))
+				array('class' => 'btn btn-lovely', 'title' => __("Did we mention it's FREE!"))
 			) ?>
-		<p class="text-center">- <?= __('or') ?> -</p>
-		<?= HTML::anchor(
-				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
-				__('Sign in with') . ' <i class="icon-facebook"></i>',
-				array('class' => 'btn btn-block btn-primary', 'title' => __('Sign in with your Facebook account'))
-			) ?>
-		<?= Form::close(); ?>
-	</li>
+	<?= Form::close(); ?>
 
 <?php
 
@@ -826,13 +804,13 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<li class="menuitem-profile" role="menuitem">
-		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small pull-left') ?>
-		<a class="user" href="#menu-profile" data-toggle="collapse"><?= HTML::chars(self::$_user->username) ?> <b class="caret"></b></a>
-	</li>
+<div id="visitor">
+	<span class="profile dropdown">
 
-	<li id="menu-profile" class="menuitem-me collapse" role="menuitem">
-		<ul class="nav nav-list" role="menu">
+		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small pull-left') ?>
+
+		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <i class="icon-caret-down"></i></a>
+		<ul class="dropdown-menu pull-right" role="menu">
 			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user"></i> ' . __('Profile')) ?><li>
 			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope"></i> ' . __('Private messages')) ?></li>
 			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar"></i> ' . __('Favorites')) ?></li>
@@ -847,9 +825,10 @@ class Anqh_View_Page extends View_Base {
 			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
 			<?php endif; ?>
 		</ul>
-	</li>
+	</span>
 
-	<li class="menuitem-notifications"><span><?= implode(' ', Anqh::notifications(self::$_user)) ?></span></li>
+	<span class="menuitem-notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
+</div>
 
 <?php
 

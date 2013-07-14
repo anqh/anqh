@@ -63,27 +63,11 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
-	<table id="body" class="wide">
-		<thead>
-			<tr id="topbar">
-
-				<td class="left">
-					<?= HTML::anchor('', '<small class="muted"><i class="iconic-home"></i></small> ' . Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-				</td><!-- /.left -->
-
-				<td class="center">
-
-					<?= $this->_header() ?>
-
-				</td><!-- /.center -->
-
-			</tr><!-- /#topbar -->
-		</thead>
-
+	<table id="body">
 		<tbody>
-			<tr id="maincontent">
+			<tr>
 
-				<td class="left">
+				<th id="sidebar" rowspan="2">
 
 					<!-- MENU -->
 
@@ -91,9 +75,18 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 
 					<!-- /MENU -->
 
-				</td><!-- /.left -->
+				</th><!-- /#sidebar -->
 
-				<td class="center">
+				<th id="topbar">
+
+					<?= $this->_header() ?>
+
+				</th><!-- /#topbar -->
+
+			</tr>
+			<tr>
+
+				<td id="maincontent">
 					<div class="container-fluid">
 
 						<!-- CONTENT -->
@@ -101,13 +94,14 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 						<?= $this->_content() ?>
 
 						<!-- /CONTENT -->
+
 					</div>
 
 					<?= $this->_foot() ?>
 
-				</td><!-- /.center -->
+				</td><!-- /#maincontent -->
 
-			</tr><!-- /#maincontent -->
+			</tr>
 		</tbody>
 	</table>
 
