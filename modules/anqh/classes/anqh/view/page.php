@@ -391,9 +391,12 @@ class Anqh_View_Page extends View_Base {
 		</div>
 
 		<div class="pull-right">
-			<?= $this->_search() ?>
-
-			<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
+			<?php if (self::$_user_id):
+				echo $this->_search();
+				echo $this->_visitor();
+			else:
+				echo $this->_signin();
+			endif; ?>
 		</div>
 	</header>
 
