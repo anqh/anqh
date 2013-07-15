@@ -116,8 +116,13 @@ blockquote                             { border-left-color: @grayDark; }
   #sidebar,
   #topbar                              { background: fadeout(@navbarInverseBackground, 10%); padding: 0; }
   #sidebar                             { .size(100%, @sidebarWidth); vertical-align: top; }
-  #maincontent                         { height: 100%; vertical-align: top; }
-  #maincontent > .container-fluid      { margin: 0 auto; max-width: 980px; padding-left: 10px; padding-right: 10px; }
+  #maincontent                         { height: 100%; padding: 0; vertical-align: top;
+    & > .background-container          { background: @bodyBackground url(../img/background.png); position: relative; z-index: 2; }
+  }
+  #footer                              { padding-bottom: 350px;
+    & > .background-container          { background: @navbarInverseBackgroundHighlight; bottom: 0; position: fixed; width: 100%; z-index: 1; }
+  }
+  .background-container > .container-fluid { margin: 0 auto; max-width: 980px; padding: 10px; }
 }
 
 
@@ -156,6 +161,15 @@ blockquote                             { border-left-color: @grayDark; }
 }
 
 
+// Footer
+#footer                                {
+  nav                                  { text-align: center; }
+  nav .nav                             { display: inline-block; }
+  hr + section                         { text-align: center; }
+}
+.kohana                                { display: none; }
+
+
 // Containers
 #title                                 { margin-bottom: 10px;
   .actions                             { float: right; line-height: 36px; margin: 9px 0; }
@@ -165,6 +179,7 @@ blockquote                             { border-left-color: @grayDark; }
 #side > section + article,
 #side > article + section,
 #side > article + article              { margin-top: @gridGutterWidth; }
+
 
 .ad                                    {
   &.ad140x350                          { margin-top: @gridGutterWidth; max-height: 350px; max-width: 140px; }
@@ -205,13 +220,6 @@ header.sticked                         { background: @bodyBackground; }
 footer.meta                            { color: @gray; }
 
 
-// Footer
-#footer                                {
-  nav                                  { text-align: center; }
-  nav .nav                             { display: inline-block; }
-  hr + section                         { text-align: center; }
-}
-.kohana                                { display: none; }
 
 
 // jQuery UI

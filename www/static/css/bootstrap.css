@@ -7309,13 +7309,31 @@ blockquote {
 
 #body #maincontent {
   height: 100%;
+  padding: 0;
   vertical-align: top;
 }
 
-#body #maincontent > .container-fluid {
+#body #maincontent > .background-container {
+  position: relative;
+  z-index: 2;
+  background: #1a1a1a url(../img/background.png);
+}
+
+#body #footer {
+  padding-bottom: 350px;
+}
+
+#body #footer > .background-container {
+  position: fixed;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  background: #222222;
+}
+
+#body .background-container > .container-fluid {
   max-width: 980px;
-  padding-right: 10px;
-  padding-left: 10px;
+  padding: 10px;
   margin: 0 auto;
 }
 
@@ -7426,6 +7444,22 @@ blockquote {
 
 #mainmenu .nav-list li.menuitem-notifications .close {
   margin-left: 10px;
+}
+
+#footer nav {
+  text-align: center;
+}
+
+#footer nav .nav {
+  display: inline-block;
+}
+
+#footer hr + section {
+  text-align: center;
+}
+
+.kohana {
+  display: none;
 }
 
 #title {
@@ -7560,22 +7594,6 @@ header.sticked {
 
 footer.meta {
   color: #555555;
-}
-
-#footer nav {
-  text-align: center;
-}
-
-#footer nav .nav {
-  display: inline-block;
-}
-
-#footer hr + section {
-  text-align: center;
-}
-
-.kohana {
-  display: none;
 }
 
 .ui-widget-overlay {

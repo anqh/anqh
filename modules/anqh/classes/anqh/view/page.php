@@ -296,36 +296,26 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<footer id="footer" class="container-fluid">
+<nav role="navigation">
+	<ul role="menubar" class="nav nav-pills">
+		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
+		<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], HTML::chars($item['text'])) ?></li>
+		<?php endforeach ?>
+	</ul>
+</nav>
 
-		<section>
+<div class="row-fluid">
 
-			<nav role="navigation">
-				<ul role="menubar" class="nav nav-pills">
-					<li role="menuitem"><a href="<?= $this->base ?>"><?= __('Front page') ?></a></li>
-					<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
-					<li role="menuitem" class="menu-<?= $id ?>"><a href="<?= $item['url'] ?>"><?= HTML::chars($item['text']) ?></a></li>
-					<?php endforeach ?>
-				</ul>
-			</nav>
+	<?= $this->footer() ?>
 
-			<div class="row-fluid">
+</div>
 
-				<?= $this->footer() ?>
+<hr />
 
-			</div>
-
-		</section>
-
-		<hr />
-
-		<section class="copyright">
-			<?= $this->_statistics() ?><br />
-			Copyright &copy; 2000&ndash;<?= date('Y')?> <?= Kohana::$config->load('site.site_name') ?> -
-			Powered by Anqh v<?= Anqh::VERSION ?> and Kohana v<?= Kohana::VERSION ?>
-		</section>
-
-	</footer><!-- #footer -->
+<small class="muted copyright">
+	&copy; 2000&ndash;<?= date('Y')?> <?= Kohana::$config->load('site.site_name') ?><br>
+	Powered by <?= HTML::anchor('https://github.com/anqh/anqh', 'Anqh v' . Anqh::VERSION, array('target' => '_blank')) ?>
+</small>
 
 <?php
 
@@ -397,7 +387,7 @@ class Anqh_View_Page extends View_Base {
 	<header>
 		<div class="pull-left">
 			<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-			<?= $menu ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
+			<?= ($this->id != 'home' && $menu) ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
 		</div>
 
 		<div class="pull-right">
@@ -504,30 +494,34 @@ class Anqh_View_Page extends View_Base {
 			<tr>
 
 				<td id="maincontent">
-					<div class="container-fluid">
+					<div class="background-container">
+						<div class="container-fluid">
 
-						<!-- ADS -->
+							<!-- ADS -->
 
-						<?= Ads::slot(Ads::TOP) ?>
+							<?= Ads::slot(Ads::TOP) ?>
 
-						<!-- /ADS -->
+							<!-- /ADS -->
 
 
-						<!-- CONTENT -->
+							<!-- CONTENT -->
 
-						<?= $this->_content() ?>
+							<?= $this->_content() ?>
 
-						<!-- /CONTENT -->
+							<!-- /CONTENT -->
 
+						</div>
 					</div>
 
+					<footer id="footer">
+						<div class="background-container">
+							<div class="container-fluid">
 
-					<!-- FOOTER -->
+							<?= $this->_footer() ?>
 
-					<?= $this->_footer() ?>
-
-					<!-- /FOOTER -->
-
+							</div>
+						</div>
+					</footer><!-- #footer -->
 
 					<?= $this->_foot() ?>
 
@@ -536,6 +530,8 @@ class Anqh_View_Page extends View_Base {
 			</tr>
 		</tbody>
 	</table>
+
+	<!-- <?= $this->_statistics() ?> -->
 
 </body>
 
