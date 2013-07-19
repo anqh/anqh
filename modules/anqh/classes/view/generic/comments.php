@@ -166,9 +166,20 @@ class View_Generic_Comments extends View_Section {
 
 		echo Form::open(null, array('class' => 'form-inline'));
 
-		// Private message?
-		if ($this->private) {
-			$input = Form::checkbox(
+		if ($this->private):
+
+			// Private messaging available
+			echo '<div class="input-prepend input-append row-fluid">';
+
+			echo Form::button('private', __('Priv'), array(
+					'value'       => 1,
+					'type'        => 'button',
+					'title'       => __('Private message'),
+					'class'       => 'btn btn-special',
+					'data-toggle' => 'button'
+				));
+
+/*			$input = Form::checkbox(
 				'private',
 				1,
 				Arr::get($this->values, 'private'),
@@ -182,14 +193,20 @@ class View_Generic_Comments extends View_Section {
 				'field-private',
 				$input . ' <span class="label label-special private" title="' . __('Private comment') . '">' . __('Priv') . '</span> ',
 				array('class' => 'checkbox')
-			);
-		}
+			);*/
 
-		echo '<div class="input-append">';
-		echo Form::input('comment', Arr::get($this->values, 'comment'), array('class' => 'span5', 'maxlength' => 300));
+		else:
+
+			// No private available
+			echo '<div class="input-append row-fluid">';
+
+		endif;
+
+		echo Form::input('comment', Arr::get($this->values, 'comment'), array('class' => 'span9', 'maxlength' => 300));
 		echo Form::button('smileys', '<i class="icon-smile"></i>', array('class' => 'btn btn-inverse', 'title' => __('Show smileys'), 'type' => 'button', 'data-toggle' => 'collapse', 'data-target' => '.smileys'));
 		echo Form::button(false, '<i class="icon-comment"></i>', array('class' => 'btn btn-primary', 'title' => __('Comment'), 'type' => 'submit'));
 		echo '</div>';
+
 		echo Form::csrf();
 
 		echo Form::close();

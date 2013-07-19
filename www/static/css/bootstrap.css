@@ -7201,6 +7201,7 @@ i[class*=" icon-"] {
 .bth-lovely.active,
 .btn-special.active {
   color: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 
 .close {
@@ -7861,7 +7862,7 @@ select.time {
   width: 75px;
 }
 
-input.private {
+button[name=private].active + input {
   border-color: #7a43b6;
 }
 
