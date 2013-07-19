@@ -47,18 +47,28 @@
 
 // Typography
 // -------------------------
+@import url(http://fonts.googleapis.com/css?family=Roboto:900,100);
+
 @sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
 @serifFontFamily:       Georgia, "Times New Roman", Times, serif;
 @monoFontFamily:        Menlo, Monaco, Consolas, "Courier New", monospace;
+
+@customFontFamily:      Roboto, @sansFontFamily;
+@customFontWeightBold:  900;
+@customFontWeightLight: 100;
 
 @baseFontSize:          12px; // 14px
 @baseFontFamily:        @sansFontFamily;
 @baseLineHeight:        18px; // 20px
 @altFontFamily:         @serifFontFamily;
 
-@headingsFontFamily:    inherit; // empty to use BS default, @baseFontFamily
-@headingsFontWeight:    bold;    // instead of browser default, bold
+@headingsFontFamily:    @customFontFamily; //inherit; // empty to use BS default, @baseFontFamily
+@headingsFontWeight:    @customFontWeightLight; //bold;    // instead of browser default, bold
 @headingsColor:         inherit; // empty to use BS default, @textColor
+
+@textColorMe:           mix(@yellow, @textColor);
+@textColorOwner:        mix(@green, @textColor);
+@textColorAdmin:        @blue;
 
 
 // Component sizing
@@ -160,6 +170,7 @@
 @iconSpritePath:          "../img/glyphicons-halflings.png";
 @iconWhiteSpritePath:     "../img/glyphicons-halflings-white.png";
 @iconicFontPath:          "../font";
+@iconAjaxPath:            '../img/ajax.gif';
 
 
 // Input placeholder text color
