@@ -201,7 +201,7 @@ class View_Forum_PostEdit extends View_Article {
 	</div>
 </fieldset>
 
-	<?= Form::control_group(
+	<?php if (!$this->private) echo Form::control_group(
 		Form::select('forum_area_id', $areas, $this->forum_topic->forum_area_id, array('class' => 'input-block-level')),
 		array('forum_area_id' => __('Area')),
 		Arr::get($this->errors, 'forum_area_id')) ?>
