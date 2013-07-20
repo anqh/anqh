@@ -40,34 +40,39 @@ class View_Topics_Index extends View_Section {
 	public function content() {
 		ob_start();
 
-		if (count($this->topics)):
+		if (count($this->topics)): ?>
 
-?>
-
-<table class="table table-condensed">
+<table class="table table-condensed table-striped">
 	<thead>
 		<tr>
-			<th class="span4 topic"><h3><?= __('Topic') ?></h3></th>
-			<th class="span1 replies"><?= __('Replies') ?></th>
-			<th class="span2 latest"><?= __('Latest post') ?></th>
+			<th class="span4"><h3><?= __('Topic') ?></h3></th>
+			<th class="span2 muted"><?= __('Last post') ?></th>
 		</tr>
 	</thead>
 
 	<tbody>
 
-		<?php foreach ($this->topics as $topic): ?>
+		<?php foreach ($this->topics as $topic):
+			$last_poster = $topic->last_post()->author(); ?>
 
 		<tr>
-			<td class="topic">
+			<td>
 				<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
 				<?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?>
+				&nbsp; <small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
 			</td>
-			<td class="replies">
-				<?= Num::format($topic->post_count - 1, 0) ?>
-			</td>
-			<td class="latest">
-				<small class="ago"><?php echo HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-				<?php echo HTML::user($topic->last_poster, $topic->last_poster) ?>
+			<td class="media">
+				<div class="pull-left">
+					<?= HTML::avatar(
+						$last_poster ? $last_poster['avatar'] : null,
+						$last_poster ? $last_poster['username'] : null,
+						true
+					) ?>
+				</div>
+				<div class="media-body">
+					<small class="ago"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
+					<?= $last_poster ? HTML::user($last_poster) : HTML::chars($topic->last_poster) ?>
+				</div>
 			</td>
 		</tr>
 

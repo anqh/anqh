@@ -194,7 +194,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Breadcrumbs
-		$this->page_breadcrumbs[] = HTML::anchor(Route::url('forum_group'), __('Forum'));
+		$this->page_breadcrumbs[] = HTML::anchor(Route::url('forum'), __('Forum'));
 		$this->page_breadcrumbs[] = HTML::anchor(Route::model($topic->area()), $topic->area()->name);
 
 

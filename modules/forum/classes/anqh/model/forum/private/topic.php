@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
@@ -170,6 +170,16 @@ class Anqh_Model_Forum_Private_Topic extends Model_Forum_Topic {
 		}
 
 	  return false;
+	}
+
+
+	/**
+	 * Get topic last post.
+	 *
+	 * @return  Model_Forum_Private_Post
+	 */
+	public function last_post() {
+		return Model_Forum_Private_Post::factory($this->last_post_id);
 	}
 
 

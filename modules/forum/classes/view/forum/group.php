@@ -52,8 +52,8 @@ class View_Forum_Group extends View_Section {
 
 	<thead>
 		<tr>
-			<th class="span5"><h3><?= HTML::chars($group->name) ?></h3></th>
-			<th class="span3 muted"><?= __('Last post') ?></th>
+			<th class="span6"><h3><?= HTML::chars($group->name) ?></h3></th>
+			<th class="span6 muted"><?= __('Last post') ?></th>
 		</tr>
 	</thead>
 
@@ -72,26 +72,40 @@ class View_Forum_Group extends View_Section {
 
 		<tr>
 			<td>
-				<h4>
-					<?= HTML::anchor(Route::model($area), HTML::chars($area->name)) ?>
-					<small class="muted"><?= Num::format($area->topic_count, 0) ?> topics, <?= Num::format($area->post_count, 0) ?> posts</small>
-				</h4>
-				<sup>
-					<?= $area->description ?>
-				</sup>
+				<?= HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => HTML::chars($area->description))) ?>
+				<br>
+				<small class="muted" title="<?= __('Topics') ?>">
+					<i class="icon-comments"></i> <?= Num::format($area->topic_count, 0) ?>
+				</small>
+				&nbsp;
+				<small class="muted" title="<?= __('Posts') ?>">
+					<i class="icon-comment"></i> <?= Num::format($area->post_count, 0) ?>
+				</small>
 			</td>
-			<td>
+			<td class="media">
 
-			<?php if ($area->topic_count > 0): $last_topic = $area->last_topic(); ?>
+			<?php if ($area->topic_count > 0):
+				$last_topic  = $area->last_topic();
+				$last_poster = $last_topic->last_post()->author(); ?>
 
-				<small class="ago"><?= HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
-				<?= HTML::anchor(Route::model($last_topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
-				<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), Forum::topic($last_topic), array('title' => HTML::chars($last_topic->name))) ?><br />
-				<?= HTML::user($last_topic->last_post()->author_id, $last_topic->last_poster) ?>
+				<div class="pull-left">
+					<?= HTML::avatar(
+						$last_poster ? $last_poster['avatar'] : null,
+						$last_poster ? $last_poster['username'] : null,
+						true
+					) ?>
+				</div>
+				<div class="media-body">
+					<small class="ago"><?= HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
+					<?= $last_poster ? HTML::user($last_poster) : HTML::chars($last_topic->last_poster) ?>
+					<br>
+					<?= HTML::anchor(Route::model($last_topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
+					<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), Forum::topic($last_topic), array('title' => HTML::chars($last_topic->name))) ?><br />
+				</div>
 
 			<?php else: ?>
 
-				<sup><?php echo __('No topics yet.') ?></sup>
+				<sup><?= __('No topics yet.') ?></sup>
 
 			<?php endif; ?>
 

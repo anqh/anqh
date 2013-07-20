@@ -27,10 +27,12 @@ class Anqh_Controller_Forum extends Controller_Page {
 		$this->page_title = __('Forum');
 
 		// Generic page actions
+		/*
 		$this->page_actions['new-posts'] = array(
 			'link' => Route::url('forum'),
 			'text' => '<i class="icon-comment icon-white"></i> ' . __('New posts'),
 		);
+		*/
 
 		// Forum areas dropdown
 		$groups = Model_Forum_Group::factory()->find_all();
@@ -52,11 +54,11 @@ class Anqh_Controller_Forum extends Controller_Page {
 		}
 		array_pop($areas);
 		$this->page_actions['areas'] = array(
-			'link'     => Route::url('forum_group'),
-			'text'     => '<i class="icon-folder-open icon-white"></i> ' . __('Areas'),
+			'link'     => Route::url('forum'),
+			'text'     => '<i class="icon-folder-open icon-white"></i> ' . __('Forum areas'),
 		);
 		$this->page_actions['area'] = array(
-			'link'     => Route::url('forum_group'),
+			'link'     => Route::url('forum'),
 			'text'     => '',
 			'dropdown' => $areas,
 		);
@@ -74,12 +76,39 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 * Action: latest posts
 	 */
 	public function action_index() {
-		$this->view      = new View_Page(__('Forum'));
-		$this->view->tab = 'new-posts';
+		$this->view        = new View_Page(__('New posts'));
+		$this->view->tab   = 'areas';
+		$this->view->spans = View_Page::SPANS_66;
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(20)));
+		// Actions
+		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
+			$this->view->actions[] = array(
+				'link' => Route::url('forum_group_add'),
+				'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New group'),
+			);
+		}
 
-		$this->_side_views();
+		// New posts
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(40)));
+
+		// Areas
+		$groups = Model_Forum_Group::factory()->find_all();
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_groups($groups));
+
+//		$this->_side_views();
+	}
+
+
+	/**
+	 * Get forum groups view.
+	 *
+	 * @param  Model_Forum_Group[]  $groups
+	 */
+	public function section_groups($groups) {
+		$section         = new View_Forum_Group($groups);
+		$section->class .= ' full';
+
+		return $section;
 	}
 
 

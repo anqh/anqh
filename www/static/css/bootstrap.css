@@ -2146,7 +2146,7 @@ table {
 
 .table-striped tbody > tr:nth-child(odd) > td,
 .table-striped tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .table-hover tbody tr:hover > td,
@@ -7112,6 +7112,12 @@ i[class*=" icon-"] {
   text-align: center;
 }
 
+.icon-facebook {
+  padding: 2px 0 0 2px;
+  background: #3B5998;
+  border-radius: 2px;
+}
+
 .label-special {
   background-color: #7a43b6;
 }
@@ -7569,6 +7575,7 @@ section.table thead {
 
 section.table thead h3 {
   padding: 5px;
+  margin: 0;
 }
 
 section.table tbody {
