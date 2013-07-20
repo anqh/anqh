@@ -604,20 +604,20 @@ class Anqh_View_Page extends View_Base {
 
 	<?= Form::open(Route::url('sign', array('action' => 'in')), array('id' => 'signin', 'class' => 'form-inline')) ?>
 		<?= HTML::anchor(
-				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
-				__('Sign in with') . ' <i class="icon-facebook"></i>',
-				array('class' => 'btn btn-primary', 'title' => __('Sign in with your Facebook account'))
-			) ?>
-
-		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
-		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
-		<?= Form::button(null, __('Sign in') . ' <i class="icon-signin"></i>', array('class' => 'btn btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
-		<?= Form::hidden('remember', 'true') ?>
-		<?= HTML::anchor(
 				Route::url('sign', array('action' => 'up')),
 				__('Sign up') . ' <i class="icon-heart"></i>',
 				array('class' => 'btn btn-lovely', 'title' => __("Did we mention it's FREE!"))
 			) ?>
+		<?= HTML::anchor(
+				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+				__('Sign in with') . ' <i class="icon-facebook"></i>',
+				array('class' => 'btn btn-primary', 'title' => __('Sign in with your Facebook account'))
+			) ?>
+	|
+		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
+		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
+		<?= Form::button(null, __('Sign in') . ' <i class="icon-signin"></i>', array('class' => 'btn btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
+		<?= Form::hidden('remember', 'true') ?>
 	<?= Form::close(); ?>
 
 <?php
