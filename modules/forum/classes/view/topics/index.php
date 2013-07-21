@@ -92,8 +92,13 @@ class View_Topics_Index extends View_Section {
 			<br>
 
 			<h4 class="media-heading">
-			<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
-			<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?></small>
+			<?php if ($this->area): ?>
+				<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
+				<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted icon-level-down"></i>', array('title' => __('Last post'))) ?></small>
+			<?php else: ?>
+				<?= $icon . HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
+				<small class="transparent"><?= HTML::anchor(Route::model($topic), '<i class="muted icon-level-up"></i>', array('title' => __('First post'))) ?></small>
+			<?php endif; ?>
 			</h4>
 		</div>
 	</li>
