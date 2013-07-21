@@ -72,7 +72,7 @@ class View_Forum_Group extends View_Section {
 
 		<tr>
 			<td>
-				<?= HTML::anchor(Route::model($area), HTML::chars($area->name), array('title' => HTML::chars($area->description))) ?>
+				<?= HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable')) ?>
 				<br>
 				<small class="muted" title="<?= __('Topics') ?>">
 					<i class="icon-comments"></i> <?= Num::format($area->topic_count, 0) ?>

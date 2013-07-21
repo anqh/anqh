@@ -26,13 +26,6 @@ class Anqh_Controller_Forum extends Controller_Page {
 
 		$this->page_title = __('Forum');
 
-		// Generic page actions
-		/*
-		$this->page_actions['new-posts'] = array(
-			'link' => Route::url('forum'),
-			'text' => '<i class="icon-comment icon-white"></i> ' . __('New posts'),
-		);
-		*/
 
 		// Forum areas dropdown
 		$groups = Model_Forum_Group::factory()->find_all();
@@ -43,8 +36,9 @@ class Anqh_Controller_Forum extends Controller_Page {
 				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$user)) {
 					$divider = true;
 					$areas[] = array(
-						'link' => Route::model($area),
-						'text' => HTML::entities($area->name),
+						'link'  => Route::model($area),
+						'text'  => HTML::entities($area->name),
+						'class' => 'hoverable'
 					);
 				}
 			}

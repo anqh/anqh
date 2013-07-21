@@ -100,6 +100,37 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 
 	/**
+	 * Action: hover card
+	 */
+	public function action_hover() {
+		$this->history = false;
+
+		// Hover card works only with ajax
+		if ($this->_request_type !== Controller::REQUEST_AJAX) {
+			$this->action_index();
+
+			return;
+		}
+
+		// Load area
+		$area_id = $this->request->param('id');
+
+		// Private area?
+		if ($area_id == 'private') {
+			return __('Private messages');
+		}
+
+		/** @var  Model_Forum_Area  $area */
+		$area = Model_Forum_Area::factory((int)$area_id);
+		if (!$area->loaded() || !Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$user)) {
+			$this->response->body(__('Area not accessible'));
+		} else {
+			$this->response->body(new View_Forum_HoverCard($area));
+		}
+	}
+
+
+	/**
 	 * Action: index
 	 */
 	public function action_index() {

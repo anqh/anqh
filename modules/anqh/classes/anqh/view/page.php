@@ -739,7 +739,7 @@ class Anqh_View_Page extends View_Base {
 								<?php if ($dropdown['divider']): ?>
 							<li class="divider"></li>
 								<?php else: ?>
-							<li><?= HTML::anchor($dropdown['link'], $dropdown['text']) ?></li>
+							<li><?= HTML::anchor(Arr::get_once($dropdown, 'link'), Arr::get_once($dropdown, 'text'), $dropdown) ?></li>
 								<?php endif; ?>
 							<?php endforeach; ?>
 						</ul>

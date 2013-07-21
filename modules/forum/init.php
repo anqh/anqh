@@ -35,7 +35,7 @@ Route::set('forum_group', 'forum/areas(/<id>(/<action>))', array('action' => 'ed
 	->defaults(array(
 		'controller' => 'forum_group',
 	));
-Route::set('forum_area', 'forum/<id>(/<action>)', array('action' => 'edit|delete'))
+Route::set('forum_area', 'forum/<id>(/<action>)', array('action' => 'edit|delete|hover'))
 	->defaults(array(
 		'controller' => 'forum_area',
 	));
