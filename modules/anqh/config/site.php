@@ -62,7 +62,7 @@ return array(
 	'menu' => array(
 		'home'       => array('url' => URL::site(),                         'text' => __('Front page'), 'icon' => 'icon-home'),
 		'events'     => array('url' => URL::site(Route::url('events')),     'text' => __('Events'),     'icon' => 'icon-calendar'),
-		'forum'      => array('url' => URL::site(Route::url('forum')),      'text' => __('Forum'),      'icon' => 'icon-comment'),
+		'forum'      => array('url' => URL::site(Route::url('forum')),      'text' => __('Forum'),      'icon' => 'icon-comments-alt'),
 		'galleries'  => array('url' => URL::site(Route::url('galleries')),  'text' => __('Galleries'),  'icon' => 'icon-picture'),
 		'venues'     => array('url' => URL::site(Route::url('venues')),     'text' => __('Venues'),     'icon' => 'icon-map-marker'),
 		'charts'     => array('url' => URL::site(Route::url('charts')),     'text' => __('Charts'),     'icon' => 'icon-music'),
