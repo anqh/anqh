@@ -70,9 +70,8 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 * Action: latest posts
 	 */
 	public function action_index() {
-		$this->view        = new View_Page(__('New posts'));
-		$this->view->tab   = 'areas';
-		$this->view->spans = View_Page::SPANS_66;
+		$this->view      = new View_Page(__('New posts'));
+		$this->view->tab = 'areas';
 
 		// Actions
 		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
@@ -83,7 +82,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		}
 
 		// New posts
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(40)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(20)));
 
 		// Areas
 		$groups = Model_Forum_Group::factory()->find_all();
@@ -99,8 +98,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 * @param  Model_Forum_Group[]  $groups
 	 */
 	public function section_groups($groups) {
-		$section         = new View_Forum_Group($groups);
-		$section->class .= ' full';
+		$section = new View_Forum_Group($groups);
 
 		return $section;
 	}

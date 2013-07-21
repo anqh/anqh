@@ -10,11 +10,6 @@
 class View_Forum_Group extends View_Section {
 
 	/**
-	 * @var  string  Section class
-	 */
-	public $class = 'forum-groups table';
-
-	/**
 	 * @var  Model_Forum_Group[]
 	 */
 	public $groups;
@@ -29,6 +24,7 @@ class View_Forum_Group extends View_Section {
 		parent::__construct();
 
 		$this->groups = $groups;
+		$this->title  = __('Forum areas');
 	}
 
 
@@ -46,114 +42,79 @@ class View_Forum_Group extends View_Section {
 
 ?>
 
-<table class="table table-condensed">
-
+<ol class="unstyled">
 	<?php foreach ($this->groups as $group): ?>
 
-	<thead>
-		<tr>
-			<th class="span6"><h3><?= HTML::chars($group->name) ?></h3></th>
-			<th class="span6 muted"><?= __('Last post') ?></th>
-		</tr>
-	</thead>
-
-	<tbody>
+	<li>
+		<h4><?= HTML::chars($group->name) ?></h4>
+		<ol class="unstyled">
 
 <?php
 
-			$areas = $group->areas();
-
-			if (count($areas)):
-				foreach ($areas as $area):
+		$areas = $group->areas();
+		if (count($areas)):
+			foreach ($areas as $area):
 
 ?>
 
-		<?php if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$_user)): ?>
+			<li>
 
-		<tr>
-			<td>
-				<?= HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable')) ?>
-				<br>
-				<small class="muted" title="<?= __('Topics') ?>">
-					<i class="icon-comments"></i> <?= Num::format($area->topic_count, 0) ?>
-				</small>
-				&nbsp;
-				<small class="muted" title="<?= __('Posts') ?>">
-					<i class="icon-comment"></i> <?= Num::format($area->post_count, 0) ?>
-				</small>
-			</td>
-			<td class="media">
+<?php
+				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$_user)):
 
-			<?php if ($area->topic_count > 0):
-				$last_topic  = $area->last_topic();
-				$last_poster = $last_topic->last_post()->author(); ?>
+					// Can read area
+					if ($area->topic_count > 0):
+						$last_topic = $area->last_topic();
+						if ($last_topic->last_posted):
+							echo '<small class="pull-right muted">' . HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) . '</small>';
+						endif;
+					endif;
 
-				<div class="pull-left">
-					<?= HTML::avatar(
-						$last_poster ? $last_poster['avatar'] : null,
-						$last_poster ? $last_poster['username'] : null,
-						true
-					) ?>
-				</div>
-				<div class="media-body">
-					<small class="ago"><?= HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
-					<?= $last_poster ? HTML::user($last_poster) : HTML::chars($last_topic->last_poster) ?>
-					<br>
-					<?= HTML::anchor(Route::model($last_topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
-					<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), Forum::topic($last_topic), array('title' => HTML::chars($last_topic->name))) ?><br />
-				</div>
+					echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable'));
 
-			<?php else: ?>
+				elseif ($area->status != Model_Forum_Area::STATUS_HIDDEN):
 
-				<sup><?= __('No topics yet.') ?></sup>
+					// Can't read area
+					echo HTML::chars($area->name);
 
-			<?php endif; ?>
+				endif;
 
-			</td>
-		</tr>
+?>
 
-		<?php elseif ($area->status != Model_Forum_Area::STATUS_HIDDEN): ?>
-
-		<tr>
-			<td colspan="4">
-				<h4><?= HTML::chars($area->name) ?></h4>
-				<?= __('Members only') ?>
-			</td>
-		</tr>
-
-		<?php	endif; ?>
+			</li>
 
 <?php
 
-				endforeach; // areas
+			endforeach;
 
-			else:
+		else:
 
 ?>
 
-		<tr>
-			<td colspan="3">
+			<li>
+				<?= __('No areas available.') ?>
 
-			<?= __('No areas available.') ?>
+				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$_user)): ?>
+					<?= HTML::anchor(Route::model($group, 'edit'), '<i class="icon-edit"></i> ' . __('Edit group'), array('class' => 'btn btn-inverse')) ?>
+				<?php endif; ?>
 
-			<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$_user)): ?>
-				<?= HTML::anchor(Route::model($group, 'edit'), '<i class="icon-edit icon-white"></i> ' . __('Edit group'), array('class' => 'btn btn-inverse')) ?>
-			<?php endif; ?>
+				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$_user)): ?>
+					<?= HTML::anchor(Route::model($group, 'add'), '<i class="icon-plus-sign"></i> ' . __('New area'), array('class' => 'btn btn-primary')) ?>
+				<?php endif; ?>
 
-			<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$_user)): ?>
-				<?= HTML::anchor(Route::model($group, 'add'), '<i class="icon-plus-sign icon-white"></i> ' . __('New area'), array('class' => 'btn btn-primary')) ?>
-			<?php endif; ?>
+			</li>
 
-			</td>
-		</tr>
+<?php
 
-		<?php	endif; ?>
+		endif;
 
-	</tbody>
+?>
 
-	<?php endforeach; // groups ?>
+		</ol>
+	</li>
 
-</table>
+	<?php endforeach; ?>
+	</ol>
 
 <?php
 
