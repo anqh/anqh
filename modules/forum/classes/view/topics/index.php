@@ -75,7 +75,7 @@ class View_Topics_Index extends View_Section {
 		<div class="media-body">
 			<?= $last_poster ? HTML::user($last_poster) : HTML::chars($topic->last_poster) ?>
 
-			&nbsp; <small class="muted"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
+			<small class="muted pull-right"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
 
 			<?php if ($area): ?>
 			<small class="muted"><?= __('in :area', array(
@@ -83,7 +83,7 @@ class View_Topics_Index extends View_Section {
 				)) ?></small>
 			<?php endif; ?>
 
-			&nbsp; <small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
+			<small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
 
 			<?php if ($topic->recipient_count > 2): ?>
 			&nbsp; <small class="muted" title="<?= __('Recipients') ?>"><i class="icon-group"></i> <?= Num::format($topic->recipient_count, 0) ?></small>
