@@ -108,7 +108,7 @@ blockquote                             { border-left-color: @grayDark; }
 // Layout
 #body                                  { min-height: 100%; width: 100%;
   #sidebar,
-  #topbar                              { background: fadeout(@navbarInverseBackground, 10%); padding: 0; }
+  #topbar                              { background: fadeout(@navbarInverseBackground, 10%); padding: 0; position: relative; z-index: 2; }
   #sidebar                             { .size(100%, @sidebarWidth); vertical-align: top; }
   #maincontent                         { height: 100%; padding: 0; vertical-align: top;
     & > .background-container          { background: @bodyBackground url(../img/background.png); position: relative; z-index: 2; }
