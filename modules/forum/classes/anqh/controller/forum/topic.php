@@ -214,8 +214,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Recipients
 		if ($this->private) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_recipients($topic));
-			$this->view->add(View_Page::COLUMN_MAIN, '<hr />');
+			$this->view->add(View_Page::COLUMN_SIDE, $this->section_recipients($topic));
 		}
 
 		// Posts
@@ -831,7 +830,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 */
 	public function section_recipients(Model_Forum_Private_Topic $topic) {
 		$section = new View_Users_List($recipients = $topic->recipients());
-		$section->title = __('Recipients') . ' <small><i class="icon-user"></i> ' . count($recipients) . '</small>';
+		$section->title = __('Recipients') . ' <small><i class="icon-group"></i> ' . count($recipients) . '</small>';
 
 		return $section;
 	}

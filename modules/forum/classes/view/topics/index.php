@@ -53,7 +53,16 @@ class View_Topics_Index extends View_Section {
 
 	<?php foreach ($this->topics as $topic):
 		$last_poster = $topic->last_post()->author();
-		$area        = $this->area ? false : $topic->area(); ?>
+		$area        = $this->area ? false : $topic->area();
+		if ($topic->recipient_count > 2):
+			$icon = '<i class="icon-group" title="' . __('Group message') . '"></i> ';
+		elseif ($topic->recipient_count > 0):
+			$icon = '<i class="icon-envelope" title="' .  __('Personal message') . '"></i> ';
+		else:
+			$icon = '';
+		endif;
+
+		?>
 
 	<li class="media">
 		<div class="pull-left">
@@ -76,10 +85,14 @@ class View_Topics_Index extends View_Section {
 
 			&nbsp; <small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
 
+			<?php if ($topic->recipient_count > 2): ?>
+			&nbsp; <small class="muted" title="<?= __('Recipients') ?>"><i class="icon-group"></i> <?= Num::format($topic->recipient_count, 0) ?></small>
+			<?php endif; ?>
+
 			<br>
 
 			<h4 class="media-heading">
-			<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
+			<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
 			<small><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?></small>
 			</h4>
 		</div>
