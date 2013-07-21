@@ -67,7 +67,7 @@ return array(
 		'venues'     => array('url' => URL::site(Route::url('venues')),     'text' => __('Venues'),     'icon' => 'icon-map-marker'),
 		'charts'     => array('url' => URL::site(Route::url('charts')),     'text' => __('Charts'),     'icon' => 'icon-music'),
 		'blogs'      => array('url' => URL::site(Route::url('blogs')),      'text' => __('Blogs'),      'icon' => 'icon-book'),
-		'members'    => array('url' => URL::site(Route::url('users')),      'text' => __('Members'),    'icon' => 'icon-user'),
+		'members'    => array('url' => URL::site(Route::url('users')),      'text' => __('Members'),    'icon' => 'icon-group'),
 		'developers' => array('url' => URL::site(Route::url('developers')), 'text' => __('Developers'), 'icon' => 'icon-gift', 'footer' => true),
 	),
 
