@@ -53,17 +53,18 @@ class Anqh_Forum {
 	 * @return  string
 	 */
 	public static function topic(Model_Forum_Topic $topic) {
-		switch ($topic->status) {
-			case Model_Forum_Topic::STATUS_LOCKED: $prefix = '<span class="label label-important">' . __('Locked') . '</span> '; break;
-			case Model_Forum_Topic::STATUS_SINK:   $prefix = '<span class="label label-inverse">' . __('Sink') . '</span> '; break;
-			default: $prefix = '';
-		}
+		$prefix = array();
 
 		if ($topic->sticky) {
-			$prefix = '<span class="label label-info">' . __('Sticky') . '</span> ' . $prefix;
+			$prefix[] = '<i class="icon-pushpin text-info" title="' . __('Sticky') . '"></i>';
 		}
 
-		return $prefix . HTML::chars($topic->name);
+		switch ($topic->status) {
+			case Model_Forum_Topic::STATUS_LOCKED: $prefix[] = '<i class="icon-lock muted" title="' . __('Locked') . '"></i>'; break;
+			case Model_Forum_Topic::STATUS_SINK:   $prefix[] = '<i class="icon-unlock muted" title="' . __('Sink') . '"></i>'; break;
+		}
+
+		return implode(' ', $prefix) . ' ' . HTML::chars($topic->name);
 	}
 
 }

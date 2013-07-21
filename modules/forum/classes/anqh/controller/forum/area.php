@@ -189,7 +189,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
 
 		// Posts
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics($area->find_active_topics($pagination->offset, $pagination->items_per_page)));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics($area->find_active_topics($pagination->offset, $pagination->items_per_page), true));
 
 		// Pagination
 		$this->view->add(View_Page::COLUMN_MAIN, $pagination);

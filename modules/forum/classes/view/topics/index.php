@@ -10,9 +10,14 @@
 class View_Topics_Index extends View_Section {
 
 	/**
+	 * @var  boolean  Single area view
+	 */
+	public $area = false;
+
+	/**
 	 * @var  string  View class
 	 */
-	public $class = 'forum-topics table';
+	public $class = 'border';
 
 	/**
 	 * @var  Model_Forum_Topic[]
@@ -24,11 +29,13 @@ class View_Topics_Index extends View_Section {
 	 * Create new view.
 	 *
 	 * @param  Model_Forum_Topics[]  $topics
+	 * @param  boolean               $area    single area
 	 */
-	public function __construct($topics = null) {
+	public function __construct($topics = null, $area = false) {
 		parent::__construct();
 
 		$this->topics = $topics;
+		$this->area   = $area;
 	}
 
 
@@ -42,44 +49,45 @@ class View_Topics_Index extends View_Section {
 
 		if (count($this->topics)): ?>
 
-<table class="table table-condensed table-striped">
-	<thead>
-		<tr>
-			<th class="span4"><h3><?= __('Topic') ?></h3></th>
-			<th class="span2 muted"><?= __('Last post') ?></th>
-		</tr>
-	</thead>
+<ol class="media-list">
 
-	<tbody>
+	<?php foreach ($this->topics as $topic):
+		$last_poster = $topic->last_post()->author();
+		$area        = $this->area ? false : $topic->area(); ?>
 
-		<?php foreach ($this->topics as $topic):
-			$last_poster = $topic->last_post()->author(); ?>
+	<li class="media">
+		<div class="pull-left">
+			<?= HTML::avatar(
+				$last_poster ? $last_poster['avatar'] : null,
+				$last_poster ? $last_poster['username'] : null,
+				false
+			) ?>
+		</div>
+		<div class="media-body">
+			<?= $last_poster ? HTML::user($last_poster) : HTML::chars($topic->last_poster) ?>
 
-		<tr>
-			<td>
-				<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
-				<?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?>
-				&nbsp; <small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
-			</td>
-			<td class="media">
-				<div class="pull-left">
-					<?= HTML::avatar(
-						$last_poster ? $last_poster['avatar'] : null,
-						$last_poster ? $last_poster['username'] : null,
-						true
-					) ?>
-				</div>
-				<div class="media-body">
-					<small class="ago"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
-					<?= $last_poster ? HTML::user($last_poster) : HTML::chars($topic->last_poster) ?>
-				</div>
-			</td>
-		</tr>
+			&nbsp; <small class="muted"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
 
-		<?php endforeach; ?>
+			<?php if ($area): ?>
+			<small class="muted"><?= __('in :area', array(
+					':area' => HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable'))
+				)) ?></small>
+			<?php endif; ?>
 
-	</tbody>
-</table>
+			&nbsp; <small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
+
+			<br>
+
+			<h4 class="media-heading">
+			<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
+			<small><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?></small>
+			</h4>
+		</div>
+	</li>
+
+	<?php endforeach ?>
+
+</ol>
 
 <?php
 

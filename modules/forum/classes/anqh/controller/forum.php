@@ -49,7 +49,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		array_pop($areas);
 		$this->page_actions['areas'] = array(
 			'link'     => Route::url('forum'),
-			'text'     => '<i class="icon-folder-open icon-white"></i> ' . __('Forum areas'),
+			'text'     => '<i class="icon-folder-open"></i> ' . __('Forum'),
 		);
 		$this->page_actions['area'] = array(
 			'link'     => Route::url('forum'),
@@ -60,7 +60,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		if (self::$user) {
 			$this->page_actions['private-messages'] = array(
 				'link' => Forum::private_messages_url(),
-				'text' => '<i class="icon-envelope icon-white"></i> ' . __('Private messages'),
+				'text' => '<i class="icon-envelope"></i> ' . __('Private messages'),
 			);
 		}
 	}
@@ -77,7 +77,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link' => Route::url('forum_group_add'),
-				'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New group'),
+				'text' => '<i class="icon-plus-sign"></i> ' . __('New group'),
 			);
 		}
 
@@ -119,10 +119,11 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 * Get bigger topic list view.
 	 *
 	 * @param   Model_Forum_Topic[]  $topics
+	 * @param   boolean              $single_area
 	 * @return  View_Topics_Index
 	 */
-	public function section_topics($topics) {
-		return new View_Topics_Index($topics);
+	public function section_topics($topics, $single_area = false) {
+		return new View_Topics_Index($topics, $single_area);
 	}
 
 

@@ -92,7 +92,7 @@ class View_Forum_Group extends View_Section {
 ?>
 
 			<li>
-				<?= __('No areas available.') ?>
+				<?= __('No areas available.') ?><br>
 
 				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$_user)): ?>
 					<?= HTML::anchor(Route::model($group, 'edit'), '<i class="icon-edit"></i> ' . __('Edit group'), array('class' => 'btn btn-inverse')) ?>

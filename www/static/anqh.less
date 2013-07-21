@@ -13,7 +13,7 @@ legend                                 { margin-bottom: 0; }
 h1                                     { font-size: 24px; font-weight: normal; letter-spacing: 1px; text-shadow: 2px 2px 2px fade(@textColor, 20%); }
 h2                                     { font-size: 20px; }
 h3                                     { font-size: 18px; line-height: 20px; }
-h4                                     { font-family: inherit; font-size: 14px; }
+h4                                     { font-family: inherit; font-size: 14px; font-weight: bold; }
 h5,
 h6                                     { font-family: inherit; font-size: 12px; }
 h1 small                               { font-size: 18px; }
@@ -52,7 +52,9 @@ select                                 { color: @white; }
 legend .control-group                  { float: right; }
 
 i[class^="icon-"],
-i[class*=" icon-"]                     { font-size: 14px; display: inline-block !important; text-align: center; width: 14px; }
+i[class*=" icon-"]                     { font-size: 14px; display: inline-block !important; text-align: center; text-decoration: none !important; width: 14px; }
+h1 i[class^="icon-"],
+h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
 .icon-facebook                         { background: #3B5998; border-radius: 2px; padding: 2px 0 0 2px; }
 .label-special                         { background-color: @purple; }
 .label-special:hover                   { background-color: darken(@purple, 10%); }
@@ -71,6 +73,7 @@ i[class*=" icon-"]                     { font-size: 14px; display: inline-block 
 .media .media                          { margin-top: 10px; }
 
 .muted                                 { color: @gray; }
+.muted a                               { color: @grayLight; }
 
 .pager                                 { margin: 5px 0;
   li > a,
