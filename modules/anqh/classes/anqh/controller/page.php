@@ -63,7 +63,6 @@ abstract class Anqh_Controller_Page extends Controller {
 
 			$section = new View_Topics_List();
 			$section->class .= ' span4';
-			$section->title  = __('New posts');
 			$section->topics = Model_Forum_Topic::factory()->find_by_latest_post(10);
 			Widget::add('footer', $section);
 

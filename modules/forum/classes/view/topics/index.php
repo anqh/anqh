@@ -93,7 +93,7 @@ class View_Topics_Index extends View_Section {
 
 			<h4 class="media-heading">
 			<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
-			<small><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?></small>
+			<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted iconic-download"></i>', array('title' => __('Last post'))) ?></small>
 			</h4>
 		</div>
 	</li>

@@ -29,6 +29,7 @@ class View_Topics_List extends View_Section {
 		parent::__construct();
 
 		$this->topics = $topics;
+		$this->title  = __('New posts');
 	}
 
 
@@ -51,7 +52,7 @@ class View_Topics_List extends View_Section {
 		<?php foreach ($this->topics as $topic): ?>
 		<li>
 			<small class="ago"><?= HTML::time(Date::short_span($topic->last_posted, true), $topic->last_posted) ?></small>
-			<?= HTML::anchor(Route::model($topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
+			<?php //= HTML::anchor(Route::model($topic), '<i class="muted iconic-upload"></i>', array('class' => 'transparent', 'title' => __('First post'))) ?>
 			<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('title' => $topic->name)) ?>
 		</li>
 		<?php endforeach; ?>

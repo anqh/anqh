@@ -133,9 +133,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 	public function _side_views() {
 
 		// New posts
-		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_active(20));
-		$section->title = __('New posts');
-		$this->view->add(View_Page::COLUMN_SIDE, $section);
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_topic_list(Model_Forum_Topic::factory()->find_active(20)));
 
 		// New topics
 //		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_new(20));
