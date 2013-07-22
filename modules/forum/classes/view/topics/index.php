@@ -17,7 +17,7 @@ class View_Topics_Index extends View_Section {
 	/**
 	 * @var  string  View class
 	 */
-	public $class = 'border';
+	public $class = 'table';
 
 	/**
 	 * @var  Model_Forum_Topic[]
@@ -49,7 +49,8 @@ class View_Topics_Index extends View_Section {
 
 		if (count($this->topics)): ?>
 
-<ol class="media-list">
+<table class="table table-condensed table-striped">
+	<tbody>
 
 	<?php foreach ($this->topics as $topic):
 		$last_poster = $topic->last_post()->author();
@@ -64,48 +65,50 @@ class View_Topics_Index extends View_Section {
 
 		?>
 
-	<li class="media">
-		<div class="pull-left">
+	<tr>
+		<td class="media">
+
 			<?= HTML::avatar(
 				$last_poster ? $last_poster['avatar'] : null,
 				$last_poster ? $last_poster['username'] : null,
-				false
+				'pull-left'
 			) ?>
-		</div>
-		<div class="media-body">
-			<?= $last_poster ? HTML::user($last_poster) : HTML::chars($topic->last_poster) ?>
 
-			<small class="muted pull-right"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
+			<div class="media-body">
+				<small class="muted pull-right"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
 
-			<?php if ($area): ?>
-			<small class="muted"><?= __('in :area', array(
-					':area' => HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable'))
-				)) ?></small>
-			<?php endif; ?>
+				<?= $last_poster ? HTML::user($last_poster) : HTML::chars($topic->last_poster) ?>
 
-			<small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
+				<?php if ($area): ?>
+				<small class="muted"><?= __('in :area', array(
+						':area' => HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable'))
+					)) ?></small>
+				<?php endif; ?>
 
-			<?php if ($topic->recipient_count > 2): ?>
-			&nbsp; <small class="muted" title="<?= __('Recipients') ?>"><i class="icon-group"></i> <?= Num::format($topic->recipient_count, 0) ?></small>
-			<?php endif; ?>
+				<small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
 
-			<br>
+				<?php if ($topic->recipient_count > 2): ?>
+				&nbsp; <small class="muted" title="<?= __('Recipients') ?>"><i class="icon-group"></i> <?= Num::format($topic->recipient_count, 0) ?></small>
+				<?php endif; ?>
 
-			<h4 class="media-heading">
-			<?php if ($this->area): ?>
-				<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
-				<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted icon-level-down"></i>', array('title' => __('Last post'))) ?></small>
-			<?php else: ?>
-				<?= $icon . HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
-				<small class="transparent"><?= HTML::anchor(Route::model($topic), '<i class="muted icon-level-up"></i>', array('title' => __('First post'))) ?></small>
-			<?php endif; ?>
-			</h4>
-		</div>
-	</li>
+				<h4 class="media-heading">
+				<?php if ($this->area || $topic->recipient_count): ?>
+					<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
+					<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted icon-level-down"></i>', array('title' => __('Last post'))) ?></small>
+				<?php else: ?>
+					<?= $icon . HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
+					<small class="transparent"><?= HTML::anchor(Route::model($topic), '<i class="muted icon-level-up"></i>', array('title' => __('First post'))) ?></small>
+				<?php endif; ?>
+				</h4>
+			</div>
+
+		</td>
+	</tr>
 
 	<?php endforeach ?>
 
-</ol>
+	</tbody>
+</table>
 
 <?php
 

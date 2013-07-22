@@ -61,7 +61,6 @@ class View_Forum_HoverCard extends View_Section {
 				<small class="ago"><?= HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) ?></small>
 				<?= $last_poster ? HTML::user($last_poster) : HTML::chars($last_topic->last_poster) ?>
 				<br>
-				<?= HTML::anchor(Route::model($last_topic), '<i class="muted iconic-upload"></i>', array('title' => __('First post'))) ?>
 				<?= HTML::anchor(Route::model($last_topic, '?page=last#last'), Forum::topic($last_topic), array('title' => HTML::chars($last_topic->name))) ?><br />
 			</div>
 		</div>

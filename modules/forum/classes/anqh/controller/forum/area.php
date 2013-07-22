@@ -225,7 +225,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		// Posts
 		$this->view->add(
 			View_Page::COLUMN_MAIN,
-			$this->section_topics(Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination->offset, $pagination->items_per_page))
+			$this->section_topics(Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination->offset, $pagination->items_per_page), true)
 		);
 
 		// Pagination

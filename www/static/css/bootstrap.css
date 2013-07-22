@@ -7529,10 +7529,12 @@ section > header .nav {
   margin-bottom: 0;
 }
 
+section td .transparent,
 section li .transparent {
   opacity: .1;
 }
 
+section td:hover .transparent,
 section li:hover .transparent {
   opacity: 1;
 }
@@ -7589,6 +7591,10 @@ section.table thead {
 
 section.table thead h3 {
   padding: 5px;
+  margin: 0;
+}
+
+section.table .table-condensed h4 {
   margin: 0;
 }
 

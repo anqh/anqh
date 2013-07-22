@@ -184,7 +184,9 @@ section                                { overflow: hidden;
   & > header                           { position: relative;
     .nav                               { margin-bottom: 0; position: absolute; right: 0; top: -5px; }
   }
+  td .transparent,
   li .transparent                      { opacity: .1; }
+  td:hover .transparent,
   li:hover .transparent                { opacity: 1; }
 }
 section.border,
@@ -201,6 +203,7 @@ section.table                          { box-shadow: 0 0 3px rgba(0, 0, 0, .25);
   thead                                { background: fadeout(@grayDarker, 50%); border-bottom: 1px solid @grayDark;
     h3                                 { margin: 0; padding: 5px; }
   }
+  .table-condensed h4                  { margin: 0; }
   tbody                                { background: @grayDarker; }
 }
 
