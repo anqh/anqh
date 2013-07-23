@@ -614,7 +614,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			// Handle preview request
 			if ($preview) {
 				if ($this->ajax) {
-					$preview  = '<div id="preview" class="span12">' . self::_event_subtitle($event) . '</div>';
+					$preview  = '<p>' . self::_event_subtitle($event) . '</p>';
 					$preview .= '<div id="main" class="span8">';
 					$preview .= $this->section_event_main($event);
 					$preview .= '<hr /></div>';
