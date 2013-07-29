@@ -109,9 +109,9 @@ class View_Event_Edit extends View_Article {
 		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
 		<?= Form::csrf() ?>
-		<?= Form::hidden('latitude', $this->venue->latitude) ?>
+		<?= Form::hidden('latitude',  $this->venue->latitude) ?>
 		<?= Form::hidden('longitude', $this->venue->longitude) ?>
-		<?= Form::hidden('venue_id', $this->venue->id) ?>
+		<?= Form::hidden('venue_id',  $this->venue->id) ?>
 	</fieldset>
 </div>
 
@@ -123,10 +123,10 @@ class View_Event_Edit extends View_Article {
 				'stamp_begin[date]',
 				is_numeric($this->event->stamp_begin) ? Date::format('DMYYYY', $this->event->stamp_begin) : $this->event->stamp_begin,
 				array('class' => 'date', 'maxlength' => 10, 'placeholder' => 'd.m.yyyy')),
-			array('stamp_begin[date]' => __('Date')),
+			array('stamp_begin[date]' => __('From')),
 			Arr::get($this->event_errors, 'stamp_begin'),
 			null,
-			array('class' => 'span4')) ?>
+			array('class' => 'span3')) ?>
 
 		<?= Form::control_group(
 			Form::select(
@@ -134,10 +134,20 @@ class View_Event_Edit extends View_Article {
 				array_reverse(Date::hours_minutes(30, true)),
 				is_numeric($this->event->stamp_begin) ? Date::format('HHMM', $this->event->stamp_begin) : (empty($this->event->stamp_begin) ? '22:00' : $this->event->stamp_begin),
 				array('class' => 'time')),
-			array('stamp_begin[time]' => __('From')),
+			array('stamp_begin[time]' => '&nbsp;'),
 			Arr::get($this->event_errors, 'stamp_begin'),
 			null,
-			array('class' => 'span4')) ?>
+			array('class' => 'span3')) ?>
+
+		<?= Form::control_group(
+			Form::input(
+				'stamp_end[date]',
+				is_numeric($this->event->stamp_end) ? Date::format('DMYYYY', $this->event->stamp_end) : $this->event->stamp_end,
+				array('class' => 'date', 'maxlength' => 10, 'placeholder' => 'd.m.yyyy')),
+			array('stamp_end[date]' => __('To')),
+			Arr::get($this->event_errors, 'stamp_end'),
+			null,
+			array('class' => 'span3')) ?>
 
 		<?= Form::control_group(
 			Form::select(
@@ -145,10 +155,10 @@ class View_Event_Edit extends View_Article {
 				Date::hours_minutes(30, true),
 				is_numeric($this->event->stamp_end) ? Date::format('HHMM', $this->event->stamp_end) : (empty($this->event->stamp_end) ? '04:00' : $this->event->stamp_end),
 				array('class' => 'time')),
-			array('stamp_end[time]' => __('To')),
+			array('stamp_end[time]' => '&nbsp;'),
 			Arr::get($this->event_errors, 'stamp_end'),
 			null,
-			array('class' => 'span4')) ?>
+			array('class' => 'span3')) ?>
 	</fieldset>
 
 	<?php if (!$this->event->flyer_front_image_id) echo Form::control_group(
@@ -170,7 +180,7 @@ class View_Event_Edit extends View_Article {
 					. ' ' . __('Underground')
 					. '</label>',
 				null, null, null,
-				array('class' => 'span2')) ?>
+				array('class' => 'span8 pull-right')) ?>
 
 			<?= __('Venue') ?>
 		</legend>
@@ -195,7 +205,7 @@ class View_Event_Edit extends View_Article {
 					. ' ' . __('Free entry')
 					. '</label>',
 				null, null, null,
-				array('class' => 'span2')) ?>
+				array('class' => 'span8 pull-right')) ?>
 
 			<?= __('Tickets') ?>
 		</legend>
@@ -289,7 +299,17 @@ class View_Event_Edit extends View_Article {
 head.ready('anqh', function() {
 
 	// Datepicker
-	$('input.date').datepicker(<?= json_encode($datepicker) ?>);
+	var pickerOptions = <?= json_encode($datepicker) ?>
+	  , $dateBegin = $('input[name="stamp_begin[date]"]')
+	  , $dateEnd   = $('input[name="stamp_end[date]"]');
+	$dateEnd.datepicker(pickerOptions);
+	$dateBegin.datepicker($.extend(pickerOptions, {
+		onClose: function(dateText, inst) {
+			var startDate = $dateBegin.datepicker('getDate');
+			startDate.setDate(startDate.getDate() + 1);
+			$dateEnd.datepicker('setDate', startDate);
+		}
+	}));
 
 	// City autocomplete
 	$('input[name=city_name]').autocompleteGeo();

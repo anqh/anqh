@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
@@ -54,7 +54,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'name'                 => array('not_empty', 'length' => array(':value', 3, 64)),
 		'homepage'             => array('url'),
 		'stamp_begin'          => array('not_empty', 'digit'),
-		'stamp_end'            => array('not_empty', 'digit'),
+		'stamp_end'            => array('not_empty', 'digit', 'after' => array(':validation', 'stamp_end', 'stamp_begin')),
 
 		'venue_hidden'         => array('in_array' => array(':value', array(0, 1))),
 		'venue_id'             => array('digit'),
@@ -267,12 +267,14 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Find events between given time period, return grouped by date
+	 * Find events between given time period, return grouped by date.
 	 *
 	 * @param   integer  $stamp_begin
 	 * @param   integer  $stamp_end
 	 * @param   string   $order
 	 * @return  array
+	 *
+	 * @throws  Kohana_Exception  when stamps are missing
 	 */
 	public function find_grouped_between($stamp_begin, $stamp_end, $order = 'DESC') {
 		$stamp_begin = (int)$stamp_begin;
@@ -290,48 +292,13 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 		$events = $this->load(
 			DB::select_array($this->fields())
-				->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))
+				->where('stamp_begin', '<=', $stamp_end)
+				->and_where('stamp_end', '>=', $stamp_begin)
+//				->where('stamp_begin', 'BETWEEN', array($stamp_begin, $stamp_end))
+//				->or_where('stamp_end', 'BETWEEN', array($stamp_begin, $stamp_end))
 				->order_by('stamp_begin', $order == 'ASC' ? 'ASC' : 'DESC')
 				->order_by('city_name', 'ASC'),
 			null
-		);
-
-		return $this->_group_by_city($events);
-	}
-
-
-	/**
-	 * Find past events, return grouped by date.
-	 *
-	 * @param   integer  $limit
-	 * @return  array
-	 */
-	public function find_grouped_past($limit = 10) {
-		$events = $this->load(
-			DB::select_array($this->fields())
-				->where('stamp_begin', '<', strtotime('today'))
-				->order_by('stamp_begin', 'DESC')
-				->order_by('city_name', 'ASC'),
-			$limit
-		);
-
-		return $this->_group_by_city($events);
-	}
-
-
-	/**
-	 * Find upcoming events, return grouped by date.
-	 *
-	 * @param   integer  $limit
-	 * @return  array
-	 */
-	public function find_grouped_upcoming($limit = 10) {
-		$events = $this->load(
-			DB::select_array($this->fields())
-				->where('stamp_begin', '>=', strtotime('today'))
-				->order_by('stamp_begin', 'ASC')
-				->order_by('city_name', 'ASC'),
-			$limit
 		);
 
 		return $this->_group_by_city($events);
@@ -453,20 +420,22 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 			// Build grouped array
 			foreach ($events as $event) {
-
-				// Date
-				$date = date('Y-m-d', $event->stamp_begin);
-				if (!isset($grouped[$date])) {
-					$grouped[$date] = array();
-				}
-
-				// City
 				$city = UTF8::ucfirst(mb_strtolower($event->city_id ? $event->city()->name : $event->city_name));
-				if (!isset($grouped[$date][$city])) {
-					$grouped[$date][$city] = array();
+
+				$days = ceil(($event->stamp_end - $event->stamp_begin) / Date::DAY);
+				for ($day = 0; $day < $days; $day++) {
+					$date = date('Y-m-d', strtotime('+' . $day . ' days', $event->stamp_begin));
+					if (!isset($grouped[$date])) {
+						$grouped[$date] = array();
+					}
+
+					if (!isset($grouped[$date][$city])) {
+						$grouped[$date][$city] = array();
+					}
+
+					$grouped[$date][$city][] = $event;
 				}
 
-				$grouped[$date][$city][] = $event;
 			}
 
 			// Sort by city

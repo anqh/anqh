@@ -415,7 +415,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 
 		// Build page
-		$this->view = View_Page::factory(__('Events'));
+		$this->view = View_Page::factory(__('Events') . ' ' . Date::format(Date::DM_SHORT, $this->stamp_begin) . '–' . Date::format(Date::DMY_SHORT, $this->stamp_end));
 
 		// Pagination
 		$pagination = $this->section_pagination();
@@ -563,7 +563,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			}
 
 			$post = Arr::intersect($_POST, Model_Event::$editable_fields);
-			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time'])) {
+			if (isset($post['stamp_begin']['date']) && isset($post['stamp_end']['time']) && !isset($post['stamp_end']['date'])) {
 				$post['stamp_end']['date'] = $post['stamp_begin']['date'];
 			}
 			$event->set_fields($post);
@@ -722,7 +722,17 @@ class Anqh_Controller_Events extends Controller_Page {
 		$subtitle = array();
 
 		// Date
-		$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DMY_LONG, $event->stamp_begin) . '</strong>', $event->stamp_begin, true);
+		if ($event->stamp_end - $event->stamp_begin > Date::DAY) {
+
+			// Multi day event
+			$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DM_LONG, $event->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_LONG, $event->stamp_end) . '</strong>', $event->stamp_begin, true);
+
+		} else {
+
+			// Single day event
+			$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DMY_LONG, $event->stamp_begin) . '</strong>', $event->stamp_begin, true);
+
+		}
 
 		// Time
 		if ($event->stamp_begin != $event->stamp_end) {
