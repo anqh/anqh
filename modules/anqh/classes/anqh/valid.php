@@ -4,10 +4,42 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Valid extends Kohana_Valid {
+
+	/**
+	 * Checks if a date is after another date.
+	 *
+	 * @param   array           $array
+	 * @param   string|integer  $stamp
+	 * @param   string|integer  $stamp2
+	 * @return  boolean
+	 */
+	public static function after($array, $stamp, $stamp2) {
+		$from  = is_numeric($array[$stamp]) ? $array[$stamp] : strtotime($array[$stamp]);
+		$to    = is_numeric($array[$stamp2]) ? $array[$stamp2] : strtotime($array[$stamp2]);
+
+		return $from > $to;
+	}
+
+
+	/**
+	 * Checks if a date is before another date.
+	 *
+	 * @param   array           $array
+	 * @param   string|integer  $stamp
+	 * @param   string|integer  $stamp2
+	 * @return  boolean
+	 */
+	public static function before($array, $stamp, $stamp2) {
+		$from  = is_numeric($array[$stamp]) ? $array[$stamp] : strtotime($array[$stamp]);
+		$to    = is_numeric($array[$stamp2]) ? $array[$stamp2] : strtotime($array[$stamp2]);
+
+		return $from < $to;
+	}
+
 
 	/**
 	 * Checks if a string is a valid date string.
@@ -27,7 +59,7 @@ class Anqh_Valid extends Kohana_Valid {
 	 * @static
 	 * @param   string   $value
 	 * @param   integer  $min
-	 * @param   intger   $max
+	 * @param   integer  $max
 	 * @return  boolean
 	 */
 	public static function length($value, $min, $max) {
