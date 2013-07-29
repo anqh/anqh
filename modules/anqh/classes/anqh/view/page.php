@@ -823,7 +823,7 @@ class Anqh_View_Page extends View_Base {
 			<li class="nav-header"><?= __('Admin functions') ?></li>
 			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk"></i> ' . __('Roles')) ?></li>
 			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags"></i> ' . __('Tags')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('div.kohana').toggle();")) ?></li>
+			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('.kohana').toggle();")) ?></li>
 			<?php endif; ?>
 		</ul>
 	</span>
