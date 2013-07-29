@@ -110,7 +110,7 @@ blockquote                             { border-left-color: @grayDark; }
   #sidebar,
   #topbar                              { background: fadeout(@navbarInverseBackground, 10%); padding: 0; position: relative; z-index: 2; }
   #sidebar                             { .size(100%, @sidebarWidth); vertical-align: top; }
-  #maincontent                         { height: 100%; padding: 0; vertical-align: top;
+  #maincontent                         { height: 100%; padding: 0; position: relative; vertical-align: top; z-index: 1;
     & > .background-container          { background: @bodyBackground url(../img/background.png); position: relative; z-index: 2; }
   }
   #footer                              { padding-bottom: 350px;
@@ -254,6 +254,10 @@ footer.meta                            { color: @gray; }
   .ui-datepicker-week-col              { cursor: pointer; text-align: center; }
   .ui-state-active                     { background: @black; }
 }
+table.ui-datepicker-calendar           {
+  a.ui-state-active                    { background: @black; }
+  a.ui-state-hover                     { background-color: @linkColor; color: @white; }
+}
 
 // jQuery file upload
 .fileinput-button                      { overflow: hidden; position: relative; }
@@ -264,7 +268,7 @@ footer.meta                            { color: @gray; }
   .name a                              { display: block; .text-overflow; width: 100px; }
   .progress                            { width: 100px; }
   .size,
-	.start,
+  .start,
   .cancel,
   .delete                              { text-align: right; white-space: nowrap; }
 }

@@ -7325,6 +7325,8 @@ blockquote {
 }
 
 #body #maincontent {
+  position: relative;
+  z-index: 1;
   height: 100%;
   padding: 0;
   vertical-align: top;
@@ -7806,6 +7808,15 @@ footer.meta {
 
 .ui-datepicker-inline .ui-state-active {
   background: #000000;
+}
+
+table.ui-datepicker-calendar a.ui-state-active {
+  background: #000000;
+}
+
+table.ui-datepicker-calendar a.ui-state-hover {
+  color: #ffffff;
+  background-color: #0088cc;
 }
 
 .fileinput-button {
