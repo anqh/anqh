@@ -7896,7 +7896,7 @@ select.time {
   width: 75px;
 }
 
-button[name=private].active + input {
+button[name=private-toggle].active + input {
   border-color: #7a43b6;
 }
 

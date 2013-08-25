@@ -169,10 +169,11 @@ class View_Generic_Comments extends View_Section {
 		if ($this->private):
 
 			// Private messaging available
+			echo Form::hidden('private', 0);
+
 			echo '<div class="input-prepend input-append row-fluid">';
 
-			echo Form::button('private', __('Priv'), array(
-					'value'       => 1,
+			echo Form::button('private-toggle', __('Priv'), array(
 					'type'        => 'button',
 					'title'       => __('Private message'),
 					'class'       => 'btn btn-special',

@@ -942,6 +942,10 @@ $(function() {
 
 		return false;
 	});
+	$(document).delegate('button[name=private-toggle]', 'click', function privateComment(e) {
+		$('input[name=private]').val(~~$(this).hasClass('active'));
+		$('input[name=comment]').focus();
+	});
 
 
 	// Submit comment with ajax
