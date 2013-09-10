@@ -8400,6 +8400,7 @@ div.image #form-note {
 }
 
 .imgareaselect-outer {
+  z-index: 0 !important;
   background-color: black;
   opacity: 0.5;
   filter: alpha(opacity=50);
