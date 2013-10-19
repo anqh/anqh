@@ -83,6 +83,22 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 
 
 	/**
+	 * Get area bind config.
+	 *
+	 * @return  array
+	 */
+	public function bind_config() {
+		if ($this->area_type == self::TYPE_BIND && $this->bind) {
+			$config = Kohana::$config->load('forum.binds');
+
+			return Arr::get($config, $this->bind);
+		}
+
+		return null;
+	}
+
+
+	/**
 	 * Find area's paginated active topics
 	 *
 	 * @param   integer  $offset

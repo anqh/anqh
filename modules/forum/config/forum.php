@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 return array(
@@ -20,8 +20,8 @@ return array(
 	 */
 	'binds' => array(
 		'events_upcoming' => array(
-			'name'  =>__('Upcoming events'),
-			'link'  => __('Show event'),
+			'name'  => __('Upcoming events'),
+			'link'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
 			'model' => 'event',
 			'view'  => array(
 				'events/flyers',
@@ -30,7 +30,7 @@ return array(
 		),
 		'events_past' => array(
 			'name'  => __('Past events'),
-			'link'  => __('Show event'),
+			'link'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
 			'model' => 'event',
 			'view'  => array(
 				'events/flyers',

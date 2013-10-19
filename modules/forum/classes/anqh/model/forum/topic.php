@@ -108,6 +108,22 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Get bound model.
+	 *
+	 * @return  Model
+	 */
+	public function bind_model() {
+		if ($bind_config = $this->area()->bind_config()) {
+			$model = AutoModeler::factory($bind_config['model'], $this->bind_id);
+
+			return $model && $model->loaded() ? $model : null;
+		}
+
+		return null;
+	}
+
+
+	/**
 	 * Find active topics.
 	 *
 	 * @param   integer  $limit

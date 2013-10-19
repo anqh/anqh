@@ -148,6 +148,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 						}
 					}
 				}
+
 			}
 
 			// Facebook
@@ -157,22 +158,22 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 			// Model binding
 			$area = $topic->area();
-			if ($area->type == Model_Forum_Area::TYPE_BIND && $topic->bind_id) {
-				if ($bind = Model_Forum_Area::get_binds($area->bind)) {
-					$model = AutoModeler::factory($bind['model'], $topic->bind_id);
-					if ($model->loaded()) {
+			if ($topic->bind_id && $bind_config = $area->bind_config()) {
+				if ($bind_model = $topic->bind_model()) {
 
-						// Set actions
-						$this->page_actions[] = array('link' => Route::model($model), 'text' => $bind['link']);
+					// Set actions
+					$this->page_actions[] = array(
+						'link' => Route::model($bind_model),
+						'text' => $bind_config['link']
+					);
 
-						// Set views
-						foreach ((array)$bind['view'] as $view) {
-							$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory($view, array(
-								$bind['model'] => $model,
-							)), Widget::TOP);
-						}
+/*					// Set views
+					foreach ((array)$bind['view'] as $view) {
+						$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory($view, array(
+							$bind['model'] => $model,
+						)), Widget::TOP);
+					}*/
 
-					}
 				}
 			}
 
