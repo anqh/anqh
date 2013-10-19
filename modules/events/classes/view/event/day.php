@@ -61,10 +61,26 @@ class View_Event_Day extends View_Article {
 
 		ob_start();
 
+		// Show limited amount of data
+		$info      = Text::limit_chars($this->event->info, 500);
+		$show_more = $info != $this->event->info;
+
+		// Max 5 lines
+		$lines     = explode("\n", str_replace(array("\r\n", "\r"), "\n", $info), 6);
+		$show_more = $show_more || count($lines) == 6;
+		if (count($lines) > 5) {
+			$lines[5] = '…';
+		}
+		$info = implode("\n", $lines);
+
+		if ($show_more) {
+			$info .= ' [url=' . Route::model($this->event) . ']' . __('See more') . '[/url]';
+		}
+
 ?>
 
 	<span class="details"><?= $this->event->price() . ($venue ? ' @ ' : '') . $venue ?></span><br />
-	<span class="djs"><?= HTML::chars($this->event->dj) ?></span>
+	<span class="djs"><?= BB::factory($info)->render(null, true) ?></span>
 
 <?php
 

@@ -89,13 +89,8 @@ class View_Event_Edit extends View_Article {
 			Arr::get($this->event_errors, 'name')) ?>
 
 		<?= Form::control_group(
-			Form::textarea('dj', $this->event->dj, array('class' => 'input-block-level'), true),
-			array('dj' => __('Line-up')),
-			Arr::get($this->event_errors, 'dj')) ?>
-
-		<?= Form::control_group(
-			Form::textarea_editor('info', $this->event->info, array('class' => 'input-block-level'), true),
-			array('info' => __('Other information')),
+			Form::textarea_editor('info', $this->event->info, array('class' => 'input-block-level', 'rows' => 20), true),
+			array('info' => __('Information')),
 			Arr::get($this->event_errors, 'info')) ?>
 	</fieldset>
 
@@ -140,22 +135,22 @@ class View_Event_Edit extends View_Article {
 			array('class' => 'span3')) ?>
 
 		<?= Form::control_group(
-			Form::input(
-				'stamp_end[date]',
-				is_numeric($this->event->stamp_end) ? Date::format('DMYYYY', $this->event->stamp_end) : $this->event->stamp_end,
-				array('class' => 'date', 'maxlength' => 10, 'placeholder' => 'd.m.yyyy')),
-			array('stamp_end[date]' => __('To')),
-			Arr::get($this->event_errors, 'stamp_end'),
-			null,
-			array('class' => 'span3')) ?>
-
-		<?= Form::control_group(
 			Form::select(
 				'stamp_end[time]',
 				Date::hours_minutes(30, true),
 				is_numeric($this->event->stamp_end) ? Date::format('HHMM', $this->event->stamp_end) : (empty($this->event->stamp_end) ? '04:00' : $this->event->stamp_end),
 				array('class' => 'time')),
-			array('stamp_end[time]' => '&nbsp;'),
+			array('stamp_end[time]' => __('To')),
+			Arr::get($this->event_errors, 'stamp_end'),
+			null,
+			array('class' => 'span3')) ?>
+
+		<?= Form::control_group(
+			Form::input(
+				'stamp_end[date]',
+				is_numeric($this->event->stamp_end) ? Date::format('DMYYYY', $this->event->stamp_end) : $this->event->stamp_end,
+				array('class' => 'date', 'maxlength' => 10, 'placeholder' => 'd.m.yyyy')),
+			array('stamp_end[date]' => '&nbsp;'),
 			Arr::get($this->event_errors, 'stamp_end'),
 			null,
 			array('class' => 'span3')) ?>
