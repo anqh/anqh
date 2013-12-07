@@ -4,20 +4,10 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface {
-
-	/**
-	 * Permission to approve images
-	 */
-	const PERMISSION_APPROVE = 'approve';
-
-	/**
-	 * Permission to see images waiting for approval
-	 */
-	const PERMISSION_APPROVE_WAITING = 'approve_waiting';
 
 	/**
 	 * Permission to post comments
@@ -193,26 +183,6 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 
 
 	/**
-	 * Get gallery images waiting for approval.
-	 *
-	 * @param   Model_User  $user  image owner or null for all
-	 * @return  Model_Image[]
-	 */
-	public function find_images_pending(Model_User $user = null) {
-		$query = DB::select_array(Model_Image::factory()->fields())
-			->where('status', 'IN', array(Model_Image::HIDDEN, Model_Image::NOT_ACCEPTED))
-			->order_by('author_id');
-
-		// Limit by user
-		if ($user) {
-			$query = $query->and_where('author_id', '=', $user->id);
-		}
-
-		return $this->find_related('images', $query);
-	}
-
-
-	/**
 	 * Find galleries with latest images
 	 *
 	 * @param   integer  $limit
@@ -267,34 +237,6 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 
 
 	/**
-	 * Get galleries with images waiting for approval
-	 *
-	 * @param   Model_User  $user  Null for all
-	 * @return  Database_Result
-	 */
-	public function find_pending(Model_User $user = null) {
-		$galleries = DB::select('gallery_id')
-			->distinct(true)
-			->from('galleries_images')
-			->join('images', 'INNER')
-			->on('images.id', '=', 'image_id')
-			->where('images.status', 'IN', array(Model_Image::NOT_ACCEPTED, Model_Image::HIDDEN))
-			->order_by('gallery_id', 'ASC');
-
-		// If checking only one user
-		if ($user) {
-			$galleries->where('author_id', '=', $user->id);
-		}
-
-		return $this->load(
-			DB::select_array($this->fields())
-				->where('id', 'IN', $galleries),
-			null
-		);
-	}
-
-
-	/**
 	 * Check permission
 	 *
 	 * @param   string      $permission
@@ -303,12 +245,8 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 	 */
 	public function has_permission($permission, $user) {
 		switch ($permission) {
-			case self::PERMISSION_APPROVE:
 			case self::PERMISSION_UPDATE:
 		    return $user && $user->has_role(array('admin', 'photo moderator'));
-
-			case self::PERMISSION_APPROVE_WAITING:
-		    return $user && $user->has_role(array('photo', 'admin', 'photo moderator'));
 
 			case self::PERMISSION_DELETE:
 		    return $user && $user->has_role('admin');
@@ -338,7 +276,7 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 			DB::select_array(Model_Image::factory()->fields())
 				->join('users', 'LEFT')
 				->on('users.id', '=', 'images.author_id')
-				->where('images.status', 'IN', array(Model_Image::VISIBLE, Model_Image::NOT_ACCEPTED))
+				->where('images.status', '=', Model_Image::VISIBLE)
 				->order_by('users.username', 'ASC')
 				->order_by('images.id', 'ASC'),
 			null

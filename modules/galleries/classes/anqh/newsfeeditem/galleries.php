@@ -38,6 +38,13 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	const TYPE_NOTE = 'note';
 
 	/**
+	 * Upload new image(s) to a gallery.
+	 *
+	 * Data: gallery_id
+	 */
+	const TYPE_UPLOAD = 'upload';
+
+	/**
 	 * @var  array  Aggregate types
 	 */
 	public static $aggregate = array(self::TYPE_COMMENT, self::TYPE_COMMENT_FLYER, self::TYPE_FLYER_EDIT);
@@ -77,6 +84,10 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				}
 				break;
 
+			case self::TYPE_UPLOAD:
+				$text = __('added new photos to a gallery');
+				break;
+
 		}
 
 		return $text . '<br />' . $link;
@@ -103,7 +114,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($gallery->loaded() && $image->loaded()) {
 					$text = HTML::anchor(
 						Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-						'<i class="icon-camera icon-white"></i> ' . HTML::chars($gallery->name),
+						'<i class="icon-camera-retro"></i> ' . HTML::chars($gallery->name),
 						array('class' => 'hoverable')
 					);
 				}
@@ -116,7 +127,19 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($flyer->loaded()) {
 					$text = HTML::anchor(
 						Route::url('flyer', array('id' => $flyer->id)),
-						'<i class="icon-picture icon-white"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+						'<i class="icon-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+						array('class' => 'hoverable')
+					);
+				}
+				break;
+
+			// Gallery
+			case self::TYPE_UPLOAD:
+				$gallery = Model_Gallery::factory($item->data['gallery_id']);
+				if ($gallery->loaded()) {
+					$text = HTML::anchor(
+						Route::model($gallery),
+						'<i class="icon-camera-retro"></i> ' . HTML::chars($gallery->name),
 						array('class' => 'hoverable')
 					);
 				}
@@ -183,5 +206,17 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 		}
 	}
 
+
+	/**
+	 * Upload image(s) to a gallery.
+	 *
+	 * @param  Model_User     $user
+	 * @param  Model_Gallery  $gallery
+	 */
+	public static function upload(Model_User $user = null, Model_Gallery $gallery = null) {
+		if ($user && $gallery) {
+			parent::add($user, 'galleries', self::TYPE_UPLOAD, array('gallery_id' => (int)$gallery->id));
+		}
+	}
 
 }

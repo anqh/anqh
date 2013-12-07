@@ -19,7 +19,6 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 
 	const DELETED      = 'd';
 	const HIDDEN       = 'h';
-	const NOT_ACCEPTED = 'n';
 	const VISIBLE      = 'v';
 
 	const SIZE_ICON      = 'icon';
@@ -67,7 +66,7 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_rules = array(
-		'status'            => array('not_empty', 'in_array' => array(':value', array(self::DELETED, self::HIDDEN, self::NOT_ACCEPTED, self::VISIBLE))),
+		'status'            => array('not_empty', 'in_array' => array(':value', array(self::DELETED, self::HIDDEN, self::VISIBLE))),
 		'remote'            => array('url'),
 	);
 

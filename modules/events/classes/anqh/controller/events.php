@@ -124,13 +124,13 @@ class Anqh_Controller_Events extends Controller_Page {
 			if ($event->is_favorite(self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Remove favorite'),
+					'text'  => '<i class="icon-heart"></i> ' . __('Remove favorite'),
 					'class' => 'btn-inverse favorite-delete',
 				);
 			} else {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'favorite') . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-heart icon-white"></i> ' . __('Add to favorites'),
+					'text'  => '<i class="icon-heart"></i> ' . __('Add to favorites'),
 					'class' => 'btn-lovely favorite-add',
 				);
 			}
@@ -138,13 +138,13 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->tab = 'event';
 		$this->view->tabs['event'] = array(
 			'link' => Route::model($event),
-			'text' => '<i class="icon-calendar icon-white"></i> ' . __('Event'),
+			'text' => '<i class="icon-calendar"></i> ' . __('Event'),
 		);
 
 		if ($event->author_id) {
 			$this->view->tabs['organizer'] = array(
 				'link' => URL::user($event->author_id),
-				'text' => '<i class="icon-user icon-white"></i> ' . __('Organizer') . ' &raquo;',
+				'text' => '<i class="icon-user"></i> ' . __('Organizer') . ' &raquo;',
 			);
 		}
 
@@ -152,22 +152,22 @@ class Anqh_Controller_Events extends Controller_Page {
 		if ($event->stamp_begin < time()) {
 			$this->view->tabs[] = array(
 				'link' => Route::get('gallery_event')->uri(array('id' => $event->id)),
-				'text' => '<i class="icon-camera icon-white"></i> ' . __('Gallery') . ' &raquo;',
+				'text' => '<i class="icon-camera-retro"></i> ' . __('Gallery') . ' &raquo;',
 			);
 		}
 
 		$this->view->tabs[] = array(
 			'link' => Route::get('forum_event')->uri(array('id' => $event->id)),
-			'text' => '<i class="icon-comment icon-white"></i> ' . __('Forum') . ' &raquo;',
+			'text' => '<i class="icon-comment"></i> ' . __('Forum') . ' &raquo;',
 		);
 		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link' => Route::model($event, 'edit'),
-				'text' => '<i class="icon-edit icon-white"></i> ' . __('Edit event'),
+				'text' => '<i class="icon-edit"></i> ' . __('Edit event'),
 			);
 			$this->view->actions[] = array(
 				'link'  => Route::model($event, 'image'),
-				'text'  => '<i class="icon-picture icon-white"></i> ' . __('Add flyer'),
+				'text'  => '<i class="icon-picture"></i> ' . __('Add flyer'),
 				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
 			);
 		}
@@ -446,7 +446,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::get('events')->uri(array('action' => 'add')),
-				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add event'),
+				'text'  => '<i class="icon-plus-sign"></i> ' . __('Add event'),
 				'class' => 'btn-primary event-add',
 			);
 		}
@@ -509,7 +509,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			if (Permission::has($event, Model_Event::PERMISSION_DELETE, self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'delete') . '?token=' . Security::csrf(),
-					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete event'),
+					'text'  => '<i class="icon-trash"></i> ' . __('Delete event'),
 					'class' => 'btn-danger event-delete'
 				);
 			}
@@ -725,23 +725,23 @@ class Anqh_Controller_Events extends Controller_Page {
 		if ($event->stamp_end - $event->stamp_begin > Date::DAY) {
 
 			// Multi day event
-			$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DM_LONG, $event->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_LONG, $event->stamp_end) . '</strong>', $event->stamp_begin, true);
+			$subtitle[] = '<i class="icon-calendar"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DM_LONG, $event->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_LONG, $event->stamp_end) . '</strong>', $event->stamp_begin, true);
 
 		} else {
 
 			// Single day event
-			$subtitle[] = '<i class="icon-calendar icon-white"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DMY_LONG, $event->stamp_begin) . '</strong>', $event->stamp_begin, true);
+			$subtitle[] = '<i class="icon-calendar"></i> ' . HTML::time(Date('l', $event->stamp_begin) . ', <strong>' . Date::format(Date::DMY_LONG, $event->stamp_begin) . '</strong>', $event->stamp_begin, true);
 
 		}
 
 		// Time
 		if ($event->stamp_begin != $event->stamp_end) {
 			$subtitle[] = $event->stamp_end ?
-				'<i class="icon-time icon-white"></i> ' . __('From :from until :to', array(
+				'<i class="icon-time"></i> ' . __('From :from until :to', array(
 					':from' => '<strong>' . HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin) . '</strong>',
 					':to'   => '<strong>' . HTML::time(Date::format('HHMM', $event->stamp_end), $event->stamp_end) . '</strong>'
 				)) :
-				'<i class="icon-time icon-white"></i> ' . __('From :from onwards', array(
+				'<i class="icon-time"></i> ' . __('From :from onwards', array(
 					':from' => HTML::time(Date::format('HHMM', $event->stamp_begin), $event->stamp_begin),
 				));
 		}
@@ -749,7 +749,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Tickets
 		$tickets = '';
 		if ($event->price == 0 || $event->price > 0 || $event->tickets_url) {
-			$tickets = '<i class="icon-bookmark icon-white"></i> ';
+			$tickets = '<i class="icon-bookmark"></i> ';
 		}
 		if ($event->price == 0) {
 			$tickets .= '<strong>' . __('Free entry') . '</strong> ';
@@ -765,12 +765,12 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Age limit
 		if ($event->age > 0) {
-			$subtitle[] = '<i class="icon-user icon-white"></i> ' . __('Age limit') . ': <strong>' . $event->age . '</strong>';
+			$subtitle[] = '<i class="icon-user"></i> ' . __('Age limit') . ': <strong>' . $event->age . '</strong>';
 		}
 
 		// Homepage
 		if (!empty($event->homepage)) {
-			$subtitle[] = '<i class="icon-home icon-white"></i> ' . HTML::anchor($event->homepage, Text::limit_url($event->homepage, 25));
+			$subtitle[] = '<i class="icon-home"></i> ' . HTML::anchor($event->homepage, Text::limit_url($event->homepage, 25));
 		}
 
 		// Venue
@@ -815,16 +815,16 @@ head.ready("anqh", function() {
 			$address = HTML::chars($event->city_name);
 
 		}
-		$subtitle[] = '<br /><i class="icon-map-marker icon-white"></i> <strong>' . $venue . '</strong>' . ($address ? ', ' . $address : '');
+		$subtitle[] = '<br /><i class="icon-map-marker"></i> <strong>' . $venue . '</strong>' . ($address ? ', ' . $address : '');
 		if (isset($map)) {
 			$subtitle[] = HTML::anchor('#map', __('Show map'));
 		}
 
 		// Tags
 		if ($tags = $event->tags()) {
-			$subtitle[] = '<br /><i class="icon-music icon-white"></i> <em>' . implode(', ', $tags) . '</em>';
+			$subtitle[] = '<br /><i class="icon-music"></i> <em>' . implode(', ', $tags) . '</em>';
 		} else if (!empty($event->music)) {
-			$subtitle[] = '<br /><i class="icon-music icon-white"></i> <em>' . $event->music . '</em>';
+			$subtitle[] = '<br /><i class="icon-music"></i> <em>' . $event->music . '</em>';
 		}
 
 		return implode(' &nbsp; ', $subtitle)
@@ -894,7 +894,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_event_favorites(Model_Event $event) {
 		$section = new View_Users_List($favorites = $event->find_favorites());
-		$section->title = __('Favorites') . ' <small><i class="icon-heart icon-white"></i> ' . count($favorites) . '</small>';
+		$section->title = __('Favorites') . ' <small><i class="icon-heart"></i> ' . count($favorites) . '</small>';
 
 		return $section;
 	}

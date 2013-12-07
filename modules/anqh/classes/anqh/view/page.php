@@ -421,7 +421,7 @@ class Anqh_View_Page extends View_Base {
 
 		<ul class="nav" role="menubar">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon-white visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
+			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
 			<?php endforeach; ?>
 		</ul>
 	</nav><!-- #mainmenu -->
@@ -567,7 +567,7 @@ class Anqh_View_Page extends View_Base {
 
 	<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
 		<label>
-			<i class="icon-camera"></i>
+			<i class="icon-camera-retro"></i>
 			<?= Form::input('search-images', null, array(
 					'class'         => 'input-small search-query',
 					'placeholder'   => __('Search images..'),

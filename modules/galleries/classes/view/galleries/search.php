@@ -70,11 +70,11 @@ class View_Galleries_Search extends View_Section {
 			echo '<span class="stats">';
 
 			// Image count
-			echo '<i class="icon-camera icon-white"></i> ', $gallery->image_count;
+			echo '<i class="icon-camera-retro"></i> ', $gallery->image_count;
 
 			// Comment count
 			if ($gallery->comment_count > 0):
-				echo '<i class="icon-comment icon-white"></i> ', $gallery->comment_count;
+				echo '<i class="icon-comment"></i> ', $gallery->comment_count;
 			endif;
 
 			echo '</span>';

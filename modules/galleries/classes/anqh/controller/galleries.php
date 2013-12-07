@@ -20,40 +20,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 	/**
-	 * Action: approve single image
-	 */
-	public function action_approve() {
-		$this->history = false;
-
-		$this->action_image();
-	}
-
-
-	/**
-	 * Action: approval
-	 */
-	public function action_approval() {
-		$this->history = false;
-
-		// Can we see galleries with un-approved images?
-		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
-
-		// Can we see all of them and approve?
-		$approve = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
-
-		// Load galleries we have access to
-		$galleries = Model_Gallery::factory()->find_pending($approve ? null : self::$user);
-
-		// Build page
-		$this->view = View_Page::factory(__('Galleries waiting for approval'));
-
-		if (count($galleries)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries, true, $approve));
-		}
-	}
-
-
-	/**
 	 * Action: browse
 	 */
 	public function action_browse() {
@@ -242,13 +208,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		$success = 0;
 		if (Security::csrf_valid()) {
-			$pending = $image->status === Model_Image::NOT_ACCEPTED;
-			foreach (($pending ? $gallery->find_images_pending() : $gallery->images()) as $image) {
+			foreach ($gallery->images() as $image) {
 				if ($image->id == $image_id) {
-					if (!$pending) {
-						$gallery->image_count--;
-						$gallery->save();
-					}
+					$gallery->image_count--;
+					$gallery->save();
 					$image->delete();
 					$success = 1;
 					break;
@@ -558,108 +521,42 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
-		// Are we approving pending images?
-		if ($this->request->action() == 'pending') {
+		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
 
-			// Can we see galleries with un-approved images?
-			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
+		// External links
+		$link_add = trim(Arr::get($_POST, 'link'));
+		$link_del = Arr::get($_GET, 'delete_link');
+		if ($link_add || is_numeric($link_del)) {
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user) && Security::csrf_valid()) {
+				$links  = $gallery->links;
 
-			// Can we see all of them and approve?
-			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
+				if ($link_add && Valid::url($link_add)) {
 
-			// Handle images?
-			if ($_POST && Security::csrf_valid()) {
-				$pending = $gallery->find_images_pending($approve ? null : self::$user);
-				$images  = (array)Arr::get($_POST, 'image_id');
-				$authors = array();
-				if (count($pending) && count($images)) {
-					foreach ($pending as $image) {
-						$action = Arr::Get($images, $image->id, 'wait');
-						switch ($action) {
+					// Add new link
+					$links .= ($links ? "\n" : '') . self::$user->id . ',' . $link_add;
 
-							case 'approve':
-								if ($approve) {
-									$author = $image->author();
-									//$gallery->image_count++;
-									$authors[$author['id']] = $author['username'];
-									$image->state(AutoModeler::STATE_LOADED);
-									$image->status = Model_Image::VISIBLE;
-									$image->save();
-								}
-						    break;
+				} else if (is_numeric($link_del)) {
 
-							case 'deny':
-								$gallery->remove('image', $image->id);
-								$gallery->image_count--;
-						    $image->delete();
-						    break;
-
+					// Remove link
+					$old_links = explode("\n", $links);
+					if ($old_links[$link_del]) {
+						list($user_id, $url) = explode(',', $old_links[$link_del]);
+						if (self::$user->id == $user_id || Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+							unset($old_links[$link_del]);
+							$links = implode("\n", $old_links);
 						}
 					}
 
-					// Admin actions
-					if ($approve) {
+				}
 
-						// Set default image if none set
-						if (!$gallery->default_image_id) {
-							$gallery->default_image_id = $gallery->images()->current()->id;
-						}
-
-						$gallery->update_copyright();
-						$gallery->updated = time();
-					}
+				$gallery->links = $links;
+				try {
 					$gallery->save();
-
-					// Redirect to normal gallery if all images approved/denied
-					if (!count($gallery->find_images_pending($approve ? null : self::$user))) {
-						$this->request->redirect(Route::model($gallery));
-					} else {
-						$this->request->redirect(Route::model($gallery, 'pending'));
-					}
-
+				} catch (Validation_Exception $e) {
 				}
 			}
 
-		} else {
-
-			Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
-
-			// External links
-			$link_add = trim(Arr::get($_POST, 'link'));
-			$link_del = Arr::get($_GET, 'delete_link');
-			if ($link_add || is_numeric($link_del)) {
-				if (Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user) && Security::csrf_valid()) {
-					$links  = $gallery->links;
-
-					if ($link_add && Valid::url($link_add)) {
-
-						// Add new link
-						$links .= ($links ? "\n" : '') . self::$user->id . ',' . $link_add;
-
-					} else if (is_numeric($link_del)) {
-
-						// Remove link
-						$old_links = explode("\n", $links);
-						if ($old_links[$link_del]) {
-							list($user_id, $url) = explode(',', $old_links[$link_del]);
-							if (self::$user->id == $user_id || Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
-								unset($old_links[$link_del]);
-								$links = implode("\n", $old_links);
-							}
-						}
-
-					}
-
-					$gallery->links = $links;
-					try {
-						$gallery->save();
-					} catch (Validation_Exception $e) {
-					}
-				}
-
-				$this->request->redirect(Route::model($gallery));
-			}
-
+			$this->request->redirect(Route::model($gallery));
 		}
 
 
@@ -676,15 +573,13 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// Share
-		if ($this->request->action() !== 'pending') {
-			Anqh::page_meta('title', __('Gallery') . ': ' . $gallery->name);
-			Anqh::page_meta('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
-			Anqh::page_meta('description', __($gallery->image_count == 1 ? ':images image' : ':images images', array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
-			if ($event && $image = $event->flyer_front()) {
-				Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
-			} else if ($image = $gallery->default_image()) {
-				Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
-			}
+		Anqh::page_meta('title', __('Gallery') . ': ' . $gallery->name);
+		Anqh::page_meta('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
+		Anqh::page_meta('description', __($gallery->image_count == 1 ? ':images image' : ':images images', array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
+		if ($event && $image = $event->flyer_front()) {
+			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
+		} else if ($image = $gallery->default_image()) {
+			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 		}
 		Anqh::share(true);
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
@@ -701,7 +596,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// Pictures
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_thumbs($gallery, $this->request->action() == 'pending', isset($approve) ? $approve : null));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_thumbs($gallery));
 
 		// External links
 		if ($gallery->links || Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
@@ -764,22 +659,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
-		// Are we approving pending images?
-		if ($this->request->action() == 'approve') {
-
-			// Can we see galleries with un-approved images?
-			Permission::required($gallery, Model_Gallery::PERMISSION_APPROVE_WAITING, self::$user);
-
-			// Can we see all of them and approve?
-			$approve = Permission::has($gallery, Model_Gallery::PERMISSION_APPROVE, self::$user);
-			$images  = $gallery->find_images_pending($approve ? null : self::$user);
-
-		} else {
-
-			Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
-			$images = $gallery->images();
-
-		}
+		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
+		$images = $gallery->images();
 
 		// Find current, previous and next images
 		$i = 0;
@@ -818,7 +699,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if (!is_null($current)) {
 
 			// Comments section
-			if (!isset($approve) && Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
 				$errors = array();
 				$values = array();
 
@@ -948,7 +829,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			));
 			$this->view->tabs['gallery'] = array(
 				'link' => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id)),
-				'text' => '<i class="icon-camera"></i> ' . __('Photo')
+				'text' => '<i class="icon-camera-retro"></i> ' . __('Photo')
 			);
 
 			// Event info
@@ -957,16 +838,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			}
 
 			// Pagination
-			$previous_url = $previous ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
-			$next_url     = $next     ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => $approve ? 'approve' : '')) . '#title' : null;
+			$previous_url = $previous ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $previous->id, 'action' => '')) . '#title' : null;
+			$next_url     = $next     ? Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $next->id, 'action' => '')) . '#title' : null;
 			$this->view->add(View_Page::COLUMN_TOP, $this->section_image_pagination($previous_url, $next_url));
 
 			// Image
-			if (!isset($approve)) {
-				$current->view_count++;
-				$current->save();
-			}
-			$this->view->add(View_Page::COLUMN_TOP, $this->section_image($current, $gallery, $next_url, (bool)$approve));
+			$current->view_count++;
+			$current->save();
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_image($current, $gallery, $next_url));
 
 			// Comments
 			if (isset($section_comments)) {
@@ -1068,16 +947,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 	/**
-	 * Action: pending
-	 */
-	public function action_pending() {
-		$this->history = false;
-
-		return $this->action_gallery();
-	}
-
-
-	/**
 	 * Action: photographer profile
 	 */
 	public function action_photographer() {
@@ -1095,7 +964,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Galleries
 		$galleries = Model_Gallery::factory()->find_by_user($user->id);
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries, false, false, true));
+		$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries, true));
 
 		// Top images
 		foreach (array(Model_Image::TOP_RATED, Model_Image::TOP_COMMENTED, Model_Image::TOP_VIEWED) as $type) {
@@ -1360,7 +1229,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					$image->set_fields(array(
 						'author_id' => self::$user->id,
 						'file'      => $file,
-						'status'    => Model_Image::NOT_ACCEPTED,
 						'created'   => time(),
 					));
 					$image->save();
@@ -1377,7 +1245,13 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					// Set the image as gallery image
 					$gallery->relate('images', array($image->id));
 					$gallery->image_count++;
+					if (!$gallery->default_image_id) {
+						$gallery->default_image_id = $image->id;
+					}
 					$gallery->save();
+
+					// Newsfeed item
+					NewsfeedItem_Galleries::upload(self::$user, $gallery);
 
 					// Mark filename as uploaded for current gallery
 					$uploaded[$gallery->id][] = $file['name'];
@@ -1395,7 +1269,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 						$info->gallery_url   = Route::url('gallery_image', array(
 							'gallery_id' => Route::model_id($gallery),
 							'id'         => $image->id,
-							'action'     => 'approve',
 						));
 						$info->delete_url    = Route::url('gallery_image', array(
 							'gallery_id' => Route::model_id($gallery),
@@ -1576,15 +1449,15 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function _set_page_actions($upload = false) {
 		$this->view->tabs['latest'] = array(
 			'link' => Route::url('galleries'),
-			'text' => '<i class="icon-camera"></i> ' . __('Latest updates')
+			'text' => '<i class="icon-camera-retro"></i> ' . __('Latest updates')
 		);
 		$this->view->tabs['galleries'] = array(
 			'link' => Route::url('galleries', array('action' => 'browse')),
-			'text' => '<i class="icon-camera"></i> ' . __('Galleries')
+			'text' => '<i class="icon-camera-retro"></i> ' . __('Galleries')
 		);
 		$this->view->tabs['top'] = array(
 			'link' => Route::url('galleries', array('action' => 'top')),
-			'text' => '<i class="icon-camera"></i> ' . __('Top 10')
+			'text' => '<i class="icon-camera-retro"></i> ' . __('Top 10')
 		);
 		$this->view->tabs['flyers'] = array(
 			'link' => Route::url('flyers', array('action' => '')),
@@ -1621,7 +1494,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 		$this->view->tabs['gallery'] = array(
 			'link' => Route::model($gallery),
-			'text' => '<i class="icon-camera"></i> ' . __('Gallery')
+			'text' => '<i class="icon-camera-retro"></i> ' . __('Gallery')
 		);
 		if ($event = $gallery->event()) {
 			$this->view->tabs[] = array(
@@ -1734,15 +1607,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * Get galleries' thumb view.
 	 *
 	 * @param   Model_Gallery[]  $galleries
-	 * @param   boolean          $pending    List pending thumbs
-	 * @param   boolean          $approve    Permission to approve
 	 * @param   boolean          $years      Show year titles
 	 * @return  View_Galleries_Thumbs
 	 */
-	public function section_galleries_thumbs($galleries, $pending = false, $approve = false, $years = false) {
+	public function section_galleries_thumbs($galleries, $years = false) {
 		$section = new View_Galleries_Thumbs($galleries);
-		$section->show_pending = $pending;
-		$section->can_approve  = $approve;
 		$section->years        = $years;
 
 		return $section;
@@ -1822,14 +1691,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * Get gallery thumb view.
 	 *
 	 * @param   Model_Gallery  $gallery
-	 * @param   boolean        $pending  List pending thumbs
-	 * @param   boolean        $approve  Permission to approve
 	 * @return  View_Gallery_Thumbs
 	 */
-	public function section_gallery_thumbs(Model_Gallery $gallery, $pending = false, $approve = false) {
+	public function section_gallery_thumbs(Model_Gallery $gallery) {
 		$section = new View_Gallery_Thumbs($gallery);
-		$section->show_pending = $pending;
-		$section->can_approve  = $approve;
 
 		return $section;
 	}
@@ -1841,13 +1706,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param   Model_Image    $image
 	 * @param   Model_Gallery  $gallery
 	 * @param   string         $url
-	 * @param   boolean        $show_pending
 	 * @return  View_Image_Full
 	 */
-	public function section_image(Model_Image $image, Model_Gallery $gallery, $url = null, $show_pending = false) {
+	public function section_image(Model_Image $image, Model_Gallery $gallery, $url = null) {
 		$section = new View_Image_Full($image, $gallery);
 		$section->url          = $url;
-		$section->show_pending = $show_pending;
 
 		return $section;
 	}

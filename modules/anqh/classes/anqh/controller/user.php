@@ -583,7 +583,7 @@ class Anqh_Controller_User extends Controller_Page {
 			// Photographer profile
 			$view->tabs['photographer'] = array(
 				'link' => Route::url('photographer', array('username' => urlencode($user->username))),
-				'text' => '<i class="icon-camera"></i> ' . __('Photographer') . ' &raquo;',
+				'text' => '<i class="icon-camera-retro"></i> ' . __('Photographer') . ' &raquo;',
 			);
 
 			// Blog

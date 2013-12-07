@@ -39,18 +39,18 @@ Route::set('image_note', 'note/<id>(/<action>)', array('action' => 'unnote'))
 		'controller' => 'galleries',
 		'action'     => 'note'
 	));
-Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'approve|delete|default|hover|note|unnote|report', 'id' => '\d+'))
+Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('action' => 'delete|default|hover|note|unnote|report', 'id' => '\d+'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'image',
 		'type'       => 'image',
 	));
-Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|upload|pending'))
+Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|upload'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'gallery',
 	));
-Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'search|browse|upload|approval|top', 'year' => '\d{4}', 'month' => '\d{1,2}'))
+Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action' => 'search|browse|upload|top', 'year' => '\d{4}', 'month' => '\d{1,2}'))
 	->defaults(array(
 		'controller' => 'galleries',
 	));

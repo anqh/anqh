@@ -25,11 +25,6 @@ class View_Image_Full extends View_Section {
 	public $image;
 
 	/**
-	 * @var  boolean  Viewing pending images
-	 */
-	public $show_pending = false;
-
-	/**
 	 * @var  string  Click URL for image
 	 */
 	public $url;
@@ -70,7 +65,7 @@ class View_Image_Full extends View_Section {
 				array('title' => __('Next image'), 'class' => 'image'));
 		else:
 			echo HTML::anchor(
-				Route::model($this->gallery, $this->show_pending ? 'approve' : ''),
+				Route::model($this->gallery),
 				HTML::image($this->image->get_url(null, $this->gallery->dir)),
 				array('title' => __('Back to gallery'), 'class' => 'image'));
 		endif; ?>

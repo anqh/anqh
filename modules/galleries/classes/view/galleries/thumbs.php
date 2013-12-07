@@ -10,19 +10,9 @@
 class View_Galleries_Thumbs extends View_Section {
 
 	/**
-	 * @var  boolean  Permission to approve galleries
-	 */
-	public $can_approve = false;
-
-	/**
 	 * @var  Model_Gallery[]
 	 */
 	public $galleries;
-
-	/**
-	 * @var  boolean  List pending galleries
-	 */
-	public $show_pending = false;
 
 	/**
 	 * @var  boolean  Display year titles
@@ -89,7 +79,7 @@ class View_Galleries_Thumbs extends View_Section {
 ?>
 
 	<li>
-		<a class="thumbnail" href="<?= Route::model($gallery, $this->show_pending ? 'pending' : null) ?>">
+		<a class="thumbnail" href="<?= Route::model($gallery) ?>">
 
 			<?= $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('Thumbnail pending') ?>
 
@@ -97,32 +87,22 @@ class View_Galleries_Thumbs extends View_Section {
 
 <?php
 
-			if ($this->show_pending):
-
-				// Approval process
-				$pending_images = $gallery->find_images_pending($this->can_approve ? null : self::$_user);
-				echo '<span class="stats"><i class="icon-camera icon-white"></i> ' . count($pending_images) . '</span>';
-
-			else:
-
-				// Rating
+			// Rating
 //				if ($gallery->rate_count > 0):
 //					echo HTML::rating($gallery->rate_total, $gallery->rate_count, false, true, true), '<br />';
 //				endif;
 
-				echo '<span class="stats">';
+			echo '<span class="stats">';
 
-				// Image count
-				echo '<i class="icon-camera icon-white"></i> ', $gallery->image_count;
+			// Image count
+			echo '<i class="icon-camera-retro"></i> ', $gallery->image_count;
 
-				// Comment count
-				if ($gallery->comment_count > 0):
-					echo '<i class="icon-comment icon-white"></i> ', $gallery->comment_count;
-				endif;
-
-				echo '</span>';
-
+			// Comment count
+			if ($gallery->comment_count > 0):
+				echo '<i class="icon-comment"></i> ', $gallery->comment_count;
 			endif;
+
+			echo '</span>';
 
 ?>
 
