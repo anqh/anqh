@@ -19,17 +19,8 @@ return array(
 	 * Special settings for bound areas
 	 */
 	'binds' => array(
-		'events_upcoming' => array(
-			'name'  => __('Upcoming events'),
-			'link'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
-			'model' => 'event',
-			'view'  => array(
-				'events/flyers',
-				'events/event_info',
-			)
-		),
-		'events_past' => array(
-			'name'  => __('Past events'),
+		'events' => array(
+			'name'  => __('Events'),
 			'link'  => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;',
 			'model' => 'event',
 			'view'  => array(
