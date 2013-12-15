@@ -168,6 +168,7 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 			$area = $area->load(
 				DB::select_array($area->fields())
 					->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
+					->where('status', '=', Model_Forum_Area::STATUS_NORMAL)
 					->where('bind', '=', $bind_name)
 			);
 			if ($area->loaded()) {

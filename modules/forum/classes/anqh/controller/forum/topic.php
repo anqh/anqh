@@ -54,15 +54,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			throw new Model_Exception($event, $event_id);
 		}
 
-		// Go to before or after event discussion?
-		$time = $this->request->param('time');
-		if (!$time) {
-			$time = $event->stamp_begin > time() ? 'before' : 'after';
-		}
-		$bind = ($time == 'before') ? 'events_upcoming' : 'events_past';
-
 		// Redirect
-		if ($topic = Model_Forum_Topic::factory()->find_by_bind($event, $bind)) {
+		if ($topic = Model_Forum_Topic::factory()->find_by_bind($event, 'events')) {
 
 			// Topic existing
 			$this->request->redirect(Route::model($topic));
