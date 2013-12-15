@@ -108,6 +108,51 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Bind model to topic.
+	 *
+	 * @param   Model    $bind_model
+	 * @param   string   $bind_name
+	 * @return  boolean  success
+	 */
+	public function bind(Model $bind_model, $bind_name = null) {
+
+		// Get correct bind config
+		$config = false;
+		if (!$bind_name) {
+			$model = Model::model_name($bind_model);
+			foreach (Model_Forum_Area::get_binds(false) as $bind_name => $bind_config) {
+				if ($bind_config['model'] == $model) {
+					$config = $bind_config;
+					break;
+				}
+			}
+		} else {
+			$config = Model_Forum_Area::get_binds($bind_name);
+		}
+
+		if ($config) {
+
+			// Get area
+			$area = Model_Forum_Area::factory();
+			$area = $area->load(
+				DB::select_array($area->fields())
+					->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
+					->where('status', '=', Model_Forum_Area::STATUS_NORMAL)
+					->where('bind', '=', $bind_name)
+			);
+			if ($area->loaded()) {
+				$this->forum_area_id = $area->id;
+				$this->bind_id       = $bind_model->id();
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
 	 * Get bound model.
 	 *
 	 * @return  Model
@@ -147,10 +192,11 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	 * @return  Model_Forum_Topic
 	 */
 	public static function find_by_bind(Model $bind_model, $bind_name = null) {
-		$model = Model::model_name($bind_model);
 
 		// Get correct bind config
+		$config = false;
 		if (!$bind_name) {
+			$model = Model::model_name($bind_model);
 			foreach (Model_Forum_Area::get_binds(false) as $bind_name => $bind_config) {
 				if ($bind_config['model'] == $model) {
 					$config = $bind_config;
