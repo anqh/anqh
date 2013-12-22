@@ -684,6 +684,9 @@ class Anqh_Controller_Events extends Controller_Page {
 				} else {
 					NewsfeedItem_Events::event(self::$user, $event);
 
+					// Add to favorites
+					$event->add_favorite(self::$user);
+
 					// Create forum topic
 					try {
 
@@ -737,7 +740,7 @@ class Anqh_Controller_Events extends Controller_Page {
 						self::$user->save();
 
 						// News feed
-						NewsfeedItem_Forum::topic(self::$user, $topic);
+//						NewsfeedItem_Forum::topic(self::$user, $topic);
 
 					} catch (Kohana_Exception $forum_validation) {
 					}
