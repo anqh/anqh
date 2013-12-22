@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 return array(
@@ -25,7 +25,12 @@ return array(
 	'inviteonly' => false,
 
 	/**
-	 * E-mail address of the invitation sending
+	 * Email address for contact
+	 */
+	'email_contact' => 'noreply@domain.tld',
+
+	/**
+	 * Email address of the invitation sending
 	 */
 	'email_invitation' => 'noreply@domain.tld',
 
@@ -68,7 +73,8 @@ return array(
 		'charts'     => array('url' => URL::site(Route::url('charts')),     'text' => __('Charts'),     'icon' => 'icon-music'),
 		'blogs'      => array('url' => URL::site(Route::url('blogs')),      'text' => __('Blogs'),      'icon' => 'icon-book'),
 		'members'    => array('url' => URL::site(Route::url('users')),      'text' => __('Members'),    'icon' => 'icon-group'),
-		'developers' => array('url' => URL::site(Route::url('developers')), 'text' => __('Developers'), 'icon' => 'icon-gift', 'footer' => true),
+		'developers' => array('url' => URL::site(Route::url('developers')), 'text' => __('Developers'), 'icon' => 'icon-gift',         'footer' => true),
+		'contact'    => array('url' => URL::site(Route::url('contact')),    'text' => __('Contact'),    'icon' => 'icon-envelope-alt', 'footer' => true),
 	),
 
 	/**

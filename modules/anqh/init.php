@@ -103,6 +103,11 @@ Route::set('developers', 'developers')
 		'controller' => 'developers',
 		'action'     => 'index',
 	));
+Route::set('contact', 'contact')
+	->defaults(array(
+		'controller' => 'contact',
+		'action'     => 'index',
+	));
 
 Route::set('oauth', 'oauth(/<provider>)/<action>', array('provider' => 'facebook|foursquare'))
 	->defaults(array(
