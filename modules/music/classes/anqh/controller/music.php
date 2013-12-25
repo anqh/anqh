@@ -212,15 +212,19 @@ class Anqh_Controller_Music extends Controller_Page {
 
 
 		// New
-		$this->view->add(View_Page::COLUMN_TOP, $this->section_list(
+		$section = $this->section_list(
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_MIX, 10),
 			__('New mixtapes')
-		));
+		);
+		$section->class = 'span6';
+		$this->view->add(View_Page::COLUMN_TOP, $section);
 
-		$this->view->add(View_Page::COLUMN_TOP, $this->section_list(
+		$this->section_list(
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_TRACK, 10),
 			__('New tracks')
-		));
+		);
+		$section->class = 'span6';
+		$this->view->add(View_Page::COLUMN_TOP, $section);
 
 		$this->view->add(View_Page::COLUMN_TOP, '</div>');
 	}
@@ -365,7 +369,6 @@ class Anqh_Controller_Music extends Controller_Page {
 	public function section_list($tracks, $title) {
 		$view = new View_Music_List($tracks);
 		$view->title = $title;
-		$view->class = 'span6';
 
 		return $view;
 	}
