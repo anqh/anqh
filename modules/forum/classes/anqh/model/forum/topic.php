@@ -270,6 +270,29 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Find news topics, i.e. latest topics from readonly areas.
+	 *
+	 * @param   integer  $limit
+	 * @return  Model_Forum_Topic[]
+	 */
+	public function find_news($limit = 10) {
+		$news_config = Kohana::$config->load('site.news');
+
+		if (!$news_config['forum_area_id'] || !$news_config['author_id']) {
+			return null;
+		}
+
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('forum_area_id', '=', $news_config['forum_area_id'])
+				->and_where('author_id', '=', $news_config['author_id'])
+				->order_by('id', 'DESC'),
+			$limit
+		);
+	}
+
+
+	/**
 	 * Find a post's number in topic.
 	 *
 	 * @param   integer  $post_id

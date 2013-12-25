@@ -77,6 +77,12 @@ return array(
 		'contact'    => array('url' => URL::site(Route::url('contact')),    'text' => __('Contact'),    'icon' => 'icon-envelope-alt', 'footer' => true),
 	),
 
+	/** News area */
+	'news' => array(
+		'forum_area_id' => 1,
+		'author_id'     => 1,
+	),
+
 	/**
 	 * Available skins
 	 */

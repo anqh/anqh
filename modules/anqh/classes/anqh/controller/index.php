@@ -32,6 +32,9 @@ class Anqh_Controller_Index extends Controller_Page {
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed());
 
+		// News
+		$this->view->add(View_Page::COLUMN_SIDE, $this->section_news());
+
 		// Shouts
 		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
 
@@ -71,6 +74,19 @@ class Anqh_Controller_Index extends Controller_Page {
 
 
 	/**
+	 * Get site news.
+	 *
+	 * @return  View_Topics_List
+	 */
+	public function section_news() {
+		$section = new View_Topics_List(Model_Forum_Topic::factory()->find_news(10));
+		$section->title = __('News');
+
+		return $section;
+	}
+
+
+	/**
 	 * Get newsfeed.
 	 *
 	 * @return  View_Newsfeed
@@ -78,6 +94,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	public function section_newsfeed() {
 		$section = new View_Newsfeed();
 		$section->type = Arr::get($_REQUEST, 'newsfeed', View_Newsfeed::TYPE_ALL);
+		$section->title = __("What's happening");
 
 		return $section;
 	}
