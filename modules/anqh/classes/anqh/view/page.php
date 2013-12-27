@@ -445,7 +445,9 @@ class Anqh_View_Page extends View_Base {
 	<nav id="mainmenu" role="navigation">
 		<ul class="nav nav-list mainmenu" role="menu">
 			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?><?= $id == $this->id ? ' active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i>', array('title' => HTML::chars($item['text']))) ?></li>
+			<li role="menuitem" class="menu-<?= $id ?><?= $id == $this->id ? ' active' : '' ?>">
+				<?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i><span>' . $item['text'] . '</span>') ?>
+			</li>
 			<?php endforeach; ?>
 		</ul>
 	</nav><!-- #mainmenu -->
