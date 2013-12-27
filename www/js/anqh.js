@@ -302,8 +302,8 @@ $.fn.autocompleteCity = function(options) {
 						response($.map(data.geonames, function(item) {
 							return {
 								'id':    item.geonameId,
-								'label': item.name + (item.adminName1 ? ', ' + item.adminName1 : '') + ', ' + item.countryName,
-								'value': item.name,
+								'label': item.name.replace(/^[\d ]+/, '') + (item.adminName1 ? ', ' + item.adminName1 : '') + ', ' + item.countryName,
+								'value': item.name.replace(/^[\d ]+/, ''),
 								'lat':   item.lat,
 								'long':  item.lng
 							};
@@ -419,7 +419,7 @@ $.fn.autocompleteEvent = function(options) {
 $.fn.autocompleteGeo = function(options) {
 	var defaults = {
 		map:       'map',
-		country:   'FI',
+		country:   'fi',
 		lang:      'en',
 		latitude:  'latitude',
 		longitude: 'longitude',
@@ -449,9 +449,9 @@ $.fn.autocompleteGeo = function(options) {
 								count++;
 								var place = item.formatted_address.split(',');
 								return {
-									label:     item.formatted_address,
-									value:     place[0],
-									city:      place.shift(),
+									label:     item.formatted_address.replace(/^[\d ]+/, ''),
+									value:     place[0].replace(/^[\d ]+/, ''),
+									city:      place.shift().replace(/^[\d ]+/, ''),
 									description: place.join(','),
 									latitude:  item.geometry.location.lat(),
 									longitude: item.geometry.location.lng()
