@@ -110,7 +110,7 @@ class View_Event_Day extends View_Article {
 			else:
 
 				// Non-favorite event, click to favorite
-				if ($this->event->favorite_count):
+				if ($this->event->favorite_count > 1):
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
 						'<i class="icon-heart"></i> ' . $this->event->favorite_count,
