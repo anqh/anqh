@@ -35,9 +35,9 @@ class View_Event_Day extends View_Article {
 
 		// Meta
 		if ($tags = $event->tags()) {
-			$this->meta = implode(', ', $tags);
+			$this->meta = '<small>' . implode(', ', $tags) . '</small>';
 		} else if ($event->music) {
-			$this->meta = $event->music;
+			$this->meta = '<small>' . $event->music . '</small>';
 		}
 
 	}
@@ -79,8 +79,9 @@ class View_Event_Day extends View_Article {
 
 ?>
 
-	<span class="details"><?= $this->event->price() . ($venue ? ' @ ' : '') . $venue ?></span><br />
-	<span class="djs"><?= BB::factory($info)->render(null, true) ?></span>
+	<sup class="details muted"><?= $this->event->price() . ($venue ? ' @ ' : '') . $venue ?></sup>
+	<br>
+	<div class="djs"><?= BB::factory($info)->render(null, true) ?></div>
 
 <?php
 
@@ -127,7 +128,7 @@ class View_Event_Day extends View_Article {
 		endif;
 
 		return $this->event->favorite_count
-			? '<span class="btn btn-small btn-inverse disabled"><i class="icon-heart icon-white"></i> ' . $this->event->favorite_count . '</a>'
+			? '<span class="btn btn-small btn-inverse disabled"><i class="icon-heart icon-white"></i> ' . $this->event->favorite_count . '</span>'
 			: '';
 	}
 
@@ -139,17 +140,17 @@ class View_Event_Day extends View_Article {
 	 */
 	public function flyer() {
 		if ($image = $this->event->flyer_front()):
-			$icon = $image->get_url($image::SIZE_ICON);
+			$icon = $image->get_url($image::SIZE_THUMBNAIL);
 		elseif (count($flyers = $this->event->flyers())):
 			$image = $flyers[0]->image();
-			$icon  = $image->get_url($image::SIZE_ICON);
+			$icon  = $image->get_url($image::SIZE_THUMBNAIL);
 		else:
 			$icon = null;
 		endif;
 
 		return $icon
-			? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))), array('class' => 'avatar'))
-			: '<div class="avatar empty"><i class="icon-picture"></i></div>';
+			? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))))
+			: '';
 	}
 
 
@@ -176,11 +177,9 @@ class View_Event_Day extends View_Article {
 ?>
 
 <article<?= HTML::attributes($attributes) ?>>
-	<div class="pull-left">
+	<div class="pull-left span2">
 
 		<?= $this->flyer() ?>
-		<br>
-		<?= $this->favorites() ?>
 
 	</div>
 
@@ -189,6 +188,8 @@ class View_Event_Day extends View_Article {
 		<?= $this->header() ?>
 
 		<?= $this->content() ?>
+
+		<?= $this->favorites() ?>
 
 		<?= $this->footer() ?>
 
