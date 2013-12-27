@@ -1,3 +1,5 @@
+@import "bootstrap.less";
+
 
 // Custom mixins
 .ajax                                  { background-image: url("@{iconAjaxPath}"); background-position: right top; background-repeat: no-repeat; }
@@ -19,7 +21,7 @@ h6                                     { font-family: inherit; font-size: 12px; 
 h1 small                               { font-size: 18px; }
 h2 small                               { font-size: 14px; }
 h3 small,
-h4 small                               { font-size: 12px; }
+h4 small                               { font-size: 12px; line-height: @baseLineHeight; }
 
 dl,
 ul,
@@ -210,7 +212,7 @@ section.table                          { box-shadow: 0 0 3px rgba(0, 0, 0, .25);
 
 article header                         { margin-bottom: 10px;
   ul li                                { display: inline; }
-  h4 small                             { float: right; }
+  h4 small                             { float: right; padding-right: 3px; }
 }
 
 header.sticked                         { background: @bodyBackground; }
@@ -359,14 +361,12 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
 #main .events                          {
   h3                                   { border-bottom: 1px solid @grayDark; }
 
-  .event                               { margin-bottom: 10px;
+  .event                               { background: @grayDarker; height: 96px; margin-bottom: 10px;
     &:last-child                       { margin-bottom: 0; }
     header,
     h4                                 { margin: 0; }
-    .avatar.empty                      { background: @bodyBackground; border: 1px dashed lighten(@bodyBackground, 5%); .square(48px);
-      i                                { margin-top: 16px; opacity: .5; }
-    }
-    .btn                               { padding: 2px 5px; width: 40px; }
+    .djs                               { max-height: 40px; overflow: hidden; }
+    .btn                               { bottom: 3px; position: absolute; right: 3px; }
   }
 }
 
@@ -493,36 +493,40 @@ div.image                              { text-align: center;
 /***** Responsive styles *****/
 
 /* Large desktop */
-@media only screen and (min-width: 1200px) {
+@media (min-width: 1200px)             {
 }
 
 
 /* Phones and tablets */
-@media only screen and (max-width: 980px) {
+@media (max-width: 980px)              {
 }
 
 
 /* Tablets */
-@media only screen and (min-width: 768px) and (max-width: 980px) {
+@media (min-width: 768px) and (max-width: 980px) {
 }
 
 
 /* Phones */
-@media only screen and (max-width: 767px) {
+@media (max-width: 767px)              {
+  body                                 { padding-left: 0; padding-right: 0; }
   #header                              {
     .brand                             { float: none; }
   }
   .ad728x90                            { display: none; }
+  #main .events                        {
+    .event                             { height: auto; }
+  }
 }
 
 
 /* Landscape phones */
-@media only screen and (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 480px) and (max-width: 767px) {
 }
 
 
 /* Portrait phones */
-@media only screen and (max-width: 479px) {
+@media (max-width: 479px)              {
 }
 
 

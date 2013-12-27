@@ -1,19 +1,7 @@
-/*!
- * Bootstrap v2.3.0
- *
- * Copyright 2012 Twitter, Inc
- * Licensed under the Apache License v2.0
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Designed and built with all the love in the world @twitter by @mdo and @fat.
- *
- * Extended with pride by @ArnoldDaniels of jasny.net
- *
- * Modified for Anqh by Antti Qvickström.
- */
 
 // Core variables and mixins
-@import "variables.less"; // Modify this for custom colors, font-sizes, etc
+@import "bootstrap-j/less/variables.less";
+@import "variables.less";
 @import "bootstrap-j/less/mixins.less";
 
 // CSS Reset
@@ -87,5 +75,8 @@
 @import "bootstrap-j/less/utilities.less"; // Has to be last to override when necessary
 
 
-// Anqh
-@import "anqh.less";
+// Responsivity
+@import "bootstrap-j/less/responsive-utilities.less";
+@import "bootstrap-j/less/responsive-1200px-min.less";
+@import "bootstrap-j/less/responsive-768px-979px.less";
+@import "bootstrap-j/less/responsive-767px-max.less";

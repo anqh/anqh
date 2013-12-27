@@ -1,3 +1,5 @@
+ANQH = ./css/anqh.css
+ANQH_LESS = ./anqh.less
 BOOTSTRAP = ./css/bootstrap.css
 BOOTSTRAP_LESS = ./bootstrap.less
 BOOTSTRAP_RESPONSIVE = ./css/bootstrap-responsive.css
@@ -22,8 +24,9 @@ build:
 	@jshint ./bootstrap-j/js/*.js --config ./bootstrap-j/js/.jshintrc
 	@jshint ./bootstrap-j/js/tests/unit/*.js --config ./bootstrap-j/js/.jshintrc
 	@echo "Running JSHint on javascript...             ${CHECK} Done"
-	@recess --compile ${BOOTSTRAP_LESS} > ${BOOTSTRAP}
-	@recess --compile ${JASNY_BOOTSTRAP_RESPONSIVE_LESS} ${BOOTSTRAP_RESPONSIVE_LESS} > ${BOOTSTRAP_RESPONSIVE}
+	@recess --compress ${ANQH_LESS} > ${ANQH}
+#	@recess --compile ${BOOTSTRAP_LESS} > ${BOOTSTRAP}
+#	@recess --compile ${JASNY_BOOTSTRAP_RESPONSIVE_LESS} ${BOOTSTRAP_RESPONSIVE_LESS} > ${BOOTSTRAP_RESPONSIVE}
 	@echo "Compiling LESS with Recess...               ${CHECK} Done"
 #	@node docs/build
 	@cp ./bootstrap-j/img/* ${IMG}
