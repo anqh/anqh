@@ -45,11 +45,11 @@ class View_Venue_Edit extends View_Section {
 	public function content() {
 		ob_start();
 
-		echo Form::open(null, array('id' => 'form-venue', 'class' => 'row'));
+		echo Form::open(null, array('id' => 'form-venue', 'class' => 'row-fluid'));
 
 ?>
 
-	<div class="span7">
+	<div class="span8">
 		<fieldset>
 			<?= Form::control_group(
 				Form::input('name', $this->venue->name, array('class' => 'input-block-level')),
@@ -90,7 +90,7 @@ class View_Venue_Edit extends View_Section {
 		</fieldset>
 	</div>
 
-	<div class="span3">
+	<div class="span4">
 		<fieldset id="fields-location">
 			<?= Form::control_group(
 				Form::input('city_name', $this->venue->city_name, array('class' => 'input-block-level')),
