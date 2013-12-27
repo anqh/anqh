@@ -449,9 +449,9 @@ $.fn.autocompleteGeo = function(options) {
 								count++;
 								var place = item.formatted_address.split(',');
 								return {
-									label:     item.formatted_address.replace(/^[\d ]+/, ''),
+									label:     item.formatted_address,
 									value:     place[0].replace(/^[\d ]+/, ''),
-									city:      place.shift().replace(/^[\d ]+/, ''),
+									city:      place.shift(),
 									description: place.join(','),
 									latitude:  item.geometry.location.lat(),
 									longitude: item.geometry.location.lng()
