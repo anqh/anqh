@@ -359,10 +359,10 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
 #carousel .empty                       { background: @bodyBackground; border: 1px dashed lighten(@bodyBackground, 5%); display: block; line-height: 200px; text-align: center; }
 #carousel .empty:hover                 { text-decoration: none; }
 #main .events                          {
-  h3                                   { border-bottom: 1px solid @grayDark; }
+  h3                                   { background: @grayDarker; border-bottom: 1px solid @grayDark; }
 
-  .event                               { background: @grayDarker; height: 96px; margin-bottom: 10px;
-    &:last-child                       { margin-bottom: 0; }
+  .event                               { border-bottom: 1px solid @grayDark; height: 96px; margin-bottom: 5px; padding-bottom: 5px;
+    &:last-child                       { border-bottom: 0 none; margin-bottom: 0; padding-bottom: 5px; }
     header,
     h4                                 { margin: 0; }
     .djs                               { max-height: 40px; overflow: hidden; }
