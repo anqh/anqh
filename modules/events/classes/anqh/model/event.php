@@ -156,6 +156,44 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Add forum topic.
+	 *
+	 * @return  boolean
+	 */
+	public function add_forum_topic() {
+
+		// Get forum area
+		$area = Model_Forum_Area::factory()->find_by_bind('events');
+		if ($area->loaded()) {
+			try {
+
+				// Topic
+				$name = $this->name . ' ' . Date::format('DMYYYY', $this->stamp_begin);
+				if ($this->city_name) {
+					$name .= ' @ ' . $this->city_name;
+				}
+
+				// Post
+				$content = $this->info;
+				if ($flyer = $this->flyer()) {
+					$content = '[url=' . Route::model($flyer) . '][img]' . $flyer->image()->get_url() . '[/img][/url]' . "\n\n" . $content;
+				}
+
+				$topic = $area->create_topic($name, $content, $this->author());
+				$topic->bind_id = $this->id;
+				$topic->save_post();
+			} catch (Kohana_Exception $forum_validation) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+
+	/**
 	 * Get event city.
 	 *
 	 * @return  Model_Geo_City
@@ -379,6 +417,20 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		} catch (AutoModeler_Exception $e) {
 			return null;
 		}
+	}
+
+
+	/**
+	 * Get event flyer.
+	 *
+	 * @return  Model_Flyer
+	 */
+	public function flyer() {
+		if ($flyers = $this->flyers()) {
+			return $flyers->current();
+		}
+
+		return null;
 	}
 
 

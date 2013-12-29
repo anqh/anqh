@@ -219,7 +219,7 @@ class Anqh_Controller_Music extends Controller_Page {
 		$section->class = 'span6';
 		$this->view->add(View_Page::COLUMN_TOP, $section);
 
-		$this->section_list(
+		$section = $this->section_list(
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_TRACK, 10),
 			__('New tracks')
 		);
@@ -292,7 +292,11 @@ class Anqh_Controller_Music extends Controller_Page {
 				if (isset($newsfeed) && $newsfeed) {
 					NewsfeedItem_Music::track(self::$user, $track);
 
-					$track->add_forum_topic();
+					// Create forum topic
+					if ($track->add_forum_topic()) {
+						self::$user->post_count++;
+						self::$user->save();
+					}
 				}
 
 				$this->request->redirect(Route::model($track));

@@ -688,61 +688,9 @@ class Anqh_Controller_Events extends Controller_Page {
 					$event->add_favorite(self::$user);
 
 					// Create forum topic
-					try {
-
-						// Topic
-						$topic = new Model_Forum_Topic();
-						if (!$topic->bind($event, 'events')) {
-							throw new Kohana_Exception('Could not bind event :event to topic', array(':event' => $event->id));
-						}
-						$topic->author_id   = self::$user->id;
-						$topic->author_name = self::$user->username;
-						$topic->created     = time();
-						$topic->name        = $event->name . ' ' . Date::format('DMYYYY', $event->stamp_begin);
-						if ($event->city_name) {
-							$topic->name .= ' @ ' . $event->city_name;
-						}
-						$topic->is_valid();
-
-						// Post
-						$post  = new Model_Forum_Post();
-						$post->author_id      = self::$user->id;
-						$post->author_name    = self::$user->username;
-						$post->author_ip      = Request::$client_ip;
-						$post->author_host    = Request::host_name();
-						$post->created        = time();
-						$post->forum_area_id  = $topic->forum_area_id;
-						$post->post           = $event->info;
-						if (isset($image) && isset($flyer) && $flyer->loaded()) {
-							$post->post = '[url=' . Route::model($flyer) . '][img]' . $image->get_url() . '[/img][/url]' . "\n\n" . $post->post;
-						}
-						$post->is_valid();
-
-						// Save
-						$topic->save();
-						$post->forum_topic_id = $topic->id;
-						$post->save();
-						$topic->first_post_id = $topic->last_post_id = $post->id;
-						$topic->last_poster   = self::$user->username;
-						$topic->last_posted   = time();
-						$topic->post_count    = 1;
-						$topic->save();
-
-						// Area
-						$area = $topic->area();
-						$area->last_topic_id = $topic->id;
-						$area->post_count++;
-						$area->topic_count++;
-						$area->save();
-
-						// User
+					if ($event->add_forum_topic()) {
 						self::$user->post_count++;
 						self::$user->save();
-
-						// News feed
-//						NewsfeedItem_Forum::topic(self::$user, $topic);
-
-					} catch (Kohana_Exception $forum_validation) {
 					}
 				}
 

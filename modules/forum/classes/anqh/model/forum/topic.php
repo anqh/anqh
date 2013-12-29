@@ -72,6 +72,9 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		'last_post_id'  => array('digit'),
 	);
 
+	/** @var  Model_Forum_Post|Model_Forum_Private_Post */
+	public $unsaved_post;
+
 
 	/**
 	 * Magic setter
@@ -171,15 +174,23 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 	/**
 	 * Add a post to topic.
 	 *
-	 * @param   string      $content
-	 * @param   Model_User  $author
+	 * @param   string            $content
+	 * @param   Model_User|array  $author
 	 * @return  Model_Forum_Post|Model_Forum_Private_Post
 	 */
-	public function create_post($content, Model_User $author) {
-		$post = $this instanceof Model_Forum_Private_Topic ? new Model_Forum_Private_Post() : new Model_Forum_Post();
-		$post->post           = $content;
-		$post->author_id      = $author->id;
-		$post->author_name    = $author->username;
+	public function create_post($content, $author) {
+		$this->unsaved_post = $post = $this instanceof Model_Forum_Private_Topic
+			? new Model_Forum_Private_Post()
+			: new Model_Forum_Post();
+
+		$post->post = $content;
+		if (is_array($author)) {
+			$post->author_id    = $author['id'];
+			$post->author_name  = $author['username'];
+		} else if (is_object($author)) {
+			$post->author_id    = $author->id;
+			$post->author_name  = $author->username;
+		}
 		$post->author_ip      = Request::$client_ip;
 		$post->author_host    = Request::host_name();
 		$post->created        = time();
@@ -418,6 +429,54 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 		}
 
 		return true;
+	}
+
+
+	/**
+	 * Save topic and handle stats updated.
+	 *
+	 * @return  boolean
+	 */
+	public function save_post() {
+		if ($this->unsaved_post) {
+			$this->unsaved_post->is_valid();
+			$area = $this->area();
+
+			if (!$this->id) {
+
+				// New topic
+				$this->save();
+
+				$this->unsaved_post->forum_topic_id = $this->id;
+				$this->unsaved_post->save();
+
+				$this->created       = $this->unsaved_post->created;
+				$this->first_post_id = $this->unsaved_post->id;
+				$area->topic_count++;
+
+			} else {
+
+				// Old topic
+				$this->unsaved_post->save();
+
+			}
+
+			// Topic stats
+			$this->last_post_id = $this->unsaved_post->id;
+			$this->last_poster  = $this->unsaved_post->author_name;
+			$this->last_posted  = $this->unsaved_post->created;
+			$this->post_count++;
+			$this->save();
+
+			// Area stats
+			$area->last_topic_id = $this->id;
+			$area->post_count++;
+			$area->save();
+
+			return true;
+		}
+
+		return false;
 	}
 
 }

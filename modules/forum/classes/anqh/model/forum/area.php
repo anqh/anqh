@@ -81,6 +81,9 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		'group', 'name', 'description', 'sort', 'access_read', 'access_write', 'status', 'area_type', 'bind'
 	);
 
+	/** @var  Model_Forum_Topic|Model_Forum_Private_Topic  Unsaved topic */
+	public $unsaved_topic;
+
 
 	/**
 	 * Get area bind config.
@@ -95,6 +98,36 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * Create new forum topic to area.
+	 *
+	 * @param   string            $name
+	 * @param   string            $content
+	 * @param   Model_User|array  $author
+	 * @return  Model_Forum_Private_Topic|Model_Forum_Topic
+	 */
+	public function create_topic($name, $content, $author) {
+		$topic = $this->area_type == self::TYPE_PRIVATE
+			? new Model_Forum_Private_Topic()
+			: new Model_Forum_Topic();
+
+		$topic->forum_area_id = $this->id;
+		$topic->name          = $name;
+		if (is_array($author)) {
+			$topic->author_id    = $author['id'];
+			$topic->author_name  = $author['username'];
+		} else if (is_object($author)) {
+			$topic->author_id    = $author->id;
+			$topic->author_name  = $author->username;
+		}
+
+		// Create post
+		$topic->create_post($content, $author);
+
+		return $topic;
 	}
 
 
@@ -115,6 +148,22 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 				->order_by('last_posted', 'DESC')
 				->offset(max(0, $offset)),
 			$limit
+		);
+	}
+
+
+	/**
+	 * Get area by bind.
+	 *
+	 * @param   string  $bind
+	 * @return  Model_Forum_Area
+	 */
+	public function find_by_bind($bind) {
+		return $this->load(
+			DB::select_array($this->fields())
+				->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
+				->where('status', '=', Model_Forum_Area::STATUS_NORMAL)
+				->where('bind', '=', $bind)
 		);
 	}
 

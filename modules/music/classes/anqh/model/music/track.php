@@ -91,79 +91,45 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 		if ($forum_areas && $forum_areas[$this->type]) {
 			$forum_area = Model_Forum_Area::factory($forum_areas[$this->type]);
 			if ($forum_area->loaded()) {
-
-				// Generate post
-				$content = '';
-
-				// Cover
-				if (Valid::url($this->cover)) {
-					$content .= '[img]' . $this->cover . "[/img]\n\n";
-				}
-
-				// Description
-				$content .= $this->description . "\n\n";
-
-				if ($this->type == Model_Music_Track::TYPE_MIX && $this->tracklist) {
-					$content .= '[b]' . __('Tracklist') . "[/b]\n";
-					$content .= $this->tracklist . "\n\n";
-				}
-
-				// Tags
-				if ($tags = $this->tags()) {
-					$content .= '[i]' . implode(', ', $tags) . "[/i]\n\n";
-				} else if (!empty($this->music)) {
-					$content .= '[i]' . $this->music . "[/i]\n\n";
-				}
-
-				// Links
-				$content .= '[url=' . URL::site(Route::model($this), true) . ']' . __('Show details') . '[/url] - ';
-				$content .= '[url=' . URL::site(Route::model($this, 'listen'), true) . ']' . __('Listen') . '[/url]';
-
-				// Create topic
-				$author = $this->author();
-				$forum_topic = new Model_Forum_Topic();
-				$forum_topic->author_id     = $author['id'];
-				$forum_topic->author_name   = $author['username'];
-				$forum_topic->name          = $this->name;
-				$forum_topic->forum_area_id = $forum_area->id;
-				$forum_topic->created       = time();
-
-				// Create post
-				$forum_post = new Model_Forum_Post();
-				$forum_post->post          = $content;
-				$forum_post->forum_area_id = $forum_area->id;
-				$forum_post->author_id     = $author['id'];
-				$forum_post->author_name   = $author['username'];
-				$forum_post->author_ip     = Request::$client_ip;
-				$forum_post->author_host   = Request::host_name();
-				$forum_post->created       = time();
-
-				// Save
 				try {
-					$forum_post->is_valid();
-					$forum_topic->is_valid();
 
-					$forum_topic->save();
+					// Generate post
+					$content = '';
 
-					$forum_post->forum_topic_id = $forum_topic->id;
-					$forum_post->save();
+					// Cover
+					if (Valid::url($this->cover)) {
+						$content .= '[img]' . $this->cover . "[/img]\n\n";
+					}
 
-					$forum_topic->first_post_id = $forum_topic->last_post_id = $forum_post->id;
-					$forum_topic->last_poster   = $author['username'];
-					$forum_topic->last_posted   = time();
-					$forum_topic->post_count    = 1;
-					$forum_topic->save();
+					// Description
+					$content .= $this->description . "\n\n";
 
-					$forum_area->last_topic_id = $forum_topic->id;
-					$forum_area->post_count++;
-					$forum_area->topic_count++;
-					$forum_area->save();
+					if ($this->type == Model_Music_Track::TYPE_MIX && $this->tracklist) {
+						$content .= '[b]' . __('Tracklist') . "[/b]\n";
+						$content .= $this->tracklist . "\n\n";
+					}
 
-					$this->forum_topic_id = $forum_topic->id;
-					$this->save();
-				} catch (Validation_Exception $e) {
+					// Tags
+					if ($tags = $this->tags()) {
+						$content .= '[i]' . implode(', ', $tags) . "[/i]\n\n";
+					} else if (!empty($this->music)) {
+						$content .= '[i]' . $this->music . "[/i]\n\n";
+					}
+
+					// Links
+					$content .= '[url=' . URL::site(Route::model($this), true) . ']' . __('Show details') . '[/url] - ';
+					$content .= '[url=' . URL::site(Route::model($this, 'listen'), true) . ']' . __('Listen') . '[/url]';
+
+					// Create topic
+					$forum_topic = $forum_area->create_topic($this->name, $content, $this->author());
+					$forum_topic->save_post();
+
+				} catch (Kohana_Exception $e) {
 					return false;
 				}
+
+				$this->forum_topic_id = $forum_topic->id;
+				$this->save();
 
 				return true;
 			}
