@@ -12,7 +12,7 @@ a                                      { color: @anchorColor; }
 a:hover                                { color: @anchorColorHover; }
 hr                                     { border-bottom-color: @grayDarker; }
 legend                                 { margin-bottom: 0; }
-h1                                     { font-size: 24px; font-weight: normal; letter-spacing: 1px; text-shadow: 2px 2px 2px fade(@textColor, 20%); }
+h1                                     { color: @white; font-size: 24px; font-weight: normal; letter-spacing: 1px; text-shadow: 2px 2px 2px fade(@textColor, 20%); }
 h2                                     { font-size: 20px; }
 h3                                     { font-size: 18px; line-height: 20px; }
 h4                                     { font-family: inherit; font-size: 14px; font-weight: bold; }
@@ -292,7 +292,7 @@ button[name=private-toggle].active + input { border-color: @purple; }
 
 a.user                                 { color: @grayLighter; }
 .male,
-a.male                                 { color: @blueDark; }
+a.male                                 { color: @blue; }
 .female,
 a.female                               { color: @pink; }
 a.user:hover                           { color: @anchorColorHover; }
@@ -301,6 +301,7 @@ a.friend                               { font-weight: bold; }
   &.small                              { .square(25px); }
   img                                  { max-height: 100%; max-width: 100% !important; /* !important needed for Jasny */ }
 }
+.avatar + .user                        { margin-left: 5px; }
 
 div.loading                            { .ajax; position: absolute; right: 5px; .square(16px); top: 5px; }
 
@@ -360,7 +361,7 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
 #carousel .empty                       { background: @bodyBackground; border: 1px dashed lighten(@bodyBackground, 5%); display: block; line-height: 200px; text-align: center; }
 #carousel .empty:hover                 { text-decoration: none; }
 #main .events                          {
-  h3                                   { background: @grayDarker; border-bottom: 1px solid @grayDark; }
+  h3                                   { background: @grayDark; border-bottom: 1px solid @gray; }
 
   .event                               { border-bottom: 1px solid @grayDark; height: 96px; margin-bottom: 5px; padding-bottom: 5px;
     &:last-child                       { border-bottom: 0 none; margin-bottom: 0; padding-bottom: 5px; }
