@@ -218,9 +218,18 @@ class View_Forum_PostEdit extends View_Article {
 		array('recipients' => __('Recipients')),
 		Arr::get($this->errors, 'recipients')) ?>
 
+	<?php if ($this->mode === self::EDIT_TOPIC && !$is_admin): ?>
+
+	<fieldset class="form-actions">
+		<?= Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+		<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-inverse btn-large')) ?>
+		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
+
+		<?= Form::csrf() ?>
+	</fieldset>
+
 <?php
 
-				if ($this->mode === self::EDIT_TOPIC && !$is_admin):
 					break;
 				endif;
 
@@ -262,12 +271,16 @@ class View_Forum_PostEdit extends View_Article {
 
 		<?= Form::csrf() ?>
 	</fieldset>
-
 </div>
 
 <?php
 
 		endswitch;
+
+?>
+
+
+<?php
 
 		echo Form::close();
 
