@@ -179,25 +179,19 @@ class View_Forum_PostEdit extends View_Article {
 ?>
 
 <fieldset class="row-fluid">
-	<div class="span4">
-		<?= Form::control_group(
-					Form::select('status', array(
-						Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
-						Model_Forum_Topic::STATUS_SINK   => __('Sink'),
-						Model_Forum_Topic::STATUS_LOCKED => __('Locked'),
-					), $this->forum_topic->status, array('class' => 'input-small')),
-					array('status' => __('Status')),
-					Arr::get($this->errors, 'status')); ?>
+	<div class="span6">
+		<?= Form::radios_wrap('sticky', array(
+					Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
+					Model_Forum_Topic::STICKY_STICKY => '<i class="icon-pushpin text-warning"></i> ' . __('Pinned'),
+				), (int)$this->forum_topic->sticky, null, __('Pinning'), Arr::get($this->errors, 'pinned'), null, 'inline') ?>
 	</div>
 
-	<div class="span4">
-		<?= Form::control_group(
-			Form::select('sticky', array(
-				Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
-				Model_Forum_Topic::STICKY_STICKY => __('Pinned'),
-			), $this->forum_topic->sticky, array('class' => 'input-small')),
-			array('sticky' => __('Stickyness')),
-			Arr::get($this->errors, 'sticky')); ?>
+	<div class="span6">
+		<?= Form::radios_wrap('status', array(
+					Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
+					Model_Forum_Topic::STATUS_SINK   => '<i class="icon-unlock muted"></i> ' . __('Sink'),
+					Model_Forum_Topic::STATUS_LOCKED => '<i class="icon-lock muted"></i> ' . __('Locked'),
+				), (int)$this->forum_topic->status, null, __('Status'), Arr::get($this->errors, 'status'), null, 'inline') ?>
 	</div>
 </fieldset>
 
@@ -206,7 +200,7 @@ class View_Forum_PostEdit extends View_Article {
 		array('forum_area_id' => __('Area')),
 		Arr::get($this->errors, 'forum_area_id')) ?>
 
-		<?php endif; ?>
+		<?php endif; // admin ?>
 
 	<?= Form::control_group(
 		Form::input('name', $this->forum_topic->name, array('class' => 'input-block-level')),
@@ -220,13 +214,13 @@ class View_Forum_PostEdit extends View_Article {
 
 	<?php if ($this->mode === self::EDIT_TOPIC && !$is_admin): ?>
 
-	<fieldset class="form-actions">
-		<?= Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-		<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-inverse btn-large')) ?>
-		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
+<fieldset class="form-actions">
+	<?= Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+	<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-inverse btn-large')) ?>
+	<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
-		<?= Form::csrf() ?>
-	</fieldset>
+	<?= Form::csrf() ?>
+</fieldset>
 
 <?php
 

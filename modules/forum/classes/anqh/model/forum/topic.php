@@ -169,6 +169,28 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Add a post to topic.
+	 *
+	 * @param   string      $content
+	 * @param   Model_User  $author
+	 * @return  Model_Forum_Post|Model_Forum_Private_Post
+	 */
+	public function create_post($content, Model_User $author) {
+		$post = $this instanceof Model_Forum_Private_Topic ? new Model_Forum_Private_Post() : new Model_Forum_Post();
+		$post->post           = $content;
+		$post->author_id      = $author->id;
+		$post->author_name    = $author->username;
+		$post->author_ip      = Request::$client_ip;
+		$post->author_host    = Request::host_name();
+		$post->created        = time();
+		$post->forum_topic_id = $this->id;
+		$post->forum_area_id  = $this->forum_area_id;
+
+		return $post;
+	}
+
+
+	/**
 	 * Find active topics.
 	 *
 	 * @param   integer  $limit
@@ -322,13 +344,13 @@ class Anqh_Model_Forum_Topic extends AutoModeler_ORM implements Permission_Inter
 				return $user && $user->has_role(array('admin', 'forum moderator'));
 
 			case self::PERMISSION_POST:
-				return $user && ($this->status !== self::STATUS_LOCKED || $user->has_role(array('admin', 'forum moderator')));
+				return $user && ($this->status != self::STATUS_LOCKED);
 
 			case self::PERMISSION_READ:
 				return Permission::has($this->area(), Model_Forum_Area::PERMISSION_READ, $user);
 
 			case self::PERMISSION_UPDATE:
-				return $user && (($this->status !== self::STATUS_LOCKED && $user->id == $this->author_id) || $user->has_role(array('admin', 'forum moderator')));
+				return $user && (($this->status != self::STATUS_LOCKED && $user->id == $this->author_id) || $user->has_role(array('admin', 'forum moderator')));
 
 		}
 

@@ -534,13 +534,18 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		$this->view = new View_Page();
 
+		$add_post = false;
+
 		if ($area_id && !$topic_id) {
 
 			// Start new topic
-			$mode = View_Forum_PostEdit::NEW_TOPIC;
+			$mode     = View_Forum_PostEdit::NEW_TOPIC;
+			$add_post = true;
 
 			/** @var  Model_Forum_Private_Area|Model_Forum_Area  $area */
-			$area = $this->private ? Model_Forum_Private_Area::factory($area_id) : Model_Forum_Area::factory($area_id);
+			$area = $this->private
+				? Model_Forum_Private_Area::factory($area_id)
+				: Model_Forum_Area::factory($area_id);
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
@@ -551,7 +556,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 				// Private topic
 				$topic  = new Model_Forum_Private_Topic();
-				$post   = new Model_Forum_Private_Post();
 				$cancel = Route::url('forum_area', array('id' => 'private', 'action' => ''));
 				$recipients = array();
 
@@ -559,12 +563,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 				// Public topic
 				$topic  = new Model_Forum_Topic();
-				$post   = new Model_Forum_Post();
 				$cancel = Route::model($area);
 
 			}
 			$topic->forum_area_id = $area->id;
-			$post->forum_area_id  = $area->id;
 
 		} else if ($topic_id) {
 
@@ -577,6 +579,11 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				throw new Model_Exception($topic, $topic_id);
 			}
 			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user);
+
+			// Add post if admin
+			if (self::$user->has_role(array('admin', 'moderator', 'forum moderator')) && Arr::get($_POST, 'post')) {
+				$add_post = true;
+			}
 
 			// Build recipients list
 			if ($this->private) {
@@ -617,25 +624,23 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				$post_recipients[self::$user->id] = self::$user->username;
 			}
 
-			if (isset($post)) {
-
-				// New topic
-				$post->post          = $_POST['post'];
-				$post->author_id     = self::$user->id;
-				$post->author_name   = self::$user->username;
-				$post->author_ip     = Request::$client_ip;
-				$post->author_host   = Request::host_name();
-				$post->created       = time();
+			// New post
+			if ($add_post) {
+				$post = $topic->create_post(Arr::get($_POST, 'post'), self::$user);
 				try {
 					$post->is_valid();
 				} catch (Validation_Exception $e) {
 					$errors += $e->array->errors('validate');
 				}
+			}
 
-				$topic->author_id     = self::$user->id;
-				$topic->author_name   = self::$user->username;
+			if (!$topic_id) {
+
+				// New topic
+				$topic->author_id     = $post->author_id;
+				$topic->author_name   = $post->author_name;
 				$topic->name          = $_POST['name'];
-				$topic->created       = time();
+				$topic->created       = $post->created;
 				try {
 					$topic->is_valid();
 				} catch (Validation_Exception $e) {
@@ -666,8 +671,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 					// Topic
 					$topic->first_post_id = $topic->last_post_id = $post->id;
-					$topic->last_poster   = self::$user->username;
-					$topic->last_posted   = time();
+					$topic->last_poster   = $post->author_name;
+					$topic->last_posted   = $post->created;
 					$topic->post_count    = 1;
 					$topic->save();
 
@@ -691,7 +696,9 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					$this->request->redirect(Route::model($topic));
 				}
 
-				isset($post_recipients) and $recipients = $post_recipients;
+				if (isset($post_recipients)) {
+					$recipients = $post_recipients;
+				}
 
 			} else {
 
@@ -715,6 +722,18 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					// Recipients
 					if ($this->private) {
 						$topic->set_recipients($post_recipients);
+					}
+
+					// Add post?
+					if (isset($post)) {
+						$post->forum_area_id = $topic->forum_area_id;
+						$post->save();
+
+						$topic->last_post_id = $post->id;
+						$topic->last_poster  = $post->author_name;
+						$topic->last_posted  = $post->created;
+						$topic->post_count++;
+						$topic->save();
 					}
 
 					// Area change
