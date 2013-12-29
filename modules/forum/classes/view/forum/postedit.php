@@ -194,7 +194,7 @@ class View_Forum_PostEdit extends View_Article {
 		<?= Form::control_group(
 			Form::select('sticky', array(
 				Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
-				Model_Forum_Topic::STICKY_STICKY => __('Sticky'),
+				Model_Forum_Topic::STICKY_STICKY => __('Pinned'),
 			), $this->forum_topic->sticky, array('class' => 'input-small')),
 			array('sticky' => __('Stickyness')),
 			Arr::get($this->errors, 'sticky')); ?>

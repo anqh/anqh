@@ -56,7 +56,7 @@ class Anqh_Forum {
 		$prefix = array();
 
 		if ($topic->sticky) {
-			$prefix[] = '<i class="icon-pushpin text-info" title="' . __('Sticky') . '"></i>';
+			$prefix[] = '<i class="icon-pushpin text-warning" title="' . __('Pinned') . '"></i>';
 		}
 
 		switch ($topic->status) {
