@@ -45,14 +45,18 @@ build:
 		./bootstrap-j/js/bootstrap-rowlink.js \
 		./bootstrap-j/js/bootstrap-fileupload.js \
 		./bootstrap-j/js/bootstrap-affix.js \
-		${JS}jquery.markitup.js \
-		${JS}markitup.bbcode.js \
-		${JS}jquery.tools.min.js \
-		${JS}jquery.form.js \
-		${JS}jquery.imgareaselect.js \
-		${JS}jquery-scrolltofixed.js \
-		${JS}jquery.lazyload.js > ${JS}c/vendor.js
+		${JS}vendor/jquery.markitup.js \
+		${JS}vendor/markitup.bbcode.js \
+		${JS}vendor/jquery.tools.min.js \
+		${JS}vendor/jquery.imgareaselect.js \
+		${JS}vendor/jquery-scrolltofixed.js \
+		${JS}vendor/jquery.lazyload.js > ${JS}c/vendor.js
 	@uglifyjs -nc -v ${JS}c/vendor.js > ${JS}c/vendor.min.js
+	@cat \
+		${JS}anqh/anqh.js \
+		${JS}anqh/jquery.form.js \
+		${JS}anqh/jquery.googlemap.js > ${JS}/c/anqh.js
+	@uglifyjs -nc -v ${JS}c/anqh.js > ${JS}c/anqh.min.js
 	@echo "Compiling and minifying javascript...       ${CHECK} Done"
 
 #

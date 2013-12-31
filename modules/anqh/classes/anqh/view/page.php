@@ -251,7 +251,7 @@ class Anqh_View_Page extends View_Base {
 		{ 'jquery':    'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
 		{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
 		{ 'vendor':    '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
-		{ 'anqh':      '<?= $this->base ?>js/anqh.js?_=<?= filemtime('js/anqh.js') ?>' },
+		{ 'anqh':      '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
 		function _loaded() {
 			Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
 		}

@@ -119,12 +119,12 @@ class View_Image_Upload extends View_Section {
 <script>
 head.ready('jquery-ui', function fileUpload() {
 	head.js(
-		{ 'jquery-template':         '<?= $base ?>static/js/tmpl.js' },
-		{ 'jquery-load-image':       '<?= $base ?>static/js/load-image.js' },
-		{ 'jquery-iframe-transport': '<?= $base ?>static/js/jquery.iframe-transport.js' },
-		{ 'jquery-fileupload':       '<?= $base ?>static/js/jquery.fileupload.js' },
-		{ 'jquery-fileupload-ui':    '<?= $base ?>static/js/jquery.fileupload-ui.js' },
-		{ 'jquery-xdr-transport':    '<?= $base ?>static/js/jquery.xdr-transport.js' },
+		{ 'jquery-template':         '<?= $base ?>static/js/vendor/tmpl.js' },
+		{ 'jquery-load-image':       '<?= $base ?>static/js/vendor/load-image.js' },
+		{ 'jquery-iframe-transport': '<?= $base ?>static/js/vendor/jquery.iframe-transport.js' },
+		{ 'jquery-fileupload':       '<?= $base ?>static/js/vendor/jquery.fileupload.js' },
+		{ 'jquery-fileupload-ui':    '<?= $base ?>static/js/vendor/jquery.fileupload-ui.js' },
+		{ 'jquery-xdr-transport':    '<?= $base ?>static/js/vendor/jquery.xdr-transport.js' },
 		function fileUploadLoaded() {
 
 			// Localization
@@ -172,7 +172,7 @@ head.ready('jquery-ui', function fileUpload() {
 	);
 });
 </script>
-<!--[if gte IE 8]><!--<script src="<?= $base ?>static/js/jquery.xdr-transport.js"></script>--><![endif]-->
+<!--[if gte IE 8]><!--<script src="<?= $base ?>static/js/vendor/jquery.xdr-transport.js"></script>--><![endif]-->
 
 <?php
 
