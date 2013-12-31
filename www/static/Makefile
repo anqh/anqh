@@ -47,9 +47,7 @@ build:
 		./bootstrap-j/js/bootstrap-affix.js \
 		${JS}vendor/jquery.markitup.js \
 		${JS}vendor/markitup.bbcode.js \
-		${JS}vendor/jquery.tools.min.js \
 		${JS}vendor/jquery.imgareaselect.js \
-		${JS}vendor/jquery-scrolltofixed.js \
 		${JS}vendor/jquery.lazyload.js > ${JS}c/vendor.js
 	@uglifyjs -nc -v ${JS}c/vendor.js > ${JS}c/vendor.min.js
 	@cat \
