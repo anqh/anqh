@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Generic_Smileys
+ * Smiley selector.
  *
  * @package    Anqh
  * @author     Antti Qvickström
@@ -59,14 +59,12 @@ class View_Generic_Smileys extends View_Base {
 </div>
 
 <script>
-	head.ready('bbcode', function _smileys() {
+	head.ready('vendor', function _smileys() {
 		var $smileys = $('.smileys')
 		  , target   = $smileys.attr('data-target');
 
 		$smileys.on('click', 'img', function _smiley() {
 			$(target).smiley($(this).attr('title'));
-// Does not work with input fields
-//			$.markItUp({ target: target, replaceWith: $(this).attr('title') });
 		});
 	});
 </script>

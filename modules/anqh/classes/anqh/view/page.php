@@ -246,25 +246,17 @@ class Anqh_View_Page extends View_Base {
 		// todo: Move to page controller
 ?>
 
-	<script>
-		head.js(
-//			{ 'google-maps':        'http://maps.google.com/maps/api/js?sensor=false&libraries=places&callback=isNaN' }, // Use callback hack to initialize correctly
-			{ 'jquery':             'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
-			{ 'jquery-ui':          'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
-			{ 'bootstrap':          '<?= $this->base ?>static/js/bootstrap.js' },
-			{ 'jquery-markitup':    '<?= $this->base ?>js/jquery.markitup.js' },
-			{ 'bbcode':             '<?= $this->base ?>js/markitup.bbcode.js' },
-			{ 'jquery-tools':       '<?= $this->base ?>js/jquery.tools.min.js' },
-			{ 'jquery-form':        '<?= $this->base ?>js/jquery.form.js' },
-			{ 'jquery-imgarea':     '<?= $this->base ?>js/jquery.imgareaselect.js' },
-			{ 'jquery-fixedscroll': '<?= $this->base ?>js/jquery-scrolltofixed.js' },
-			{ 'jquery-lazyload':    '<?= $this->base ?>static/js/jquery.lazyload.min.js' },
-			{ 'anqh':               '<?= $this->base ?>js/anqh.js?_=<?= filemtime('js/anqh.js') ?>' },
-			function _loaded() {
-				Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
-			}
-		);
-	</script>
+<script>
+	head.js(
+		{ 'jquery':    'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
+		{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
+		{ 'vendor':    '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
+		{ 'anqh':      '<?= $this->base ?>js/anqh.js?_=<?= filemtime('js/anqh.js') ?>' },
+		function _loaded() {
+			Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
+		}
+	);
+</script>
 
 <?php
 

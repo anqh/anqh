@@ -439,7 +439,7 @@ class Anqh_Form extends Kohana_Form {
 		return
 			new View_Generic_Smileys($element)
 				. Form::textarea($name, $body, $attributes, $double_encode)
-				. HTML::script_source('head.ready("bbcode", function initMarkItUp() { $("' . $element . '").markItUp(bbCodeSettings); });');
+				. HTML::script_source('head.ready("vendor", function initMarkItUp() { $("' . $element . '").markItUp(bbCodeSettings); });');
 	}
 
 
@@ -469,7 +469,7 @@ class Anqh_Form extends Kohana_Form {
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
 		if ($bbcode) {
 			$input .= HTML::script_source('
-head.ready("bbcode", function initMarkItUp() {
+head.ready("vendor", function initMarkItUp() {
 	$("#' . $attributes['id'] . '").markItUp(bbCodeSettings);
 });
 ');
