@@ -157,7 +157,7 @@ class View_Generic_Filters extends View_Section {
 (function() {
 
 	// Hook clicks
-	head.ready('jquery-ui', function _hookFilters() {
+	head.ready('jquery', function _hookFilters() {
 		var $filters = $('#<?= $this->id ?> .filters a')
 		  , $filter  = $('#<?= $this->id ?> .filter span');
 
@@ -204,16 +204,6 @@ class View_Generic_Filters extends View_Section {
 
 		});
 	});
-
-	/** @todo  Disabled, using filters loses current position
-	// Hook sticky filters
-	head.ready('jquery-fixedscroll', function stickyFilters() {
-		$('#filters').scrollToFixed({
-			marginTop: $('#header').outerHeight(), // Show below header
-			limit:     $(this).parent().outerHeight()
-		});
-	});
-	*/
 
 })();
 </script>
