@@ -55,7 +55,14 @@ build:
 	@cat \
 		${JS}anqh/anqh.js \
 		${JS}anqh/jquery.form.js \
-		${JS}anqh/jquery.googlemap.js > ${JS}/c/anqh.js
+		${JS}anqh/jquery.googlemap.js \
+		${JS}anqh/jquery.dialogify.js \
+		${JS}anqh/jquery.ajaxify.js \
+		${JS}anqh/jquery.autocomplete.event.js \
+		${JS}anqh/jquery.autocomplete.geo.js \
+		${JS}anqh/jquery.autocomplete.user.js \
+		${JS}anqh/jquery.autocomplete.venue.js \
+		${JS}anqh/jquery.notes.js > ${JS}/c/anqh.js
 	@uglifyjs -nc -v ${JS}c/anqh.js > ${JS}c/anqh.min.js
 	@echo "Compiling and minifying javascript...       ${CHECK} Done"
 

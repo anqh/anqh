@@ -53,94 +53,6 @@ var Anqh = {
 };
 
 
-// Theme switcher
-$.fn.skinswitcher = function() {
-
-	$(this).click(function() {
-		switchskin($(this).attr('rel'));
-		$.ajax({ url: $(this).attr('href') });
-		return false;
-	});
-
-	function switchskin(skin) {
-		//$('link[@rel*=style][title=' + skin + ']').first().disabled = false;
-		$('link[@rel*=style][title]').each(function(i) {
-			this.disabled = true;
-			if ($(this).attr('title') == skin) {
-				this.disabled = false;
-			}
-		});
-	}
-
-	return this;
-};
-
-
-// Open ajax dialog
-$.fn.dialogify = function() {
-	var href = this.attr('href') || this.attr('data-href');
-	if (!href) {
-		return false;
-	}
-
-	var title  = this.attr('data-dialog-title'),
-	    width  = this.attr('data-dialog-width') || 300,
-	    height = this.attr('data-dialog-height') || 'auto';
-	$('<div style="display:none"></div>')
-		.appendTo('body')
-		.dialog({
-			modal:     true,
-			title:     title,
-			width:     width,
-			height:    height,
-			closeText: '☓',
-			open: function() {
-				$(this).load(href);
-			},
-			close: function() {
-				$(this).remove();
-			}
-		});
-
-	return false;
-};
-
-
-// Ajaxified requests
-$.fn.ajaxify = function(url, data, type, success) {
-	var $target = $(this);
-
-	type = (type == 'post' || type == 'POST') ? 'POST' : 'GET';
-	$.ajax({
-		type:    type,
-		url:     url,
-		data:    data,
-		timeout: 2500,
-		success: function(data) {
-			$target.slideUp('fast', function _replace() {
-				$target.replaceWith(data).slideDown('fast');
-			});
-
-			if (typeof success == 'function') {
-				success(data);
-			}
-		},
-		error: function(req, err) {
-			if (err === 'error') {
-				err = req.statusText;
-			}
-			alert('Fail: ' + err);
-			$target.loading(true);
-		},
-		beforeSend: function() {
-			$target.loading();
-		}
-	});
-
-	return this;
-};
-
-
 // Ajax loader
 $.fn.loading = function(loaded) {
 	if (loaded) {
@@ -153,661 +65,8 @@ $.fn.loading = function(loaded) {
 };
 
 
-// Slideshow
-$.fn.slideshow = function() {
-	var $images = $(this).find('a');
-	$images.click(function() {
-		var $link = $(this);
-		if ($link.hasClass('active')) { return false; }
-
-		var url = $(this).attr('href');
-		var wrap = $('#slideshow-image').fadeTo('fast', 0.5).loading();
-		var loader = new Image();
-		loader.onload = function() {
-			wrap.fadeTo('fast', 1).loading(true);
-			wrap.find('img').attr('src', url);
-		};
-		loader.src = url;
-
-		$images.removeClass('active');
-		$(this).addClass('active');
-
-		return false;
-	});
-};
-
-
-// Add smiley to input
-$.fn.smiley = function(smiley) {
-	var $input = $(this)
-	  , input  = $(this).get(0);
-
-	if (document.selection) {
-
-		// IE
-		$input.focus();
-		var range = document.selection.createRange();
-		range.text = smiley;
-		$input.focus();
-
-	} else if (input.selectionStart || input.selectionStart == '0') {
-
-	 // Others
-		var from = input.selectionStart
-		  , to   = input.selectionEnd
-		  , text = input.value;
-		input.value = text.substring(0, from) + smiley + text.substring(to, text.length);
-		$input.focus();
-		input.selectionStart = input.selectionEnd = from + smiley.length;
-
-	} else {
-
-		// Fallback
-		input.value += smiley;
-		$input.focus();
-
-	}
-};
-
-
-// City autocomplete
-$.fn.autocompleteCity = function(options) {
-	var defaults = {
-		'map':       'map',
-		'cityId':    'city_id',
-		'country':   'FI',
-		'lang':      'en',
-		'address':   'address',
-		'latitude':  'latitude',
-		'longitude': 'longitude',
-		'limit':     10,
-		'minLength': 2
-	};
-	options = $.extend(defaults, options || {});
-
-	$(this)
-		.autocomplete({
-			source: function(request, response) {
-				$.ajax({
-					url: Anqh.geoNamesURL + '/searchJSON',
-
-					dataType: 'jsonp',
-
-					data: {
-						'username':        Anqh.geoNamesUser,
-						'lang':            options.lang,
-						'featureClass':    'P',
-						'countryBias':     options.country,
-						'style':           'full',
-						'maxRows':         10,
-						'name_startsWith': request.term
-					},
-
-					success: function(data) {
-						response($.map(data.geonames, function(item) {
-							return {
-								'id':    item.geonameId,
-								'label': item.name.replace(/^[\d ]+/, '') + (item.adminName1 ? ', ' + item.adminName1 : '') + ', ' + item.countryName,
-								'value': item.name.replace(/^[\d ]+/, ''),
-								'lat':   item.lat,
-								'long':  item.lng
-							};
-						}));
-					}
-				})
-			},
-
-			minLength: options.minLength,
-
-			select: function(event, ui) {
-				$('input[name=' + options.cityId + ']').val(ui.item.id);
-				$('input[name=' + options.latitude + ']').val(ui.item.lat);
-				$('input[name=' + options.longitude + ']').val(ui.item.long);
-				$('#' + options.map).googleMap({ lat: ui.item.lat, long: ui.item.long });
-			}
-		});
-};
-
-$.fn.autocompleteEvent = function(options) {
-	var field = $(this);
-	var cache = {};
-	var lastXhr;
-
-	var defaults = {
-		eventId:   'event_id',
-		limit:     25,
-		minLength: 3,
-		action:    'form',
-		search:    'name',
-		field:     'id:name:city:stamp_begin:url',
-		order:     'stamp_begin.desc',
-		position:  { collision: 'fit' }
-	};
-	options = $.extend(defaults, options || {});
-
-	$(this)
-		.autocomplete({
-			minLength: options.minLength,
-			position:  options.position,
-
-			source: function(request, response) {
-				if (request.term in cache) {
-					response(cache[request.term]);
-
-					return;
-				}
-
-				lastXhr = $.ajax({
-					url: Anqh.APIURL + '/v1/events/search',
-					dataType: 'jsonp',
-					data: {
-						'q':      request.term,
-						'limit':  25,
-						'filter': options.filter,
-						'search': options.search,
-						'field':  options.field,
-						'order':  options.order
-					},
-					success: function(data, status, xhr) {
-						cache[request.term] = $.map(data.events, function(item) {
-							return {
-								'label': item.name,
-								'stamp': item.stamp_begin,
-								'city':  item.city,
-								'value': item.name,
-								'id':    item.id,
-								'url':   item.url
-							}
-						});
-
-						if (xhr === lastXhr) {
-							response(cache[request.term]);
-						}
-					}
-				});
-			},
-
-			select: function(event, ui) {
-				switch (options.action) {
-
-					// Fill form
-					case 'form':
-						$('input[name=' + options.eventId + ']') && $('input[name=' + options.eventId + ']').val(ui.item.id);
-						field.val(ui.item.value);
-						break;
-
-					// Navigate URL
-					case 'redirect':
-						window.location = ui.item.url;
-						break;
-
-					// Execute action
-					default:
-						if (typeof options.action == 'function') {
-							options.action(event, ui);
-						}
-
-				}
-			}
-
-		})
-		.data('autocomplete')._renderItem = function(ul, item) {
-			return $('<li></li>')
-				.data('item.autocomplete', item)
-				.append('<a>' + $.datepicker.formatDate('dd.mm.yy', new Date(item.stamp * 1000)) + ' ' + item.label + ', ' + item.city + '</a>')
-				.appendTo(ul);
-		};
-};
-
-
-// Geocoder autocomplete
-$.fn.autocompleteGeo = function(options) {
-	var defaults = {
-		map:       'map',
-		country:   'fi',
-		lang:      'en',
-		latitude:  'latitude',
-		longitude: 'longitude',
-		limit:     10,
-		minLength: 3,
-		type:      'locality'
-	};
-	options = $.extend(defaults, options || {});
-
-	var geocoder;
-
-	var autocomplete = $(this)
-		.autocomplete({
-			minLength: options.minLength,
-
-			source: function(request, response) {
-				if (!geocoder) {
-					geocoder = new google.maps.Geocoder();
-				}
-
-				geocoder.geocode({ address: request.term, region: options.country }, function(results, status) {
-					if (status == google.maps.GeocoderStatus.OK) {
-						var count = 0;
-
-						response($.map(results, function(item) {
-							if (count < options.limit && item.types.indexOf(options.type) > -1) {
-								count++;
-								var place = item.formatted_address.split(',');
-								return {
-									label:     item.formatted_address,
-									value:     place[0].replace(/^[\d ]+/, ''),
-									city:      place.shift(),
-									description: place.join(','),
-									latitude:  item.geometry.location.lat(),
-									longitude: item.geometry.location.lng()
-								};
-							}
-						}));
-					}
-				});
-			},
-
-			select: function(event, ui) {
-				$('input[name=' + options.latitude + ']').val(ui.item.latitude);
-				$('input[name=' + options.longitude + ']').val(ui.item.longitude);
-			}
-
-		})
-		.data('autocomplete');
-
-	autocomplete._renderItem = function(ul, item) {
-		var $map = $('<img />')
-			.attr({
-				width: 100,
-				height: 100,
-				alt: 'Google Maps',
-				src: 'http://maps.googleapis.com/maps/api/staticmap?center=' + item.latitude + ',' + item.longitude + '&zoom=10&size=100x100&sensor=false'
-			});
-		return	$('<li class="geocoded" />')
-			.data('item.autocomplete', item)
-			.append('<a><strong>' + item.city + '</strong><br />' + item.description + '</a>')
-			.append($map)
-			.appendTo(ul);
-	};
-	autocomplete._renderMenu = function(ul, items) {
-		ul.addClass('geocoded');
-		var self = this;
-		$.each(items, function(index, item) {
-			self._renderItem(ul, item);
-		});
-	};
-
-};
-
-
-// User autocomplete
-$.fn.autocompleteUser = function(options) {
-	var $field = $(this);
-	var cache = {};
-	var lastXhr;
-
-	var defaults = {
-		user:      0,
-		userId:    'user_id',
-		limit:     15,
-		minLength: 2,
-		maxUsers:  1,
-		tokenized: false,
-		action:    'form',
-		search:    'username',
-		field:     'id:username:avatar:url',
-		order:     'username.asc',
-		position:  { collision: 'fit' }
-	};
-	options = $.extend(defaults, options || {});
-
-	// Facebook style tokenized list
-	if (options.tokenized) {
-		var width = $field.width();
-		$field.wrap('<div class="tokenized" />');
-		$field.parent()
-			.width(width)
-			.click(function() {
-				$field.focus();
-			});
-	}
-
-	// Multiple users in one select
-	var multiple = (options.maxUsers > 1 && !options.tokenized);
-
-	function split(val) {
-		return val.split(/,\s*/);
-	}
-
-	function lastTerm(term) {
-		return split(term).pop();
-	}
-
-	$(this)
-		.autocomplete({
-			minLength: options.minLength,
-			position:  options.position,
-
-			source: function(request, response) {
-				var term = multiple ? lastTerm(request.term) : request.term;
-
-				if (term in cache) {
-					response(cache[term]);
-					return;
-				}
-
-				lastXhr = $.ajax({
-					url: Anqh.APIURL + '/v1/users/search',
-					dataType: 'jsonp',
-					data: {
-						'q':     term,
-						'user':  options.user,
-						'limit': options.limit,
-						'field': options.field,
-						'order': options.order
-					},
-					success: function(data, status, xhr) {
-						cache[term] = $.map(data.users, function(item) {
-							return {
-								'label': item.username,
-								'value': item.username,
-								'image': item.avatar,
-								'id':    item.id,
-								'url':   item.url
-							};
-						});
-
-						if (xhr === lastXhr) {
-							response(cache[term]);
-						}
-					}
-				});
-			},
-
-			// Custom minLength check for multiple terms
-			search: function() {
-				if (multiple) {
-					var terms = split(this.value);
-
-					if (terms.length > options.maxUsers || terms.pop().length < this.minLength) {
-						return false;
-					}
-				}
-			},
-
-			// Don't insert value on focus
-			focus: function() {
-				if (multiple) return false;
-			},
-
-			select: function(event, ui) {
-				switch (options.action) {
-
-					// Fill form
-					case 'form':
-						if (multiple) {
-
-							// Multiple users, one input
-							var terms = split(this.value);
-							terms.pop();
-							terms.push(ui.item.value);
-							terms.push('');
-							this.value = terms.join(', ');
-							return false;
-
-						} else if (options.maxUsers > 1) {
-
-							// Multiple users, tokenized
-							// @todo  Values to post
-							var span = $('<span>')
-								.attr({ 'user-id': ui.item.id })
-								.text(ui.item.value);
-							var link = $('<a>')
-								.attr({ 'href': '#remove' })
-								.text('x')
-								.click(function() {
-									$(this).parent().remove();
-									return false;
-								})
-								.appendTo(span);
-
-							span.insertBefore(field);
-							this.value = '';
-							return false;
-
-						} else {
-
-							// Single user
-							$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
-							$field.val(ui.item.value);
-
-						}
-						break;
-
-					// Navigate URL
-					case 'redirect':
-						var location = $field.attr('data-redirect') || ui.item.url;
-						$.each(ui.item, function _replace(key, value) {
-							location = location.replace(':' + key, value);
-						});
-						window.location = location;
-						break;
-
-					// Execute action
-					default:
-						if (typeof options.action == 'function') {
-							options.action(event, ui);
-						}
-
-
-				}
-			}
-		})
-		.data('autocomplete')._renderItem = function(ul, item) {
-			return $('<li></li>')
-				.data('item.autocomplete', item)
-				.append('<a>' + (item.image ? '<img src="' + item.image + '" alt="Avatar" width="22" height="22" align="middle" />' : '') + item.label + '</a>')
-				.appendTo(ul);
-		};
-
-};
-
-
-$.fn.autocompleteVenue = function(options) {
-	var $field = $(this);
-
-	var defaults = {
-		venueId:   'venue_id',
-		cityName:  'city_name',
-		latitude:  'latitude',
-		longitude: 'longitude',
-		limit:     25,
-		minLength: 1,
-		action:    'form',
-		source:    [],
-		position:  { collision: 'fit' }
-
-	};
-	options = $.extend(defaults, options || {});
-
-	$(this)
-		.autocomplete({
-			minLength: options.minLength,
-			position:  options.position,
-			source:    options.source,
-
-			select: function(event, ui) {
-				switch (options.action) {
-
-					// Fill form
-					case 'form':
-						$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
-						$('input[name=' + options.cityName + ']') && $('input[name=' + options.cityName + ']').val(ui.item.city);
-						$('input[name=' + options.latitude + ']') && $('input[name=' + options.latitude + ']').val(ui.item.latitude);
-						$('input[name=' + options.longitude + ']') && $('input[name=' + options.longitude + ']').val(ui.item.longitude);
-						$field.val(ui.item.value);
-						break;
-
-					// Navigate URL
-					case 'redirect':
-						window.location = ui.item.url;
-						break;
-
-					// Execute action
-					default:
-						if (typeof options.action == 'function') {
-							options.action(event, ui);
-						}
-
-				}
-			}
-
-		})
-		.data('autocomplete')._renderItem = function(ul, item) {
-			return $("<li></li>")
-				.data('item.autocomplete', item)
-				.append('<a>' + item.label + ', ' + item.city + '</a>')
-				.appendTo(ul);
-		};
-};
-
-
-// Foursquare autocomplete
-$.fn.foursquareVenue = function(options) {
-	var defaults = {
-		address:         'address',
-		latitudeSearch:  'city_latitude',
-		longitudeSearch: 'city_longitude',
-		latitude:        'latitude',
-		longitude:       'longitude',
-		venueId:         'venue_id',
-		categoryId:      'category_id',
-		map:             'map',
-		limit:           10,
-		position:        { collision: 'fit' }
-
-	};
-
-	options = $.extend(defaults, options || {});
-
-	$(this)
-		.autocomplete({
-			minLength: 2,
-			position:  options.position,
-			source:    function(request, response) {
-				$.ajax({
-					url:      Anqh.APIURL + '/v1/venues/foursquare',
-					dataType: 'jsonp',
-					type:     'get',
-					data:     {
-						method:  'venues',
-						ll:      $('input[name=' + options.latitudeSearch + ']').val() + ',' + $('input[name=' + options.longitudeSearch + ']').val(),
-						limit:   options.limit,
-						intent:  'match',
-						query:   request.term
-					},
-					success: function(data) {
-						if (!data.venues) {
-							return false;
-						}
-
-						response($.map(data.venues.groups[0].venues, function(item) {
-							return {
-								'id':       item.id,
-								'label':    item.name + ', ' + item.address,
-								'value':    item.name,
-								'address':  item.address,
-								'city':     item.city,
-								'zip':      item.zip,
-								'lat':      item.geolat,
-								'long':     item.geolong,
-								'category': item.primarycategory ? item.primarycategory.id : 0
-							}
-						}));
-					}
-				});
-			},
-			select: function(event, ui) {
-				$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
-				ui.item.category && $('input[name=' + options.categoryId + ']') && $('input[name=' + options.categoryId + ']').val(ui.item.category);
-				ui.item.address && $('input[name=' + options.address + ']') && $('input[name=' + options.address + ']').val(ui.item.address);
-				$('input[name=' + options.latitude + ']') && $('input[name=' + options.latitude + ']').val(ui.item.lat);
-				$('input[name=' + options.longitude + ']') && $('input[name=' + options.longitude + ']').val(ui.item.long);
-				$('#' + options.map).googleMap({ marker: true, lat: ui.item.lat, long: ui.item.long });
-			}
-		});
-};
-
-
-// Image notes
-$.fn.notes = function(n) {
-	var notes       = n || {}
-	  , $image      = $(this)
-	  , imageOffset = $image.position()
-	  , imageWidth  = $image.width()
-	  , imageHeight = $image.height();
-
-	$(notes).each(function() {
-		add(this);
-	});
-
-	$(window).resize(function() {
-		$('.note').remove();
-
-		imageOffset = $image.position();
-    imageWidth  = $image.width();
-    imageHeight = $image.height();
-		$(notes).each(function() {
-			add(this);
-		});
-	});
-
-
-	function add(note_data) {
-		var scaleX = imageWidth / note_data.imageWidth || 1
-		  , scaleY = imageHeight / note_data.imageHeight || 1
-		  , noteX  = parseInt(imageOffset.left) + parseInt(note_data.x)
-			, noteY  = parseInt(imageOffset.top) + parseInt(note_data.y);
-
-		var $note = $('<div class="note" id="note-' + note_data.id + '" />').css({
-			left: noteX * scaleX + 'px',
-			top:  noteY * scaleY + 'px'
-		});
-		var $area = $('<div class="notea" />').css({
-			width:  note_data.width * scaleX + 'px',
-			height: note_data.height * scaleY + 'px'
-		});
-		var $text = $('<div class="notet label label-inverse" />')
-			.append(note_data.url ? $('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>') : note_data.name);
-
-		$note
-			.append($area)
-			.append($text);
-		$image.after($note);
-
-		$('[data-note-id=' + note_data.id + ']') && $('[data-note-id=' + note_data.id + ']').hover(
-			function _show() { $area.css({ visibility: 'visible' }); },
-			function _hide() { $area.css({ visibility: 'hidden' }); }
-		);
-	}
-
-};
-
-
 // Initialize
 $(function() {
-
-	// Form input hints
-	/*
-	$('input:text, textarea, input:password').hint('hint');
-	*/
-
-
-	// Ellipsis ...
-	/*
-	$('.cut li').ellipsis();
-	*/
-
 
 	// Hover card
 	var hoverTimeout;
@@ -852,10 +111,6 @@ $(function() {
 			}
 		}
 	}, 'a.hoverable');
-
-
-	// Theme
-	$('#dock a.theme, .menu-theme a').skinswitcher();
 
 
 	// Delete comment
@@ -1012,39 +267,6 @@ $(function() {
 
 		$(this).dialogify();
 	});
-
-
-	// Ajax tabs
-	/*
-	$('body').delegate('.tabs a', 'click', function() {
-		$(this).closest('section.mod').ajaxify($(this).attr('href'), null, 'GET');
-
-		return false;
-	});
-	*/
-
-
-	// Slideshows, scrollables
-	$('div.scrollable').scrollable();
-	$('div.slideshow').slideshow();
-
-
-	// Sticky elements
-	/* Too unstable
-	$('.sticky').each(function sticky() {
-		var $this      = $(this)
-		  , $container = $this.parent()
-			, limit      = $container.offset().top + $container.outerHeight() - $this.outerHeight();
-
-		$this.scrollToFixed({
-			marginTop: $('.navbar-fixed-top').outerHeight(),
-			limit:     limit,
-			preFixed:  function sticked() { $this.addClass('sticked'); },
-			postFixed: function unsticked() { $this.removeClass('sticked'); }
-		});
-
-	});
-	*/
 
 
 	// Keyboard pagination navigation
@@ -1292,3 +514,660 @@ $(function() {
 	};
 
 })(jQuery, Anqh);
+/**
+ * Ajax dialog.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($) {
+
+	$.fn.dialogify = function() {
+		var href = this.attr('href') || this.attr('data-href');
+		if (!href) {
+			return false;
+		}
+
+		var title  = this.attr('data-dialog-title'),
+		    width  = this.attr('data-dialog-width') || 300,
+		    height = this.attr('data-dialog-height') || 'auto';
+		$('<div style="display:none"></div>')
+			.appendTo('body')
+			.dialog({
+				modal:     true,
+				title:     title,
+				width:     width,
+				height:    height,
+				closeText: '☓',
+				open: function() {
+					$(this).load(href);
+				},
+				close: function() {
+					$(this).remove();
+				}
+			});
+
+		return false;
+	};
+
+})(jQuery);
+/**
+ * Ajaxified requests.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($) {
+
+	$.fn.ajaxify = function(url, data, type, success) {
+		var $target = $(this);
+
+		type = (type == 'post' || type == 'POST') ? 'POST' : 'GET';
+		$.ajax({
+			type:    type,
+			url:     url,
+			data:    data,
+			timeout: 2500,
+			success: function(data) {
+				$target.slideUp('fast', function _replace() {
+					$target.replaceWith(data).slideDown('fast');
+				});
+
+				if (typeof success == 'function') {
+					success(data);
+				}
+			},
+			error: function(req, err) {
+				if (err === 'error') {
+					err = req.statusText;
+				}
+				alert('Fail: ' + err);
+				$target.loading(true);
+			},
+			beforeSend: function() {
+				$target.loading();
+			}
+		});
+
+		return this;
+	};
+
+})(jQuery);
+/**
+ * Event autocomplete.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($, Anqh) {
+
+	$.fn.autocompleteEvent = function(options) {
+		var field = $(this);
+		var cache = {};
+		var lastXhr;
+
+		var defaults = {
+			eventId:   'event_id',
+			limit:     25,
+			minLength: 3,
+			action:    'form',
+			search:    'name',
+			field:     'id:name:city:stamp_begin:url',
+			order:     'stamp_begin.desc',
+			position:  { collision: 'fit' }
+		};
+		options = $.extend(defaults, options || {});
+
+		$(this)
+			.autocomplete({
+				minLength: options.minLength,
+				position:  options.position,
+
+				source: function(request, response) {
+					if (request.term in cache) {
+						response(cache[request.term]);
+
+						return;
+					}
+
+					lastXhr = $.ajax({
+						url: Anqh.APIURL + '/v1/events/search',
+						dataType: 'jsonp',
+						data: {
+							'q':      request.term,
+							'limit':  25,
+							'filter': options.filter,
+							'search': options.search,
+							'field':  options.field,
+							'order':  options.order
+						},
+						success: function(data, status, xhr) {
+							cache[request.term] = $.map(data.events, function(item) {
+								return {
+									'label': item.name,
+									'stamp': item.stamp_begin,
+									'city':  item.city,
+									'value': item.name,
+									'id':    item.id,
+									'url':   item.url
+								}
+							});
+
+							if (xhr === lastXhr) {
+								response(cache[request.term]);
+							}
+						}
+					});
+				},
+
+				select: function(event, ui) {
+					switch (options.action) {
+
+						// Fill form
+						case 'form':
+							$('input[name=' + options.eventId + ']') && $('input[name=' + options.eventId + ']').val(ui.item.id);
+							field.val(ui.item.value);
+							break;
+
+						// Navigate URL
+						case 'redirect':
+							window.location = ui.item.url;
+							break;
+
+						// Execute action
+						default:
+							if (typeof options.action == 'function') {
+								options.action(event, ui);
+							}
+
+					}
+				}
+
+			})
+			.data('autocomplete')._renderItem = function(ul, item) {
+				return $('<li></li>')
+					.data('item.autocomplete', item)
+					.append('<a>' + $.datepicker.formatDate('dd.mm.yy', new Date(item.stamp * 1000)) + ' ' + item.label + ', ' + item.city + '</a>')
+					.appendTo(ul);
+			};
+	};
+
+})(jQuery, Anqh);
+/**
+ * GeoCoder autocomplete.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($) {
+
+	// Geocoder autocomplete
+	$.fn.autocompleteGeo = function(options) {
+		var defaults = {
+			map:       'map',
+			country:   'fi',
+			lang:      'en',
+			latitude:  'latitude',
+			longitude: 'longitude',
+			limit:     10,
+			minLength: 3,
+			type:      'locality'
+		};
+		options = $.extend(defaults, options || {});
+
+		var geocoder;
+
+		var autocomplete = $(this)
+			.autocomplete({
+				minLength: options.minLength,
+
+				source: function(request, response) {
+					if (!geocoder) {
+						geocoder = new google.maps.Geocoder();
+					}
+
+					geocoder.geocode({ address: request.term, region: options.country }, function(results, status) {
+						if (status == google.maps.GeocoderStatus.OK) {
+							var count = 0;
+
+							response($.map(results, function(item) {
+								if (count < options.limit && item.types.indexOf(options.type) > -1) {
+									count++;
+									var place = item.formatted_address.split(',');
+									return {
+										label:     item.formatted_address,
+										value:     place[0].replace(/^[\d ]+/, ''),
+										city:      place.shift(),
+										description: place.join(','),
+										latitude:  item.geometry.location.lat(),
+										longitude: item.geometry.location.lng()
+									};
+								}
+							}));
+						}
+					});
+				},
+
+				select: function(event, ui) {
+					$('input[name=' + options.latitude + ']').val(ui.item.latitude);
+					$('input[name=' + options.longitude + ']').val(ui.item.longitude);
+				}
+
+			})
+			.data('autocomplete');
+
+		autocomplete._renderItem = function(ul, item) {
+			var $map = $('<img />')
+				.attr({
+					width: 100,
+					height: 100,
+					alt: 'Google Maps',
+					src: 'http://maps.googleapis.com/maps/api/staticmap?center=' + item.latitude + ',' + item.longitude + '&zoom=10&size=100x100&sensor=false'
+				});
+			return	$('<li class="geocoded" />')
+				.data('item.autocomplete', item)
+				.append('<a><strong>' + item.city + '</strong><br />' + item.description + '</a>')
+				.append($map)
+				.appendTo(ul);
+		};
+		autocomplete._renderMenu = function(ul, items) {
+			ul.addClass('geocoded');
+			var self = this;
+			$.each(items, function(index, item) {
+				self._renderItem(ul, item);
+			});
+		};
+
+	};
+
+})(jQuery);
+/**
+ * User autocomplete.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($, Anqh) {
+
+	$.fn.autocompleteUser = function(options) {
+		var $field = $(this);
+		var cache = {};
+		var lastXhr;
+
+		var defaults = {
+			user:      0,
+			userId:    'user_id',
+			limit:     15,
+			minLength: 2,
+			maxUsers:  1,
+			tokenized: false,
+			action:    'form',
+			search:    'username',
+			field:     'id:username:avatar:url',
+			order:     'username.asc',
+			position:  { collision: 'fit' }
+		};
+		options = $.extend(defaults, options || {});
+
+		// Facebook style tokenized list
+		if (options.tokenized) {
+			var width = $field.width();
+			$field.wrap('<div class="tokenized" />');
+			$field.parent()
+				.width(width)
+				.click(function() {
+					$field.focus();
+				});
+		}
+
+		// Multiple users in one select
+		var multiple = (options.maxUsers > 1 && !options.tokenized);
+
+		function split(val) {
+			return val.split(/,\s*/);
+		}
+
+		function lastTerm(term) {
+			return split(term).pop();
+		}
+
+		$(this)
+			.autocomplete({
+				minLength: options.minLength,
+				position:  options.position,
+
+				source: function(request, response) {
+					var term = multiple ? lastTerm(request.term) : request.term;
+
+					if (term in cache) {
+						response(cache[term]);
+						return;
+					}
+
+					lastXhr = $.ajax({
+						url: Anqh.APIURL + '/v1/users/search',
+						dataType: 'jsonp',
+						data: {
+							'q':     term,
+							'user':  options.user,
+							'limit': options.limit,
+							'field': options.field,
+							'order': options.order
+						},
+						success: function(data, status, xhr) {
+							cache[term] = $.map(data.users, function(item) {
+								return {
+									'label': item.username,
+									'value': item.username,
+									'image': item.avatar,
+									'id':    item.id,
+									'url':   item.url
+								};
+							});
+
+							if (xhr === lastXhr) {
+								response(cache[term]);
+							}
+						}
+					});
+				},
+
+				// Custom minLength check for multiple terms
+				search: function() {
+					if (multiple) {
+						var terms = split(this.value);
+
+						if (terms.length > options.maxUsers || terms.pop().length < this.minLength) {
+							return false;
+						}
+					}
+				},
+
+				// Don't insert value on focus
+				focus: function() {
+					if (multiple) return false;
+				},
+
+				select: function(event, ui) {
+					switch (options.action) {
+
+						// Fill form
+						case 'form':
+							if (multiple) {
+
+								// Multiple users, one input
+								var terms = split(this.value);
+								terms.pop();
+								terms.push(ui.item.value);
+								terms.push('');
+								this.value = terms.join(', ');
+								return false;
+
+							} else if (options.maxUsers > 1) {
+
+								// Multiple users, tokenized
+								// @todo  Values to post
+								var span = $('<span>')
+									.attr({ 'user-id': ui.item.id })
+									.text(ui.item.value);
+								var link = $('<a>')
+									.attr({ 'href': '#remove' })
+									.text('x')
+									.click(function() {
+										$(this).parent().remove();
+										return false;
+									})
+									.appendTo(span);
+
+								span.insertBefore(field);
+								this.value = '';
+								return false;
+
+							} else {
+
+								// Single user
+								$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
+								$field.val(ui.item.value);
+
+							}
+							break;
+
+						// Navigate URL
+						case 'redirect':
+							var location = $field.attr('data-redirect') || ui.item.url;
+							$.each(ui.item, function _replace(key, value) {
+								location = location.replace(':' + key, value);
+							});
+							window.location = location;
+							break;
+
+						// Execute action
+						default:
+							if (typeof options.action == 'function') {
+								options.action(event, ui);
+							}
+
+
+					}
+				}
+			})
+			.data('autocomplete')._renderItem = function(ul, item) {
+				return $('<li></li>')
+					.data('item.autocomplete', item)
+					.append('<a>' + (item.image ? '<img src="' + item.image + '" alt="Avatar" width="22" height="22" align="middle" />' : '') + item.label + '</a>')
+					.appendTo(ul);
+			};
+
+	};
+
+})(jQuery);
+/**
+ * Venue autocomplete.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($, Anqh) {
+
+	$.fn.autocompleteVenue = function(options) {
+		var $field = $(this);
+
+		var defaults = {
+			venueId:   'venue_id',
+			cityName:  'city_name',
+			latitude:  'latitude',
+			longitude: 'longitude',
+			limit:     25,
+			minLength: 1,
+			action:    'form',
+			source:    [],
+			position:  { collision: 'fit' }
+
+		};
+		options = $.extend(defaults, options || {});
+
+		$(this)
+			.autocomplete({
+				minLength: options.minLength,
+				position:  options.position,
+				source:    options.source,
+
+				select: function(event, ui) {
+					switch (options.action) {
+
+						// Fill form
+						case 'form':
+							$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
+							$('input[name=' + options.cityName + ']') && $('input[name=' + options.cityName + ']').val(ui.item.city);
+							$('input[name=' + options.latitude + ']') && $('input[name=' + options.latitude + ']').val(ui.item.latitude);
+							$('input[name=' + options.longitude + ']') && $('input[name=' + options.longitude + ']').val(ui.item.longitude);
+							$field.val(ui.item.value);
+							break;
+
+						// Navigate URL
+						case 'redirect':
+							window.location = ui.item.url;
+							break;
+
+						// Execute action
+						default:
+							if (typeof options.action == 'function') {
+								options.action(event, ui);
+							}
+
+					}
+				}
+
+			})
+			.data('autocomplete')._renderItem = function(ul, item) {
+				return $("<li></li>")
+					.data('item.autocomplete', item)
+					.append('<a>' + item.label + ', ' + item.city + '</a>')
+					.appendTo(ul);
+			};
+	};
+
+
+	// Foursquare autocomplete
+	$.fn.foursquareVenue = function(options) {
+		var defaults = {
+			address:         'address',
+			latitudeSearch:  'city_latitude',
+			longitudeSearch: 'city_longitude',
+			latitude:        'latitude',
+			longitude:       'longitude',
+			venueId:         'venue_id',
+			categoryId:      'category_id',
+			map:             'map',
+			limit:           10,
+			position:        { collision: 'fit' }
+
+		};
+
+		options = $.extend(defaults, options || {});
+
+		$(this)
+			.autocomplete({
+				minLength: 2,
+				position:  options.position,
+				source:    function(request, response) {
+					$.ajax({
+						url:      Anqh.APIURL + '/v1/venues/foursquare',
+						dataType: 'jsonp',
+						type:     'get',
+						data:     {
+							method:  'venues',
+							ll:      $('input[name=' + options.latitudeSearch + ']').val() + ',' + $('input[name=' + options.longitudeSearch + ']').val(),
+							limit:   options.limit,
+							intent:  'match',
+							query:   request.term
+						},
+						success: function(data) {
+							if (!data.venues) {
+								return false;
+							}
+
+							response($.map(data.venues.groups[0].venues, function(item) {
+								return {
+									'id':       item.id,
+									'label':    item.name + ', ' + item.address,
+									'value':    item.name,
+									'address':  item.address,
+									'city':     item.city,
+									'zip':      item.zip,
+									'lat':      item.geolat,
+									'long':     item.geolong,
+									'category': item.primarycategory ? item.primarycategory.id : 0
+								}
+							}));
+						}
+					});
+				},
+				select: function(event, ui) {
+					$('input[name=' + options.venueId + ']') && $('input[name=' + options.venueId + ']').val(ui.item.id);
+					ui.item.category && $('input[name=' + options.categoryId + ']') && $('input[name=' + options.categoryId + ']').val(ui.item.category);
+					ui.item.address && $('input[name=' + options.address + ']') && $('input[name=' + options.address + ']').val(ui.item.address);
+					$('input[name=' + options.latitude + ']') && $('input[name=' + options.latitude + ']').val(ui.item.lat);
+					$('input[name=' + options.longitude + ']') && $('input[name=' + options.longitude + ']').val(ui.item.long);
+					$('#' + options.map).googleMap({ marker: true, lat: ui.item.lat, long: ui.item.long });
+				}
+			});
+	};
+
+})(jQuery, Anqh);
+/**
+ * Image notes.
+ *
+ * @package    Anqh
+ * @author     Antti Qvickström
+ * @copyright  (c) 2013 Antti Qvickström
+ * @license    http://www.opensource.org/licenses/mit-license.php MIT license
+ */
+(function ($) {
+
+	$.fn.notes = function(n) {
+		var notes       = n || {}
+		  , $image      = $(this)
+		  , imageOffset = $image.position()
+		  , imageWidth  = $image.width()
+		  , imageHeight = $image.height();
+
+		$(notes).each(function() {
+			add(this);
+		});
+
+		$(window).resize(function() {
+			$('.note').remove();
+
+			imageOffset = $image.position();
+	    imageWidth  = $image.width();
+	    imageHeight = $image.height();
+			$(notes).each(function() {
+				add(this);
+			});
+		});
+
+
+		function add(note_data) {
+			var scaleX = imageWidth / note_data.imageWidth || 1
+			  , scaleY = imageHeight / note_data.imageHeight || 1
+			  , noteX  = parseInt(imageOffset.left) + parseInt(note_data.x)
+				, noteY  = parseInt(imageOffset.top) + parseInt(note_data.y);
+
+			var $note = $('<div class="note" id="note-' + note_data.id + '" />').css({
+				left: noteX * scaleX + 'px',
+				top:  noteY * scaleY + 'px'
+			});
+			var $area = $('<div class="notea" />').css({
+				width:  note_data.width * scaleX + 'px',
+				height: note_data.height * scaleY + 'px'
+			});
+			var $text = $('<div class="notet label label-inverse" />')
+				.append(note_data.url ? $('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>') : note_data.name);
+
+			$note
+				.append($area)
+				.append($text);
+			$image.after($note);
+
+			$('[data-note-id=' + note_data.id + ']') && $('[data-note-id=' + note_data.id + ']').hover(
+				function _show() { $area.css({ visibility: 'visible' }); },
+				function _hide() { $area.css({ visibility: 'hidden' }); }
+			);
+		}
+
+	};
+
+})(jQuery);
