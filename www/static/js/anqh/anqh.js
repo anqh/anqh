@@ -311,27 +311,6 @@ $(function() {
 	$('.carousel').carousel({ interval: false });
 
 
-	// Search
-	var $search = $('#form-search-events, #form-search-users, #form-search-images');
-	if ($search.length) {
-		$search.on('submit', function _disable(event) {
-			event.preventDefault();
-		});
-		$search.find('[name=search-events]').autocompleteEvent({
-			action:   'redirect'/*,
-			position: { my: 'right top', at: 'left top', of: '#form-search-events', collision: 'flip' }*/
-		});
-		$search.find('[name=search-users]').autocompleteUser({
-			action:   'redirect'/*,
-			position: { my: 'right top', at: 'right bottom', of: '#form-search-users', collision: 'flip' }*/
-		});
-		$search.find('[name=search-images]').autocompleteUser({
-			action:   'redirect',
-			position: { my: 'right top', at: 'right bottom', of: '#form-search-images', collision: 'flip' }
-		});
-	}
-
-
 	// Lady load images
 	$('img.lazy').lazyload({
 		failure_limit: 100

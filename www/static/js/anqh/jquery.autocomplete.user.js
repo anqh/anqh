@@ -179,4 +179,4 @@
 
 	};
 
-})(jQuery);
+})(jQuery, Anqh);

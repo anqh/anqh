@@ -254,6 +254,25 @@ class Anqh_View_Page extends View_Base {
 		{ 'anqh':      '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
 		function _loaded() {
 			Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
+
+			// Search
+			var $search = $('#form-search-events, #form-search-users, #form-search-images');
+			if ($search.length) {
+				$search.on('submit', function _disable(event) {
+					event.preventDefault();
+				});
+				$search.find('[name=search-events]').autocompleteEvent({
+					action:   'redirect'
+				});
+				$search.find('[name=search-users]').autocompleteUser({
+					action:   'redirect'
+				});
+				$search.find('[name=search-images]').autocompleteUser({
+					action:   'redirect',
+					position: { my: 'right top', at: 'right bottom', of: '#form-search-images', collision: 'flip' }
+				});
+			}
+
 		}
 	);
 </script>
