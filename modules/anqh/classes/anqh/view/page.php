@@ -56,11 +56,6 @@ class Anqh_View_Page extends View_Base {
 	public $scripts = array();
 
 	/**
-	 * @var  array  Skinned stylesheets
-	 */
-	public $skins = array();
-
-	/**
 	 * @var  string  Content column span sizes
 	 */
 	public $spans = self::SPANS_84;
@@ -247,13 +242,14 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <script>
-	head.js(
-		{ 'jquery':    'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
-		{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
-		{ 'vendor':    '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
-		{ 'anqh':      '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
-		function _loaded() {
-			Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
+	head.load(
+		{ jquery:   '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js' },
+		{ semantic: '//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.11.0/javascript/semantic.min.js' },
+//		{ 'jquery-ui': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js' },
+		{ vendor:   '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
+		{ anqh:     '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
+		function () {
+/*			Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
 
 			// Search
 			var $search = $('#form-search-events, #form-search-users, #form-search-images');
@@ -271,7 +267,7 @@ class Anqh_View_Page extends View_Base {
 					action:   'redirect',
 					position: { my: 'right top', at: 'right bottom', of: '#form-search-images', collision: 'flip' }
 				});
-			}
+			}*/
 
 		}
 	);
@@ -364,12 +360,8 @@ class Anqh_View_Page extends View_Base {
 
 	<?= $this->_styles() ?>
 
-	<?= $this->_skins() ?>
-
-	<?= HTML::style('ui/site.css') ?>
-
-	<?= HTML::script(Kohana::$environment == Kohana::PRODUCTION ? 'js/head.min.js' : 'js/head.js') ?>
-	<?= HTML::script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places') ?>
+	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
+	<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
 
 	<?= $this->head(); ?>
 
@@ -427,40 +419,22 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="mainmenu" role="navigation">
-		<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+	<nav id="mainmenu" role="menubar" class="ui fixed small menu inverted">
+		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
+			<?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon"></i> <span>' . $item['text'] . '</span>', array(
+				'role'  => 'menuitem',
+				'class' => ($id == $this->id ? 'active ' : '') . 'item'
+			)) ?>
+		<?php endforeach; ?>
 
-		<ul class="nav" role="menubar">
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
-			<?php endforeach; ?>
-		</ul>
-	</nav><!-- #mainmenu -->
-
-<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
-	 * Render main menu.
-	 *
-	 * @return  string
-	 */
-	protected function _menu() {
-		ob_start();
-
-?>
-
-	<nav id="mainmenu" role="navigation">
-		<ul class="nav nav-list mainmenu" role="menu">
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?><?= $id == $this->id ? ' active' : '' ?>">
-				<?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i><span>' . $item['text'] . '</span>') ?>
-			</li>
-			<?php endforeach; ?>
-		</ul>
+		<div class="right menu">
+		<?php if (self::$_user_id):
+			echo $this->_search();
+			echo $this->_visitor();
+		else:
+			echo $this->_signin();
+		endif; ?>
+		</div>
 	</nav><!-- #mainmenu -->
 
 <?php
@@ -486,17 +460,14 @@ class Anqh_View_Page extends View_Base {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
+<?= $this->_mainmenu() ?>
+
 	<table id="body">
 		<tbody>
 			<tr>
 
 				<th id="sidebar" rowspan="2">
 
-					<!-- MENU -->
-
-					<?= $this->_menu() ?>
-
-					<!-- /MENU -->
 
 				</th><!-- /#sidebar -->
 
@@ -567,8 +538,19 @@ class Anqh_View_Page extends View_Base {
 	protected function _search() {
 		ob_start();
 
+		echo '<div class="item">';
+		echo Form::open(null, array('id' => 'form-search', 'class' => 'ui icon input'));
+		echo Form::input('search', null, array('placeholder' => __('Search...')));
+		echo '<i class="search link icon"></i>';
+		echo Form::close();
+		echo '</div>';
+
+		return ob_get_clean();
 ?>
 
+<div class="item">
+	<div class="ui icon input"></div>
+</div>
 <div id="search">
 
 	<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
@@ -636,16 +618,6 @@ class Anqh_View_Page extends View_Base {
 <?php
 
 		return ob_get_clean();
-	}
-
-
-	/**
-	 * Render skinned stylesheets.
-	 *
-	 * @return  string
-	 */
-	protected function _skins() {
-		return implode("\n  ", $this->skins);
 	}
 
 
@@ -796,50 +768,29 @@ class Anqh_View_Page extends View_Base {
 	protected function _visitor() {
 		ob_start();
 
-		/*
-		// Sunrise
-		if (self::$_user && self::$_user->latitude && self::$_user->longitude) {
-			$latitude  = self::$_user->latitude;
-			$longitude = self::$_user->longitude;
-		} else {
-			$latitude  = 60.1829;
-			$longitude = 24.9549;
-		}
-		$sun = date_sun_info(time(), $latitude, $longitude);
-		$sunrise = __(':day, week :week | Sunrise: :sunrise | Sunset: :sunset', array(
-			':day'     => strftime('%A'),
-			':week'    => strftime('%V'),
-			':sunrise' => Date::format(Date::TIME, $sun['sunrise']),
-			':sunset'  => Date::format(Date::TIME, $sun['sunset'])
-		));
-		*/
-
 ?>
 
-<div id="visitor">
-	<span class="menuitem-notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
+<div class="ui dropdown item">
+	<span class="notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
 
-	<span class="profile dropdown">
+	<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'ssmall') ?>
+	<span><?= HTML::chars(self::$_user->username) ?></span> <i class="dropdown icon"></i>
 
-		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
-
-		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <i class="icon-caret-down"></i></a>
-		<ul class="dropdown-menu pull-right" role="menu">
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user"></i> ' . __('Profile')) ?><li>
-			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope"></i> ' . __('Private messages')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar"></i> ' . __('Favorites')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart"></i> ' . __('Friends')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle"></i> ' . __('Ignores')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog"></i> ' . __('Settings')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-signout"></i> ' . __('Sign out')) ?></li>
-			<?php if (self::$_user->has_role('admin')): ?>
-			<li class="nav-header"><?= __('Admin functions') ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk"></i> ' . __('Roles')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags"></i> ' . __('Tags')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('.kohana').toggle();")) ?></li>
-			<?php endif; ?>
-		</ul>
-	</span>
+	<div class="menu" role="menu">
+		<?= HTML::anchor(URL::user(self::$_user->username), '<i class="user icon"></i> ' . __('Profile'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(Forum::private_messages_url(), '<i class="mail outline icon"></i> ' . __('Private messages'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="calendar icon"></i> ' . __('Favorites'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="heart icon"></i> ' . __('Friends'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="mute icon"></i> ' . __('Ignores'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="wrench icon"></i> ' . __('Settings'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="sign out icon"></i> ' . __('Sign out'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?php if (self::$_user->has_role('admin')): ?>
+		<div class="header item"><?= __('Admin functions') ?></div>
+		<?= HTML::anchor(Route::url('roles'), '<i class="asterisk icon"></i> ' . __('Roles'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(Route::url('tags'), '<i class="tags icon"></i> ' . __('Tags'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor('#debug', '<i class="signal icon"></i> ' . __('Profiler'), array('onclick' => "$('.kohana').toggle();", 'role' => 'menuitem', 'class' => 'item')) ?>
+		<?php endif; ?>
+	</div>
 </div>
 
 <?php

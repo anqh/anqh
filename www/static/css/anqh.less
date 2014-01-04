@@ -1,3 +1,35 @@
+@import "mixins.less";
+
+// Variables
+@sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
+@serifFontFamily:       Georgia, "Times New Roman", Times, serif;
+@monoFontFamily:        Monaco, Menlo, Consolas, "Courier New", monospace;
+
+@baseFontSize:          12px;
+@baseFontFamily:        @sansFontFamily;
+@baseLineHeight:        18px;
+@altFontFamily:         @serifFontFamily;
+
+
+html,
+body                                   { font-size: @baseFontSize; }
+body                                   { font-family: @baseFontFamily; }
+
+
+// Main menu
+#mainmenu                              {
+  #form-search input                   { .transition(width .25s); width: 9em; }
+  #form-search input:focus             { margin-left: -6em; width: 15em; }
+  .avatar                              { margin-bottom: -1em; margin-top: -1em; }
+}
+
+
+/*.avatar                                { display: inline-block; float: left; .square(50px); text-align: center;
+  &.small                              { .square(25px); }
+  img                                  { max-height: 100%; max-width: 100% !important; }
+}*/
+
+/*
 @import "bootstrap.less";
 
 
@@ -299,7 +331,7 @@ a.user:hover                           { color: @anchorColorHover; }
 a.friend                               { font-weight: bold; }
 .avatar                                { display: inline-block; float: left; .square(50px); text-align: center;
   &.small                              { .square(25px); }
-  img                                  { max-height: 100%; max-width: 100% !important; /* !important needed for Jasny */ }
+  img                                  { max-height: 100%; max-width: 100% !important; }
 }
 .avatar + .user                        { margin-left: 5px; }
 
@@ -427,7 +459,6 @@ div.image                              { text-align: center;
 
     .note                              { cursor: help; position: absolute; }
     .notea                             { border: 1px solid rgba(255, 255, 255, .75); border-radius: 2px; .box-shadow(0 5px 10px rgba(0, 0, 0, .75)); position: relative; visibility: hidden; }
-    /*.notea:before                      { border: 1px solid black; border-radius: 3px; content: ''; height: 100%; margin: -2px 0 0 -2px; padding: 1px; position: absolute; width: 100%; }*/
     .notet                             { .opacity(0); margin-top: @gridGutterWidth; .transition(opacity .25s ease-in-out); }
     .note:hover .notet                 { .opacity(100); }
   }
@@ -471,25 +502,22 @@ div.image                              { text-align: center;
   }
   #main .blog-entry + .blog-entry      { border-top: 1px solid @grayDark; padding-top: 10px; }
 }
+*/
 
 /**
  * Loaned from Foundation by ZURB, http://foundation.zurb.com
  */
-.block-grid                            { display: block; overflow: hidden;
+/*.block-grid                            { display: block; overflow: hidden;
   & > li                               { display: block; float: left; height: auto; }
   &.two-up                             { margin-left: -4% }
   &.two-up > li                        { margin-left: 4%; width: 46%; }
-/* 	&.two-up > li:nth-child(2n+1)        { clear: left; } */
   &.three-up                           { margin-left: -2% }
   &.three-up > li                      { margin-left: 2%; width: 31.3%; }
-/* 	&.three-up > li:nth-child(3n+1)      { clear: left; } */
   &.four-up                            { margin-left: -2% }
   &.four-up > li                       { margin-left: 2%; width: 23%; }
-/*  &.four-up > li:nth-child(4n+1)       { clear: left; } */
   &.five-up                            { margin-left: -1.5% }
   &.five-up > li                       { margin-left: 1.5%; width: 18.5%; }
-/*  &.five-up > li:nth-child(5n+1)       { clear: left; } */
-}
+}*/
 
 
 /***** Responsive styles *****/
@@ -511,14 +539,14 @@ div.image                              { text-align: center;
 
 /* Phones */
 @media (max-width: 767px)              {
-  body                                 { padding-left: 0; padding-right: 0; }
+/*  body                                 { padding-left: 0; padding-right: 0; }
   #header                              {
     .brand                             { float: none; }
   }
   .ad728x90                            { display: none; }
   #main .events                        {
     .event                             { height: auto; }
-  }
+  }*/
 }
 
 

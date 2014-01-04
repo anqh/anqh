@@ -3,11 +3,19 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
+head.ready([ 'jquery', 'semantic' ], function() {
+
+	// Initialize dropdown menus
+	$('.ui.dropdown').dropdown();
+
+});
+
 // Anqh 'namespace'
+/*
 var Anqh = {
 
 	// Anqh API URL
@@ -36,10 +44,6 @@ var Anqh = {
 				modal: true,
 				close: function(ev, ui) { $(this).remove(); },
 				closeText: '☓',
-/*				buttons: {
-					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
-					'✕ No, cancel': function() { $(this).dialog('close'); }
-				},*/
 				buttons: [
 					{ 'text': '✓ Yes, do it!', 'class': 'btn btn-danger', click: function() { $(this).dialog('close'); action(); } },
 					{ 'text': '☓ No, cancel',  'class': 'btn btn-inverse', click: function() { $(this).dialog('close'); } }
@@ -51,7 +55,6 @@ var Anqh = {
 	}
 
 };
-
 
 // Ajax loader
 $.fn.loading = function(loaded) {
@@ -334,3 +337,4 @@ $(function() {
 	});
 
 });
+*/

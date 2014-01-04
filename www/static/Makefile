@@ -1,11 +1,9 @@
-ANQH = ./css/anqh.css
-ANQH_LESS = ./anqh.less
-IMG = img/
-JS = js/
-FONT = css/
-DATE=$(shell date +%I:%M%p)
-CHECK=✔
-HR=\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+IMG   = img/
+JS    = js/
+CSS   = css/
+DATE  = $(shell date +%I:%M%p)
+CHECK = ✔
+HR    = \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 
 
 #
@@ -17,50 +15,34 @@ build:
 	@echo "Building static files..."
 	@echo "${HR}"
 
-	@jshint ./bootstrap-j/js/*.js --config ./bootstrap-j/js/.jshintrc
-	@jshint ./bootstrap-j/js/tests/unit/*.js --config ./bootstrap-j/js/.jshintrc
-	@echo "Running JSHint on javascript...             ${CHECK} Done"
+#	@jshint ./bootstrap-j/js/*.js --config ./bootstrap-j/js/.jshintrc
+#	@jshint ./bootstrap-j/js/tests/unit/*.js --config ./bootstrap-j/js/.jshintrc
+#	@echo "Running JSHint on javascript...             ${CHECK} Done"
 
-	@recess --compress ${ANQH_LESS} > ${ANQH}
+	@recess --compress ${CSS}anqh.less > ${CSS}anqh.css
 	@echo "Compiling LESS with Recess...               ${CHECK} Done"
 
-	@cp ./bootstrap-j/img/* ${IMG}
-	@cp -r ./bootstrap-j/font .
+#	@cp ./bootstrap-j/img/* ${IMG}
+#	@cp -r ./bootstrap-j/font .
 #	@echo "Compiling documentation...                  ${CHECK} Done"
 
 	@cat \
-		./bootstrap-j/js/bootstrap-transition.js \
-		./bootstrap-j/js/bootstrap-alert.js \
-		./bootstrap-j/js/bootstrap-button.js \
-		./bootstrap-j/js/bootstrap-carousel.js \
-		./bootstrap-j/js/bootstrap-collapse.js \
-		./bootstrap-j/js/bootstrap-dropdown.js \
-		./bootstrap-j/js/bootstrap-modal.js \
-		./bootstrap-j/js/bootstrap-tooltip.js \
-		./bootstrap-j/js/bootstrap-popover.js \
-		./bootstrap-j/js/bootstrap-scrollspy.js \
-		./bootstrap-j/js/bootstrap-tab.js \
-		./bootstrap-j/js/bootstrap-typeahead.js \
-		./bootstrap-j/js/bootstrap-inputmask.js \
-		./bootstrap-j/js/bootstrap-rowlink.js \
-		./bootstrap-j/js/bootstrap-fileupload.js \
-		./bootstrap-j/js/bootstrap-affix.js \
-		${JS}vendor/jquery.markitup.js \
-		${JS}vendor/markitup.bbcode.js \
-		${JS}vendor/jquery.imgareaselect.js \
 		${JS}vendor/jquery.lazyload.js > ${JS}c/vendor.js
+#		${JS}vendor/jquery.markitup.js \
+#		${JS}vendor/markitup.bbcode.js \
+#		${JS}vendor/jquery.imgareaselect.js
 	@uglifyjs -nc -v ${JS}c/vendor.js > ${JS}c/vendor.min.js
 	@cat \
-		${JS}anqh/anqh.js \
-		${JS}anqh/jquery.form.js \
-		${JS}anqh/jquery.googlemap.js \
-		${JS}anqh/jquery.dialogify.js \
-		${JS}anqh/jquery.ajaxify.js \
-		${JS}anqh/jquery.autocomplete.event.js \
-		${JS}anqh/jquery.autocomplete.geo.js \
-		${JS}anqh/jquery.autocomplete.user.js \
-		${JS}anqh/jquery.autocomplete.venue.js \
-		${JS}anqh/jquery.notes.js > ${JS}/c/anqh.js
+		${JS}anqh/anqh.js > ${JS}c/anqh.js
+#		${JS}anqh/jquery.form.js \
+#		${JS}anqh/jquery.googlemap.js \
+#		${JS}anqh/jquery.dialogify.js \
+#		${JS}anqh/jquery.ajaxify.js \
+#		${JS}anqh/jquery.autocomplete.event.js \
+#		${JS}anqh/jquery.autocomplete.geo.js \
+#		${JS}anqh/jquery.autocomplete.user.js \
+#		${JS}anqh/jquery.autocomplete.venue.js \
+#		${JS}anqh/jquery.notes.js
 	@uglifyjs -nc -v ${JS}c/anqh.js > ${JS}c/anqh.min.js
 	@echo "Compiling and minifying javascript...       ${CHECK} Done"
 

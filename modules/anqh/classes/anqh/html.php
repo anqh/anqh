@@ -30,9 +30,9 @@ class Anqh_HTML extends Kohana_HTML {
 		}
 
 		if (!$class) {
-			$class = 'avatar';
+			$class = 'ui avatar image';
 		} else {
-			$class = 'avatar ' . ($class === true ? ' small' : $class);
+			$class = 'ui avatar image ' . ($class === true ? 'small' : $class);
 		}
 
 		if (empty($title)) {
@@ -139,6 +139,34 @@ class Anqh_HTML extends Kohana_HTML {
 		return '<var class="' . $class . '"' . $title . '>' . $formatted . '</var>';
 	}
 
+
+	/**
+	 * Creates a script link.
+	 *
+	 *     echo HTML::script('media/js/jquery.min.js');
+	 *
+	 * @param   string  $file       file name
+	 * @param   array   $attributes default attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
+	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
+	 */
+	public static function script($file, array $attributes = null, $protocol = null, $index = false) {
+		if (strpos($file, '://') === false && strpos($file, '//') === false) {
+			// Add the base URL
+			$file = URL::site($file, $protocol, $index);
+		}
+
+		// Set the script link
+		$attributes['src'] = $file;
+
+		// Set the script type
+		$attributes['type'] = 'text/javascript';
+
+		return '<script'.HTML::attributes($attributes).'></script>';
+	}
 
 
 	/**

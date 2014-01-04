@@ -44,12 +44,9 @@ abstract class Anqh_Controller_Page extends Controller {
 
 			// Stylesheets
 			$styles = array(
-				'ui/jquery-ui.css', // Deprecated
-			);
-
-			$skins = array(
-				HTML::style('static/css/anqh.css?_=' . filemtime('static/css/anqh.css')),
-				HTML::style('//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css'),
+				'//cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css',
+				'//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.11.0/css/semantic.min.css',
+				'static/css/anqh.css?_=' . filemtime('static/css/anqh.css')
 			);
 
 			// Footer
@@ -122,7 +119,6 @@ head.js(
 
 			// Set the generic page variables
 			$this->view->styles   = $styles;
-			$this->view->skins    = $skins;
 			$this->view->language = $this->language;
 			$this->view->id       = $this->page_id;
 			$this->view->class    = $page_class;
@@ -135,7 +131,7 @@ head.js(
 
 
 			// And finally the profiler stats
-			if (self::$user && self::$user->has_role('admin')) {
+			if (false && self::$user && self::$user->has_role('admin')) {
 				Widget::add('foot', new View_Generic_Debug());
 				Widget::add('foot', View::factory('profiler/stats'));
 			}
