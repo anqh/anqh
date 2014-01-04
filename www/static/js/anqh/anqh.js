@@ -14,6 +14,15 @@ head.ready([ 'jquery', 'semantic' ], function() {
 
 });
 
+head.ready([ 'jquery', 'vendor' ], function() {
+
+		// Lady load images
+	$('img.lazy').lazyload({
+		failure_limit: 100
+	});
+
+});
+
 // Anqh 'namespace'
 /*
 var Anqh = {

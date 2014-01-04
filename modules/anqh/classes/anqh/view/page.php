@@ -392,15 +392,6 @@ class Anqh_View_Page extends View_Base {
 			<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 			<?= ($this->id != 'home' && $menu) ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
 		</div>
-
-		<div class="pull-right">
-			<?php if (self::$_user_id):
-				echo $this->_search();
-				echo $this->_visitor();
-			else:
-				echo $this->_signin();
-			endif; ?>
-		</div>
 	</header>
 
 <?php
@@ -419,9 +410,9 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="mainmenu" role="menubar" class="ui fixed small menu inverted">
+	<nav id="mainmenu" role="menubar" class="ui fixed menu inverted">
 		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' icon"></i> <span>' . $item['text'] . '</span>', array(
+			<?= HTML::anchor($item['url'], '<!--<i class="' . $item['icon'] . ' icon"></i> --><span>' . $item['text'] . '</span>', array(
 				'role'  => 'menuitem',
 				'class' => ($id == $this->id ? 'active ' : '') . 'item'
 			)) ?>
@@ -597,6 +588,58 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
+<div class="item">
+	<?= HTML::anchor(
+				Route::url('sign', array('action' => 'up')),
+				__('Join'),
+				array('class' => 'ui orange button', 'title' => __("Did we mention it's FREE!"))
+			) ?>
+
+	<div class="ui teal top right pointing dropdown button">
+		<span class="text"><?= __('Login') ?></span>
+		<div class="menu">
+			<?= Form::open(Route::url('sign', array('action' => 'in')), array('class' => 'ui form segment')) ?>
+			<?= Form::hidden('remember', 'true') ?>
+
+			<div class="field">
+				<div class="ui left labeled icon input">
+					<i class="user icon"></i>
+					<?= Form::input('username', null, array('placeholder' => __('Username or email'))) ?>
+				</div>
+			</div>
+
+			<div class="field">
+				<div class="ui left labeled icon input">
+					<i class="lock icon"></i>
+					<?= Form::password('password', null, array('placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
+				</div>
+			</div>
+
+			<?= Form::button(null, __('Login') . ' <i class="sign in icon"></i>', array('class' => 'ui teal icon labeled submit button', 'title' => __('Remember to sign out if on a public computer!'))) ?>
+
+			<?= HTML::anchor(Route::url('password'), __('Forgot those?')) ?>
+
+			<div class="ui horizontal divider">
+				<?= __('or') ?>
+			</div>
+
+			<?= HTML::anchor(
+						Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+						__('Sign in with') . ' <i class="facebook icon"></i>',
+						array('class' => 'ui facebook button', 'title' => __('Sign in with your Facebook account'))
+					) ?>
+
+			<?= Form::close() ?>
+
+		</div>
+	</div>
+</div>
+
+<?php
+
+		return ob_get_clean();
+
+?>
 	<?= Form::open(Route::url('sign', array('action' => 'in')), array('id' => 'signin', 'class' => 'form-inline')) ?>
 		<?= HTML::anchor(
 				Route::url('sign', array('action' => 'up')),
@@ -768,10 +811,17 @@ class Anqh_View_Page extends View_Base {
 	protected function _visitor() {
 		ob_start();
 
+		if ($notifications = Anqh::notifications(self::$_user)):
+
 ?>
 
+<div class="ui circular teal labels item notifications">
+	<div class="ui label"><?= implode('</div> <div class="ui label">', $notifications) ?></div>
+</div>
+
+<?php endif; ?>
+
 <div class="ui dropdown item">
-	<span class="notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
 
 	<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'ssmall') ?>
 	<span><?= HTML::chars(self::$_user->username) ?></span> <i class="dropdown icon"></i>
@@ -782,7 +832,7 @@ class Anqh_View_Page extends View_Base {
 		<?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="calendar icon"></i> ' . __('Favorites'), array('role' => 'menuitem', 'class' => 'item')) ?>
 		<?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="heart icon"></i> ' . __('Friends'), array('role' => 'menuitem', 'class' => 'item')) ?>
 		<?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="mute icon"></i> ' . __('Ignores'), array('role' => 'menuitem', 'class' => 'item')) ?>
-		<?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="wrench icon"></i> ' . __('Settings'), array('role' => 'menuitem', 'class' => 'item')) ?>
+		<?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="settings icon"></i> ' . __('Settings'), array('role' => 'menuitem', 'class' => 'item')) ?>
 		<?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="sign out icon"></i> ' . __('Sign out'), array('role' => 'menuitem', 'class' => 'item')) ?>
 		<?php if (self::$_user->has_role('admin')): ?>
 		<div class="header item"><?= __('Admin functions') ?></div>

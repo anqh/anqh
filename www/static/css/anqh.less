@@ -15,19 +15,19 @@ html,
 body                                   { font-size: @baseFontSize; }
 body                                   { font-family: @baseFontFamily; }
 
+// Semantic UI overrides
+.ui                                    {
+  &.label a.detail                     { text-decoration: none; }
+}
 
 // Main menu
 #mainmenu                              {
   #form-search input                   { .transition(width .25s); width: 9em; }
   #form-search input:focus             { margin-left: -6em; width: 15em; }
+  .labels.notifications                { margin-top: -.2em; }
   .avatar                              { margin-bottom: -1em; margin-top: -1em; }
 }
 
-
-/*.avatar                                { display: inline-block; float: left; .square(50px); text-align: center;
-  &.small                              { .square(25px); }
-  img                                  { max-height: 100%; max-width: 100% !important; }
-}*/
 
 /*
 @import "bootstrap.less";

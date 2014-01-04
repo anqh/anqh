@@ -91,8 +91,8 @@ class Anqh_Core {
 		if ($user->new_comment_count) {
 			$new['new-comments'] = HTML::anchor(
 				URL::user($user),
-				'<i class="icon-comment"></i> ' . $user->new_comment_count,
-				array('class' => 'badge badge-info', 'title' => __('New comments'))
+				'<i class="comment icon"></i> ' . $user->new_comment_count,
+				array('class' => 'detail', 'title' => __('New comments'))
 			);
 		}
 
@@ -105,8 +105,8 @@ class Anqh_Core {
 			}
 			$new['new-private-messages'] = HTML::anchor(
 				Route::model($private_message->topic()) . '?page=last#last',
-				'<i class="icon-comment"></i> ' . $new_messages,
-				array('class' => 'badge badge-info', 'title' => __('New private messages'))
+				'<i class="comment icon"></i> ' . $new_messages,
+				array('class' => 'detail', 'title' => __('New private messages'))
 			);
 		}
 		unset($private_messages);
@@ -120,8 +120,8 @@ class Anqh_Core {
 			}
 			$new['new-blog-comments'] = HTML::anchor(
 				Route::model($blog_entry),
-				'<i class="icon-comment"></i> ' . $new_comments,
-				array('class' => 'badge badge-info', 'title' => __('New blog comments'))
+				'<i class="comment icon"></i> ' . $new_comments,
+				array('class' => 'detail', 'title' => __('New blog comments'))
 			);
 		}
 		unset($blog_comments);
@@ -133,8 +133,8 @@ class Anqh_Core {
 			$quote = $forum_quotes->current();
 			$new['new-forum-quotes'] = HTML::anchor(
 				Route::get('forum_post')->uri(array('topic_id' => $quote->forum_topic_id, 'id' => $quote->forum_post_id)) . '#post-' . $quote->forum_post_id,
-				'<i class="icon-comment"></i> ' . $new_quotes,
-				array('class' => 'badge badge-info', 'title' => __('Forum quotes'))
+				'<i class="comment icon"></i> ' . $new_quotes,
+				array('class' => 'detail', 'title' => __('Forum quotes'))
 			);
 		}
 
@@ -150,8 +150,8 @@ class Anqh_Core {
 			}
 			$new['new-flyer-comments'] = HTML::anchor(
 				Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')),
-				'<i class="icon-picture"></i> ' . $new_comments,
-				array('class' => 'badge badge-info', 'title' => __('New flyer comments'))
+				'<i class="picture icon"></i> ' . $new_comments,
+				array('class' => 'detail', 'title' => __('New flyer comments'))
 			);
 		}
 		unset($flyer_comments);
@@ -180,8 +180,8 @@ class Anqh_Core {
 			if ($new_comments) {
 				$new['new-image-comments'] = HTML::anchor(
 					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_image_id)), 'id' => $new_image_id, 'action' => '')),
-					'<i class="icon-camera-retro"></i> ' . $new_comments,
-					array('class' => 'badge badge-info', 'title' => __('New image comments'))
+					'<i class="retro camera icon"></i> ' . $new_comments,
+					array('class' => 'detail', 'title' => __('New image comments'))
 				);
 			}
 		}
@@ -203,8 +203,8 @@ class Anqh_Core {
 			if ($new_notes) {
 				$new['new-image-notes'] = HTML::anchor(
 					Route::get('gallery_image')->uri(array('gallery_id' => Route::model_id(Model_Gallery::find_by_image($new_note_image_id)), 'id' => $new_note_image_id, 'action' => '')),
-					'<i class="icon-tag"></i> ' . $new_notes,
-					array('class' => 'badge badge-info', 'title' => __('New image tags'))
+					'<i class="tag icon"></i> ' . $new_notes,
+					array('class' => 'detail', 'title' => __('New image tags'))
 				);
 			}
 		}
@@ -215,8 +215,8 @@ class Anqh_Core {
 		if (count($notifications)) {
 			$new['new-notifications'] = HTML::anchor(
 				Route::url('notifications'),
-				'<i class="icon-bell"></i> <span>' . count($notifications) . '</span>',
-				array('class' => 'badge badge-info notifications', 'title' => __('New notifications'), 'onclick' => 'return false;')
+				'<i class="bell icon"></i> <span>' . count($notifications) . '</span>',
+				array('class' => 'detail notifications', 'title' => __('New notifications'), 'onclick' => 'return false;')
 			);
 		}
 
