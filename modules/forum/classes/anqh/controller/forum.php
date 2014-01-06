@@ -49,18 +49,14 @@ class Anqh_Controller_Forum extends Controller_Page {
 		array_pop($areas);
 		$this->page_actions['areas'] = array(
 			'link'     => Route::url('forum'),
-			'text'     => '<i class="icon-folder-open"></i> ' . __('Forum'),
-		);
-		$this->page_actions['area'] = array(
-			'link'     => Route::url('forum'),
-			'text'     => '',
+			'text'     => '<i class="open folder icon"></i> ' . __('Forum'),
 			'dropdown' => $areas,
 		);
 
 		if (self::$user) {
 			$this->page_actions['private-messages'] = array(
 				'link' => Forum::private_messages_url(),
-				'text' => '<i class="icon-envelope"></i> ' . __('Private messages'),
+				'text' => '<i class="mail outline icon"></i> ' . __('Private messages'),
 			);
 		}
 	}

@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Blogs_List extends View_Section {
@@ -26,21 +26,25 @@ class View_Blogs_List extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		if (!$this->blog_entries) {
+		if (!$this->blog_entries):
 			return '';
-		}
+		endif;
 
 		ob_start();
 
 ?>
 
-<ul class="unstyled">
+<div class="ui small feed">
 
 	<?php foreach ($this->blog_entries as $entry): ?>
-	<li><?= HTML::anchor(Route::model($entry), HTML::chars($entry->name)) ?></li>
+	<div class="event">
+		<div class="content">
+			<div class="summary"><?= HTML::anchor(Route::model($entry), HTML::chars($entry->name)) ?></div>
+		</div>
+	</div>
 	<?php endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 

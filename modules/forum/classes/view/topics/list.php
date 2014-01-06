@@ -47,17 +47,20 @@ class View_Topics_List extends View_Section {
 
 ?>
 
-<ul class="unstyled">
+<div class="ui small feed">
 
-		<?php foreach ($this->topics as $topic): ?>
-		<li>
-			<small class="ago"><?= HTML::time(Date::short_span($topic->last_posted, true), $topic->last_posted) ?></small>
-			<?php //= HTML::anchor(Route::model($topic), '<i class="muted iconic-upload"></i>', array('class' => 'transparent', 'title' => __('First post'))) ?>
-			<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('title' => $topic->name)) ?>
-		</li>
-		<?php endforeach; ?>
+	<?php foreach ($this->topics as $topic): ?>
+	<div class="event">
+		<div class="content">
+			<small class="date"><?= HTML::time(Date::short_span($topic->last_posted, true), $topic->last_posted) ?></small>
+			<div class="summary">
+				<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('title' => $topic->name)) ?>
+			</div>
+		</div>
+	</div>
+	<?php endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 

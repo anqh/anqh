@@ -51,21 +51,21 @@ abstract class Anqh_Controller_Page extends Controller {
 
 			// Footer
 			$section = new View_Events_List();
-			$section->class .= ' span4';
+//			$section->class .= ' column';
 			$section->title  = __('New events');
 			$section->events = Model_Event::factory()->find_new(10);
-			Widget::add('footer', $section);
+			Widget::add('footer', '<div class="column">' . $section . '</div>');
 
 			$section = new View_Topics_List();
-			$section->class .= ' span4';
+//			$section->class .= ' column';
 			$section->topics = Model_Forum_Topic::factory()->find_by_latest_post(10);
-			Widget::add('footer', $section);
+			Widget::add('footer', '<div class="column">' . $section . '</div>');
 
 			$section = new View_Blogs_List();
-			$section->class       .= ' span4';
+//			$section->class       .= ' column';
 			$section->title        = __('New blogs');
 			$section->blog_entries = Model_Blog_Entry::factory()->find_new(10);
-			Widget::add('footer', $section);
+			Widget::add('footer', '<div class="column">' . $section . '</div>');
 
 
 			// Open Graph

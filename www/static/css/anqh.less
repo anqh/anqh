@@ -1,10 +1,10 @@
 @import "mixins.less";
 
 // Variables
+@linkColor:             #00b7e4;
 @sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
 @serifFontFamily:       Georgia, "Times New Roman", Times, serif;
 @monoFontFamily:        Monaco, Menlo, Consolas, "Courier New", monospace;
-
 @baseFontSize:          12px;
 @baseFontFamily:        @sansFontFamily;
 @baseLineHeight:        18px;
@@ -14,11 +14,32 @@
 html,
 body                                   { font-size: @baseFontSize; }
 body                                   { font-family: @baseFontFamily; }
+a                                      { color: @linkColor; text-decoration: none; }
+a:hover                                { text-decoration: underline; }
+
 
 // Semantic UI overrides
 .ui                                    {
+
+  // Elements
   &.label a.detail                     { text-decoration: none; }
+  &.top.attached.segment               {
+    .ui.tabular.menu                   { bottom: 0; margin-right: 1rem; position: absolute; right: 0; }
+  }
+
+  // Collections
+  &.menu.center.aligned                { text-align: center; }
+  &.dropdown .menu                     {
+    .divider + .item                   { border-top: 0 none; }
+  }
+
+  // Views
+  &.feed.small                         {
+    .event                             { padding: .25em 0; }
+  }
 }
+
+.container                             { margin: 0 auto; max-width: 924px; }
 
 // Main menu
 #mainmenu                              {

@@ -29,10 +29,12 @@ class Anqh_HTML extends Kohana_HTML {
 			$avatar = URL::site($avatar);
 		}
 
-		if (!$class) {
+		if ($class === null) {
 			$class = 'ui avatar image';
-		} else {
+		} else if ($class) {
 			$class = 'ui avatar image ' . ($class === true ? 'small' : $class);
+		} else {
+			$class = '';
 		}
 
 		if (empty($title)) {

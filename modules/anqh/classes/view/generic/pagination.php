@@ -148,29 +148,35 @@ class View_Generic_Pagination extends View_Base {
 
 ?>
 
-<ul class="pager">
+<div class="ui menu">
 
 	<?php if ($this->first_url): ?>
-	<li class="previous"><?= HTML::anchor($this->first_url, $this->first_text) ?></li>
+	<?= HTML::anchor($this->first_url, $this->first_text, array('class' => 'item first')) ?>
 	<?php endif; ?>
 
 	<?php if ($this->previous_url): ?>
-	<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
+	<?= HTML::anchor($this->previous_url, $this->previous_text, array('class' => 'item previous')) ?>
 	<?php endif; ?>
 
 	<?php if ($this->current_page): ?>
-	<li class="disabled"><a><?= $this->current_page ?></a></li>
+	<span class="disabled item"><?= $this->current_page ?></span
 	<?php endif; ?>
 
-	<?php if ($this->last_url): ?>
-	<li class="next"><?= HTML::anchor($this->last_url, $this->last_text) ?></li>
+	<?php if ($this->last_url || $this->next_url): ?>
+	<div class="right menu">
+
+		<?php if ($this->next_url): ?>
+		<?= HTML::anchor($this->next_url, $this->next_text, array('class' => 'item next')) ?>
+		<?php endif; ?>
+
+		<?php if ($this->last_url): ?>
+		<?= HTML::anchor($this->last_url, $this->last_text, array('class' => 'item last')) ?>
+		<?php endif; ?>
+
+	</div>
 	<?php endif; ?>
 
-	<?php if ($this->next_url): ?>
-	<li class="next"><?= HTML::anchor($this->next_url, $this->next_text) ?></li>
-	<?php endif; ?>
-
-</ul>
+</div>
 
 <?php
 
@@ -219,29 +225,27 @@ class View_Generic_Pagination extends View_Base {
 		$previous = 1;
 ?>
 
-<div class="pagination pagination-centered">
-	<ul>
+<div class="ui borderless pagination menu">
 
-		<?php if ($this->previous_url): ?>
-		<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
-		<?php else: ?>
-		<li class="previous disabled"><span><?= $this->previous_text ?></span></li>
+	<?php if ($this->previous_url): ?>
+	<?= HTML::anchor($this->previous_url, $this->previous_text, array('class' => 'item previous')) ?>
+	<?php else: ?>
+	<span class="disabled item previous"><?= $this->previous_text ?></span>
+	<?php endif; ?>
+
+	<?php foreach ($range as $page): ?>
+		<?php if ($page - $previous > 1): ?>
+	<span class="disabled item">&hellip;</span>
 		<?php endif; ?>
+	<?= HTML::anchor($this->url($page), $page, array('class' => ($page == $this->current_page ? 'active ' : '') . 'item')) ?>
+	<?php $previous = $page; endforeach; ?>
 
-		<?php foreach ($range as $page): ?>
-			<?php if ($page - $previous > 1): ?>
-		<li class="disabled"><span>&hellip;</span></li>
-			<?php endif; ?>
-		<li<?= $page == $this->current_page ? ' class="active"' : '' ?>><?= HTML::anchor($this->url($page), $page) ?></li>
-		<?php $previous = $page; endforeach; ?>
+	<?php if ($this->next_url): ?>
+	<?= HTML::anchor($this->next_url, $this->next_text, array('class' => 'item next')) ?>
+	<?php else: ?>
+	<span class="disabled item next"><?= $this->next_text ?></span>
+	<?php endif; ?>
 
-		<?php if ($this->next_url): ?>
-		<li class="next"><?= HTML::anchor($this->next_url, $this->next_text) ?></li>
-		<?php else: ?>
-		<li class="next disabled"><span><?= $this->next_text ?></span></li>
-		<?php endif; ?>
-
-	</ul>
 </div>
 
 <?php

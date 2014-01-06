@@ -151,9 +151,9 @@ class Anqh_View_Page extends View_Base {
 
 			$spans = explode('+', $this->spans);
 			switch ($column):
-				case self::COLUMN_MAIN: $class = 'span' . $spans[0]; break;
-				case self::COLUMN_SIDE: $class = 'span' . $spans[1]; break;
-				case self::COLUMN_TOP:  $class = 'span12'; break;
+				case self::COLUMN_MAIN: $class = 'eleven wide column'; break;
+				case self::COLUMN_SIDE: $class = 'five wide column'; break;
+				case self::COLUMN_TOP:  $class = 'sixteen wide column'; break;
 				default:                $class = '';
 			endswitch;
 
@@ -188,13 +188,13 @@ class Anqh_View_Page extends View_Base {
 
 	<?= $this->_title() ?>
 
-	<div class="row-fluid">
+	<div class="ui grid">
 
 		<?= $this->content(self::COLUMN_TOP) ?>
 
 	</div>
 
-	<div class="row-fluid">
+	<div class="stackable ui grid">
 
 		<?= $this->content(self::COLUMN_MAIN) ?>
 
@@ -303,18 +303,21 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<nav role="navigation">
-	<ul role="menubar" class="nav nav-pills">
-		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
-		<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], HTML::chars($item['text'])) ?></li>
-		<?php endforeach ?>
-	</ul>
+<nav role="menubar" class="ui center aligned secondary menu">
+	<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
+	<?= HTML::anchor($item['url'], HTML::chars($item['text']), array(
+			'role' => 'menuitem',
+			'class' => ($id == $this->id ? 'active ' : '') . 'item'
+		)) ?>
+	<?php endforeach ?>
 </nav>
 
-<div class="row-fluid">
+<div class="ui three column grid">
+	<div class="row">
 
 	<?= $this->footer() ?>
 
+	</div>
 </div>
 
 <hr />
@@ -410,21 +413,25 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="mainmenu" role="menubar" class="ui fixed menu inverted">
-		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<?= HTML::anchor($item['url'], '<!--<i class="' . $item['icon'] . ' icon"></i> --><span>' . $item['text'] . '</span>', array(
-				'role'  => 'menuitem',
-				'class' => ($id == $this->id ? 'active ' : '') . 'item'
-			)) ?>
-		<?php endforeach; ?>
+	<nav id="mainmenu" role="menubar" class="ui menu inverted">
+		<div class="container">
 
-		<div class="right menu">
-		<?php if (self::$_user_id):
-			echo $this->_search();
-			echo $this->_visitor();
-		else:
-			echo $this->_signin();
-		endif; ?>
+			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
+				<?= HTML::anchor($item['url'], '<!--<i class="' . $item['icon'] . ' icon"></i> --><span>' . $item['text'] . '</span>', array(
+					'role'  => 'menuitem',
+					'class' => ($id == $this->id ? 'active ' : '') . 'item'
+				)) ?>
+			<?php endforeach; ?>
+
+			<div class="right menu">
+			<?php if (self::$_user_id):
+				echo $this->_search();
+				echo $this->_visitor();
+			else:
+				echo $this->_signin();
+			endif; ?>
+			</div>
+			
 		</div>
 	</nav><!-- #mainmenu -->
 
@@ -453,61 +460,30 @@ class Anqh_View_Page extends View_Base {
 
 <?= $this->_mainmenu() ?>
 
-	<table id="body">
-		<tbody>
-			<tr>
+	<div class="main container">
 
-				<th id="sidebar" rowspan="2">
+		<!-- ADS -->
 
+		<?= Ads::slot(Ads::TOP) ?>
 
-				</th><!-- /#sidebar -->
-
-				<th id="topbar">
-
-					<?= $this->_header() ?>
-
-				</th><!-- /#topbar -->
-
-			</tr>
-			<tr>
-
-				<td id="maincontent">
-					<div class="background-container">
-						<div class="container-fluid">
-
-							<!-- ADS -->
-
-							<?= Ads::slot(Ads::TOP) ?>
-
-							<!-- /ADS -->
+		<!-- /ADS -->
 
 
-							<!-- CONTENT -->
+		<!-- CONTENT -->
 
-							<?= $this->_content() ?>
+		<?= $this->_content() ?>
 
-							<!-- /CONTENT -->
+		<!-- /CONTENT -->
 
-						</div>
-					</div>
+		<?= $this->_foot() ?>
 
-					<footer id="footer">
-						<div class="background-container">
-							<div class="container-fluid">
+	</div>
 
-							<?= $this->_footer() ?>
+	<footer class="container">
 
-							</div>
-						</div>
-					</footer><!-- #footer -->
+		<?= $this->_footer() ?>
 
-					<?= $this->_foot() ?>
-
-				</td><!-- /#maincontent -->
-
-			</tr>
-		</tbody>
-	</table>
+	</footer>
 
 	<!-- <?= $this->_statistics() ?> -->
 
@@ -716,83 +692,86 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-			<header id="title">
+<header id="title">
 
-				<?php if ($this->breadcrumbs): ?>
-				<nav class="breadcrumbs">
-					<?= implode(' &rsaquo; ', $this->breadcrumbs); ?>
-				</nav>
-				<?php endif; ?>
+	<?php if ($this->breadcrumbs): ?>
+	<nav class="breadcrumbs">
+		<?= implode(' &rsaquo; ', $this->breadcrumbs); ?>
+	</nav>
+	<?php endif; ?>
 
-				<?php if ($this->actions): ?>
-				<div class="actions">
-					<?php foreach ($this->actions as $action):
-							$attributes = $action;
-							unset($attributes['link'], $attributes['text']);
-							$attributes['class'] = $attributes['class'] ? 'btn ' . $attributes['class'] : 'btn btn-inverse';
+	<?php if ($this->actions): ?>
+	<div class="ui right floated compact menu">
+		<?php foreach ($this->actions as $action):
+				$attributes = $action;
+				unset($attributes['link'], $attributes['text']);
+				$attributes['class'] = $attributes['class'] ? 'item ' . $attributes['class'] : 'item';
 
-							echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
-						endforeach; ?>
-				</div>
-				<?php endif; ?>
+				echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+			endforeach; ?>
+	</div>
+	<?php endif; ?>
 
-				<?php if ($this->title_html || $this->title): ?>
-				<h1><?= $this->title_html ? $this->title_html : HTML::chars($this->title) ?></h1>
-				<?php endif; ?>
+	<?php if ($this->title_html || $this->title): ?>
+	<h1 class="ui header">
+		<?= $this->title_html ? $this->title_html : HTML::chars($this->title) ?>
 
-				<?php if ($this->subtitle): ?>
-				<p><?= $this->subtitle ?></p>
-				<?php endif; ?>
+		<?php if ($this->subtitle): ?>
+		<p class="sub header"><?= $this->subtitle ?></p>
+		<?php endif; ?>
+	</h1>
+	<?php endif; ?>
 
-				<?php if ($this->tabs): ?>
-				<ul class="nav nav-tabs">
 
-				<?php foreach ($this->tabs as $tab_id => $tab):
-						if (is_array($tab)):
+	<?php if ($this->tabs): ?>
+	<div class="ui secondary pointing menu">
 
-							// Tab is a link
-							$attributes = $tab;
-							unset($attributes['link'], $attributes['text'], $attributes['dropdown'], $attributes['active']);
+	<?php foreach ($this->tabs as $tab_id => $tab):
+			if (is_array($tab)):
 
-							if ($tab['dropdown']):
-								$attributes['class']      .= ' dropdown-toggle';
-								$attributes['data-toggle'] = 'dropdown';
-								$attributes['data-target'] = '#';
-				?>
+				// Tab is a link
+				$attributes = $tab;
+				unset($attributes['link'], $attributes['text'], $attributes['dropdown'], $attributes['active']);
 
-					<li class="dropdown<?= $tab_id === $this->tab ? ' active' : '' ?>">
-						<?= HTML::anchor($tab['link'], $tab['text'] . ' <span class="caret"></span>', $attributes) ?>
-						<ul class="dropdown-menu">
-							<?php foreach ($tab['dropdown'] as $dropdown): ?>
-								<?php if ($dropdown['divider']): ?>
-							<li class="divider"></li>
-								<?php else: ?>
-							<li><?= HTML::anchor(Arr::get_once($dropdown, 'link'), Arr::get_once($dropdown, 'text'), $dropdown) ?></li>
-								<?php endif; ?>
-							<?php endforeach; ?>
-						</ul>
-					</li>
+				$attributes['class'] .= ($tab_id === $this->tab ? ' active' : '') . ' item';
 
-				<?php
+				if ($tab['dropdown']):
+	?>
 
-							else:
-								echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . HTML::anchor($tab['link'], $tab['text'], $attributes) . '</li>';
-							endif;
+		<?= HTML::anchor($tab['link'], $tab['text'], $attributes) ?>
+		<div class="ui dropdown item<?= ($tab_id === $this->tab ? ' active' : '') ?>">
+			<i class="dropdown icon"></i>
+			<div class="menu">
+				<?php foreach ($tab['dropdown'] as $dropdown): ?>
+					<?php if ($dropdown['divider']): ?>
+				<div class="ui divider"></div>
+					<?php else: ?>
+				<?= HTML::anchor($dropdown['link'], $dropdown['text'], array('class' => 'item')) ?>
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</div>
+		</div>
 
-						else:
+	<?php
 
-							// Action is HTML
-							echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
+				else:
+					echo HTML::anchor($tab['link'], $tab['text'], $attributes);
+				endif;
 
-						endif;
-					endforeach;
+			else:
 
-				?>
+				// Action is HTML
+				echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
 
-				</ul>
-				<?php endif; ?>
+			endif;
+		endforeach;
 
-			</header>
+	?>
+
+	</div>
+	<?php endif; ?>
+
+</header>
 
 <?php
 

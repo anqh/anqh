@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2012 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Events_List extends View_Section {
@@ -38,24 +38,28 @@ class View_Events_List extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		if (!$this->events) {
+		if (!$this->events):
 			return '';
-		}
+		endif;
 
 		ob_start();
 
 ?>
 
-<ul class="unstyled">
+<div class="ui small feed">
 
-	<?php foreach ($this->events as $event) { ?>
-	<li>
-		<time title="<?php echo Date::format(Date::DATETIME, $event->stamp_begin) . ($event->stamp_end ? ' - ' . Date::format(Date::TIME, $event->stamp_end) : '') ?>"><?php echo Date::format(Date::DM_PADDED, $event->stamp_begin) ?></time>
-		<?php echo HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable', 'title' => HTML::chars($event->name))) ?>
-	</li>
-	<?php } ?>
+	<?php foreach ($this->events as $event): ?>
+	<div class="event">
+		<div class="content">
+			<div class="summary">
+				<small title="<?php echo Date::format(Date::DATETIME, $event->stamp_begin) . ($event->stamp_end ? ' - ' . Date::format(Date::TIME, $event->stamp_end) : '') ?>"><?php echo Date::format(Date::DM_PADDED, $event->stamp_begin) ?></small>
+				<?= HTML::anchor(Route::model($event), HTML::chars($event->name), array('class' => 'hoverable', 'title' => HTML::chars($event->name))) ?>
+			</div>
+		</div>
+	</div>
+	<?php endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 

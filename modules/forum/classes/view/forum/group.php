@@ -42,22 +42,22 @@ class View_Forum_Group extends View_Section {
 
 ?>
 
-<ol class="unstyled">
+<div class="ui small feed">
 	<?php foreach ($this->groups as $group): ?>
 
-	<li>
-		<h4><?= HTML::chars($group->name) ?></h4>
-		<ol class="unstyled">
+	<h4 class="ui header"><?= HTML::chars($group->name) ?></h4>
 
 <?php
 
 		$areas = $group->areas();
 		if (count($areas)):
+
 			foreach ($areas as $area):
 
 ?>
 
-			<li>
+	<div class="event">
+		<div class="content">
 
 <?php
 				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$_user)):
@@ -66,55 +66,59 @@ class View_Forum_Group extends View_Section {
 					if ($area->topic_count > 0):
 						$last_topic = $area->last_topic();
 						if ($last_topic->last_posted):
-							echo '<small class="pull-right muted">' . HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) . '</small>';
+							echo '<small class="date">' . HTML::time(Date::short_span($last_topic->last_posted, true, true), $last_topic->last_posted) . '</small>';
 						endif;
 					endif;
 
-					echo HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable'));
-
-				elseif ($area->status != Model_Forum_Area::STATUS_HIDDEN):
-
-					// Can't read area
-					echo HTML::chars($area->name);
-
-				endif;
-
 ?>
 
-			</li>
+			<div class="summary">
+				<?= HTML::anchor(Route::model($area), HTML::chars($area->name), array('class' => 'hoverable')) ?>
+			</div>
+
+<?php elseif ($area->status != Model_Forum_Area::STATUS_HIDDEN): ?>
+
+			<div class="summary">
+				<?= HTML::chars($area->name) ?>
+			</div>
+
+<?php endif; ?>
+
+		</div>
+	</div>
 
 <?php
 
-			endforeach;
+			endforeach; // Areas
 
-		else:
+		else: // Areas
 
 ?>
 
-			<li>
+	<div class="event">
+		<div class="content">
+			<div class="summary">
 				<?= __('No areas available.') ?><br>
 
 				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$_user)): ?>
-					<?= HTML::anchor(Route::model($group, 'edit'), '<i class="icon-edit"></i> ' . __('Edit group'), array('class' => 'btn btn-inverse')) ?>
+					<?= HTML::anchor(Route::model($group, 'edit'), '<i class="edit icon"></i> ' . __('Edit group'), array('class' => 'ui tiny secondary button')) ?>
 				<?php endif; ?>
 
 				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$_user)): ?>
-					<?= HTML::anchor(Route::model($group, 'add'), '<i class="icon-plus-sign"></i> ' . __('New area'), array('class' => 'btn btn-primary')) ?>
+					<?= HTML::anchor(Route::model($group, 'add'), '<i class="add sign icon"></i> ' . __('New area'), array('class' => 'ui tiny primary button')) ?>
 				<?php endif; ?>
 
-			</li>
+			</div>
+		</div>
+	</div>
 
 <?php
 
 		endif;
+	endforeach; // Groups
 
 ?>
-
-		</ol>
-	</li>
-
-	<?php endforeach; ?>
-	</ol>
+</div>
 
 <?php
 

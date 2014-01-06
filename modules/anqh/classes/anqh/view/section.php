@@ -100,9 +100,11 @@ class Anqh_View_Section extends View_Base {
 		if ($title || $subtitle || $tabs):
 			ob_start();
 
-			$attributes = array();
+			$attributes = array(
+				'class' => '', //'top attached secondary ui segment'
+			);
 			if ($this->title_sticky):
-				$attributes['class'] = 'sticky';
+				$attributes['class'] .= 'sticky';
 			endif;
 			if ($avatar = $this->avatar()):
 				$attributes['class'] .= ' media';
@@ -112,32 +114,34 @@ class Anqh_View_Section extends View_Base {
 
 <header<?= HTML::attributes($attributes) ?>>
 
-	<?php if ($avatar): ?>
-	<div class="pull-left"><?= $avatar ?></div>
-	<div class="media-body">
-	<?php endif; ?>
-
 	<?php if ($title): ?>
-	<h3><?= $title ?></h3>
-	<?php endif; ?>
+	<h3 class="ui <?= ($tabs ? '' : 'dividing') ?> header">
 
-	<?php if ($subtitle): ?>
-	<p><?= $subtitle ?></p>
-	<?php endif; ?>
+		<?php if ($avatar): ?>
+		<?= $avatar ?>
+		<?php endif; ?>
 
-	<?php if ($tabs): ?>
-	<ul class="nav nav-<?= $this->tab_style ?>">
-		<?php foreach ($tabs as $tab): ?>
-		<li<?= !empty($tab['selected']) ? ' class="active"' : ''?>><?= $tab['tab'] ?></li>
-		<?php endforeach; ?>
-	</ul>
-	<?php endif; ?>
+		<?= $title ?>
 
-	<?php if ($avatar): ?>
-	</div>
+		<?php if ($subtitle): ?>
+		<p class="sub header"><?= $subtitle ?></p>
+		<?php endif; ?>
+	</h3>
 	<?php endif; ?>
 
 </header>
+
+<?php if ($tabs): ?>
+<div class="ui top attached tabular menu">
+	<?php foreach ($tabs as $tab): ?>
+		<?php if ($tab['url']): ?>
+	<?= HTML::anchor($tab['url'], $tab['text'], array('class' => 'item' . ($tab['selected'] ? ' active' : ''))) ?>
+		<?php else: ?>
+	<?= $tab['tab'] ?>
+		<?php endif; ?>
+	<?php endforeach; ?>
+</div>
+<?php endif; ?>
 
 <?php
 
@@ -165,18 +169,16 @@ class Anqh_View_Section extends View_Base {
 		// Section attributes
 		$attributes = array(
 			'id'    => $this->id,
-			'class' => $this->class,
+			'class' => 'ui ' . $this->class,
 			'role'  => $this->role,
 		);
 ?>
 
 <section<?= HTML::attributes($attributes) ?>>
 
-	<?= $this->header() ?>
+	<?= $has_header = $this->header() ?>
 
-	<div class="body">
-		<?= $this->content() ?>
-	</div>
+	<?= $this->content() ?>
 
 </section>
 

@@ -67,21 +67,24 @@ class View_Newsfeed extends View_Section {
 
 ?>
 
-<ul class="media-list">
+<div class="ui feed">
 
 	<?php foreach ($items as $item): ?>
-	<li class="media">
-		<div class="pull-left">
-			<?= HTML::avatar($item['user']['avatar'], $item['user']['username'], $this->mini) ?>
+	<div class="event">
+		<div class="label">
+			<?= HTML::avatar($item['user']['avatar'], $item['user']['username'], false) ?>
 		</div>
-		<div class="media-body">
-			<?= HTML::user($item['user']) ?> <small class="ago"><?= HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
-			<?= $item['text'] ?>
+		<div class="content">
+			<small class="date"><?= HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
+			<div class="summary">
+				<?= HTML::user($item['user']) ?>
+				<?= $item['text'] ?>
+			</div>
 		</div>
-	</li>
+	</div>
 	<?php endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 
@@ -136,10 +139,14 @@ class View_Newsfeed extends View_Section {
 		if (self::$_user_id && $this->type !== self::TYPE_PERSONAL) {
 			$tabs[] = array(
 				'selected' => $this->type === self::TYPE_ALL,
+				'text'     => __('All'),
+				'url'      => Route::url('default') . '?newsfeed=' . self::TYPE_ALL,
 				'tab'      => HTML::anchor(Route::url('default') . '?newsfeed=' . self::TYPE_ALL, __('All')),
 			);
 			$tabs[] = array(
 				'selected' => $this->type === self::TYPE_FRIENDS,
+				'text'     => __('Friends'),
+				'url'      => Route::url('default') . '?newsfeed=' . self::TYPE_FRIENDS,
 				'tab'      => HTML::anchor(Route::url('default') . '?newsfeed=' . self::TYPE_FRIENDS, __('Friends')),
 			);
 		}
