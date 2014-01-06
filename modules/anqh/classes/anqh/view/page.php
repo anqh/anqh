@@ -151,8 +151,8 @@ class Anqh_View_Page extends View_Base {
 
 			$spans = explode('+', $this->spans);
 			switch ($column):
-				case self::COLUMN_MAIN: $class = 'eleven wide column'; break;
-				case self::COLUMN_SIDE: $class = 'five wide column'; break;
+				case self::COLUMN_MAIN: $class = 'ten wide column'; break;
+				case self::COLUMN_SIDE: $class = 'six wide column'; break;
 				case self::COLUMN_TOP:  $class = 'sixteen wide column'; break;
 				default:                $class = '';
 			endswitch;
@@ -431,7 +431,7 @@ class Anqh_View_Page extends View_Base {
 				echo $this->_signin();
 			endif; ?>
 			</div>
-			
+
 		</div>
 	</nav><!-- #mainmenu -->
 

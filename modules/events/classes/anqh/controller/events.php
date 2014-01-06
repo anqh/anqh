@@ -935,6 +935,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_events_hot() {
 		$section = new View_Events_List();
+		$section->class  = 'dark segment';
 		$section->title  = __('Hot events');
 		$section->events = Model_Event::factory()->find_hot(20);
 
@@ -949,6 +950,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_events_new() {
 		$section = new View_Events_List();
+		$section->class  = 'dark segment';
 		$section->title  = __('New events');
 		$section->events = Model_Event::factory()->find_new(15);
 
@@ -963,6 +965,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_events_updated() {
 		$section = new View_Events_List();
+		$section->class  = 'dark segment';
 		$section->title  = __('Updated events');
 		$section->events = Model_Event::factory()->find_modified(10);
 

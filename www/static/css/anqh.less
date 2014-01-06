@@ -1,7 +1,18 @@
 @import "mixins.less";
 
 // Variables
+@bodyColor:             #f5f2ed;
 @linkColor:             #00b7e4;
+@textColor:             #2b292b;
+@femaleColor:           #e4004d;
+@maleColor:             #00b7e4;
+@userColor:             rgba(106,106,106,0.7);
+@darkBodyColor:         #2b292b;
+@darkHeaderColor:       #c29d52;
+@darkTextColor:         #7b787b;
+@darkLightTextColor:    #474647;
+@darkUserColor:         #615f61;
+
 @sansFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
 @serifFontFamily:       Georgia, "Times New Roman", Times, serif;
 @monoFontFamily:        Monaco, Menlo, Consolas, "Courier New", monospace;
@@ -13,7 +24,7 @@
 
 html,
 body                                   { font-size: @baseFontSize; }
-body                                   { font-family: @baseFontFamily; }
+body                                   { background: @bodyColor; color: @textColor; font-family: @baseFontFamily; }
 a                                      { color: @linkColor; text-decoration: none; }
 a:hover                                { text-decoration: underline; }
 
@@ -28,6 +39,7 @@ a:hover                                { text-decoration: underline; }
   }
 
   // Collections
+  &.tabular.menu .active.item          { background: @bodyColor; border-bottom-color: @bodyColor; }
   &.menu.center.aligned                { text-align: center; }
   &.dropdown .menu                     {
     .divider + .item                   { border-top: 0 none; }
@@ -39,7 +51,39 @@ a:hover                                { text-decoration: underline; }
   }
 }
 
+// Dark container
+.ui.dark                               { background-color: @darkBodyColor; color: @darkTextColor;
+
+  h4                                   { color: @darkHeaderColor; }
+
+  // Elements
+  .ui.dividing.header                  { border-bottom-color: rgba(25, 25, 25, .5); }
+
+  // Views
+  .ui.feed                             {
+    .content .date                     { color: @darkLightTextColor; }
+    .content .summary                  { color: @darkTextColor; }
+  }
+
+  a.user                               { color: @darkUserColor; }
+  .male,
+  a.male                               { color: @maleColor; }
+  .female,
+  a.female                             { color: @femaleColor; }
+}
+
+
 .container                             { margin: 0 auto; max-width: 924px; }
+section.ui + section.ui                { margin-top: 2em; }
+
+a.user                                 { color: @userColor; }
+.male,
+a.male                                 { color: @maleColor; }
+.female,
+a.female                               { color: @femaleColor; }
+.friend,
+a.friend                               { font-weight: bold; }
+
 
 // Main menu
 #mainmenu                              {

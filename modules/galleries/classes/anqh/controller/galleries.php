@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Galleries extends Controller_Page {
@@ -1811,6 +1811,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 */
 	public function section_month_browser(array $months, $route = 'galleries', $action = 'browse', $year = null, $month = null) {
 		$section = new View_Generic_Months($months, $route, array('action' => $action));
+		$section->class = 'dark segment';
 		$section->year  = $year;
 		$section->month = $month;
 

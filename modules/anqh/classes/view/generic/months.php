@@ -66,17 +66,16 @@ class View_Generic_Months extends View_Section {
 
 ?>
 
-<nav>
-	<ol class="block-grid three-up">
+<div class="ui four column grid">
 
 	<?php foreach ($this->months as $years => $y): ?>
-		<li<?= $this->year == $years ? ' class="selected"' : '' ?>>
-			<h4><?= HTML::anchor(
+	<div class="column <?= $this->year == $years ? 'active' : ''?>">
+		<h5 class="ui header"><?= HTML::anchor(
 				Route::get($this->route)->uri(array_merge((array)$this->params, array(
 					'year'   => $years,
 				))),
 				$years == 1970 ? __('Unknown') : $years
-			) ?></h4>
+			) ?></h5>
 			<ol class="unstyled">
 
 			<?php foreach ($y as $m => $count): ?>
@@ -90,11 +89,11 @@ class View_Generic_Months extends View_Section {
 			<?php endforeach ?>
 
 			</ol><br />
-		</li>
+		</div>
 	<?php endforeach ?>
 
 	</ol>
-</nav>
+</div>
 
 <?php
 

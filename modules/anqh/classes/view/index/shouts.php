@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2013 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Index_Shouts extends View_Section {
@@ -53,17 +53,21 @@ class View_Index_Shouts extends View_Section {
 
 ?>
 
-<ul class="unstyled">
+<div class="ui small feed">
 
 	<?php foreach (array_reverse($shouts) as $shout) { ?>
-	<li>
-		<?= HTML::time(Date::format('HHMM', $shout['created']), array('datetime' => $shout['created'], 'class' => 'muted')) ?>
-		<?= HTML::user($shout['user_id']) ?>:
-		<?= Text::smileys(Text::auto_link_urls(HTML::chars($shout['shout']))) ?>
-	</li>
+	<div class="event">
+		<div class="content">
+			<?= HTML::time(Date::format('HHMM', $shout['created']), array('datetime' => $shout['created'], 'class' => 'date')) ?>
+			<div class="summary">
+				<?= HTML::user($shout['user_id']) ?>:
+				<?= Text::smileys(Text::auto_link_urls(HTML::chars($shout['shout']))) ?>
+			</div>
+		</div>
+	</div>
 	<?php } ?>
 
-</ul>
+</div>
 
 <?php if ($this->_can_shout) { ?>
 <form class="form-inline ajaxify" action="<?= Route::url('shouts', array('action' => 'shout')) ?>" method="post">

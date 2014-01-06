@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Venues extends Controller_Page {
@@ -553,7 +553,10 @@ class Anqh_Controller_Venues extends Controller_Page {
 	 * @param  Model_Venue[]  $venues
 	 */
 	public function section_venue_list($venues) {
-		return new View_Venues_List($venues);
+		$section = new View_Venues_List($venues);
+		$section->class = 'dark segment';
+
+		return $section;
 	}
 
 

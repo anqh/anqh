@@ -115,7 +115,7 @@ class Anqh_View_Section extends View_Base {
 <header<?= HTML::attributes($attributes) ?>>
 
 	<?php if ($title): ?>
-	<h3 class="ui <?= ($tabs ? '' : 'dividing') ?> header">
+	<h4 class="ui <?= ($tabs ? '' : 'dividing') ?> header">
 
 		<?php if ($avatar): ?>
 		<?= $avatar ?>
@@ -126,7 +126,7 @@ class Anqh_View_Section extends View_Base {
 		<?php if ($subtitle): ?>
 		<p class="sub header"><?= $subtitle ?></p>
 		<?php endif; ?>
-	</h3>
+	</h4>
 	<?php endif; ?>
 
 </header>

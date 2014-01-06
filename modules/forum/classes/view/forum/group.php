@@ -45,7 +45,7 @@ class View_Forum_Group extends View_Section {
 <div class="ui small feed">
 	<?php foreach ($this->groups as $group): ?>
 
-	<h4 class="ui header"><?= HTML::chars($group->name) ?></h4>
+	<h5 class="ui header"><?= HTML::chars($group->name) ?></h5>
 
 <?php
 

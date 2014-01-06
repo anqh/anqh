@@ -42,6 +42,7 @@ class Anqh_Controller_Users extends Controller_Page {
 	 */
 	public function section_birthdays() {
 		$section = new View_Users_Birthdays();
+		$section->class = 'dark segment';
 		$section->limit = 0;
 
 		return $section;
@@ -64,7 +65,10 @@ class Anqh_Controller_Users extends Controller_Page {
 	 * @return  View_Users_Online
 	 */
 	public function section_online() {
-		return new View_Users_Online();
+		$section = new View_Users_Online();
+		$section->class = 'dark segment';
+
+		return $section;
 	}
 
 }
