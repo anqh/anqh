@@ -888,7 +888,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Latest flyers
 		$flyers = Model_Flyer::factory()->find_latest(20);
 		if (count($flyers)) {
-			$this->view->add(View_Page::COLUMN_TOP, $this->section_flyers_latest($flyers));
+			$section = $this->section_flyers($flyers);
+			$section->title = __('Latest flyers');
+			$this->view->add(View_Page::COLUMN_TOP, $section);
 		}
 
 	}
@@ -1586,20 +1588,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @return  View_Flyers_Thumbs
 	 */
 	public function section_flyers($flyers) {
-		$section = new View_Flyers_Thumbs($flyers);
-
-		return $section;
-	}
-
-
-	/**
-	 * Get latest flyers.
-	 *
-	 * @param   Model_Flyer[]  $flyers
-	 * @return  View_Flyers_Latest
-	 */
-	public function section_flyers_latest($flyers) {
-		return new View_Flyers_Latest($flyers);
+		return new View_Flyers_Thumbs($flyers);
 	}
 
 
@@ -1612,7 +1601,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 */
 	public function section_galleries_thumbs($galleries, $years = false) {
 		$section = new View_Galleries_Thumbs($galleries);
-		$section->years        = $years;
+		$section->years = $years;
 
 		return $section;
 	}

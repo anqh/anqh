@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Galleries_Thumbs extends View_Section {
@@ -50,9 +50,10 @@ class View_Galleries_Thumbs extends View_Section {
 
 ?>
 
-<ul class="thumbnails">
+<div class="ui four items">
 
 <?php
+
 
 				$current_year = true;
 
@@ -63,12 +64,12 @@ class View_Galleries_Thumbs extends View_Section {
 				if ($year !== $current_year):
 					if ($current_year): ?>
 
-</ul>
+</div>
 
 <?php     endif; ?>
 
-<header><h3><?= $year ?></h3></header>
-<ul class="thumbnails">
+<h3 class="ui header"><?= $year ?></h3>
+<div class="ui four items">
 
 <?php
 
@@ -78,40 +79,27 @@ class View_Galleries_Thumbs extends View_Section {
 
 ?>
 
-	<li>
-		<a class="thumbnail" href="<?= Route::model($gallery) ?>">
-
+	<a class="item" href="<?= Route::model($gallery) ?>">
+		<div class="image">
 			<?= $default_image ? HTML::image($default_image->get_url('thumbnail', $gallery->dir)) : __('Thumbnail pending') ?>
+		</div>
 
-			<p class="description"><?= HTML::chars($gallery->name) ?></p>
+		<div class="content">
+			<p class="name"><?= HTML::chars($gallery->name) ?></p>
+		</div>
 
-<?php
+		<div class="extra">
+			<?= $gallery->image_count ?> <i class="retro camera icon"></i>
 
-			// Rating
-//				if ($gallery->rate_count > 0):
-//					echo HTML::rating($gallery->rate_total, $gallery->rate_count, false, true, true), '<br />';
-//				endif;
-
-			echo '<span class="stats">';
-
-			// Image count
-			echo '<i class="icon-camera-retro"></i> ', $gallery->image_count;
-
-			// Comment count
-			if ($gallery->comment_count > 0):
-				echo '<i class="icon-comment"></i> ', $gallery->comment_count;
-			endif;
-
-			echo '</span>';
-
-?>
-
-		</a>
-	</li>
+			<?php if ($gallery->comment_count > 0): ?>
+			<?= $gallery->comment_count ?> <i class="comment icon"></i>
+			<?php endif; ?>
+		</div>
+	</a>
 
 <?php endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 

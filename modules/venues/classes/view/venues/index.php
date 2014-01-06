@@ -62,7 +62,7 @@ class View_Venues_Index extends View_Section {
 
 ?>
 
-<div class="ui three column grid">
+<div class="ui four column grid">
 
 	<?php foreach ($this->_group_by_city() as $city => $venues): ?>
 
