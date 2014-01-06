@@ -25,6 +25,7 @@
 html,
 body                                   { font-size: @baseFontSize; }
 body                                   { background: @bodyColor; color: @textColor; font-family: @baseFontFamily; }
+small                                  { font-size: smaller; }
 a                                      { color: @linkColor; text-decoration: none; }
 a:hover                                { text-decoration: underline; }
 
@@ -43,6 +44,20 @@ a:hover                                { text-decoration: underline; }
   &.menu.center.aligned                { text-align: center; }
   &.dropdown .menu                     {
     .divider + .item                   { border-top: 0 none; }
+  }
+  &.table                              {
+    tr.left.aligned th,
+    tr.left.aligned td,
+    th.left.aligned,
+    td.left.aligned                    { text-align: left; }
+    tr.center.aligned th,
+    tr.center.aligned td,
+    th.center.aligned,
+    td.center.aligned                  { text-align: center; }
+    tr.right.aligned th,
+    tr.right.aligned td,
+    th.right.aligned,
+    td.right.aligned                   { text-align: right; }
   }
 
   // Views
@@ -75,6 +90,8 @@ a:hover                                { text-decoration: underline; }
 
 .container                             { margin: 0 auto; max-width: 924px; }
 section.ui + section.ui                { margin-top: 2em; }
+
+.nowrap                                { white-space: nowrap; }
 
 a.user                                 { color: @userColor; }
 .male,
