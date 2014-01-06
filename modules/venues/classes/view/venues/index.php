@@ -60,28 +60,23 @@ class View_Venues_Index extends View_Section {
 	public function content() {
 		ob_start();
 
-		foreach ($this->_group_by_city() as $city => $venues):
-
 ?>
 
-<article>
-	<header>
-		<h4><?= HTML::chars($city) ?></h4>
-	</header>
+<div class="ui three column grid">
 
-	<ul class="unstyled block-grid two-up">
-	<?php foreach ($venues as $venue): ?>
+	<?php foreach ($this->_group_by_city() as $city => $venues): ?>
 
-		<li><?= HTML::anchor(Route::model($venue), HTML::chars($venue->name)) ?></li>
+	<h4 class="ui dividing header"><?= HTML::chars($city) ?></h4>
+
+		<?php foreach ($venues as $venue): ?>
+		<?= HTML::anchor(Route::model($venue), HTML::chars($venue->name), array('class' => 'column')) ?>
+		<?php endforeach; ?>
 
 	<?php endforeach; ?>
-	</ul>
 
-</article>
+</div>
 
 <?php
-
-		endforeach;
 
 		return ob_get_clean();
 	}
