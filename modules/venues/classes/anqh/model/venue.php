@@ -43,7 +43,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_rules = array(
-		'name'                   => array('not_empty', 'max_length' => array(':value', 32)),
+		'name'                   => array('not_empty', 'max_length' => array(':value', 100)),
 		'description'            => array('max_length' => array(':value', 250)),
 		'homepage'               => array('url'),
 		'hours'                  => array('max_length' => array(':value', 250)),
