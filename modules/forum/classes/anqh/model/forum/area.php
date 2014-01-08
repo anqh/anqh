@@ -231,7 +231,7 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 			case self::PERMISSION_POST:
 		    return $user
 			    && ($this->access_write != self::WRITE_ADMINS
-				    && $this->area_type != self::TYPE_BIND
+//				    && $this->area_type != self::TYPE_BIND
 				    && $this->status != self::STATUS_HIDDEN
 				    || $user->has_role('admin')
 			    );
