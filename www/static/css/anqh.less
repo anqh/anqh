@@ -65,20 +65,30 @@ a:hover                                { text-decoration: underline; }
     .event                             { padding: .25em 0; }
   }
   &.items > .item                      { min-height: 245px; }
+
 }
 
-// Dark container
-.ui.dark                               { background-color: @darkBodyColor; color: @darkTextColor;
-
+// Secondary container
+.inverted.theme,
+.inverted.container,
+.inverted.theme aside,
+.mixed.theme aside                     { background-color: @darkBodyColor; color: @darkTextColor;
   h4                                   { color: @darkHeaderColor; }
 
-  // Elements
-  .ui.dividing.header                  { border-bottom-color: rgba(25, 25, 25, .5); }
+  // Semantic UI overrides
+  .ui                                  {
 
-  // Views
-  .ui.feed                             {
-    .content .date                     { color: @darkLightTextColor; }
-    .content .summary                  { color: @darkTextColor; }
+    // Elements
+    &.dividing.header                  { border-bottom-color: rgba(25, 25, 25, .5); }
+
+    // Collections
+
+    // Views
+    &.feed                             {
+      .content .date                   { color: @darkLightTextColor; }
+      .content .summary                { color: @darkTextColor; }
+    }
+
   }
 
   a.user                               { color: @darkUserColor; }
@@ -89,8 +99,10 @@ a:hover                                { text-decoration: underline; }
 }
 
 
-.container                             { margin: 0 auto; max-width: 924px; }
-section.ui + section.ui                { margin-top: 2em; }
+.container > .ui                       { margin: 0 auto; max-width: 924px; }
+section + section,
+section + aside,
+aside + aside                          { margin-top: 2em; }
 
 .nowrap                                { white-space: nowrap; }
 

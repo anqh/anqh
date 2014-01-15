@@ -58,7 +58,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_birthdays() {
 		$section = new View_Users_Birthdays();
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}
@@ -71,7 +71,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_friend_suggestions() {
 		$section = new View_Users_FriendSuggestions(self::$user, 5);
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}
@@ -85,7 +85,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	public function section_news() {
 		$section = new View_Topics_List(Model_Forum_Topic::factory()->find_news(10));
 		$section->title = __('News');
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}
@@ -112,7 +112,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_online() {
 		$section = new View_Users_Online();
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}
@@ -125,7 +125,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_shouts() {
 		$section = new View_Index_Shouts();
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}

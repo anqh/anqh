@@ -4,21 +4,28 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Page extends View_Base {
 
-	const COLUMN_MAIN = 'main';
-	const COLUMN_SIDE = 'side';
-	const COLUMN_TOP  = 'top';
-	const SPANS_93    = '9+3';
-	const SPANS_84    = '8+4';
-	const SPANS_82    = '8+2';
-	const SPANS_73    = '7+3';
-	const SPANS_66    = '6+6';
-	const SPANS_64    = '6+4';
-	const SPANS_55    = '5+5';
+	const COLUMN_BOTTOM = 'bottom';
+	const COLUMN_CENTER = 'center';
+	const COLUMN_FOOTER = 'footer';
+	const COLUMN_LEFT   = 'left';
+	const COLUMN_RIGHT  = 'right';
+	const COLUMN_TOP    = 'top';
+
+	// Deprecated
+	const COLUMN_MAIN   = 'main';
+	const COLUMN_SIDE   = 'side';
+	const SPANS_93      = '9+3';
+	const SPANS_84      = '8+4';
+	const SPANS_82      = '8+2';
+	const SPANS_73      = '7+3';
+	const SPANS_66      = '6+6';
+	const SPANS_64      = '6+4';
+	const SPANS_55      = '5+5';
 
 	/**
 	 * @var  array  Page actions
@@ -39,6 +46,11 @@ class Anqh_View_Page extends View_Base {
 	 * @var  array  Column contents
 	 */
 	protected $_content = array();
+
+	/**
+	 * @var  array  Column classes
+	 */
+	protected $_content_class = array();
 
 	/**
 	 * @var  string  Page language
@@ -147,25 +159,33 @@ class Anqh_View_Page extends View_Base {
 		endif;
 
 		if (!empty($this->_content[$column])):
+			$left   = !empty($this->_content[self::COLUMN_LEFT]);
+			$center = !empty($this->_content[self::COLUMN_CENTER]);
+			$right  = !empty($this->_content[self::COLUMN_RIGHT]);
 			ob_start();
 
-			$spans = explode('+', $this->spans);
 			switch ($column):
-				case self::COLUMN_MAIN: $class = 'ten wide column'; break;
-				case self::COLUMN_SIDE: $class = 'six wide column'; break;
-				case self::COLUMN_TOP:  $class = 'sixteen wide column'; break;
-				default:                $class = '';
+				case self::COLUMN_LEFT:   $class = $center && $right ? 'four wide column' : ($center ? 'six wide column' : 'eight wide column'); break;
+				case self::COLUMN_CENTER: $class = $left && $right ? 'eight wide column' : ($left || $right ? 'ten wide column' : 'sixteen wide column'); break;
+				case self::COLUMN_RIGHT:  $class = $left && $center ? 'four wide column' : ($center ? 'six wide column' : 'eight wide column'); break;
+				case self::COLUMN_FOOTER: $class = 'row'; break;
+
+				// Deprecated
+				case self::COLUMN_MAIN:   $class = 'ten wide column'; break;
+				case self::COLUMN_SIDE:   $class = 'six wide column'; break;
+
+				default:                  $class = 'sixteen wide column';
 			endswitch;
 
 ?>
 
-			<div id="<?= $column ?>" class="<?= $class ?>">
+			<div id="<?= $column ?>-column" class="<?= $class ?>">
 
 				<?= implode("\n", $this->_content[$column]) ?>
 
 				<?= /*$column === self::COLUMN_SIDE ? '' :*/ Ads::slot($column) ?>
 
-			</div><!-- #<?= $column ?> -->
+			</div><!-- #<?= $column ?>-column -->
 
 <?php
 
@@ -188,19 +208,38 @@ class Anqh_View_Page extends View_Base {
 
 	<?= $this->_title() ?>
 
-	<div class="ui grid">
+	<?php if ($top = $this->content(self::COLUMN_TOP)): ?>
+	<div class="container <?= Arr::get($this->_content_class, self::COLUMN_TOP) ?>">
+		<div class="ui grid">
 
-		<?= $this->content(self::COLUMN_TOP) ?>
+			<?= $top ?>
 
+		</div>
+	</div>
+	<?php endif; ?>
+
+	<div class="container <?= Arr::get($this->_content_class, self::COLUMN_CENTER) ?>">
+		<div class="stackable ui grid">
+
+			<?= $this->content(self::COLUMN_LEFT) ?>
+			<?= $this->content(self::COLUMN_CENTER) ?>
+			<?= $this->content(self::COLUMN_RIGHT) ?>
+
+			<?= $this->content(self::COLUMN_MAIN) ?>
+			<?= $this->content(self::COLUMN_SIDE) ?>
+
+		</div>
 	</div>
 
-	<div class="stackable ui grid">
+	<?php if ($bottom = $this->content(self::COLUMN_BOTTOM)): ?>
+	<div class="container <?= Arr::get($this->_content_class, self::COLUMN_BOTTOM) ?>">
+		<div class="ui grid">
 
-		<?= $this->content(self::COLUMN_MAIN) ?>
+			<?= $bottom ?>
 
-		<?= $this->content(self::COLUMN_SIDE) ?>
-
+		</div>
 	</div>
+	<?php endif; ?>
 
 <?php
 
@@ -217,16 +256,6 @@ class Anqh_View_Page extends View_Base {
 		$view = get_called_class();
 
 		return new $view($title);
-	}
-
-
-	/**
-	 * Render additional foot.
-	 *
-	 * @return  string
-	 */
-	public function foot() {
-		return Widget::get('foot');
 	}
 
 
@@ -275,21 +304,11 @@ class Anqh_View_Page extends View_Base {
 
 <?php
 
-		echo $this->foot();
+		echo Widget::get('foot');
 
 		echo Ads::foot();
 
 		return ob_get_clean();
-	}
-
-
-	/**
-	 * Render additional <footer>.
-	 *
-	 * @return  string
-	 */
-	public function footer() {
-		return Widget::get('footer');
 	}
 
 
@@ -303,43 +322,37 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<nav role="menubar" class="ui center aligned secondary menu">
-	<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
-	<?= HTML::anchor($item['url'], HTML::chars($item['text']), array(
-			'role' => 'menuitem',
-			'class' => ($id == $this->id ? 'active ' : '') . 'item'
-		)) ?>
-	<?php endforeach ?>
-</nav>
+<footer class="container">
+	<div class="ui">
 
-<div class="ui three column grid">
-	<div class="row">
+		<nav role="menubar" class="ui center aligned secondary menu">
+			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
+			<?= HTML::anchor($item['url'], HTML::chars($item['text']), array(
+					'role' => 'menuitem',
+					'class' => ($id == $this->id ? 'active ' : '') . 'item'
+				)) ?>
+			<?php endforeach ?>
+		</nav>
 
-	<?= $this->footer() ?>
+		<div class="ui three column grid">
+
+			<?= $this->content(self::COLUMN_FOOTER) ?>
+
+		</div>
+
+		<hr />
+
+		<small class="muted copyright">
+			&copy; 2000&ndash;<?= date('Y')?> <?= Kohana::$config->load('site.site_name') ?><br>
+			Powered by <?= HTML::anchor('https://github.com/anqh/anqh', 'Anqh v' . Anqh::VERSION, array('target' => '_blank')) ?>
+		</small>
 
 	</div>
-</div>
-
-<hr />
-
-<small class="muted copyright">
-	&copy; 2000&ndash;<?= date('Y')?> <?= Kohana::$config->load('site.site_name') ?><br>
-	Powered by <?= HTML::anchor('https://github.com/anqh/anqh', 'Anqh v' . Anqh::VERSION, array('target' => '_blank')) ?>
-</small>
+</footer>
 
 <?php
 
 		return ob_get_clean();
-	}
-
-
-	/**
-	 * Render additional <head>.
-	 *
-	 * @return  string
-	 */
-	public function head() {
-		return Widget::get('head');
 	}
 
 
@@ -366,10 +379,9 @@ class Anqh_View_Page extends View_Base {
 	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
 	<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
 
-	<?= $this->head(); ?>
+	<?= Widget::get('head'); ?>
 
 	<?= Ads::head() ?>
-
 </head>
 
 <?php
@@ -390,12 +402,12 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<header>
-		<div class="pull-left">
-			<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-			<?= ($this->id != 'home' && $menu) ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
-		</div>
-	</header>
+<header>
+	<div class="pull-left">
+		<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+		<?= ($this->id != 'home' && $menu) ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
+	</div>
+</header>
 
 <?php
 
@@ -413,27 +425,27 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="mainmenu" role="menubar" class="ui menu inverted">
-		<div class="container">
+<nav id="mainmenu" role="menubar" class="container ui inverted menu">
+	<div class="ui">
 
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-				<?= HTML::anchor($item['url'], '<!--<i class="' . $item['icon'] . ' icon"></i> --><span>' . $item['text'] . '</span>', array(
-					'role'  => 'menuitem',
-					'class' => ($id == $this->id ? 'active ' : '') . 'item'
-				)) ?>
-			<?php endforeach; ?>
+		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
+			<?= HTML::anchor($item['url'], '<!--<i class="' . $item['icon'] . ' icon"></i> --><span>' . $item['text'] . '</span>', array(
+				'role'  => 'menuitem',
+				'class' => ($id == $this->id ? 'active ' : '') . 'item'
+			)) ?>
+		<?php endforeach; ?>
 
-			<div class="right menu">
-			<?php if (self::$_user_id):
-				echo $this->_search();
-				echo $this->_visitor();
-			else:
-				echo $this->_signin();
-			endif; ?>
-			</div>
-
+		<div class="right menu">
+		<?php if (self::$_user_id):
+			echo $this->_search();
+			echo $this->_visitor();
+		else:
+			echo $this->_signin();
+		endif; ?>
 		</div>
-	</nav><!-- #mainmenu -->
+
+	</div>
+</nav><!-- #mainmenu -->
 
 <?php
 
@@ -460,32 +472,32 @@ class Anqh_View_Page extends View_Base {
 
 <?= $this->_mainmenu() ?>
 
-	<div class="main container">
+	<!-- ADS -->
 
-		<!-- ADS -->
+	<div class="ads container">
+		<div class="ui">
 
-		<?= Ads::slot(Ads::TOP) ?>
+			<?= Ads::slot(Ads::TOP) ?>
 
-		<!-- /ADS -->
-
-
-		<!-- CONTENT -->
-
-		<?= $this->_content() ?>
-
-		<!-- /CONTENT -->
-
-		<?= $this->_foot() ?>
-
+		</div>
 	</div>
 
-	<footer class="container">
+	<!-- /ADS -->
 
-		<?= $this->_footer() ?>
 
-	</footer>
+<!-- CONTENT -->
 
-	<!-- <?= $this->_statistics() ?> -->
+<?= $this->_content() ?>
+
+<!-- /CONTENT -->
+
+
+<?= $this->_foot() ?>
+
+<?= $this->_footer() ?>
+
+
+<!-- <?= $this->_statistics() ?> -->
 
 </body>
 
@@ -692,85 +704,87 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<header id="title">
+<header id="title" class="container">
+	<div class="ui">
 
-	<?php if ($this->breadcrumbs): ?>
-	<nav class="breadcrumbs">
-		<?= implode(' &rsaquo; ', $this->breadcrumbs); ?>
-	</nav>
-	<?php endif; ?>
-
-	<?php if ($this->actions): ?>
-	<div class="ui right floated compact menu">
-		<?php foreach ($this->actions as $action):
-				$attributes = $action;
-				unset($attributes['link'], $attributes['text']);
-				$attributes['class'] = $attributes['class'] ? 'item ' . $attributes['class'] : 'item';
-
-				echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
-			endforeach; ?>
-	</div>
-	<?php endif; ?>
-
-	<?php if ($this->title_html || $this->title): ?>
-	<h1 class="ui header">
-		<?= $this->title_html ? $this->title_html : HTML::chars($this->title) ?>
-
-		<?php if ($this->subtitle): ?>
-		<p class="sub header"><?= $this->subtitle ?></p>
+		<?php if ($this->breadcrumbs): ?>
+		<nav class="breadcrumbs">
+			<?= implode(' &rsaquo; ', $this->breadcrumbs); ?>
+		</nav>
 		<?php endif; ?>
-	</h1>
-	<?php endif; ?>
 
+		<?php if ($this->actions): ?>
+		<div class="ui right floated compact menu">
+			<?php foreach ($this->actions as $action):
+					$attributes = $action;
+					unset($attributes['link'], $attributes['text']);
+					$attributes['class'] = $attributes['class'] ? 'item ' . $attributes['class'] : 'item';
 
-	<?php if ($this->tabs): ?>
-	<div class="ui secondary pointing menu">
-
-	<?php foreach ($this->tabs as $tab_id => $tab):
-			if (is_array($tab)):
-
-				// Tab is a link
-				$attributes = $tab;
-				unset($attributes['link'], $attributes['text'], $attributes['dropdown'], $attributes['active']);
-
-				$attributes['class'] .= ($tab_id === $this->tab ? ' active' : '') . ' item';
-
-				if ($tab['dropdown']):
-	?>
-
-		<?= HTML::anchor($tab['link'], $tab['text'], $attributes) ?>
-		<div class="ui dropdown item<?= ($tab_id === $this->tab ? ' active' : '') ?>">
-			<i class="dropdown icon"></i>
-			<div class="menu">
-				<?php foreach ($tab['dropdown'] as $dropdown): ?>
-					<?php if ($dropdown['divider']): ?>
-				<div class="ui divider"></div>
-					<?php else: ?>
-				<?= HTML::anchor($dropdown['link'], $dropdown['text'], array('class' => 'item')) ?>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			</div>
+					echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
+				endforeach; ?>
 		</div>
+		<?php endif; ?>
 
-	<?php
+		<?php if ($this->title_html || $this->title): ?>
+		<h1 class="ui header">
+			<?= $this->title_html ? $this->title_html : HTML::chars($this->title) ?>
+
+			<?php if ($this->subtitle): ?>
+			<p class="sub header"><?= $this->subtitle ?></p>
+			<?php endif; ?>
+		</h1>
+		<?php endif; ?>
+
+
+		<?php if ($this->tabs): ?>
+		<div class="ui secondary pointing menu">
+
+		<?php foreach ($this->tabs as $tab_id => $tab):
+				if (is_array($tab)):
+
+					// Tab is a link
+					$attributes = $tab;
+					unset($attributes['link'], $attributes['text'], $attributes['dropdown'], $attributes['active']);
+
+					$attributes['class'] .= ($tab_id === $this->tab ? ' active' : '') . ' item';
+
+					if ($tab['dropdown']):
+		?>
+
+			<?= HTML::anchor($tab['link'], $tab['text'], $attributes) ?>
+			<div class="ui dropdown item<?= ($tab_id === $this->tab ? ' active' : '') ?>">
+				<i class="dropdown icon"></i>
+				<div class="menu">
+					<?php foreach ($tab['dropdown'] as $dropdown): ?>
+						<?php if ($dropdown['divider']): ?>
+					<div class="ui divider"></div>
+						<?php else: ?>
+					<?= HTML::anchor($dropdown['link'], $dropdown['text'], array('class' => 'item')) ?>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</div>
+			</div>
+
+		<?php
+
+					else:
+						echo HTML::anchor($tab['link'], $tab['text'], $attributes);
+					endif;
 
 				else:
-					echo HTML::anchor($tab['link'], $tab['text'], $attributes);
+
+					// Action is HTML
+					echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
+
 				endif;
+			endforeach;
 
-			else:
+		?>
 
-				// Action is HTML
-				echo '<li' . ($tab_id === $this->tab ? ' class="active"' : '') . '>' . $tab . '</li>';
-
-			endif;
-		endforeach;
-
-	?>
+		</div>
+		<?php endif; ?>
 
 	</div>
-	<?php endif; ?>
-
 </header>
 
 <?php

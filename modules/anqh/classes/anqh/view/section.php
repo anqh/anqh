@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Section extends View_Base {
@@ -17,6 +17,11 @@ class Anqh_View_Section extends View_Base {
 	 * @var  array  View articles
 	 */
 	public $articles = array();
+
+	/**
+	 * @var  boolean Supporting content
+	 */
+	public $aside = false;
 
 	/**
 	 * @var  string  Section avatar
@@ -80,11 +85,7 @@ class Anqh_View_Section extends View_Base {
 	 * @return  string
 	 */
 	public function content() {
-		if ($articles = $this->articles()) {
-			return implode("\n\n", $articles);
-		}
-
-		return '';
+		return implode("\n\n", $this->articles);
 	}
 
 
@@ -160,31 +161,31 @@ class Anqh_View_Section extends View_Base {
 	public function render() {
 
 		// Start benchmark
-		if (Kohana::$profiling === true and class_exists('Profiler', false)):
+		if (Kohana::$profiling === true && class_exists('Profiler', false)):
 			$benchmark = Profiler::start('View', __METHOD__ . '(' . get_called_class() . ')');
 		endif;
 
-		ob_start();
+		if ($this->aside):
 
-		// Section attributes
-		$attributes = array(
-			'id'    => $this->id,
-			'class' => 'ui ' . $this->class,
-			'role'  => $this->role,
-		);
-?>
+			$attributes = array(
+				'id'    => $this->id,
+				'class' => 'ui segment ' . $this->class,
+				'role'  => $this->role,
+			);
 
-<section<?= HTML::attributes($attributes) ?>>
+			$render = '<aside' . HTML::attributes($attributes) . '>' . $this->header() . $this->content() . '</aside>';
 
-	<?= $has_header = $this->header() ?>
+		else:
 
-	<?= $this->content() ?>
+			$attributes = array(
+				'id'    => $this->id,
+				'class' => $this->class,
+				'role'  => $this->role,
+			);
 
-</section>
+			$render = '<section' . HTML::attributes($attributes) . '>' . $this->header() . $this->content() . '</section>';
 
-<?php
-
-		$render = ob_get_clean();
+		endif;
 
 		// Stop benchmark
 		if (isset($benchmark)):
