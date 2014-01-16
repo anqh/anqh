@@ -85,7 +85,7 @@ class Anqh_View_Section extends View_Base {
 	 * @return  string
 	 */
 	public function content() {
-		return implode("\n\n", $this->articles);
+		return implode("\n\n", $this->articles());
 	}
 
 
@@ -116,7 +116,7 @@ class Anqh_View_Section extends View_Base {
 <header<?= HTML::attributes($attributes) ?>>
 
 	<?php if ($title): ?>
-	<h4 class="ui <?= ($tabs ? '' : 'dividing') ?> header">
+	<h4 class="ui <?= ($tabs && $this->tab_style == self::TAB_TAB ? '' : 'dividing') ?> header">
 
 		<?php if ($avatar): ?>
 		<?= $avatar ?>
@@ -133,7 +133,7 @@ class Anqh_View_Section extends View_Base {
 </header>
 
 <?php if ($tabs): ?>
-<div class="ui top attached tabular menu">
+<div class="ui <?= $this->tab_style == self::TAB_TAB ? 'top attached tabular' : 'compact secondary right aligned' ?> menu">
 	<?php foreach ($tabs as $tab): ?>
 		<?php if ($tab['url']): ?>
 	<?= HTML::anchor($tab['url'], $tab['text'], array('class' => 'item' . ($tab['selected'] ? ' active' : ''))) ?>

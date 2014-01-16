@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Shouts extends Controller_Page {
@@ -13,13 +13,12 @@ class Anqh_Controller_Shouts extends Controller_Page {
 	 * Action: index
 	 */
 	public function action_index() {
+		$this->page_title = __('Shouts');
 
-		// Build page
-		$this->view = View_Page::factory(__('Shouts'));
-
-		// Shouts
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
-
+		$section = $this->section_shouts();
+		$section->limit = 50;
+		$section->title = null;
+		$this->view->add(View_Page::COLUMN_CENTER, $section);
 	}
 
 
@@ -45,7 +44,7 @@ class Anqh_Controller_Shouts extends Controller_Page {
 			return;
 		}
 
-		$this->request->redirect(Route::get('shouts')->uri());
+		$this->request->redirect(Route::url('shouts'));
 	}
 
 
@@ -55,13 +54,7 @@ class Anqh_Controller_Shouts extends Controller_Page {
 	 * @return  View_Index_Shouts
 	 */
 	public function section_shouts() {
-		$section = new View_Index_Shouts();
-
-		if (!$this->ajax) {
-			$section->title = null;
-		}
-
-		return $section;
+		return new View_Index_Shouts();
 	}
 
 }

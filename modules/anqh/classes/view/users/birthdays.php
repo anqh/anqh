@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Users_Birthdays extends View_Section {
@@ -36,15 +36,9 @@ class View_Users_Birthdays extends View_Section {
 	public function __construct() {
 		parent::__construct();
 
+		$this->title = HTML::anchor(Route::url('users'), __('Birthdays'));
+
 		$this->stamp = strtotime('today', time());
-
-		$this->title = __('Birthdays');
-
-		$this->tabs = array(
-			array(
-				'tab' => HTML::anchor(Route::url('users'), __('Show more')),
-			),
-		);
 	}
 
 
@@ -141,28 +135,28 @@ class View_Users_Birthdays extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		if ($birthdays = $this->_birthdays()) {
+		if ($birthdays = $this->_birthdays()):
 			ob_start();
 
 ?>
 
-<dl>
-	<?php foreach ($birthdays as $birthday) { ?>
-	<dt><?php echo Arr::get($birthday, 'date') ?> <?php echo Arr::get($birthday, 'link') ?></dt>
-	<dd>
-		<ul class="unstyled">
-			<?php foreach ($birthday['users'] as $user) { ?>
-			<li><?php echo __($user['age'] == 1 ? ':age year' : ':age years', array(':age' => $user['age'])) ?> <?php echo $user['user'] ?></li>
-			<?php } ?>
-		</ul>
+<dl class="ui small list">
+	<?php foreach ($birthdays as $birthday): ?>
+	<dt class="header"><?= Arr::get($birthday, 'date') ?> <?= Arr::get($birthday, 'link') ?></dt>
+	<dd class="item">
+		<ol class="content list">
+			<?php foreach ($birthday['users'] as $user): ?>
+			<li class="item"><?= __($user['age'] == 1 ? ':age year' : ':age years', array(':age' => $user['age'])) ?> <?= $user['user'] ?></li>
+			<?php endforeach; ?>
+		</ol>
 	</dd>
-	<?php } ?>
+	<?php endforeach; ?>
 </dl>
 
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}

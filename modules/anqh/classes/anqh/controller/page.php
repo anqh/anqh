@@ -118,6 +118,9 @@ head.js(
 			$this->view->language = $this->language;
 			$this->view->id       = $this->page_id;
 			$this->view->class    = $page_class;
+			if ($this->page_title) {
+				$this->view->title = $this->page_title;
+			}
 			if ($this->page_actions) {
 				$this->view->tabs = $this->page_actions;
 			}

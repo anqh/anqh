@@ -41,7 +41,8 @@ a:hover                                { text-decoration: underline; }
 
   // Collections
   &.tabular.menu .active.item          { background: @bodyColor; border-bottom-color: @bodyColor; }
-  &.menu.center.aligned                { text-align: center; }
+  &.center.aligned.menu                { text-align: center; }
+  &.right.aligned.menu                 { position: absolute; right: .5rem; top: .5rem; }
   &.dropdown .menu                     {
     .divider + .item                   { border-top: 0 none; }
   }
@@ -73,13 +74,15 @@ a:hover                                { text-decoration: underline; }
 .inverted.container,
 .inverted.theme aside,
 .mixed.theme aside                     { background-color: @darkBodyColor; color: @darkTextColor;
-  h4                                   { color: @darkHeaderColor; }
+  h4                                   { font-size: .8rem; }
 
   // Semantic UI overrides
   .ui                                  {
 
     // Elements
-    &.dividing.header                  { border-bottom-color: rgba(25, 25, 25, .5); }
+    &.header                           { color: @darkHeaderColor; text-align: center; text-transform: uppercase; }
+    &.header a                         { color: @darkHeaderColor; }
+    &.dividing.header                  { border-bottom-color: black; margin-bottom: 1em; padding-bottom: 1em; }
 
     // Collections
 
