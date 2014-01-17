@@ -12,7 +12,7 @@ class View_Forum_Topic extends View_Section {
 	/**
 	 * @var  string  View class
 	 */
-	public $class = 'topic speech';
+	public $class = 'ui comments';
 
 	/**
 	 * @var  Model_Forum_Topic

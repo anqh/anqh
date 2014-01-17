@@ -95,7 +95,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 */
 	public function section_groups($groups) {
 		$section = new View_Forum_Group($groups);
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}
@@ -109,7 +109,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 */
 	public function section_topic_list($topics) {
 		$section = new View_Topics_List($topics);
-		$section->class = 'dark segment';
+		$section->aside = true;
 
 		return $section;
 	}

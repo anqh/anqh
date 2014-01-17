@@ -28,6 +28,7 @@ body                                   { background: @bodyColor; color: @textCol
 small                                  { font-size: smaller; }
 a                                      { color: @linkColor; text-decoration: none; }
 a:hover                                { text-decoration: underline; }
+img                                    { max-width: 100%; }
 
 
 // Semantic UI overrides
@@ -35,6 +36,7 @@ a:hover                                { text-decoration: underline; }
 
   // Elements
   &.label a.detail                     { text-decoration: none; }
+  &.segment                            { border-radius: 0; }
   &.top.attached.segment               {
     .ui.tabular.menu                   { bottom: 0; margin-right: 1rem; position: absolute; right: 0; }
   }
@@ -62,6 +64,14 @@ a:hover                                { text-decoration: underline; }
   }
 
   // Views
+  &.comments                           {
+    .comment .attached.segment         { margin: 0; }
+    .comment .text                     { line-height: @baseLineHeight; }
+    .comment blockquote                { font-style: italic; }
+    .comment blockquote em,
+    .comment blockquote cite           { font-style: normal; }
+    .comment footer                    { font-family: @monoFontFamily; font-size: @baseFontSize - 2px; }
+  }
   &.feed.small                         {
     .event                             { padding: .25em 0; }
   }
@@ -74,14 +84,11 @@ a:hover                                { text-decoration: underline; }
 .inverted.container,
 .inverted.theme aside,
 .mixed.theme aside                     { background-color: @darkBodyColor; color: @darkTextColor;
-  h4                                   { font-size: .8rem; }
 
   // Semantic UI overrides
   .ui                                  {
 
     // Elements
-    &.header                           { color: @darkHeaderColor; text-align: center; text-transform: uppercase; }
-    &.header a                         { color: @darkHeaderColor; }
     &.dividing.header                  { border-bottom-color: black; margin-bottom: 1em; padding-bottom: 1em; }
 
     // Collections
@@ -92,6 +99,12 @@ a:hover                                { text-decoration: underline; }
       .content .summary                { color: @darkTextColor; }
     }
 
+  }
+
+  header                               {
+    h4                                 { font-size: .8rem; }
+    .ui.header                         { color: @darkHeaderColor; font-weight: normal; letter-spacing: .125em; text-align: center; text-transform: uppercase; }
+    .ui.header a                       { color: @darkHeaderColor; }
   }
 
   a.user                               { color: @darkUserColor; }
@@ -109,13 +122,13 @@ aside + aside                          { margin-top: 2em; }
 
 .nowrap                                { white-space: nowrap; }
 
-a.user                                 { color: @userColor; }
+a.user                                 { color: @userColor; font-weight: bold; }
 .male,
 a.male                                 { color: @maleColor; }
 .female,
 a.female                               { color: @femaleColor; }
 .friend,
-a.friend                               { font-weight: bold; }
+a.friend                               { text-decoration: underline; }
 
 
 // Main menu

@@ -816,7 +816,7 @@ class Anqh_View_Page extends View_Base {
 
 <div class="ui dropdown item">
 
-	<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'ssmall') ?>
+	<?= HTML::avatar(self::$_user->avatar, self::$_user->username) ?>
 	<span><?= HTML::chars(self::$_user->username) ?></span> <i class="dropdown icon"></i>
 
 	<div class="menu" role="menu">

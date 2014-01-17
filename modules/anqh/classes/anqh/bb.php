@@ -234,7 +234,7 @@ class Anqh_BB extends BBCode {
 
 		// Add parent post
 		if (isset($post) && $post->loaded()) {
-			$quote = '<blockquote cite="' . URL::site(Route::model($post->topic())) . '?post=' . $post->id . '#post-' . $post->id . '">';
+			$quote = '<blockquote class="ui secondary segment" cite="' . URL::site(Route::model($post->topic())) . '?post=' . $post->id . '#post-' . $post->id . '">';
 
 			// Override author
 			$author = Model_User::find_user_light($post->author_id);
