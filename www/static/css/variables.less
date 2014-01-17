@@ -1,0 +1,127 @@
+//
+// Variables
+// --------------------------------------------------
+
+
+// GLOBAL VALUES
+// --------------------------------------------------
+
+
+// Grays
+// -------------------------
+@white:                      #fff;
+@gray-darkest:               #111;
+@black:                      #000;
+
+
+// Accent colors
+// -------------------------
+@brand-lovely:               #c3325f;
+@brand-special:              #7a43b6;
+
+// Scaffolding
+// -------------------------
+@body-bg:                    #1a1a1a;
+@text-color:                 @gray-light;
+
+
+// Links
+// -------------------------
+@anchor-color:               @gray-lighter;
+@anchor-hover-color:         darken(@anchor-color, 15%);
+
+
+// Typography
+// -------------------------
+@import url(http://fonts.googleapis.com/css?family=Roboto:900,100);
+
+@font-family-custom:         Roboto, @font-family-sans-serif;
+@font-weight-bold-custom:    900;
+@font-weight-light-custom:   100;
+
+@font-size-base:             12px;
+@line-height-base:           18px;
+
+@headings-font-family:       @font-family-custom;
+@headings-font-weight:       @font-weight-light-custom;
+
+@text-color-me:              mix(@brand-warning, @text-color);
+@text-color-owner:           mix(@brand-success, @text-color);
+@text-color-admin:           @brand-info;
+
+
+// Component sizing
+// -------------------------
+@sidebar-width:              60px;
+@topbar-height:              40px;
+
+
+// Tables
+// -------------------------
+@table-bg-accent:            rgba(0, 0, 0, .05); // for striping
+@table-border:               @gray-dark; // table and cell border
+
+
+// Buttons
+// -------------------------
+@btn-lovely-color:              #fff;
+@btn-lovely-bg:                 @brand-lovely;
+@btn-lovely-border:             darken(@btn-lovely-bg, 5%);
+
+@btn-special-color:             #fff;
+@btn-special-bg:                @brand-special;
+@btn-special-border:            darken(@btn-special-bg, 5%);
+
+
+// Forms
+// -------------------------
+@input-bg:                   #202020;
+@input-border:               @gray-darkest;
+@input-bg-disabled:          @gray-dark;
+@input-color-placeholder:    @gray;
+
+
+// Dropdowns
+// -------------------------
+@dropdown-bg:                #161616;
+@dropdown-border:            #1f1f1f;
+@dropdown-divider-top:       @black;
+@dropdown-divider-bottom:    @gray-darker;
+
+@dropdown-link-color:        @link-color;
+@dropdown-link-active-color: @dropdown-link-color;
+
+
+
+
+// COMPONENT VARIABLES
+// --------------------------------------------------
+
+
+// Sprite icons path
+// -------------------------
+@icon-ajax-path:             '../img/ajax.gif';
+
+
+// Hr border color
+// -------------------------
+@hr-border:                  @black;
+
+
+// Wells
+// -------------------------
+@well-bg:                    #202020;
+
+
+// Pagination
+// -------------------------
+@pagination-bg:              @black;
+@pagination-border:          @gray-darkest;
+@pagination-active-bg:       @gray-dark;
+
+
+// Tooltips and popovers
+// -------------------------
+@popover-bg:                 @gray-darker;
+@popover-arrow-color:        @gray-darker;
+@popover-title-bg:           darken(@popover-bg, 3%);
