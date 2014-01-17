@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2012 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Article extends View_Base {
@@ -52,19 +52,19 @@ class Anqh_View_Article extends View_Base {
 	 */
 	public function footer() {
 		$meta = $this->meta();
-		if ($meta) {
+		if ($meta):
 			ob_start();
 
 ?>
 
 <footer class="meta">
-	<?php echo $meta ?>
+	<?= $meta ?>
 </footer>
 
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}
@@ -78,27 +78,27 @@ class Anqh_View_Article extends View_Base {
 	public function header() {
 		$title   = $this->title();
 		$actions = $this->actions();
-		if ($title || $actions) {
+		if ($title || $actions):
 			ob_start();
 
 ?>
 
 <header>
 
-	<?php if ($title) { ?>
-	<h4><?php echo $title ?></h4>
-	<?php } ?>
+	<?php if ($title): ?>
+	<h4 class="ui class header"><?= $title ?></h4>
+	<?php endif; ?>
 
-	<?php if ($actions) { ?>
-	<div class="btn-group"><?php echo implode(' ', $actions) ?></div>
-	<?php } ?>
+	<?php if ($actions): ?>
+	<div class="btn-group"><?= implode(' ', $actions) ?></div>
+	<?php endif; ?>
 
 </header>
 
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}
@@ -122,9 +122,9 @@ class Anqh_View_Article extends View_Base {
 	public function render() {
 
 		// Start benchmark
-		if (Kohana::$profiling === true and class_exists('Profiler', false)) {
+		if (Kohana::$profiling === true and class_exists('Profiler', false)):
 			$benchmark = Profiler::start('View', __METHOD__ . '(' . get_called_class() . ')');
-		}
+		endif;
 
 		ob_start();
 
@@ -136,13 +136,13 @@ class Anqh_View_Article extends View_Base {
 
 ?>
 
-<article<?php echo HTML::attributes($attributes) ?>>
+<article<?= HTML::attributes($attributes) ?>>
 
-	<?php echo $this->header() ?>
+	<?= $this->header() ?>
 
-	<?php echo $this->content() ?>
+	<?= $this->content() ?>
 
-	<?php echo $this->footer() ?>
+	<?= $this->footer() ?>
 
 </article>
 
@@ -151,9 +151,9 @@ class Anqh_View_Article extends View_Base {
 		$render = ob_get_clean();
 
 		// Stop benchmark
-		if (isset($benchmark)) {
+		if (isset($benchmark)):
 			Profiler::stop($benchmark);
-		}
+		endif;
 
 		return $render;
 	}

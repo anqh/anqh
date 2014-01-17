@@ -12,7 +12,7 @@ class View_Events_Day extends View_Section {
 	/**
 	 * @var  string  Section class
 	 */
-	public $class = 'events';
+	public $class = 'ui vertically divided grid';
 
 	/**
 	 * @var  string  Day to show, Y-m-d

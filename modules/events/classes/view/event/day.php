@@ -10,11 +10,6 @@
 class View_Event_Day extends View_Article {
 
 	/**
-	 * @var  string  Article class
-	 */
-	public $class = 'event';
-
-	/**
 	 * @var  Model_Event
 	 */
 	public $event;
@@ -31,7 +26,7 @@ class View_Event_Day extends View_Article {
 		$this->event = $event;
 
 		$this->id    = 'event-' . $event->id;
-		$this->title = HTML::anchor(Route::model($event), HTML::chars($event->name)) . ' <small>' . HTML::chars($event->city_name) . '</small>';
+		$this->title = HTML::anchor(Route::model($event), HTML::chars($event->name));
 
 		// Meta
 		if ($tags = $event->tags()) {
@@ -53,10 +48,13 @@ class View_Event_Day extends View_Article {
 		// Venue
 		if ($this->event->venue_hidden):
 			$venue = __('Underground');
-		elseif ($venue  = $this->event->venue()):
+			$city  = $this->event->city_name;
+		elseif ($venue = $this->event->venue()):
+			$city  = $venue->city_name;
 			$venue = HTML::anchor(Route::model($venue), HTML::chars($venue->name));
 		else:
-			$venue = HTML::chars($this->event->venue_name);
+			$venue = HTML::chars($this->event->venue_name) . ', ' . $this->event->city_name;
+			$city  = $this->event->city_name;
 		endif;
 
 		ob_start();
@@ -79,7 +77,7 @@ class View_Event_Day extends View_Article {
 
 ?>
 
-	<sup class="details muted"><?= $this->event->price() . ($venue ? ' @ ' : '') . $venue ?></sup>
+	<sup class="details muted"><?= __(':venue, :city', array(':venue' => $venue, ':city' => $city)) ?></sup>
 	<br>
 	<div class="djs"><?= BB::factory($info)->render(null, true) ?></div>
 
@@ -103,7 +101,7 @@ class View_Event_Day extends View_Article {
 				// Favorite event, click to unfavorite
 				return HTML::anchor(
 					Route::model($this->event, 'unfavorite') . '?token=' . Security::csrf(),
-					'<i class="icon-heart"></i> ' . $this->event->favorite_count,
+					'<i class="heart icon"></i> ' . $this->event->favorite_count,
 					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-small btn-lovely active')
 				);
 
@@ -113,13 +111,13 @@ class View_Event_Day extends View_Article {
 				if ($this->event->favorite_count > 1):
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
-						'<i class="icon-heart"></i> ' . $this->event->favorite_count,
+						'<i class="heart icon"></i> ' . $this->event->favorite_count,
 						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
 					);
 				else:
 					return HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
-						'<i class="muted icon-heart"></i>',
+						'<i class="muted heart icon"></i>',
 						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
 					);
 				endif;
@@ -128,7 +126,7 @@ class View_Event_Day extends View_Article {
 		endif;
 
 		return $this->event->favorite_count
-			? '<span class="btn btn-small btn-inverse disabled"><i class="icon-heart icon-white"></i> ' . $this->event->favorite_count . '</span>'
+			? '<span class="btn btn-small btn-inverse disabled"><i class="heart icon"></i> ' . $this->event->favorite_count . '</span>'
 			: '';
 	}
 
@@ -171,19 +169,19 @@ class View_Event_Day extends View_Article {
 		// Section attributes
 		$attributes = array(
 			'id'    => $this->id,
-			'class' => 'media ' . $this->class,
+			'class' => 'row ' . $this->class,
 		);
 
 ?>
 
 <article<?= HTML::attributes($attributes) ?>>
-	<div class="pull-left span2">
+	<div class="four wide column">
 
 		<?= $this->flyer() ?>
 
 	</div>
 
-	<div class="media-body">
+	<div class="twelve wide column">
 
 		<?= $this->header() ?>
 
