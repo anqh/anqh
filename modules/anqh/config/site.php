@@ -65,16 +65,16 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home'       => array('url' => URL::site(),                         'text' => __('Front page'), 'icon' => 'icon-home'),
-		'events'     => array('url' => URL::site(Route::url('events')),     'text' => __('Events'),     'icon' => 'icon-calendar'),
-		'forum'      => array('url' => URL::site(Route::url('forum')),      'text' => __('Forum'),      'icon' => 'icon-comments-alt'),
-		'galleries'  => array('url' => URL::site(Route::url('galleries')),  'text' => __('Galleries'),  'icon' => 'icon-camera-retro'),
-		'venues'     => array('url' => URL::site(Route::url('venues')),     'text' => __('Venues'),     'icon' => 'icon-map-marker'),
-		'charts'     => array('url' => URL::site(Route::url('charts')),     'text' => __('Charts'),     'icon' => 'icon-music'),
-		'blogs'      => array('url' => URL::site(Route::url('blogs')),      'text' => __('Blogs'),      'icon' => 'icon-book'),
-		'members'    => array('url' => URL::site(Route::url('users')),      'text' => __('Members'),    'icon' => 'icon-group'),
-		'developers' => array('url' => URL::site(Route::url('developers')), 'text' => __('Developers'), 'icon' => 'icon-gift',         'footer' => true),
-		'contact'    => array('url' => URL::site(Route::url('contact')),    'text' => __('Contact'),    'icon' => 'icon-envelope-alt', 'footer' => true),
+		'home'       => array('url' => URL::site(),                         'text' => __('Front page'), 'icon' => 'fa fa-2x fa-home'),
+		'events'     => array('url' => URL::site(Route::url('events')),     'text' => __('Events'),     'icon' => 'fa fa-2x fa-calendar'),
+		'forum'      => array('url' => URL::site(Route::url('forum')),      'text' => __('Forum'),      'icon' => 'fa fa-2x fa-comments-o'),
+		'galleries'  => array('url' => URL::site(Route::url('galleries')),  'text' => __('Galleries'),  'icon' => 'fa fa-2x fa-camera-retro'),
+		'venues'     => array('url' => URL::site(Route::url('venues')),     'text' => __('Venues'),     'icon' => 'fa fa-2x fa-map-marker'),
+		'charts'     => array('url' => URL::site(Route::url('charts')),     'text' => __('Charts'),     'icon' => 'fa fa-2x fa-music'),
+		'blogs'      => array('url' => URL::site(Route::url('blogs')),      'text' => __('Blogs'),      'icon' => 'fa fa-2x fa-book'),
+		'members'    => array('url' => URL::site(Route::url('users')),      'text' => __('Members'),    'icon' => 'fa fa-2x fa-group'),
+		'developers' => array('url' => URL::site(Route::url('developers')), 'text' => __('Developers'), 'icon' => 'fa fa-2x fa-gift',       'footer' => true),
+		'contact'    => array('url' => URL::site(Route::url('contact')),    'text' => __('Contact'),    'icon' => 'fa fa-2x fa-envelope-o', 'footer' => true),
 	),
 
 	/** News area */
