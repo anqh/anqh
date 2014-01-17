@@ -45,7 +45,7 @@ abstract class Anqh_Controller_Page extends Controller {
 			// Stylesheets
 			$styles = array(
 				'//cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css',
-				'//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.11.0/css/semantic.min.css',
+				'//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.12.0/css/semantic.min.css',
 				'static/css/anqh.css?_=' . filemtime('static/css/anqh.css')
 			);
 
