@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Page extends View_Base {
@@ -56,19 +56,9 @@ class Anqh_View_Page extends View_Base {
 	public $scripts = array();
 
 	/**
-	 * @var  array  Skinned stylesheets
-	 */
-	public $skins = array();
-
-	/**
 	 * @var  string  Content column span sizes
 	 */
 	public $spans = self::SPANS_84;
-
-	/**
-	 * @var  array  Basic stylesheets
-	 */
-	public $styles = array();
 
 	/**
 	 * @var  string  Active tab
@@ -248,8 +238,9 @@ class Anqh_View_Page extends View_Base {
 
 <script>
 	head.js(
-		{ 'jquery':    'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' },
-		{ 'jquery-ui': 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js' },
+		{ 'jquery':    '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js' },
+		{ 'jquery-ui': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js' },
+		{ 'bootstrap': '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js' },
 		{ 'vendor':    '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
 		{ 'anqh':      '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
 		function _loaded() {
@@ -362,14 +353,11 @@ class Anqh_View_Page extends View_Base {
 	<title><?= $this->title ? HTML::chars($this->title) : Kohana::$config->load('site.site_name') ?></title>
 	<link rel="icon" type="image/png" href="<?= $this->base ?>ui/favicon.png" />
 
-	<?= $this->_styles() ?>
+	<?= HTML::style('static/css/anqh.css?_=' . filemtime('static/css/anqh.css')) ?>
+	<?= HTML::style('//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css') ?>
 
-	<?= $this->_skins() ?>
-
-	<?= HTML::style('ui/site.css') ?>
-
-	<?= HTML::script(Kohana::$environment == Kohana::PRODUCTION ? 'js/head.min.js' : 'js/head.js') ?>
-	<?= HTML::script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places') ?>
+	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
+	<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
 
 	<?= $this->head(); ?>
 
@@ -640,16 +628,6 @@ class Anqh_View_Page extends View_Base {
 
 
 	/**
-	 * Render skinned stylesheets.
-	 *
-	 * @return  string
-	 */
-	protected function _skins() {
-		return implode("\n  ", $this->skins);
-	}
-
-
-	/**
 	 * Render page statistics.
 	 *
 	 * @return  string
@@ -672,21 +650,6 @@ class Anqh_View_Page extends View_Base {
 			':database_queries' => $queries,
 			':included_files'   => count(get_included_files()),
 		));
-	}
-
-
-	/**
-	 * Render stylesheets.
-	 *
-	 * @return  string
-	 */
-	protected function _styles() {
-		$styles = array();
-		foreach ($this->styles as $style) {
-			$styles[] = HTML::style($style);
-		}
-
-		return implode("\n  ", $styles);
 	}
 
 
@@ -795,24 +758,6 @@ class Anqh_View_Page extends View_Base {
 	 */
 	protected function _visitor() {
 		ob_start();
-
-		/*
-		// Sunrise
-		if (self::$_user && self::$_user->latitude && self::$_user->longitude) {
-			$latitude  = self::$_user->latitude;
-			$longitude = self::$_user->longitude;
-		} else {
-			$latitude  = 60.1829;
-			$longitude = 24.9549;
-		}
-		$sun = date_sun_info(time(), $latitude, $longitude);
-		$sunrise = __(':day, week :week | Sunrise: :sunrise | Sunset: :sunset', array(
-			':day'     => strftime('%A'),
-			':week'    => strftime('%V'),
-			':sunrise' => Date::format(Date::TIME, $sun['sunrise']),
-			':sunset'  => Date::format(Date::TIME, $sun['sunset'])
-		));
-		*/
 
 ?>
 

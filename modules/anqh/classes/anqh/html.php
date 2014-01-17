@@ -140,6 +140,35 @@ class Anqh_HTML extends Kohana_HTML {
 	}
 
 
+	/**
+	 * Creates a script link.
+	 *
+	 *     echo HTML::script('media/js/jquery.min.js');
+	 *
+	 * @param   string  $file       file name
+	 * @param   array   $attributes default attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
+	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
+	 */
+	public static function script($file, array $attributes = null, $protocol = null, $index = false) {
+
+		// Add the base URL
+		if (strpos($file, '//') === false) {
+			$file = URL::site($file, $protocol, $index);
+		}
+
+		// Set the script link
+		$attributes['src'] = $file;
+
+		// Set the script type
+		$attributes['type'] = 'text/javascript';
+
+		return '<script' . HTML::attributes($attributes) . '></script>';
+	}
+
 
 	/**
 	 * JavaScript source code block

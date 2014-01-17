@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Controller_Page extends Controller {
@@ -41,16 +41,6 @@ abstract class Anqh_Controller_Page extends Controller {
 		} else if ($this->auto_render) {
 
 			// Normal requests
-
-			// Stylesheets
-			$styles = array(
-				'ui/jquery-ui.css', // Deprecated
-			);
-
-			$skins = array(
-				HTML::style('static/css/anqh.css?_=' . filemtime('static/css/anqh.css')),
-				HTML::style('//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css'),
-			);
 
 			// Footer
 			$section = new View_Events_List();
@@ -121,8 +111,6 @@ head.js(
 
 
 			// Set the generic page variables
-			$this->view->styles   = $styles;
-			$this->view->skins    = $skins;
 			$this->view->language = $this->language;
 			$this->view->id       = $this->page_id;
 			$this->view->class    = $page_class;
