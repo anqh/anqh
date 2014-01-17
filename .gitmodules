@@ -22,9 +22,6 @@
 [submodule "modules/email"]
 	path = modules/email
 	url = http://github.com/banks/kohana-email.git
-[submodule "www/js/headjs"]
-	path = www/js/headjs
-	url = https://github.com/headjs/headjs.git
 [submodule "modules/asset"]
 	path = modules/asset
 	url = git://github.com/goyote/asset.git
@@ -40,9 +37,6 @@
 [submodule "www/static/bootstrap"]
 	path = www/static/bootstrap
 	url = git://github.com/twitter/bootstrap.git
-[submodule "www/static/bootstrap-j"]
-	path = www/static/bootstrap-j
-	url = git://github.com/jasny/bootstrap.git
 [submodule "modules/oauth2"]
 	path = modules/oauth2
 	url = git://github.com/managedit/kohana-oauth2.git
