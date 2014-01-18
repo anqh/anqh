@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_Section extends View_Base {
@@ -17,6 +17,11 @@ class Anqh_View_Section extends View_Base {
 	 * @var  array  View articles
 	 */
 	public $articles = array();
+
+	/**
+	 * @var  boolean  Secondary content
+	 */
+	public $aside = false;
 
 	/**
 	 * @var  string  Section avatar
@@ -80,11 +85,7 @@ class Anqh_View_Section extends View_Base {
 	 * @return  string
 	 */
 	public function content() {
-		if ($articles = $this->articles()) {
-			return implode("\n\n", $articles);
-		}
-
-		return '';
+		return implode("\n\n", $this->articles());
 	}
 
 
@@ -100,9 +101,12 @@ class Anqh_View_Section extends View_Base {
 		if ($title || $subtitle || $tabs):
 			ob_start();
 
-			$attributes = array();
+			$attributes = array('class' => '');
+			if ($this->aside):
+				$attributes['class'] .= 'panel-heading';
+			endif;
 			if ($this->title_sticky):
-				$attributes['class'] = 'sticky';
+				$attributes['class'] .= 'sticky';
 			endif;
 			if ($avatar = $this->avatar()):
 				$attributes['class'] .= ' media';
@@ -118,7 +122,7 @@ class Anqh_View_Section extends View_Base {
 	<?php endif; ?>
 
 	<?php if ($title): ?>
-	<h3><?= $title ?></h3>
+	<h3<?= $this->aside ? ' class="panel-title"' : '' ?>><?= $title ?></h3>
 	<?php endif; ?>
 
 	<?php if ($subtitle): ?>
@@ -162,13 +166,39 @@ class Anqh_View_Section extends View_Base {
 
 		ob_start();
 
-		// Section attributes
-		$attributes = array(
-			'id'    => $this->id,
-			'class' => $this->class,
-			'role'  => $this->role,
-		);
+		if ($this->aside):
+
+			// Secondary content
+			$attributes = array(
+				'id'    => $this->id,
+				'class' => 'panel panel-default ' . $this->class,
+				'role'  => $this->role,
+			);
+
 ?>
+
+<aside<?= HTML::attributes($attributes) ?>>
+
+	<?= $this->header() ?>
+
+	<div class="panel-body">
+		<?= $this->content() ?>
+	</div>
+
+</aside>
+
+<?php
+
+		else:
+
+			// Primary content
+			$attributes = array(
+				'id'    => $this->id,
+				'class' => $this->class,
+				'role'  => $this->role,
+			);
+
+			?>
 
 <section<?= HTML::attributes($attributes) ?>>
 
@@ -181,6 +211,8 @@ class Anqh_View_Section extends View_Base {
 </section>
 
 <?php
+
+		endif;
 
 		$render = ob_get_clean();
 

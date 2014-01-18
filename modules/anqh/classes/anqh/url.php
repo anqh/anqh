@@ -5,7 +5,7 @@
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_URL extends Kohana_URL {
@@ -13,7 +13,7 @@ abstract class Anqh_URL extends Kohana_URL {
 	/**
 	 * Transforms an database id to file path, 1234567 = 01/23/45
 	 *
-	 * @param  int $id
+	 * @param  integer  $id
 	 * @return string
 	 */
 	public static function id($id) {
@@ -31,27 +31,50 @@ abstract class Anqh_URL extends Kohana_URL {
 	/**
 	 * Get URL for user
 	 *
-	 * @param   mixed   $user
+	 * @param   mixed   $user   true for session user
 	 * @param   string  $action
 	 * @return  string
 	 */
 	public static function user($user, $action = null) {
+		static $_visitor;
 
-		// User id given
 		if (is_numeric($user) && (int)$user > 0) {
-			$user = Model_User::find_user($user);
-		}
 
-		// Model_User given
-		if ($user instanceof Model_User) {
+			// User id given
+			if ($user = Model_User::find_user($user)) {
+				$user = $user->username;
+			}
+
+		} else if ($user instanceof Model_User) {
+
+			// Model_User given
 			$user = $user->username;
+
 		} else if (is_array($user) && isset($user['username'])) {
+
+			// Light user array given
 			$user = $user['username'];
+
+		} else if ($user === true) {
+
+			// Use session user
+			if ($_visitor === null) {
+				if ($user = Visitor::instance()->get_user()) {
+					$_visitor = $user->username;
+				} else {
+
+					// No session user available
+					$_visitor = false;
+
+				}
+			}
+			$user = $_visitor;
+
 		}
 
-		// Username given
+		// Username available
 		if (is_string($user)) {
-			return Route::get('user')->uri(array('username' => urlencode($user), 'action' => $action));
+			return Route::url('user', array('username' => urlencode($user), 'action' => $action));
 		}
 
 		return null;

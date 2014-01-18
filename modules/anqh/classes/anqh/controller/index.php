@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Index extends Controller_Page {
@@ -30,23 +30,23 @@ class Anqh_Controller_Index extends Controller_Page {
 		$this->view = new View_Page();
 
 		// Newsfeed
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_newsfeed());
 
 		// News
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_news());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_news());
 
 		// Shouts
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_shouts());
 
 		// Birthdays or friend suggestions
 		if (self::$user && rand(0, 10) < 5) {
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_friend_suggestions());
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_friend_suggestions());
 		} else {
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_birthdays());
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_birthdays());
 		}
 
 		// Online
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_online());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_online());
 
 	}
 
@@ -58,6 +58,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_birthdays() {
 		$section = new View_Users_Birthdays();
+		$section->aside = true;
 
 		return $section;
 	}
@@ -69,7 +70,10 @@ class Anqh_Controller_Index extends Controller_Page {
 	 * @return  View_Users_FriendSuggestions
 	 */
 	public function section_friend_suggestions() {
-		return new View_Users_FriendSuggestions(self::$user, 5);
+		$section = new View_Users_FriendSuggestions(self::$user, 5);
+		$section->aside = true;
+
+		return $section;
 	}
 
 
@@ -81,6 +85,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	public function section_news() {
 		$section = new View_Topics_List(Model_Forum_Topic::factory()->find_news(10));
 		$section->title = __('News');
+		$section->aside = true;
 
 		return $section;
 	}
@@ -107,6 +112,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_online() {
 		$section = new View_Users_Online();
+		$section->aside = true;
 
 		return $section;
 	}
@@ -119,6 +125,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_shouts() {
 		$section = new View_Index_Shouts();
+		$section->aside = true;
 
 		return $section;
 	}

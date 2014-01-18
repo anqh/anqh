@@ -9,9 +9,16 @@
  */
 class Anqh_View_Page extends View_Base {
 
+	const COLUMN_TOP    = 'top';
+	const COLUMN_LEFT   = 'left';
+	const COLUMN_CENTER = 'center';
+	const COLUMN_RIGHT  = 'right';
+	const COLUMN_BOTTOM = 'bottom';
+	const COLUMN_FOOTER = 'footer';
+
+	// Deprecated
 	const COLUMN_MAIN = 'main';
 	const COLUMN_SIDE = 'side';
-	const COLUMN_TOP  = 'top';
 	const SPANS_93    = '9+3';
 	const SPANS_84    = '8+4';
 	const SPANS_82    = '8+2';
@@ -39,6 +46,11 @@ class Anqh_View_Page extends View_Base {
 	 * @var  array  Column contents
 	 */
 	protected $_content = array();
+
+	/**
+	 * @var  array  Container classes
+	 */
+	protected $_content_class = array();
 
 	/**
 	 * @var  string  Page language
@@ -142,25 +154,32 @@ class Anqh_View_Page extends View_Base {
 		endif;
 
 		if (!empty($this->_content[$column])):
+			$left   = !(empty($this->_content[self::COLUMN_LEFT]));
+			$center = !(empty($this->_content[self::COLUMN_CENTER]));
+			$right  = !(empty($this->_content[self::COLUMN_RIGHT]));
 			ob_start();
 
-			$spans = explode('+', $this->spans);
 			switch ($column):
-				case self::COLUMN_MAIN: $class = 'span' . $spans[0]; break;
-				case self::COLUMN_SIDE: $class = 'span' . $spans[1]; break;
-				case self::COLUMN_TOP:  $class = 'span12'; break;
-				default:                $class = '';
+				case self::COLUMN_LEFT:   $class = $center && $right ? 'col-sm-3' : ($center ? 'col-sm-4' : 'col-sm-6'); break;
+				case self::COLUMN_CENTER: $class = $left && $right ? 'col-sm-6' : ($left || $right ? 'col-sm-8' : 'col-sm-12'); break;
+				case self::COLUMN_RIGHT:  $class = $left && $center ? 'col-sm-3' : ($center ? 'col-sm-4' : 'col-sm-6'); break;
+
+				// Deprecated
+				case self::COLUMN_MAIN: $class = 'col-sm-8'; break;
+				case self::COLUMN_SIDE: $class = 'col-sm-4'; break;
+
+				default:                $class = 'col-sm-12';
 			endswitch;
 
 ?>
 
-			<div id="<?= $column ?>" class="<?= $class ?>">
+			<div id="content-<?= $column ?>" class="<?= $class ?>">
 
 				<?= implode("\n", $this->_content[$column]) ?>
 
 				<?= /*$column === self::COLUMN_SIDE ? '' :*/ Ads::slot($column) ?>
 
-			</div><!-- #<?= $column ?> -->
+			</div><!-- #content-<?= $column ?> -->
 
 <?php
 
@@ -168,38 +187,6 @@ class Anqh_View_Page extends View_Base {
 		endif;
 
 		return '';
-	}
-
-
-	/**
-	 * Render #content.
-	 *
-	 * @return  string
-	 */
-	protected function _content() {
-		ob_start();
-
-?>
-
-	<?= $this->_title() ?>
-
-	<div class="row-fluid">
-
-		<?= $this->content(self::COLUMN_TOP) ?>
-
-	</div>
-
-	<div class="row-fluid">
-
-		<?= $this->content(self::COLUMN_MAIN) ?>
-
-		<?= $this->content(self::COLUMN_SIDE) ?>
-
-	</div>
-
-<?php
-
-		return ob_get_clean();
 	}
 
 
@@ -212,16 +199,6 @@ class Anqh_View_Page extends View_Base {
 		$view = get_called_class();
 
 		return new $view($title);
-	}
-
-
-	/**
-	 * Render additional foot.
-	 *
-	 * @return  string
-	 */
-	public function foot() {
-		return Widget::get('foot');
 	}
 
 
@@ -270,21 +247,11 @@ class Anqh_View_Page extends View_Base {
 
 <?php
 
-		echo $this->foot();
+		echo Widget::get('foot');
 
 		echo Ads::foot();
 
 		return ob_get_clean();
-	}
-
-
-	/**
-	 * Render additional <footer>.
-	 *
-	 * @return  string
-	 */
-	public function footer() {
-		return Widget::get('footer');
 	}
 
 
@@ -306,9 +273,9 @@ class Anqh_View_Page extends View_Base {
 	</ul>
 </nav>
 
-<div class="row-fluid">
+<div class="row">
 
-	<?= $this->footer() ?>
+	<?= $this->content(self::COLUMN_FOOTER) ?>
 
 </div>
 
@@ -415,41 +382,20 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<nav id="mainmenu" role="navigation">
-		<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
+<nav id="mainmenu" role="navigation" class="navbar navbar-inverse navbar-static-top">
+<!--	--><?//= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
-		<ul class="nav" role="menubar">
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?> <?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' visible-phone"></i><span class="hidden-phone">' . $item['text'] . '</span>') ?></li>
-			<?php endforeach; ?>
-		</ul>
-	</nav><!-- #mainmenu -->
+	<ul class="nav navbar-nav" role="menubar">
+		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
+		<li role="menuitem" class="<?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' visible-xs"></i><span class="hidden-xs">' . $item['text'] . '</span>') ?></li>
+		<?php endforeach; ?>
+	</ul>
 
-<?php
+	<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
 
-		return ob_get_clean();
-	}
+	<?= $this->_search() ?>
 
-
-	/**
-	 * Render main menu.
-	 *
-	 * @return  string
-	 */
-	protected function _menu() {
-		ob_start();
-
-?>
-
-	<nav id="mainmenu" role="navigation">
-		<ul class="nav nav-list mainmenu" role="menu">
-			<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-			<li role="menuitem" class="menu-<?= $id ?><?= $id == $this->id ? ' active' : '' ?>">
-				<?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i><span>' . $item['text'] . '</span>') ?>
-			</li>
-			<?php endforeach; ?>
-		</ul>
-	</nav><!-- #mainmenu -->
+</nav><!-- #mainmenu -->
 
 <?php
 
@@ -474,68 +420,73 @@ class Anqh_View_Page extends View_Base {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
-	<table id="body">
-		<tbody>
-			<tr>
-
-				<th id="sidebar" rowspan="2">
-
-					<!-- MENU -->
-
-					<?= $this->_menu() ?>
-
-					<!-- /MENU -->
-
-				</th><!-- /#sidebar -->
-
-				<th id="topbar">
-
-					<?= $this->_header() ?>
-
-				</th><!-- /#topbar -->
-
-			</tr>
-			<tr>
-
-				<td id="maincontent">
-					<div class="background-container">
-						<div class="container-fluid">
-
-							<!-- ADS -->
-
-							<?= Ads::slot(Ads::TOP) ?>
-
-							<!-- /ADS -->
+<?= $this->_mainmenu() ?>
 
 
-							<!-- CONTENT -->
+<!-- ADS -->
 
-							<?= $this->_content() ?>
+<?= Ads::slot(Ads::TOP) ?>
 
-							<!-- /CONTENT -->
+<!-- /ADS -->
 
-						</div>
-					</div>
 
-					<footer id="footer">
-						<div class="background-container">
-							<div class="container-fluid">
+<!-- CONTENT -->
 
-							<?= $this->_footer() ?>
+<?= $this->_title() ?>
 
-							</div>
-						</div>
-					</footer><!-- #footer -->
+<?php if ($top = $this->content(self::COLUMN_TOP)): ?>
+<div class="content <?= Arr::get($this->_content_class, self::COLUMN_TOP) ?>">
+	<div class="container">
+		<div class="row">
 
-					<?= $this->_foot() ?>
+<?= $this->content(self::COLUMN_TOP) ?>
 
-				</td><!-- /#maincontent -->
+		</div>
+	</div>
+</div>
+<?php endif; ?>
 
-			</tr>
-		</tbody>
-	</table>
+<div class="content <?= Arr::get($this->_content_class, self::COLUMN_CENTER) ?>">
+	<div class="container">
+		<div class="row">
 
-	<!-- <?= $this->_statistics() ?> -->
+<?= $this->content(self::COLUMN_LEFT) ?>
+<?= $this->content(self::COLUMN_CENTER) ?>
+<?= $this->content(self::COLUMN_RIGHT) ?>
+
+<?= $this->content(self::COLUMN_MAIN) ?>
+<?= $this->content(self::COLUMN_SIDE) ?>
+
+		</div>
+	</div>
+</div>
+
+<?php if ($bottom = $this->content(self::COLUMN_BOTTOM)): ?>
+<div class="content <?= Arr::get($this->_content_class, self::COLUMN_BOTTOM) ?>">
+	<div class="container">
+		<div class="row">
+
+<?= $this->content(self::COLUMN_BOTTOM) ?>
+
+		</div>
+	</div>
+</div>
+<?php endif; ?>
+
+<!-- /CONTENT -->
+
+
+<footer id="footer" class="content">
+	<div class="container">
+
+<?= $this->_footer() ?>
+
+	</div>
+</footer><!-- #footer -->
+
+<?= $this->_foot() ?>
+
+<!-- <?= $this->_statistics() ?> -->
 
 </body>
 
@@ -555,8 +506,15 @@ class Anqh_View_Page extends View_Base {
 	protected function _search() {
 		ob_start();
 
+		echo Form::open(null, array('id' => 'search', 'role' => 'search', 'class' => 'navbar-form navbar-right'));
+
 ?>
 
+<div class="form-group">
+	<?= Form::input('search', null, array('class' => 'form-control', 'placeholder' => __('Search'))) ?>
+</div>
+
+<!--
 <div id="search">
 
 	<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
@@ -586,8 +544,11 @@ class Anqh_View_Page extends View_Base {
 	<?= Form::close(); ?>
 
 </div>
+-->
 
 <?php
+
+		echo Form::close();
 
 		return ob_get_clean();
 	}
@@ -761,31 +722,25 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<div id="visitor">
-	<span class="menuitem-notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></span>
+<ul id="visitor" class="nav navbar-nav navbar-right">
+	<li><?= implode(' ', Anqh::notifications(self::$_user)) ?></li>
 
-	<span class="profile dropdown">
-
+	<li class="dropdown">
 		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
-
-		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <i class="icon-caret-down"></i></a>
+		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <i class="fa fa-caret-down"></i></a>
 		<ul class="dropdown-menu pull-right" role="menu">
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user->username), '<i class="icon-user"></i> ' . __('Profile')) ?><li>
-			<li role="menuitem"><?= HTML::anchor(Forum::private_messages_url(), '<i class="icon-envelope"></i> ' . __('Private messages')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'favorites'), '<i class="icon-calendar"></i> ' . __('Favorites')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'friends'), '<i class="icon-heart"></i> ' . __('Friends')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'ignores'), '<i class="icon-ban-circle"></i> ' . __('Ignores')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(URL::user(self::$_user, 'settings'), '<i class="icon-cog"></i> ' . __('Settings')) ?></li>
-			<li role="menuitem"><?= HTML::anchor(Route::url('sign', array('action' => 'out')), '<i class="icon-signout"></i> ' . __('Sign out')) ?></li>
+			<?php foreach (Kohana::$config->load('site.menu_visitor') as $item): ?>
+			<li role="menuitem"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i> ' . $item['text']) ?></li>
+			<?php endforeach; ?>
 			<?php if (self::$_user->has_role('admin')): ?>
-			<li class="nav-header"><?= __('Admin functions') ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('roles'), '<i class="icon-asterisk"></i> ' . __('Roles')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor(Route::url('tags'), '<i class="icon-tags"></i> ' . __('Tags')) ?></li>
-			<li role="menuitem" class="admin"><?= HTML::anchor('#debug', '<i class="icon-signal"></i> ' . __('Profiler'), array('onclick' => "$('.kohana').toggle();")) ?></li>
+			<li role="presentation" class="dropdown-header"><?= __('Admin functions') ?></li>
+				<?php foreach (Kohana::$config->load('site.menu_admin') as $item): ?>
+			<li role="menuitem"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i> ' . $item['text'], Arr::get($item, 'attributes')) ?></li>
+				<?php endforeach; ?>
 			<?php endif; ?>
 		</ul>
-	</span>
-</div>
+	</li>
+</ul>
 
 <?php
 

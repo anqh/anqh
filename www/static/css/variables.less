@@ -21,14 +21,16 @@
 
 // Scaffolding
 // -------------------------
-@body-bg:                    #1a1a1a;
-@text-color:                 @gray-light;
-
+@body-bg:                    #f5f2ed;
+@dark-body-bg:               #1a1a1a;
+@dark-text-color:            @gray-light;
 
 // Links
 // -------------------------
-@anchor-color:               @gray-lighter;
-@anchor-hover-color:         darken(@anchor-color, 15%);
+@anchor-color:               @link-color;
+@anchor-hover-color:         @link-hover-color;
+@dark-anchor-color:          @gray-lighter;
+@dark-anchor-hover-color:    lighten(@dark-anchor-color, 15%);
 
 
 // Typography
@@ -40,56 +42,50 @@
 @font-weight-light-custom:   100;
 
 @font-size-base:             12px;
-@line-height-base:           18px;
 
 @headings-font-family:       @font-family-custom;
 @headings-font-weight:       @font-weight-light-custom;
+@dark-headings-color:        #c29d52;
 
 @text-color-me:              mix(@brand-warning, @text-color);
 @text-color-owner:           mix(@brand-success, @text-color);
 @text-color-admin:           @brand-info;
 
 
-// Component sizing
-// -------------------------
-@sidebar-width:              60px;
-@topbar-height:              40px;
-
-
 // Tables
 // -------------------------
-@table-bg-accent:            rgba(0, 0, 0, .05); // for striping
-@table-border:               @gray-dark; // table and cell border
+@dark-table-bg-accent:       rgba(0, 0, 0, .05); // for striping
+@dark-table-border:          @gray-dark; // table and cell border
 
 
 // Buttons
 // -------------------------
-@btn-lovely-color:              #fff;
-@btn-lovely-bg:                 @brand-lovely;
-@btn-lovely-border:             darken(@btn-lovely-bg, 5%);
+@btn-lovely-color:           #fff;
+@btn-lovely-bg:              @brand-lovely;
+@btn-lovely-border:          darken(@btn-lovely-bg, 5%);
 
-@btn-special-color:             #fff;
-@btn-special-bg:                @brand-special;
-@btn-special-border:            darken(@btn-special-bg, 5%);
+@btn-special-color:          #fff;
+@btn-special-bg:             @brand-special;
+@btn-special-border:         darken(@btn-special-bg, 5%);
 
 
 // Forms
 // -------------------------
-@input-bg:                   #202020;
-@input-border:               @gray-darkest;
-@input-bg-disabled:          @gray-dark;
-@input-color-placeholder:    @gray;
+@dark-input-bg:              #202020;
+@dark-input-border:          @gray-darkest;
+@dark-input-bg-disabled:     @gray-dark;
+@dark-input-color-placeholder: @gray;
 
 
 // Dropdowns
 // -------------------------
-@dropdown-bg:                #161616;
-@dropdown-border:            #1f1f1f;
-@dropdown-divider-top:       @black;
-@dropdown-divider-bottom:    @gray-darker;
+@dark-dropdown-bg:           #161616;
+@dark-dropdown-border:       #1f1f1f;
+@dark-dropdown-divider-top:  @black;
+@dark-dropdown-divider-bottom: @gray-darker;
 
-@dropdown-link-color:        @link-color;
-@dropdown-link-active-color: @dropdown-link-color;
+@dark-dropdown-link-color:   @link-color;
+@dark-dropdown-link-active-color: @dropdown-link-color;
 
 
 
@@ -105,23 +101,33 @@
 
 // Hr border color
 // -------------------------
-@hr-border:                  @black;
+@dark-hr-border:             @black;
 
+
+// Panels
+@dark-panel-bg:              #2b292b;
+@dark-panel-inner-border:    @dark-body-bg;
+@dark-panel-footer-bg:       @dark-panel-bg;
+@dark-panel-default-text:    @dark-text-color;
+@dark-panel-default-border:  @dark-panel-bg;
+@dark-panel-default-heading-bg: @dark-panel-bg;
 
 // Wells
 // -------------------------
-@well-bg:                    #202020;
+@dark-well-bg:               #202020;
 
+
+@navbar-height:              40px;
 
 // Pagination
 // -------------------------
-@pagination-bg:              @black;
-@pagination-border:          @gray-darkest;
-@pagination-active-bg:       @gray-dark;
+@dark-pagination-bg:         @black;
+@dark-pagination-border:     @gray-darkest;
+@dark-pagination-active-bg:  @gray-dark;
 
 
 // Tooltips and popovers
 // -------------------------
-@popover-bg:                 @gray-darker;
-@popover-arrow-color:        @gray-darker;
-@popover-title-bg:           darken(@popover-bg, 3%);
+@dark-popover-bg:            @gray-darker;
+@dark-popover-arrow-color:   @gray-darker;
+@dark-popover-title-bg:      darken(@popover-bg, 3%);

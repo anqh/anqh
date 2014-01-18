@@ -4,47 +4,10 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_View_ErrorPage extends Anqh_View_Page {
-
-	public $styles = array(
-		'static/css/bootstrap.css',
-		'static/css/bootstrap-responsive.css',
-		'//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css',
-	);
-
-
-	/**
-	 * Render <head>.
-	 *
-	 * @return  string
-	 */
-	protected function __head() {
-		ob_start();
-
-?>
-
-<head>
-	<meta charset="<?= Kohana::$charset ?>" />
-	<meta http-equiv="Content-Type" content="text/html; charset=<?= Kohana::$charset ?>" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-
-	<title><?= $this->title ? HTML::chars($this->title) : Kohana::$config->load('site.site_name') ?></title>
-	<link rel="icon" type="image/png" href="<?= $this->base ?>ui/favicon.png" />
-
-	<?= $this->_styles() ?>
-
-	<?= HTML::style('ui/site.css') ?>
-
-</head>
-
-<?php
-
-		return ob_get_clean();
-	}
-
 
 	/**
 	 * Render page.
@@ -63,47 +26,56 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 
 <body id="<?= $this->id ?>" class="<?= $this->class ?>">
 
-	<table id="body">
-		<tbody>
-			<tr>
+<?= $this->_mainmenu() ?>
 
-				<th id="sidebar" rowspan="2">
 
-					<!-- MENU -->
+<!-- CONTENT -->
 
-					<?= $this->_menu() ?>
+<?= $this->_title() ?>
 
-					<!-- /MENU -->
+<?php if ($top = $this->content(self::COLUMN_TOP)): ?>
+<div class="content <?= Arr::get($this->_content_class, self::COLUMN_TOP) ?>">
+	<div class="container">
+		<div class="row">
 
-				</th><!-- /#sidebar -->
+<?= $this->content(self::COLUMN_TOP) ?>
 
-				<th id="topbar">
+		</div>
+	</div>
+</div>
+<?php endif; ?>
 
-					<?= $this->_header() ?>
+<div class="content <?= Arr::get($this->_content_class, self::COLUMN_CENTER) ?>">
+	<div class="container">
+		<div class="row">
 
-				</th><!-- /#topbar -->
+<?= $this->content(self::COLUMN_LEFT) ?>
+<?= $this->content(self::COLUMN_CENTER) ?>
+<?= $this->content(self::COLUMN_RIGHT) ?>
 
-			</tr>
-			<tr>
+<?= $this->content(self::COLUMN_MAIN) ?>
+<?= $this->content(self::COLUMN_SIDE) ?>
 
-				<td id="maincontent">
-					<div class="container-fluid">
+		</div>
+	</div>
+</div>
 
-						<!-- CONTENT -->
+<?php if ($bottom = $this->content(self::COLUMN_BOTTOM)): ?>
+<div class="content <?= Arr::get($this->_content_class, self::COLUMN_BOTTOM) ?>">
+	<div class="container">
+		<div class="row">
 
-						<?= $this->_content() ?>
+<?= $this->content(self::COLUMN_BOTTOM) ?>
 
-						<!-- /CONTENT -->
+		</div>
+	</div>
+</div>
+<?php endif; ?>
 
-					</div>
+<!-- /CONTENT -->
 
-					<?= $this->_foot() ?>
 
-				</td><!-- /#maincontent -->
-
-			</tr>
-		</tbody>
-	</table>
+<?= $this->_foot() ?>
 
 </body>
 
@@ -113,6 +85,5 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 
 		return ob_get_clean();
 	}
-
 
 }

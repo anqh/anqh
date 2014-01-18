@@ -65,16 +65,32 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home'       => array('url' => URL::site(),                         'text' => __('Front page'), 'icon' => 'fa fa-2x fa-home'),
-		'events'     => array('url' => URL::site(Route::url('events')),     'text' => __('Events'),     'icon' => 'fa fa-2x fa-calendar'),
-		'forum'      => array('url' => URL::site(Route::url('forum')),      'text' => __('Forum'),      'icon' => 'fa fa-2x fa-comments-o'),
-		'galleries'  => array('url' => URL::site(Route::url('galleries')),  'text' => __('Galleries'),  'icon' => 'fa fa-2x fa-camera-retro'),
-		'venues'     => array('url' => URL::site(Route::url('venues')),     'text' => __('Venues'),     'icon' => 'fa fa-2x fa-map-marker'),
-		'charts'     => array('url' => URL::site(Route::url('charts')),     'text' => __('Charts'),     'icon' => 'fa fa-2x fa-music'),
-		'blogs'      => array('url' => URL::site(Route::url('blogs')),      'text' => __('Blogs'),      'icon' => 'fa fa-2x fa-book'),
-		'members'    => array('url' => URL::site(Route::url('users')),      'text' => __('Members'),    'icon' => 'fa fa-2x fa-group'),
-		'developers' => array('url' => URL::site(Route::url('developers')), 'text' => __('Developers'), 'icon' => 'fa fa-2x fa-gift',       'footer' => true),
-		'contact'    => array('url' => URL::site(Route::url('contact')),    'text' => __('Contact'),    'icon' => 'fa fa-2x fa-envelope-o', 'footer' => true),
+		'home'       => array('url' => URL::site(),              'text' => __('Front page'), 'icon' => 'fa fa-home'),
+		'events'     => array('url' => Route::url('events'),     'text' => __('Events'),     'icon' => 'fa fa-calendar'),
+		'forum'      => array('url' => Route::url('forum'),      'text' => __('Forum'),      'icon' => 'fa fa-comments-o'),
+		'galleries'  => array('url' => Route::url('galleries'),  'text' => __('Galleries'),  'icon' => 'fa fa-camera-retro'),
+		'venues'     => array('url' => Route::url('venues'),     'text' => __('Venues'),     'icon' => 'fa fa-map-marker'),
+		'charts'     => array('url' => Route::url('charts'),     'text' => __('Charts'),     'icon' => 'fa fa-music'),
+		'blogs'      => array('url' => Route::url('blogs'),      'text' => __('Blogs'),      'icon' => 'fa fa-book'),
+		'members'    => array('url' => Route::url('users'),      'text' => __('Members'),    'icon' => 'fa fa-group'),
+		'developers' => array('url' => Route::url('developers'), 'text' => __('Developers'), 'icon' => 'fa fa-gift',       'footer' => true),
+		'contact'    => array('url' => Route::url('contact'),    'text' => __('Contact'),    'icon' => 'fa fa-envelope-o', 'footer' => true),
+	),
+
+	'menu_visitor' => array(
+		'profile'   => array('url' => URL::user(true),                              'text' => __('Profile'),          'icon' => 'fa fa-fw fa-user'),
+		'messages'  => array('url' => Forum::private_messages_url(),                'text' => __('Private messages'), 'icon' => 'fa fa-fw fa-envelope'),
+		'favorites' => array('url' => URL::user(true, 'favorites'),                 'text' => __('Favorites'),        'icon' => 'fa fa-fw fa-calendar'),
+		'friends'   => array('url' => URL::user(true, 'friends'),                   'text' => __('Friends'),          'icon' => 'fa fa-fw fa-heart'),
+		'ignores'   => array('url' => URL::user(true, 'ignores'),                   'text' => __('Ignores'),          'icon' => 'fa fa-fw fa-ban'),
+		'settings'  => array('url' => URL::user(true, 'settings'),                  'text' => __('Settings'),         'icon' => 'fa fa-fw fa-cog'),
+		'signout'   => array('url' => Route::url('sign', array('action' => 'out')), 'text' => __('Sign out'),         'icon' => 'fa fa-fw fa-sign-out'),
+	),
+
+	'menu_admin' => array(
+		'roles'    => array('url' => Route::url('roles'), 'text' => __('Roles'),    'icon' => 'fa fa-fw fa-asterisk'),
+		'tags'     => array('url' => Route::url('tags'),  'text' => __('Tags'),     'icon' => 'fa fa-fw fa-tags'),
+		'profiler' => array('url' => '#debug',            'text' => __('Profiler'), 'icon' => 'fa fa-fw fa-signal', 'attributes' => array('onclick' => "$('.kohana').toggle();")),
 	),
 
 	/** News area */

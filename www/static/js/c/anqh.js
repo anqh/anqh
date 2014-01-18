@@ -68,7 +68,7 @@ $.fn.loading = function(loaded) {
 // Initialize
 $(function() {
 
-	// Hover card
+	// Hover card, disabled until hover out fixed, use only one?
 	var hoverTimeout;
 	$(document).on({
 		mouseenter: function() {
@@ -110,7 +110,7 @@ $(function() {
 				$this.popover('hide');
 			}
 		}
-	}, 'a.hoverable');
+	}, 'a.hoverablee');
 
 
 	// Delete comment
@@ -162,7 +162,7 @@ $(function() {
 
 
 	// Delete item confirmation
-	$('a[class*="-delete"]').live('click', function(e) {
+	$(document).on('click', 'a[class*="-delete"]', function(e) {
 		e.preventDefault();
 
 		var $this = $(this)
@@ -233,7 +233,7 @@ $(function() {
 		return false;
 	});
 
-	$('form.ajaxify').live('submit', function() {
+	$(document).on('submit', 'form.ajaxify', function() {
 		var $form = $(this);
 		$(this).closest('section').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
 
@@ -262,7 +262,7 @@ $(function() {
 	});
 
 	// Ajax dialogs
-	$('a.dialogify').live('click', function(e) {
+	$(document).on('click', 'a.dialogify', function(e) {
 		e.preventDefault();
 
 		$(this).dialogify();
@@ -287,7 +287,7 @@ $(function() {
 
 
 	// User default picture
-	$('section.image-slideshow a[data-image-id]').click(function() {
+	$('section.image-slideshow a[data-image-id]').on('click', function() {
 		var $changes = $('a.image-change');
 		var $image = $(this);
 		if ($changes.length) {

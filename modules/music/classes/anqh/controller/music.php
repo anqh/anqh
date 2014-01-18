@@ -4,7 +4,7 @@
  *
  * @package    Music
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Music extends Controller_Page {
@@ -39,26 +39,26 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view->tab = $this->request->param('music');
 
 		// Filters
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters($this->request->param('music'), $genre));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_filters($this->request->param('music'), $genre));
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($limit, $count));
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination = $this->section_pagination($limit, $count));
 		$this->view->subtitle = __($pagination->total_pages == 1 ? ':pages page' : ':pages pages', array(':pages' => Num::format($pagination->total_pages, 0)));
 
 		// Browse
 		$tracks = $music->find_by_type($type, $genre, $limit, $pagination->offset);
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_browse($tracks));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_browse($tracks));
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		// New
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_list(
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_list(
 			$music->find_new(Model_Music_Track::TYPE_MIX, 10),
 			__('New mixtapes')
 		));
 
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_list(
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_list(
 			$music->find_new(Model_Music_Track::TYPE_TRACK, 10),
 			__('New tracks')
 		));
@@ -178,9 +178,9 @@ class Anqh_Controller_Music extends Controller_Page {
 		Anqh::share(true);
 
 		// Content
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_track_main($track));
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_track_info($track));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_track_main($track));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_share());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_track_info($track));
 
 	}
 
@@ -195,20 +195,16 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view->tab = 'charts';
 		$this->_set_page_actions();
 
-		$this->view->add(View_Page::COLUMN_TOP, '<div class="row-fluid">');
-
 		// Top charts
-		$this->view->add(View_Page::COLUMN_TOP, $this->section_charts(
+		$this->view->add(View_Page::COLUMN_LEFT, $this->section_charts(
 			Model_Music_Track::factory()->find_top_weekly(Model_Music_Track::TYPE_MIX, 10),
 			__('Top :top Mixtapes', array(':top' => 10))
 		));
 
-		$this->view->add(View_Page::COLUMN_TOP, $this->section_charts(
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_charts(
 			Model_Music_Track::factory()->find_top_weekly(Model_Music_Track::TYPE_TRACK, 10),
 			__('Top :top Tracks', array(':top' => 10))
 		));
-
-		$this->view->add(View_Page::COLUMN_TOP, '</div><div class="row-fluid">');
 
 
 		// New
@@ -216,17 +212,16 @@ class Anqh_Controller_Music extends Controller_Page {
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_MIX, 10),
 			__('New mixtapes')
 		);
-		$section->class = 'span6';
-		$this->view->add(View_Page::COLUMN_TOP, $section);
+		$section->class = 'col-sm-6';
+		$this->view->add(View_Page::COLUMN_BOTTOM, $section);
 
 		$section = $this->section_list(
 			Model_Music_Track::factory()->find_new(Model_Music_Track::TYPE_TRACK, 10),
 			__('New tracks')
 		);
-		$section->class = 'span6';
-		$this->view->add(View_Page::COLUMN_TOP, $section);
+		$section->class = 'col-sm-6';
+		$this->view->add(View_Page::COLUMN_BOTTOM, $section);
 
-		$this->view->add(View_Page::COLUMN_TOP, '</div>');
 	}
 
 
@@ -338,7 +333,6 @@ class Anqh_Controller_Music extends Controller_Page {
 	public function section_charts($tracks, $title) {
 		$view = new View_Music_Charts($tracks);
 		$view->title = $title;
-		$view->class = 'span6';
 
 		return $view;
 	}

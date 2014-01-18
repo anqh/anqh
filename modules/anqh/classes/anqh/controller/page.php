@@ -44,21 +44,21 @@ abstract class Anqh_Controller_Page extends Controller {
 
 			// Footer
 			$section = new View_Events_List();
-			$section->class .= ' span4';
+			$section->class .= ' col-sm-4';
 			$section->title  = __('New events');
 			$section->events = Model_Event::factory()->find_new(10);
-			Widget::add('footer', $section);
+			$this->view->add(View_Page::COLUMN_FOOTER, $section);
 
 			$section = new View_Topics_List();
-			$section->class .= ' span4';
+			$section->class .= ' col-sm-4';
 			$section->topics = Model_Forum_Topic::factory()->find_by_latest_post(10);
-			Widget::add('footer', $section);
+			$this->view->add(View_Page::COLUMN_FOOTER, $section);
 
 			$section = new View_Blogs_List();
-			$section->class       .= ' span4';
+			$section->class       .= ' col-sm-4';
 			$section->title        = __('New blogs');
 			$section->blog_entries = Model_Blog_Entry::factory()->find_new(10);
-			Widget::add('footer', $section);
+			$this->view->add(View_Page::COLUMN_FOOTER, $section);
 
 
 			// Open Graph
@@ -103,8 +103,7 @@ head.js(
 
 			// Do some CSS magic to page class
 			$page_class = array_merge(array(
-				$this->language,
-				$this->request->action(),
+				'theme-mixed',
 				self::$user ? 'authenticated' : 'unauthenticated',
 			), explode(' ' , $this->page_class));
 			$page_class = implode(' ', array_unique($page_class));
