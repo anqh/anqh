@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Pagination extends View_Base {
@@ -186,41 +186,41 @@ class View_Generic_Pagination extends View_Base {
 	private function _pagination() {
 
 		// Build range
-		if ($this->total_pages > 15) {
+		if ($this->total_pages > 15):
 			$first = max($this->current_page - 2, 1);
 			$last  = min($this->current_page + 2, $this->total_pages);
-		} else {
+		else:
 			$first = 1;
 			$last  = $this->total_pages;
-		}
+		endif;
 		$range = range($first, $last);
 
 		// Add gaps
-		if ($first > 1) {
-			if ($first > 10) {
+		if ($first > 1):
+			if ($first > 10):
 				array_unshift($range, floor($first / 2));
-			}
+			endif;
 			array_unshift($range, 1);
-		}
-		if ($last < $this->total_pages) {
-			if ($this->total_pages - $last > 10) {
+		endif;
+		if ($last < $this->total_pages):
+			if ($this->total_pages - $last > 10):
 				$range[] = ceil(($this->total_pages - $last) / 2) + $last;
-			}
+			endif;
 			$range[] = $this->total_pages;
-		}
+		endif;
 
 		// No pagination if only 1 page
-		if ($this->auto_hide && $this->total_pages == 1) {
+		if ($this->auto_hide && $this->total_pages == 1):
 			return '';
-		}
+		endif;
 
 		ob_start();
 
 		$previous = 1;
 ?>
 
-<div class="pagination pagination-centered">
-	<ul>
+<div class="text-center">
+	<ul class="pagination pagination-sm">
 
 		<?php if ($this->previous_url): ?>
 		<li class="previous"><?= HTML::anchor($this->previous_url, $this->previous_text) ?></li>
