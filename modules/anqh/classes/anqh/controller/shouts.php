@@ -40,7 +40,9 @@ class Anqh_Controller_Shouts extends Controller_Page {
 		}
 
 		if ($this->ajax) {
-			$this->response->body($this->section_shouts());
+			$section = $this->section_shouts();
+			$section->aside = true;
+			$this->response->body($section);
 
 			return;
 		}

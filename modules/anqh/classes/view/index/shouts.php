@@ -66,8 +66,8 @@ class View_Index_Shouts extends View_Section {
 </ul>
 
 <?php if ($this->_can_shout): ?>
-<form class="form-inline ajaxify" action="<?= Route::url('shouts', array('action' => 'shout')) ?>" method="post">
-	<input class="input-block-level" type="text" name="shout" maxlength="300" placeholder="<?= __('Shout, and ye shall be heard..') ?>" />
+<form <?= $this->aside ? 'class="ajaxify"' : '' ?> action="<?= Route::url('shouts', array('action' => 'shout')) ?>" method="post">
+	<input class="form-control" type="text" name="shout" maxlength="300" placeholder="<?= __('Shout, and ye shall be heard..') ?>" />
 	<?= Form::CSRF() ?>
 </form>
 <?php
