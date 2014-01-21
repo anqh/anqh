@@ -309,16 +309,6 @@ class Anqh_View_Page extends View_Base {
 
 
 	/**
-	 * Render additional <head>.
-	 *
-	 * @return  string
-	 */
-	public function head() {
-		return Widget::get('head');
-	}
-
-
-	/**
 	 * Render <head>.
 	 *
 	 * @return  string
@@ -342,7 +332,7 @@ class Anqh_View_Page extends View_Base {
 	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
 	<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
 
-	<?= $this->head(); ?>
+	<?= Widget::get('head'); ?>
 
 	<?= Ads::head() ?>
 
