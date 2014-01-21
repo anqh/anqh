@@ -228,14 +228,14 @@ $(function() {
 	$(document).on('click', 'a.ajaxify', function _ajaxify() {
 		var parent = $(this).attr('data-ajaxify-target');
 
-		$(this).closest('section, article' + (parent ? ', ' + parent : '')).ajaxify($(this).attr('href'));
+		$(this).closest('section, article, aside' + (parent ? ', ' + parent : '')).ajaxify($(this).attr('href'));
 
 		return false;
 	});
 
 	$(document).on('submit', 'form.ajaxify', function() {
 		var $form = $(this);
-		$(this).closest('section').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
+		$(this).closest('section, aside').ajaxify($form.attr('action'), $form.serialize(), $form.attr('method'));
 
 		return false;
 	});
@@ -244,7 +244,7 @@ $(function() {
 	$(document).on('click', 'a.notification', function _ajaxify() {
 		var parent = $(this).attr('data-ajaxify-target');
 
-		$(this).closest('section, article' + (parent ? ', ' + parent : ''))
+		$(this).closest('section, article, aside' + (parent ? ', ' + parent : ''))
 			.ajaxify($(this).attr('href'), null, 'get', function _counter(response) {
 				var notifications  = $(response).find('li').length
 				  , $notifications = $('.menuitem-notifications a.notifications');
