@@ -38,12 +38,12 @@ class Anqh_HTML extends Kohana_HTML {
 		if (empty($title)) {
 			return '<span class="' . $class . '">' . ($ajax
 				? HTML::image($avatar, array('alt' => __('Avatar')))
-				: HTML::image($placeholder, array('alt' => __('Avatar'), 'class' => 'lazy', 'data-original' => $avatar))
+				: HTML::image($placeholder, array('alt' => __('Avatar'), 'class' => 'img-circle lazy', 'data-original' => $avatar))
 			) . '</span>';
 		} else {
 			return HTML::anchor(URL::user($title), ($ajax
 				? HTML::image($avatar, array('title' => $title, 'alt' => $title))
-				: HTML::image($placeholder, array('title' => $title, 'alt' => $title, 'class' => 'lazy', 'data-original' => $avatar))
+				: HTML::image($placeholder, array('title' => $title, 'alt' => $title, 'class' => 'img-circle lazy', 'data-original' => $avatar))
 			), array('class' => $class . ' hoverable'));
 		}
 	}
