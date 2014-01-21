@@ -99,6 +99,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 */
 	public function section_groups($groups) {
 		$section = new View_Forum_Group($groups);
+		$section->aside = true;
 
 		return $section;
 	}
@@ -111,7 +112,10 @@ class Anqh_Controller_Forum extends Controller_Page {
 	 * @return  View_Topics_List
 	 */
 	public function section_topic_list($topics) {
-		return new View_Topics_List($topics);
+		$section = new View_Topics_List($topics);
+		$section->aside = true;
+
+		return $section;
 	}
 
 

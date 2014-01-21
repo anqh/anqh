@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Events extends Controller_Page {
@@ -935,6 +935,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_events_hot() {
 		$section = new View_Events_List();
+		$section->aside  = true;
 		$section->title  = __('Hot events');
 		$section->events = Model_Event::factory()->find_hot(20);
 
@@ -949,6 +950,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_events_new() {
 		$section = new View_Events_List();
+		$section->aside  = true;
 		$section->title  = __('New events');
 		$section->events = Model_Event::factory()->find_new(15);
 
@@ -963,6 +965,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_events_updated() {
 		$section = new View_Events_List();
+		$section->aside  = true;
 		$section->title  = __('Updated events');
 		$section->events = Model_Event::factory()->find_modified(10);
 

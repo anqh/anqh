@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Venues extends Controller_Page {
@@ -92,14 +92,14 @@ class Anqh_Controller_Venues extends Controller_Page {
 			} else {
 
 				// Confirm
-				$this->view->add(View_Page::COLUMN_MAIN, $this->section_venue_combine($venue, $duplicate));
+				$this->view->add(View_Page::COLUMN_CENTER, $this->section_venue_combine($venue, $duplicate));
 
 			}
 
 		} else {
 
 			// Select parent
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_venue_combine($venue));
+			$this->view->add(View_Page::COLUMN_CENTER, $this->section_venue_combine($venue));
 
 		}
 	}
@@ -263,7 +263,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		}
 
 		$this->view = new View_Page($venue->name);
-		$this->view->add(View_Page::COLUMN_MAIN, $view);
+		$this->view->add(View_Page::COLUMN_CENTER, $view);
 	}
 
 
@@ -284,7 +284,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			);
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_venues());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_venues());
 
 		$this->_side_views();
 	}
@@ -338,7 +338,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			$has_events = true;
 			$section = $this->section_events_list($events);
 			$section->title = __('Upcoming events');
-			$this->view->add(View_Page::COLUMN_MAIN, $section);
+			$this->view->add(View_Page::COLUMN_CENTER, $section);
 		}
 
 		$events = $venue->find_events_past(10);
@@ -346,11 +346,11 @@ class Anqh_Controller_Venues extends Controller_Page {
 			$has_events = true;
 			$section = $this->section_events_list($events);
 			$section->title = __('Past events');
-			$this->view->add(View_Page::COLUMN_MAIN, $section);
+			$this->view->add(View_Page::COLUMN_CENTER, $section);
 		}
 
 		if (!$has_events) {
-			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(__('Nothing has happened here yet.'), null, View_Alert::INFO));
+			$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(__('Nothing has happened here yet.'), null, View_Alert::INFO));
 		}
 
 		// Similar venues
@@ -358,18 +358,18 @@ class Anqh_Controller_Venues extends Controller_Page {
 			$similar = $venue->find_similar(65);
 
 			if ($similar) {
-				$this->view->add(View_Page::COLUMN_MAIN, $this->section_venue_similar($venue, $similar));
+				$this->view->add(View_Page::COLUMN_CENTER, $this->section_venue_similar($venue, $similar));
 			}
 		}
 
 		// Default image
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_image($venue));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_venue_image($venue));
 
 		// Venue info
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_info($venue));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_venue_info($venue));
 
 		/* @todo Needs a decent OAuth2 module
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_venue_foursquare($venue));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_venue_foursquare($venue));
 		 */
 
 	}
@@ -553,7 +553,10 @@ class Anqh_Controller_Venues extends Controller_Page {
 	 * @param  Model_Venue[]  $venues
 	 */
 	public function section_venue_list($venues) {
-		return new View_Venues_List($venues);
+		$section = new View_Venues_List($venues);
+		$section->aside = true;
+
+		return $section;
 	}
 
 
@@ -587,12 +590,12 @@ class Anqh_Controller_Venues extends Controller_Page {
 		// New venues
 		$section = $this->section_venue_list(Model_Venue::factory()->find_new(10));
 		$section->title = __('New venues');
-		$this->view->add(View_Page::COLUMN_SIDE, $section);
+		$this->view->add(View_Page::COLUMN_RIGHT, $section);
 
 		// Updated venues
 		$section = $this->section_venue_list(Model_Venue::factory()->find_updated(10));
 		$section->title = __('Updated venues');
-		$this->view->add(View_Page::COLUMN_SIDE, $section);
+		$this->view->add(View_Page::COLUMN_RIGHT, $section);
 
 	}
 

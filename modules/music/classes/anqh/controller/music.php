@@ -365,10 +365,11 @@ class Anqh_Controller_Music extends Controller_Page {
 	 * Get list view.
 	 */
 	public function section_list($tracks, $title) {
-		$view = new View_Music_List($tracks);
-		$view->title = $title;
+		$section = new View_Music_List($tracks);
+		$section->aside = true;
+		$section->title = $title;
 
-		return $view;
+		return $section;
 	}
 
 

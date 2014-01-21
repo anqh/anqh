@@ -16,15 +16,31 @@ class Anqh_View_Page extends View_Base {
 	const COLUMN_BOTTOM = 'bottom';
 	const COLUMN_FOOTER = 'footer';
 
-	// Deprecated
+	/** @deprecated */
 	const COLUMN_MAIN = 'main';
+
+	/** @deprecated */
 	const COLUMN_SIDE = 'side';
+
+	/** @deprecated */
 	const SPANS_93    = '9+3';
+
+	/** @deprecated */
 	const SPANS_84    = '8+4';
+
+	/** @deprecated */
 	const SPANS_82    = '8+2';
+
+	/** @deprecated */
 	const SPANS_73    = '7+3';
+
+	/** @deprecated */
 	const SPANS_66    = '6+6';
+
+	/** @deprecated */
 	const SPANS_64    = '6+4';
+
+	/** @deprecated */
 	const SPANS_55    = '5+5';
 
 	/**

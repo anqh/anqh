@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Forum_Group
+ * Forum Groups
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_Group extends View_Section {
@@ -42,12 +42,12 @@ class View_Forum_Group extends View_Section {
 
 ?>
 
-<ol class="unstyled">
+<ol class="list-unstyled">
 	<?php foreach ($this->groups as $group): ?>
 
 	<li>
 		<h4><?= HTML::chars($group->name) ?></h4>
-		<ol class="unstyled">
+		<ol class="list-unstyled">
 
 <?php
 

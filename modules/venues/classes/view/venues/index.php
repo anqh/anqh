@@ -4,7 +4,7 @@
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Venues_Index extends View_Section {
@@ -64,20 +64,17 @@ class View_Venues_Index extends View_Section {
 
 ?>
 
-<article>
-	<header>
-		<h4><?= HTML::chars($city) ?></h4>
-	</header>
+<header>
+	<h4><?= HTML::chars($city) ?></h4>
+</header>
 
-	<ul class="unstyled block-grid two-up">
-	<?php foreach ($venues as $venue): ?>
+<ul class="list-unstyled row">
+<?php foreach ($venues as $venue): ?>
 
-		<li><?= HTML::anchor(Route::model($venue), HTML::chars($venue->name)) ?></li>
+	<li class="col-sx-6 col-sm-4 col-md-3"><?= HTML::anchor(Route::model($venue), HTML::chars($venue->name)) ?></li>
 
-	<?php endforeach; ?>
-	</ul>
-
-</article>
+<?php endforeach; ?>
+</ul>
 
 <?php
 

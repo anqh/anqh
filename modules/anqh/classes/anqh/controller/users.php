@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Users extends Controller_Page {
@@ -24,13 +24,13 @@ class Anqh_Controller_Users extends Controller_Page {
 		$this->view = View_Page::factory(__('New members'));
 
 		// New users
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_new_users());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_new_users());
 
 		// Birthdays
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_birthdays());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_birthdays());
 
 		// Online
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_online());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_online());
 
 	}
 
@@ -42,6 +42,7 @@ class Anqh_Controller_Users extends Controller_Page {
 	 */
 	public function section_birthdays() {
 		$section = new View_Users_Birthdays();
+		$section->aside = true;
 		$section->limit = 0;
 
 		return $section;
@@ -64,7 +65,10 @@ class Anqh_Controller_Users extends Controller_Page {
 	 * @return  View_Users_Online
 	 */
 	public function section_online() {
-		return new View_Users_Online();
+		$section = new View_Users_Online();
+		$section->aside = true;
+
+		return $section;
 	}
 
 }
