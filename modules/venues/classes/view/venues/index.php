@@ -71,7 +71,7 @@ class View_Venues_Index extends View_Section {
 <ul class="list-unstyled row">
 <?php foreach ($venues as $venue): ?>
 
-	<li class="col-sx-6 col-sm-4 col-md-3"><?= HTML::anchor(Route::model($venue), HTML::chars($venue->name)) ?></li>
+	<li class="col-xs-6 col-sm-4 col-md-3"><?= HTML::anchor(Route::model($venue), HTML::chars($venue->name)) ?></li>
 
 <?php endforeach; ?>
 </ul>
