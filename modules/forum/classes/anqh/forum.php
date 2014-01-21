@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Forum {
@@ -56,12 +56,12 @@ class Anqh_Forum {
 		$prefix = array();
 
 		if ($topic->sticky) {
-			$prefix[] = '<i class="icon-pushpin text-warning" title="' . __('Pinned') . '"></i>';
+			$prefix[] = '<i class="fa fa-thumb-tack text-warning" title="' . __('Pinned') . '"></i>';
 		}
 
 		switch ($topic->status) {
-			case Model_Forum_Topic::STATUS_LOCKED: $prefix[] = '<i class="icon-lock muted" title="' . __('Locked') . '"></i>'; break;
-			case Model_Forum_Topic::STATUS_SINK:   $prefix[] = '<i class="icon-unlock muted" title="' . __('Sink') . '"></i>'; break;
+			case Model_Forum_Topic::STATUS_LOCKED: $prefix[] = '<i class="fa fa-lock muted" title="' . __('Locked') . '"></i>'; break;
+			case Model_Forum_Topic::STATUS_SINK:   $prefix[] = '<i class="fa fa-unlock muted" title="' . __('Sink') . '"></i>'; break;
 		}
 
 		return implode(' ', $prefix) . ' ' . HTML::chars($topic->name);

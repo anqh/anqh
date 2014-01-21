@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Topics_Index extends View_Section {
@@ -56,9 +56,9 @@ class View_Topics_Index extends View_Section {
 		$last_poster = $topic->last_post()->author();
 		$area        = $this->area ? false : $topic->area();
 		if ($topic->recipient_count > 2):
-			$icon = '<i class="icon-group" title="' . __('Group message') . '"></i> ';
+			$icon = '<i class="fa fa-group" title="' . __(':recipients recipients', array(':recipients' => Num::format($topic->recipient_count, 0))) . '"></i> ';
 		elseif ($topic->recipient_count > 0):
-			$icon = '<i class="icon-envelope" title="' .  __('Personal message') . '"></i> ';
+			$icon = '<i class="fa fa-envelope" title="' .  __('Personal message') . '"></i> ';
 		else:
 			$icon = '';
 		endif;
@@ -84,11 +84,10 @@ class View_Topics_Index extends View_Section {
 			</small>
 			<?php endif; ?>
 
-			<small class="muted" title="<?= __('Replies') ?>"><i class="icon-comment"></i> <?= Num::format($topic->post_count - 1, 0) ?></small>
+		</td>
 
-			<?php if ($topic->recipient_count > 2): ?>
-			&nbsp; <small class="muted" title="<?= __('Recipients') ?>"><i class="icon-group"></i> <?= Num::format($topic->recipient_count, 0) ?></small>
-			<?php endif; ?>
+		<td class="text-right muted nowrap">
+			<small title="<?= __('Replies') ?>"><?= Num::format($topic->post_count - 1, 0) ?> <i class="fa fa-comment"></i></small>
 		</td>
 
 		<td>
