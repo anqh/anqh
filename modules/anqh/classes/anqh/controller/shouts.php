@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Shouts extends Controller_Page {
@@ -18,7 +18,7 @@ class Anqh_Controller_Shouts extends Controller_Page {
 		$this->view = View_Page::factory(__('Shouts'));
 
 		// Shouts
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_shouts());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_shouts());
 
 	}
 
@@ -59,6 +59,7 @@ class Anqh_Controller_Shouts extends Controller_Page {
 
 		if (!$this->ajax) {
 			$section->title = null;
+			$section->limit = 50;
 		}
 
 		return $section;

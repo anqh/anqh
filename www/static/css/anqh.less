@@ -83,6 +83,14 @@ a.friend                               { text-decoration: underline; }
   #visitor > li > a                    { background: transparent; float: left; }
 }
 
+
+// Ads
+.ad                                    { text-align: center;
+  &.ad140x350                          { margin-top: @grid-gutter-width; max-height: 350px; max-width: 140px; }
+  &.ad728x90                           { margin: 10px auto; max-height: 90px; max-width: 728px; }
+}
+
+
 // Theming
 .content.dark,
 body.theme-dark                        { background: @dark-body-bg url(../img/background.png);
@@ -93,6 +101,7 @@ body.theme-dark aside.panel,
 body.theme-mixed aside.panel           { background-color: @dark-panel-bg; border-radius: 0; color: @dark-panel-default-text; .panel-variant(@dark-panel-default-border; @dark-headings-color; @dark-panel-default-heading-bg; @dark-panel-default-border);
   .panel-heading                       { border-bottom-color: @dark-panel-inner-border; }
   .panel-title                         { font-size: @font-size-base; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
+  .panel-title a                       { color: @dark-headings-color; }
 }
 .content.dark,
 body.theme-dark,
@@ -213,10 +222,6 @@ body.theme-mixed aside                 {
 #side > article + article              { margin-top: @grid-gutter-width; }
 
 
-.ad                                    {
-  &.ad140x350                          { margin-top: @grid-gutter-width; max-height: 350px; max-width: 140px; }
-  &.ad728x90                           { margin: 10px auto; max-height: 90px; max-width: 728px; }
-}
 
 section                                { overflow: hidden;
   & > header                           { position: relative;

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Users_Birthdays extends View_Section {
@@ -36,15 +36,9 @@ class View_Users_Birthdays extends View_Section {
 	public function __construct() {
 		parent::__construct();
 
+		$this->title = HTML::anchor(Route::url('users'), __('Birthdays'));
+
 		$this->stamp = strtotime('today', time());
-
-		$this->title = __('Birthdays');
-
-		$this->tabs = array(
-			array(
-				'tab' => HTML::anchor(Route::url('users'), __('Show more')),
-			),
-		);
 	}
 
 
@@ -102,6 +96,17 @@ class View_Users_Birthdays extends View_Section {
 						);
 					}
 
+					// Sort by age and name
+					usort($users, function($a, $b) {
+						if ($a['age'] > $b['age']) {
+							return -1;
+						} else if ($a['age'] < $b['age']) {
+							return 1;
+						} else {
+							return strcasecmp($a['user'], $b['user']);
+						}
+					});
+
 					// Build date
 					$span = $stamp - $today;
 					if ($span == 0) {
@@ -141,28 +146,28 @@ class View_Users_Birthdays extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		if ($birthdays = $this->_birthdays()) {
+		if ($birthdays = $this->_birthdays()):
 			ob_start();
 
 ?>
 
 <dl>
-	<?php foreach ($birthdays as $birthday) { ?>
-	<dt><?php echo Arr::get($birthday, 'date') ?> <?php echo Arr::get($birthday, 'link') ?></dt>
+	<?php foreach ($birthdays as $birthday): ?>
+	<dt><?= Arr::get($birthday, 'date') ?> <?= Arr::get($birthday, 'link') ?></dt>
 	<dd>
-		<ul class="unstyled">
-			<?php foreach ($birthday['users'] as $user) { ?>
-			<li><?php echo __($user['age'] == 1 ? ':age year' : ':age years', array(':age' => $user['age'])) ?> <?php echo $user['user'] ?></li>
-			<?php } ?>
+		<ul class="list-unstyled">
+			<?php foreach ($birthday['users'] as $user): ?>
+			<li><?= __($user['age'] == 1 ? ':age year' : ':age years', array(':age' => $user['age'])) ?> <?= $user['user'] ?></li>
+			<?php endforeach; ?>
 		</ul>
 	</dd>
-	<?php } ?>
+	<?php endforeach; ?>
 </dl>
 
 <?php
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}

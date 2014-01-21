@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Index_Shouts extends View_Section {
@@ -27,7 +27,7 @@ class View_Index_Shouts extends View_Section {
 		parent::__construct();
 
 		$this->id    = 'shouts';
-		$this->title = __('Shouts');
+		$this->title = HTML::anchor(Route::url('shouts'), __('Shouts'));
 
 		$this->_can_shout = Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE, self::$_user);
 	}
@@ -40,41 +40,41 @@ class View_Index_Shouts extends View_Section {
 	 */
 	public function content() {
 		$shouts = array();
-		foreach (Model_Shout::find_latest($this->limit) as $shout) {
+		foreach (Model_Shout::find_latest($this->limit) as $shout):
 			$shouts[] = array(
 				'created' => $shout->created,
 			  'user_id' => $shout->author_id,
 			  'shout'   => $shout->shout
 			);
-		}
+		endforeach;
 
-		if ($shouts) {
+		if ($shouts):
 			ob_start();
 
 ?>
 
-<ul class="unstyled">
+<ul class="list-unstyled">
 
-	<?php foreach (array_reverse($shouts) as $shout) { ?>
+	<?php foreach (array_reverse($shouts) as $shout): ?>
 	<li>
 		<?= HTML::time(Date::format('HHMM', $shout['created']), array('datetime' => $shout['created'], 'class' => 'muted')) ?>
 		<?= HTML::user($shout['user_id']) ?>:
 		<?= Text::smileys(Text::auto_link_urls(HTML::chars($shout['shout']))) ?>
 	</li>
-	<?php } ?>
+	<?php endforeach; ?>
 
 </ul>
 
-<?php if ($this->_can_shout) { ?>
+<?php if ($this->_can_shout): ?>
 <form class="form-inline ajaxify" action="<?= Route::url('shouts', array('action' => 'shout')) ?>" method="post">
 	<input class="input-block-level" type="text" name="shout" maxlength="300" placeholder="<?= __('Shout, and ye shall be heard..') ?>" />
 	<?= Form::CSRF() ?>
 </form>
 <?php
-			}
+			endif;
 
 			return ob_get_clean();
-		}
+		endif;
 
 		return '';
 	}

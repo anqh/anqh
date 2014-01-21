@@ -1,18 +1,13 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Topics_List
+ * Topics list.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Topics_List extends View_Section {
-
-	/**
-	 * @var  string  Section class
-	 */
-	public $class = 'topics cut';
 
 	/**
 	 * @var  Model_Forum_Topic[]
@@ -39,21 +34,19 @@ class View_Topics_List extends View_Section {
 	 * @return  string
 	 */
 	public function content() {
-		if (!$this->topics) {
+		if (!$this->topics):
 			return '';
-		}
+		endif;
 
 		ob_start();
 
 ?>
 
-<ul class="unstyled">
+<ul class="list-unstyled">
 
 		<?php foreach ($this->topics as $topic): ?>
 		<li>
-			<small class="ago"><?= HTML::time(Date::short_span($topic->last_posted, true), $topic->last_posted) ?></small>
-			<?php //= HTML::anchor(Route::model($topic), '<i class="muted iconic-upload"></i>', array('class' => 'transparent', 'title' => __('First post'))) ?>
-			<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('title' => $topic->name)) ?>
+			<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic), array('title' => HTML::chars($topic->name))) ?>
 		</li>
 		<?php endforeach; ?>
 
