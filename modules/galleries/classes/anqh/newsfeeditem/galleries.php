@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
@@ -57,7 +57,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsfeedItem $item) {
-		$link = $item->is_aggregate() ? implode('<br />', self::get_links($item)) : self::get_link($item);
+		$link = $item->is_aggregate() ? implode('<br>', self::get_links($item)) : self::get_link($item);
 		if (!$link) {
 			return '';
 		}
@@ -114,7 +114,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($gallery->loaded() && $image->loaded()) {
 					$text = HTML::anchor(
 						Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => '')),
-						'<i class="icon-camera-retro"></i> ' . HTML::chars($gallery->name),
+						'<i class="fa fa-camera-retro"></i> ' . HTML::chars($gallery->name),
 						array('class' => 'hoverable')
 					);
 				}
@@ -127,7 +127,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($flyer->loaded()) {
 					$text = HTML::anchor(
 						Route::url('flyer', array('id' => $flyer->id)),
-						'<i class="icon-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
+						'<i class="fa fa-picture"></i> ' . ($flyer->name ? HTML::chars($flyer->name) : __('flyer')),
 						array('class' => 'hoverable')
 					);
 				}
@@ -139,7 +139,7 @@ class Anqh_NewsfeedItem_Galleries extends NewsfeedItem {
 				if ($gallery->loaded()) {
 					$text = HTML::anchor(
 						Route::model($gallery),
-						'<i class="icon-camera-retro"></i> ' . HTML::chars($gallery->name),
+						'<i class="fa fa-camera-retro"></i> ' . HTML::chars($gallery->name),
 						array('class' => 'hoverable')
 					);
 				}

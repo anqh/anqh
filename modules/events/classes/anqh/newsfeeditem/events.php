@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Events extends NewsfeedItem {
@@ -44,7 +44,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsFeedItem $item) {
-		$link = $item->is_aggregate() ? implode('<br />', self::get_links($item)) : self::get_link($item);
+		$link = $item->is_aggregate() ? implode('<br>', self::get_links($item)) : self::get_link($item);
 		if (!$link) {
 			return '';
 		}
@@ -66,7 +66,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 
 		}
 
-		return $text . '<br />' . $link;
+		return $text . '<br>' . $link;
 	}
 
 
@@ -89,7 +89,7 @@ class Anqh_NewsfeedItem_Events extends NewsfeedItem {
 				if ($event->loaded()) {
 					$text = HTML::anchor(
 						Route::model($event),
-						'<i class="icon-calendar icon-white"></i> ' . HTML::chars($event->name),
+						'<i class="fa fa-calendar"></i> ' . HTML::chars($event->name),
 						array('class' => 'hoverable')
 					);
 				}

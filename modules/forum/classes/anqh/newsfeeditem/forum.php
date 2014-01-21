@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
@@ -37,7 +37,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsFeedItem $item) {
-		$link = $item->is_aggregate() ? implode('<br />', self::get_links($item)) : self::get_link($item);
+		$link = $item->is_aggregate() ? implode('<br>', self::get_links($item)) : self::get_link($item);
 		if (!$link) {
 			return '';
 		}
@@ -55,7 +55,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 
 		}
 
-		return $text . '<br />' . $link;
+		return $text . '<br>' . $link;
 	}
 
 
@@ -76,7 +76,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 				if ($topic->loaded()) {
 					$text = HTML::anchor(
 						Route::get('forum_post')->uri(array('topic_id' => Route::model_id($topic), 'id' => $item->data['post_id'])) . '#post-' . $item->data['post_id'],
-						'<i class="icon-comments"></i> ' . HTML::chars($topic->name),
+						'<i class="fa fa-comments"></i> ' . HTML::chars($topic->name),
 						array('title' => $topic->name)
 					);
 				}
@@ -87,7 +87,7 @@ class Anqh_NewsfeedItem_Forum extends NewsfeedItem {
 				if ($topic->loaded()) {
 					$text = HTML::anchor(
 						Route::model($topic),
-						'<i class="icon-comments"></i> ' . HTML::chars($topic->name),
+						'<i class="fa fa-comments"></i> ' . HTML::chars($topic->name),
 						array('title' => $topic->name)
 					);
 				}

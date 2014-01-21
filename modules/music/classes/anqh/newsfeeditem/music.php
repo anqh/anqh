@@ -4,7 +4,7 @@
  *
  * @package    Music
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_NewsfeedItem_Music extends NewsfeedItem {
@@ -36,7 +36,7 @@ class Anqh_NewsfeedItem_Music extends NewsfeedItem {
 	 * @return  string
 	 */
 	public static function get(Model_NewsfeedItem $item) {
-		$link = $item->is_aggregate() ? implode('<br />', self::get_links($item)) : self::get_link($item);
+		$link = $item->is_aggregate() ? implode('<br>', self::get_links($item)) : self::get_link($item);
 		if (!$link) {
 			return '';
 		}
@@ -54,7 +54,7 @@ class Anqh_NewsfeedItem_Music extends NewsfeedItem {
 
 		}
 
-		return $text . '<br />' . $link;
+		return $text . '<br>' . $link;
 	}
 
 
@@ -76,7 +76,7 @@ class Anqh_NewsfeedItem_Music extends NewsfeedItem {
 				if ($track->loaded()) {
 					$text = HTML::anchor(
 						Route::model($track),
-						'<i class="icon-music icon-white"></i> ' . HTML::chars($track->name),
+						'<i class="fa fa-music"></i> ' . HTML::chars($track->name),
 						array('title' => $track->name)
 					);
 				}
