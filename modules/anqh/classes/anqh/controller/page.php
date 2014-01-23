@@ -73,21 +73,6 @@ abstract class Anqh_Controller_Page extends Controller {
 			}
 
 
-			// Analytics
-			if ($google_analytics = Kohana::$config->load('site.google_analytics')) {
-				Widget::add('head', HTML::script_source("
-var tracker;
-head.js(
-	{ 'google-analytics': 'http://www.google-analytics.com/ga.js' },
-	function() {
-		tracker = _gat._getTracker('" . $google_analytics . "');
-		tracker._trackPageview();
-	}
-);
-"));
-			}
-
-
 			// Ads
 /*			$ads = Kohana::$config->load('site.ads');
 			if ($ads && $ads['enabled']) {

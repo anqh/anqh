@@ -37,8 +37,9 @@ return array(
 	/**
 	 * Google configs
 	 */
-	'google_api_key'   => false,
-	'google_analytics' => false, // UA-123456-7
+	'google_api_key'          => false,
+	'google_analytics'        => false, // UA-123456-7
+	'google_analytics_domain' => false, // domain.tld
 
 	/**
 	 * Facebook configs
