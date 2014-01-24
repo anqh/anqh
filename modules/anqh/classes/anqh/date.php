@@ -215,31 +215,29 @@ class Anqh_Date extends Kohana_Date {
 	 * @static
 	 * @param   integer  $timestamp
 	 * @param   boolean  $short      Include ago/in
-	 * @param   boolean  $wrap       Wrap number in <var>
 	 * @return  string
 	 */
-	public static function short_span($timestamp, $short = true, $wrap = false) {
+	public static function short_span($timestamp, $short = true) {
 
 		// Determine the difference in seconds
 		$offset = abs(time() - $timestamp);
-		$wrap   = $wrap ? '<var>%d</var>' : '%d';
 
 		if ($offset < Date::MINUTE) {
-			$span = __('< 1 min');
+			return __('just now');
 		} else if ($offset < Date::HOUR) {
-			$span = __(':min min', array(':min' => sprintf($wrap, floor($offset / Date::MINUTE))));
+			$span = __(':min min', array(':min' => floor($offset / Date::MINUTE)));
 		} else if ($offset > Date::HOUR * 6 && date('Ymd', $timestamp) == date('Ymd', strtotime('yesterday'))) {
 			return __('yesterday');
 		} else if ($offset > Date::HOUR * 6 && date('Ymd', $timestamp) == date('Ymd', strtotime('tomorrow'))) {
 			return __('tomorrow');
 		} else if ($offset < Date::DAY) {
-			$span = __(':hour h', array(':hour' => sprintf($wrap, floor($offset / Date::HOUR))));
+			$span = __(':hour h', array(':hour' => floor($offset / Date::HOUR)));
 		} else if ($offset < Date::WEEK) {
 			return date('l', $timestamp); //__(':day d', array(':day' => sprintf($wrap, floor($offset / Date::DAY))));
 		} else if ($offset < Date::MONTH) {
-			$span = __(':week wk', array(':week' => sprintf($wrap, floor($offset / Date::WEEK))));
+			$span = __(':week wk', array(':week' => floor($offset / Date::WEEK)));
 		} else if ($offset < (Date::YEAR)) {
-			$span = __(':month mo', array(':month' => sprintf($wrap, floor($offset / Date::MONTH))));
+			return date('F', $timestamp);
 		} else {
 			return date('Y', $timestamp);
 		}

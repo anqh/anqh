@@ -100,7 +100,7 @@ class View_Topics_Index extends View_Section {
 		</td>
 
 		<td>
-			<small class="muted pull-right"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
+			<small class="muted pull-right nowrap"><?= HTML::time(Date::short_span($topic->last_posted, true, true), $topic->last_posted) ?></small>
 		</td>
 
 	</tr>
