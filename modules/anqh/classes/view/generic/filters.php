@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Filters extends View_Section {
@@ -89,8 +89,8 @@ class View_Generic_Filters extends View_Section {
 
 ?>
 
-<button type="button" class="btn btn-<?= $this->selected ? 'info' : 'inverse' ?> btn-small filter" data-toggle="collapse" data-target="#<?= $this->id ?> .collapse">
-	<i class="icon-filter icon-white"></i> <?= __('Show') ?>: <span><?= $this->selected ? $this->selected : __('All') ?></span>
+<button type="button" class="btn btn-<?= $this->selected ? 'info' : 'default' ?> btn-sm filter" data-toggle="collapse" data-target="#<?= $this->id ?> .collapse">
+	<i class="fa fa-filter"></i> <?= __('Show') ?>: <span><?= $this->selected ? $this->selected : __('All') ?></span>
 </button>
 
 <?php
@@ -103,10 +103,10 @@ class View_Generic_Filters extends View_Section {
 ?>
 
 <div class="btn-toolbar filters collapse">
-	<a data-filter="all" data-toggle="button" class="btn btn-mini btn-inverse active"><?= __('All') ?></a>
+	<button type="button" data-filter="all" data-toggle="button" class="btn btn-xs btn-default"><?= __('All') ?></button>
 
 	<?php foreach ($filter['filters'] as $key => $name): ?>
-	<a data-filter="<?= $type . '-' . $key ?>" data-toggle="button" class="btn btn-mini btn-inverse"><?= HTML::chars($name) ?></a>
+	<button type="button" data-filter="<?= $type . '-' . $key ?>" data-toggle="button" class="btn btn-xs btn-default"><?= HTML::chars($name) ?></button>
 	<?php endforeach ?>
 
 </div>
@@ -125,10 +125,10 @@ class View_Generic_Filters extends View_Section {
 ?>
 
 <div class="btn-toolbar filters collapse">
-	<a href="<?= self::url(false) ?>" data-toggle="button" class="btn btn-mini btn-inverse <?= $this->selected ? '' : 'active' ?>"><?= __('All') ?></a>
+	<button type="button" href="<?= self::url(false) ?>" data-toggle="button" class="btn btn-xs btn-default <?= $this->selected ? 'active' : '' ?>"><?= __('All') ?></button>
 
 	<?php foreach ($filter['filters'] as $name): ?>
-	<a href="<?= self::url($name) ?>" data-toggle="button" class="btn btn-mini btn-inverse <?= $this->selected == $name ? 'active' : '' ?>"><?= HTML::chars($name) ?></a>
+	<button type="button" href="<?= self::url($name) ?>" data-toggle="button" class="btn btn-xs btn-default <?= $this->selected == $name ? 'active' : '' ?>"><?= HTML::chars($name) ?></button>
 	<?php endforeach; ?>
 
 </div>
@@ -158,7 +158,7 @@ class View_Generic_Filters extends View_Section {
 
 	// Hook clicks
 	head.ready('jquery', function _hookFilters() {
-		var $filters = $('#<?= $this->id ?> .filters a')
+		var $filters = $('#<?= $this->id ?> .filters .btn')
 		  , $filter  = $('#<?= $this->id ?> .filter span');
 
 		$filters.on('click', function _filterClick() {
