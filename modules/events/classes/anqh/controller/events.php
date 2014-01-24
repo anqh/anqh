@@ -417,12 +417,12 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Build page
 		$this->view = View_Page::factory(__('Events') . ' ' . Date::format(Date::DM_SHORT, $this->stamp_begin) . '–' . Date::format(Date::DMY_SHORT, $this->stamp_end));
 
+		// Filters
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_filters());
+
 		// Pagination
 		$pagination = $this->section_pagination();
 		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
-
-		// Filters
-		$this->view->add(View_Page::COLUMN_CENTER, $this->section_filters());
 
 		// Event list
 		$this->view->add(View_Page::COLUMN_CENTER, $this->sections_events());
@@ -1012,6 +1012,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_pagination() {
 		return new View_Generic_Pagination(array(
+//		  'current_page'  => Date::format(Date::DM_SHORT, $this->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_SHORT, $this->stamp_end),
 			'previous_text' => '&lsaquo; ' . __('Previous events'),
 			'next_text'     => __('Next events') . ' &rsaquo;',
 			'previous_url'  => Route::url('events_ymd', array(

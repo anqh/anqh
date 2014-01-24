@@ -28,11 +28,12 @@ form                                   {
 }
 
 legend .control-group                  { float: right; }
-
+/*
 i[class^="icon-"],
 i[class*=" icon-"]                     { font-size: 14px; display: inline-block !important; text-align: center; text-decoration: none !important; width: 14px; }
 h1 i[class^="icon-"],
 h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
+*/
 .icon-facebook                         { background: #3B5998; border-radius: 2px; padding: 2px 0 0 2px; }
 .label-special                         { background-color: @brand-special; }
 .label-special:hover                   { background-color: darken(@brand-special, 10%); }
@@ -42,7 +43,7 @@ h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
 .media,
 .media .media                          { margin-top: 10px; }
 
-.pager                                 { margin: 5px 0;
+/*.pager                                 { margin: 5px 0;
   li > a,
   li > span                            { background-color: @pagination-bg; border-color: @pagination-border; }
   li > a:hover                         { background-color: @pagination-active-bg; }
@@ -51,7 +52,7 @@ h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
   .disabled > span                     { background-color: @gray-darker; }
 }
 .pagination                            { margin-top: 0; }
-
+*/
 /*
 .nav-tabs > li > a                     { border-width: 0 0 4px 0; padding-bottom: 5px; }
 .nav-tabs > li.active > a,
@@ -75,6 +76,8 @@ a.friend                               { text-decoration: underline; }
   img                                  { max-height: 100%; max-width: 100%; }
 }
 .avatar + .user                        { margin-left: 5px; }
+input.private                          { border-color: @brand-special; color: @brand-special; }
+.private div                           { color: @brand-special; }
 
 .kohana                                { display: none; position: relative; z-index: 1; }
 
@@ -343,8 +346,6 @@ table.ui-datepicker-calendar           {
 .input-max                             { width: 100%; }
 input.date                             { width: 62px; }
 select.time                            { width: 75px; }
-button[name=private-toggle].active + input { border-color: @brand-special; }
-.private div                           { color: @brand-special; }
 
 //p.cut,
 .cut li                                { .text-overflow; }

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Comments extends View_Section {
@@ -88,7 +88,7 @@ class View_Generic_Comments extends View_Section {
 			// Ignore
 			if (self::$_user && self::$_user->is_ignored($author)) continue;
 
-			$classes = array('media', 'speech');
+			$classes = array('media');
 
 			// Private comment?
 			if ($comment->private) {
@@ -118,7 +118,7 @@ class View_Generic_Comments extends View_Section {
 		</div>
 		<div class="arrow"></div>
 		<div class="media-body">
-			<small class="ago">
+			<small class="pull-right">
 				<?php if (self::$_user_id && $comment->user_id == self::$_user_id || in_array('my', $classes)):
 
 					if ($this->private && !$comment->private):
@@ -162,7 +162,8 @@ class View_Generic_Comments extends View_Section {
 	public function form() {
 		ob_start();
 
-		echo new View_Generic_Smileys('input[name=comment]');
+//		echo new View_Generic_Smileys('input[name=comment]');
+//		echo Form::button('smileys', '<i class="fa fa-smile-o"></i>', array('class' => 'btn btn-default', 'title' => __('Show smileys'), 'type' => 'button', 'data-toggle' => 'collapse', 'data-target' => '.smileys'));
 
 		echo Form::open(null, array('class' => 'form-inline'));
 
@@ -171,14 +172,14 @@ class View_Generic_Comments extends View_Section {
 			// Private messaging available
 			echo Form::hidden('private', 0);
 
-			echo '<div class="input-prepend input-append row-fluid">';
+			echo '<div class="input-group">';
 
-			echo Form::button('private-toggle', __('Priv'), array(
+			echo '<span class="input-group-btn">' . Form::button('private-toggle', __('Priv'), array(
 					'type'        => 'button',
 					'title'       => __('Private message'),
 					'class'       => 'btn btn-special',
 					'data-toggle' => 'button'
-				));
+				)) . '</span>';
 
 /*			$input = Form::checkbox(
 				'private',
@@ -199,13 +200,12 @@ class View_Generic_Comments extends View_Section {
 		else:
 
 			// No private available
-			echo '<div class="input-append row-fluid">';
+			echo '<div class="input-group">';
 
 		endif;
 
-		echo Form::input('comment', Arr::get($this->values, 'comment'), array('class' => 'span9', 'maxlength' => 300));
-		echo Form::button('smileys', '<i class="icon-smile"></i>', array('class' => 'btn btn-inverse', 'title' => __('Show smileys'), 'type' => 'button', 'data-toggle' => 'collapse', 'data-target' => '.smileys'));
-		echo Form::button(false, '<i class="icon-comment"></i>', array('class' => 'btn btn-primary', 'title' => __('Comment'), 'type' => 'submit'));
+		echo Form::input('comment', Arr::get($this->values, 'comment'), array('class' => 'form-control', 'maxlength' => 300));
+		echo '<span class="input-group-btn">' . Form::button(false, '<i class="fa fa-comment"></i>', array('class' => 'btn btn-primary', 'title' => __('Comment'), 'type' => 'submit')) . '</span>';
 		echo '</div>';
 
 		echo Form::csrf();

@@ -75,7 +75,7 @@ class View_Newsfeed extends View_Section {
 			<?= HTML::avatar($item['user']['avatar'], $item['user']['username'], $this->mini) ?>
 		</div>
 		<div class="media-body">
-			<?= HTML::user($item['user']) ?> <small class="ago"><?= HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
+			<?= HTML::user($item['user']) ?> <small class="pull-right"><?= HTML::time(Date::short_span($item['stamp'], true, true), $item['stamp']) ?></small>
 			<?= $item['text'] ?>
 		</div>
 	</li>

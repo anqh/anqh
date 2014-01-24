@@ -159,7 +159,7 @@ class View_Generic_Pagination extends View_Base {
 	<?php endif; ?>
 
 	<?php if ($this->current_page): ?>
-	<li class="disabled"><a><?= $this->current_page ?></a></li>
+	<li><span><?= $this->current_page ?></span></li>
 	<?php endif; ?>
 
 	<?php if ($this->last_url): ?>

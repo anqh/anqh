@@ -142,9 +142,9 @@ $(function() {
 
 		return false;
 	});
-	$(document).delegate('button[name=private-toggle]', 'click', function privateComment(e) {
+	$(document).delegate('button[name=private-toggle]', 'click', function privateComment() {
 		$('input[name=private]').val(~~$(this).hasClass('active'));
-		$('input[name=comment]').focus();
+		$('input[name=comment]').toggleClass('private', ~~$(this).hasClass('active')).focus();
 	});
 
 
