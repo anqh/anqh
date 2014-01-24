@@ -56,7 +56,7 @@ class Anqh_Controller_Events extends Controller_Page {
 	 * Action: add
 	 */
 	public function action_add() {
-		return $this->_edit_event();
+		$this->_edit_event();
 	}
 
 
@@ -97,7 +97,7 @@ class Anqh_Controller_Events extends Controller_Page {
 	 * Action: edit event
 	 */
 	public function action_edit() {
-		return $this->_edit_event((int)$this->request->param('id'));
+		$this->_edit_event((int)$this->request->param('id'));
 	}
 
 
@@ -184,19 +184,19 @@ class Anqh_Controller_Events extends Controller_Page {
 		Anqh::share(true);
 
 		// Event main info
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_event_main($event));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_event_main($event));
 
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_share());
 
 		// Flyers
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_carousel($event));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_carousel($event));
 
 		// Event side info
 		//$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_info($event));
 
 		// Favorites
 		if ($event->favorite_count) {
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_favorites($event));
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_event_favorites($event));
 		}
 
 	}
@@ -374,7 +374,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Build page
 		$this->view = View_Page::factory($event->name);
 
-		$this->view->add(View_Page::COLUMN_MAIN, $view);
+		$this->view->add(View_Page::COLUMN_CENTER, $view);
 	}
 
 
@@ -419,28 +419,28 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Pagination
 		$pagination = $this->section_pagination();
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		// Filters
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_filters());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_filters());
 
 		// Event list
-		$this->view->add(View_Page::COLUMN_MAIN, $this->sections_events());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->sections_events());
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		// Calendar
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_calendar());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_calendar());
 
 		// Hot events
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_hot());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_events_hot());
 
 		// New events
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_new());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_events_new());
 
 		// Updated events
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_events_updated());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_events_updated());
 
 		// Set actions
 		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {

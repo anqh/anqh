@@ -81,8 +81,8 @@ return array(
 	'menu_visitor' => array(
 		'profile'   => array('url' => URL::user(true),                              'text' => __('Profile'),          'icon' => 'fa fa-fw fa-user'),
 		'messages'  => array('url' => Forum::private_messages_url(),                'text' => __('Private messages'), 'icon' => 'fa fa-fw fa-envelope'),
-		'favorites' => array('url' => URL::user(true, 'favorites'),                 'text' => __('Favorites'),        'icon' => 'fa fa-fw fa-calendar'),
-		'friends'   => array('url' => URL::user(true, 'friends'),                   'text' => __('Friends'),          'icon' => 'fa fa-fw fa-heart'),
+		'favorites' => array('url' => URL::user(true, 'favorites'),                 'text' => __('Favorites'),        'icon' => 'fa fa-fw fa-heart'),
+		'friends'   => array('url' => URL::user(true, 'friends'),                   'text' => __('Friends'),          'icon' => 'fa fa-fw fa-group'),
 		'ignores'   => array('url' => URL::user(true, 'ignores'),                   'text' => __('Ignores'),          'icon' => 'fa fa-fw fa-ban'),
 		'settings'  => array('url' => URL::user(true, 'settings'),                  'text' => __('Settings'),         'icon' => 'fa fa-fw fa-cog'),
 		'signout'   => array('url' => Route::url('sign', array('action' => 'out')), 'text' => __('Sign out'),         'icon' => 'fa fa-fw fa-sign-out'),

@@ -8,8 +8,6 @@
 // Bootstrap overrides
 html                                   { height: 100%; }
 article                                { position: relative; }
-a                                      { color: @anchor-color; }
-a:hover                                { color: @anchor-hover-color; }
 legend                                 { margin-bottom: 0; }
 h1                                     { font-size: 24px; font-weight: normal; letter-spacing: 1px; }
 h2                                     { font-size: 20px; }
@@ -70,7 +68,7 @@ h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
 .user                                  { color: @gray-darkest; font-weight: bold; }
 .male                                  { color: @brand-info; }
 .female                                { color: @brand-lovely; }
-.user:hover                            { color: @anchor-hover-color; }
+.user:hover                            { color: @link-hover-color; }
 a.friend                               { text-decoration: underline; }
 .avatar                                { display: inline-block; .square(50px); text-align: center;
   &.small                              { .square(25px); }
@@ -94,6 +92,22 @@ a.friend                               { text-decoration: underline; }
 }
 
 
+// Events
+/*#main .dj p                            { font-size: @font-size-large; }
+#carousel .empty                       { background: @body-bg; border: 1px dashed lighten(@body-bg, 5%); display: block; line-height: 200px; text-align: center; }
+#carousel .empty:hover                 { text-decoration: none; }*/
+#events .events                        {
+  .event                               {
+    .flyer                             { text-align: center; width: 120px; }
+    .flyer i                           { font-size: 60px; opacity: .1; padding: 30px; }
+    .media-body                        { padding: 10px 10px 10px 0; }
+    .djs                               { max-height: 50px; overflow: hidden; }
+    img                                { max-width: 100%; }
+    h4                                 { margin: 0; }
+  }
+}
+
+
 // Theming
 .content.dark,
 body.theme-dark                        { background: @dark-body-bg url(../img/background.png);
@@ -110,12 +124,12 @@ body.theme-mixed aside.panel           { background-color: @dark-panel-bg; borde
 body.theme-dark,
 body.theme-mixed aside                 {
   hr                                   { border-bottom-color: @gray-darker; }
-  a                                    { color: @dark-anchor-color; }
-  a:hover                              { color: @dark-anchor-hover-color; }
+  a                                    { color: @dark-link-color; }
+  a:hover                              { color: @dark-link-hover-color; }
   .user                                { color: @gray-lighter; font-weight: bold; }
   .male                                { color: @brand-info; }
   .female                              { color: @brand-lovely; }
-  .user:hover                          { color: @anchor-hover-color; }
+  .user:hover                          { color: @link-hover-color; }
 
   legend                               { border-bottom: 1px solid @gray-darkest; box-shadow: 0 1px 0 @gray-darker; color: @gray-lighter; }
 /*  textarea,
@@ -389,21 +403,6 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
   textarea[name=signature]             { font-family: @font-family-monospace; }
 }
 
-// Events
-#main .dj p                            { font-size: @font-size-large; }
-#carousel .empty                       { background: @body-bg; border: 1px dashed lighten(@body-bg, 5%); display: block; line-height: 200px; text-align: center; }
-#carousel .empty:hover                 { text-decoration: none; }
-#main .events                          {
-  h3                                   { background: @gray-dark; border-bottom: 1px solid @gray; }
-
-  .event                               { border-bottom: 1px solid @gray-dark; height: 96px; margin-bottom: 5px; padding-bottom: 5px;
-    &:last-child                       { border-bottom: 0 none; margin-bottom: 0; padding-bottom: 5px; }
-    header,
-    h4                                 { margin: 0; }
-    .djs                               { max-height: 40px; overflow: hidden; }
-    .btn                               { bottom: 3px; position: absolute; right: 3px; }
-  }
-}
 
 // Forum
 .forum-topics .replies                 { text-align: right; }

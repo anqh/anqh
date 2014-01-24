@@ -12,7 +12,7 @@ class View_Event_Day extends View_Article {
 	/**
 	 * @var  string  Article class
 	 */
-	public $class = 'event';
+	public $class = 'event panel media';
 
 	/**
 	 * @var  Model_Event
@@ -31,7 +31,17 @@ class View_Event_Day extends View_Article {
 		$this->event = $event;
 
 		$this->id    = 'event-' . $event->id;
-		$this->title = HTML::anchor(Route::model($event), HTML::chars($event->name)) . ' <small>' . HTML::chars($event->city_name) . '</small>';
+		$this->title = HTML::anchor(Route::model($event), HTML::chars($event->name));
+
+		// Venue
+		if ($this->event->venue_hidden):
+			$this->subtitle = __('Underground') . ', ' . HTML::chars($this->event->city_name);
+		elseif ($venue  = $this->event->venue()):
+			$this->subtitle = HTML::anchor(Route::model($venue), HTML::chars($venue->name)) . ', ' . HTML::chars($venue->city_name);
+		else:
+			$this->subtitle = HTML::chars($this->event->venue_name . ', ' . $this->event->city_name);
+		endif;
+
 
 		// Meta
 		if ($tags = $event->tags()) {
@@ -50,86 +60,67 @@ class View_Event_Day extends View_Article {
 	 */
 	public function content() {
 
-		// Venue
-		if ($this->event->venue_hidden):
-			$venue = __('Underground');
-		elseif ($venue  = $this->event->venue()):
-			$venue = HTML::anchor(Route::model($venue), HTML::chars($venue->name));
-		else:
-			$venue = HTML::chars($this->event->venue_name);
-		endif;
-
-		ob_start();
-
 		// Show limited amount of data
 		$info      = Text::limit_chars($this->event->info, 500);
 		$show_more = $info != $this->event->info;
 
 		// Max 5 lines
-		$lines     = explode("\n", str_replace(array("\r\n", "\r"), "\n", $info), 6);
-		$show_more = $show_more || count($lines) == 6;
-		if (count($lines) > 5) {
-			$lines[5] = '…';
-		}
+		$lines     = explode("\n", str_replace(array("\r\n", "\r"), "\n", $info), 4);
+		$show_more = $show_more || count($lines) == 4;
+		if (count($lines) > 4):
+			$lines[3] .= '…';
+		endif;
 		$info = implode("\n", $lines);
 
-		if ($show_more) {
+		if ($show_more):
 			$info .= ' [url=' . Route::model($this->event) . ']' . __('See more') . '[/url]';
-		}
+		endif;
 
-?>
-
-	<sup class="details muted"><?= $this->event->price() . ($venue ? ' @ ' : '') . $venue ?></sup>
-	<br>
-	<div class="djs"><?= BB::factory($info)->render(null, true) ?></div>
-
-<?php
-
-		return ob_get_clean();
+		return '<div class="djs">' . BB::factory($info)->render(null, true) . '</div>';
 	}
 
 
 	/**
-	 * Render favorites.
+	 * Get favorites.
 	 *
-	 * @return  string
+	 * @return  array
 	 */
-	public function favorites() {
+	public function actions() {
 
 		// Clickable favorites
 		if (Permission::has($this->event, Model_Event::PERMISSION_FAVORITE, self::$_user)):
 			if ($this->event->is_favorite(self::$_user)):
 
 				// Favorite event, click to unfavorite
-				return HTML::anchor(
+				return array(HTML::anchor(
 					Route::model($this->event, 'unfavorite') . '?token=' . Security::csrf(),
-					'<i class="icon-heart"></i> ' . $this->event->favorite_count,
-					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-small btn-lovely active')
-				);
+					$this->event->favorite_count . ' <i class="fa fa-heart"></i>',
+					array('title' => __('Remove favorite'), 'class' => 'ajaxify btn btn-xs btn-lovely')
+				));
 
 			else:
 
 				// Non-favorite event, click to favorite
 				if ($this->event->favorite_count > 1):
-					return HTML::anchor(
+					return array(HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
-						'<i class="icon-heart"></i> ' . $this->event->favorite_count,
-						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
-					);
+						$this->event->favorite_count . ' <i class="fa fa-heart"></i>',
+						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-xs btn-default')
+					));
 				else:
-					return HTML::anchor(
+					return array(HTML::anchor(
 						Route::model($this->event, 'favorite') . '?token=' . Security::csrf(),
-						'<i class="muted icon-heart"></i>',
-						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-small btn-inverse active')
-					);
+						'<i class="fa fa-heart"></i>',
+						array('title' => __('Add to favorites'), 'class' => 'ajaxify btn btn-xs btn-default text-muted')
+					));
 				endif;
 
 			endif;
 		endif;
 
 		return $this->event->favorite_count
-			? '<span class="btn btn-small btn-inverse disabled"><i class="icon-heart icon-white"></i> ' . $this->event->favorite_count . '</span>'
-			: '';
+			? array('<span class="btn btn-xs btn-default disabled"><i class="fa fa-heart"></i> ' . $this->event->favorite_count . '</span>')
+			: null;
 	}
 
 
@@ -148,9 +139,10 @@ class View_Event_Day extends View_Article {
 			$icon = null;
 		endif;
 
-		return $icon
-			? HTML::anchor(Route::model($this->event), HTML::image($icon, array('alt' => __('Flyer'))))
-			: '';
+		return HTML::anchor(
+			Route::model($this->event),
+			$icon ? HTML::image($icon, array('alt' => __('Flyer'))) : '<i class="fa fa-calendar"></i>'
+		);
 	}
 
 
@@ -177,19 +169,13 @@ class View_Event_Day extends View_Article {
 ?>
 
 <article<?= HTML::attributes($attributes) ?>>
-	<div class="pull-left span2">
-
-		<?= $this->flyer() ?>
-
-	</div>
+	<div class="pull-left flyer"><?= $this->flyer() ?></div>
 
 	<div class="media-body">
 
 		<?= $this->header() ?>
 
 		<?= $this->content() ?>
-
-		<?= $this->favorites() ?>
 
 		<?= $this->footer() ?>
 
