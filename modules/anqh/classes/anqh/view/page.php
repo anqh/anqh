@@ -669,7 +669,7 @@ class Anqh_View_Page extends View_Base {
 		<?php endif; ?>
 
 		<?php if ($this->actions): ?>
-		<div class="actions">
+		<div class="actions pull-right">
 			<?php foreach ($this->actions as $action):
 					$attributes = $action;
 					unset($attributes['link'], $attributes['text']);
