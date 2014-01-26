@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Gallery_Thumbs
+ * Gallery thumbnails.
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Gallery_Thumbs extends View_Section {
@@ -50,7 +50,7 @@ class View_Gallery_Thumbs extends View_Section {
 
 ?>
 
-	</ul>
+	</div>
 
 <?php
 
@@ -64,32 +64,31 @@ class View_Gallery_Thumbs extends View_Section {
 ?>
 
 	<header><h3>&copy; <?= HTML::user($copyright) ?></h3></header>
-	<ul class="thumbnails">
+	<div class="row">
 
 <?php endif; // Copyright ?>
 
-		<li>
+		<article class="col-xs-6 col-md-4 col-lg-3">
+			<div class="thumbnail">
 
-			<a class="thumbnail" href="<?= Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $image->id, 'action' => '')) ?>">
-				<?= HTML::image($image->get_url('thumbnail', $this->gallery->dir)) ?>
+				<?= HTML::anchor(
+					Route::url('gallery_image', array('gallery_id' => Route::model_id($this->gallery), 'id' => $image->id, 'action' => '')),
+					HTML::image($image->get_url('thumbnail', $this->gallery->dir))
+				) ?>
 
-				<?php if ($image->description): ?>
-				<p class="description"><?= HTML::chars($image->description) ?></p>
-				<?php endif; ?>
+				<small class="stats label label-default">
+					<?= (int)$image->view_count ?> <i class="fa fa-eye"></i>
+					<?php if ($image->comment_count): ?>
+						&nbsp; <?= (int)$image->comment_count ?> <i class="fa fa-comment"></i>
+					<?php endif; ?>
+				</small>
 
-				<span class="stats">
-				<?php if ($image->comment_count): ?>
-					<i class="icon-comment icon-white"></i> <?= (int)$image->comment_count ?>
-				<?php endif; ?>
-					<i class="icon-eye-open icon-white"></i> <?= (int)$image->view_count ?>
-				</span>
-			</a>
-
-		</li>
+			</div>
+		</article>
 
 <?php	endforeach; ?>
 
-	</ul>
+	</div>
 
 <?php
 

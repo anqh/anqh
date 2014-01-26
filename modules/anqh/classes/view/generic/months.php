@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Generic_Months extends View_Section {
@@ -67,17 +67,17 @@ class View_Generic_Months extends View_Section {
 ?>
 
 <nav>
-	<ol class="block-grid three-up">
+	<ol class="row list-unstyled">
 
 	<?php foreach ($this->months as $years => $y): ?>
-		<li<?= $this->year == $years ? ' class="selected"' : '' ?>>
+		<li class="col-xs-4 col-md-3<?= $this->year == $years ? ' selected' : '' ?>">
 			<h4><?= HTML::anchor(
 				Route::get($this->route)->uri(array_merge((array)$this->params, array(
 					'year'   => $years,
 				))),
 				$years == 1970 ? __('Unknown') : $years
 			) ?></h4>
-			<ol class="unstyled">
+			<ol class="list-unstyled">
 
 			<?php foreach ($y as $m => $count): ?>
 				<li<?= $this->year == $years && $this->month == $m ? ' class="selected"' : '' ?>><?= HTML::anchor(

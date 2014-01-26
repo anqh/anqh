@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Flyers_Thumbs
+ * Flyer thumbnails.
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Flyers_Thumbs extends View_Section {
@@ -13,6 +13,11 @@ class View_Flyers_Thumbs extends View_Section {
 	 * @var  Model_Flyer[]
 	 */
 	public $flyers;
+
+	/**
+	 * @var  boolean  Wide view
+	 */
+	public $wide = true;
 
 
 	/**
@@ -37,23 +42,27 @@ class View_Flyers_Thumbs extends View_Section {
 
 ?>
 
-<ul class="thumbnails">
+<div class="row">
 
 	<?php foreach ($this->flyers as $flyer): $name = $flyer->event ? $flyer->event->name : $flyer->name ?>
 
-	<li>
-		<?= HTML::anchor(
-			Route::get('flyer')->uri(array('id' => $flyer->id)),
-			HTML::image($flyer->image->get_url('thumbnail'))
-				. '<p class="description">' . HTML::chars($name) . '</p>',
-			array('class' => 'thumbnail', 'title' => HTML::chars($name))
-		) ?>
+	<article class="<?= $this->wide ? 'col-xs-6 col-sm-4 col-md-3 col-lg-2' : 'col-xs-6 col-md-4 col-lg-3' ?>">
+		<div class="thumbnail">
 
-	</li>
+			<?= HTML::anchor(
+				Route::get('flyer')->uri(array('id' => $flyer->id)),
+				HTML::image($flyer->image->get_url('thumbnail'))) ?>
+
+			<div class="caption">
+				<h4><?= HTML::anchor(Route::url('flyer', array('id' => $flyer->id)), HTML::chars($name), array('title' => HTML::chars($name))) ?></h4>
+			</div>
+
+		</div>
+	</article>
 
 	<?php endforeach ?>
 
-</ul>
+</div>
 
 <?php
 

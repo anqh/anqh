@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013.2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Gallery_Links extends View_Section {
@@ -45,28 +45,28 @@ class View_Gallery_Links extends View_Section {
 			$links = explode("\n", $this->gallery->links);
 			$count = 0;
 
-			echo '<ul class="unstyled">';
-			foreach ($links as $link):
-				echo '<li>';
-				list($user_id, $url) = explode(',', $link, 2);
+?>
 
-				echo HTML::anchor($url, Text::limit_url($url, 75));
-				echo ' &copy; ' . HTML::user($user_id);
+<ul class="list-unstyled">
 
-				// Delete?
-				if ($user_id == self::$_user_id || Permission::has($this->gallery, Model_Gallery::PERMISSION_UPDATE, self::$_user)):
-					echo ' ' . HTML::anchor(Route::model($this->gallery) . '?delete_link=' . $count . '&' . Security::csrf_query(), __('Remove'), array('class' => 'btn btn-danger btn-mini link-delete'));
-				endif;
+	<?php	foreach ($links as $link): list($user_id, $url) = explode(',', $link, 2); ?>
+	<li>
+		<?= HTML::anchor($url, Text::limit_url($url, 75)) ?> &copy; <?= HTML::user($user_id) ?>
+		<?php if ($user_id == self::$_user_id || Permission::has($this->gallery, Model_Gallery::PERMISSION_UPDATE, self::$_user)): ?>
+		<?= HTML::anchor(Route::model($this->gallery) . '?delete_link=' . $count . '&' . Security::csrf_query(), __('Remove'), array('class' => 'btn btn-danger btn-sm link-delete')) ?>
+		<?php endif; ?>
+	</li>
+	<?php $count++; endforeach ?>
 
-				$count++;
-				echo '</li>';
-			endforeach;
-			echo '</ul>';
+</ul>
+
+<?php
+
 		endif;
 
 		// Add new link
 		if (Permission::has($this->gallery, Model_Gallery::PERMISSION_CREATE, self::$_user)):
-			echo HTML::anchor('#add-link', '<i class="icon-plus-sign icon-white"></i> ' . __('Add link'), array('data-toggle' => 'collapse', 'data-target' => '#form-link'));
+			echo HTML::anchor('#add-link', '<i class="fa fa-plus-circle"></i> ' . __('Add link'), array('data-toggle' => 'collapse', 'data-target' => '#form-link'));
 			echo $this->form();
 		endif;
 

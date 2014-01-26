@@ -110,6 +110,48 @@ input.private                          { border-color: @brand-special; color: @b
   }
 }
 
+// Galleries
+#galleries                             {
+  .thumbnail                           {
+    & > img,
+    a > img                            { width: 100%; }
+    h4                                 { height: 2.3em; margin: 0; overflow: hidden; }
+    .stats                             { display: none; position: absolute; right: (@grid-gutter-width / 2) + 10px; top: 10px;}
+    &:hover .stats                     { display: block; }
+  }
+}
+/*
+.thumbnails                            {
+  .thumbnail                           { position: relative; }
+  h4,
+  .description                         { background: rgba(0, 0, 0, .75); bottom: 4px; left: 4px; margin: 0; overflow: hidden; padding: 2px; position: absolute; right: 4px; .transition(all .2s ease-in-out); }
+  .stats                               { position: absolute; padding: 0 2px; right: 4px; text-shadow: 1px 1px 1px black; top: 4px; .transition(all .2s ease-in-out); }
+  a:hover                              { text-decoration: none;
+    h4,
+    .description,
+    .stats                             { opacity: 0; }
+  }
+  i + i                                { margin-left: 10px; }
+  i.icon-star + i.icon-star,
+  i.icon-star + i.icon-star-empty,
+  i.icon-star-empty + i.icon-star,
+  i.icon-star-empty + i.icon-star-empty { margin-left: 0; }
+}
+.exif                                  { background: rgba(0, 0, 0, .75); padding: 5px; position: absolute; right: 0; text-align: right; top: 0;
+  .toggle                              { float: right; }
+  &:hover dl                           { display: block; }
+  dl                                   { display: none; margin: 0; }
+  dt,
+  dd                                   { text-align: left; }
+  dt                                   { font-weight: normal; width: 100px; }
+  dd                                   { font-weight: bold; margin-left: 120px; }
+  i,
+  span                                 { line-height: 15px; }
+  .iso                                 { font-variant: small-caps; }
+}
+*/
+
+
 
 // Theming
 .content.dark,
@@ -422,36 +464,6 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
   footer                               { font-family: @font-family-monospace; font-size: @font-size-base - 2px; line-height: @line-height-base - 2px; margin-top: 10px; .text-muted; }
 }
 .post-old                              { margin-top: 15px; text-align: center; }
-
-// Galleries
-.thumbnails                            {
-  .thumbnail                           { position: relative; }
-  h4,
-  .description                         { background: rgba(0, 0, 0, .75); bottom: 4px; left: 4px; margin: 0; overflow: hidden; padding: 2px; position: absolute; right: 4px; .transition(all .2s ease-in-out); }
-  .stats                               { position: absolute; padding: 0 2px; right: 4px; text-shadow: 1px 1px 1px black; top: 4px; .transition(all .2s ease-in-out); }
-  a:hover                              { text-decoration: none;
-    h4,
-    .description,
-    .stats                             { opacity: 0; }
-  }
-  i + i                                { margin-left: 10px; }
-  i.icon-star + i.icon-star,
-  i.icon-star + i.icon-star-empty,
-  i.icon-star-empty + i.icon-star,
-  i.icon-star-empty + i.icon-star-empty { margin-left: 0; }
-}
-.exif                                  { background: rgba(0, 0, 0, .75); padding: 5px; position: absolute; right: 0; text-align: right; top: 0;
-  .toggle                              { float: right; }
-  &:hover dl                           { display: block; }
-  dl                                   { display: none; margin: 0; }
-  dt,
-  dd                                   { text-align: left; }
-  dt                                   { font-weight: normal; width: 100px; }
-  dd                                   { font-weight: bold; margin-left: 120px; }
-  i,
-  span                                 { line-height: 15px; }
-  .iso                                 { font-variant: small-caps; }
-}
 
 // Notes
 div.image                              { text-align: center;

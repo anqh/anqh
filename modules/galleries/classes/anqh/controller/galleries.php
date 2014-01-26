@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Galleries extends Controller_Page {
@@ -48,15 +48,17 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->_set_flyer_actions();
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_month_pagination($months, 'galleries', 'browse', $year, $month));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_month_pagination($months, 'galleries', 'browse', $year, $month));
 
 		// Month browser
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'galleries', 'browse', $year, $month));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_month_browser($months, 'galleries', 'browse', $year, $month));
 
 		// Galleries
 		$galleries = Model_Gallery::factory()->find_by_month($year, $month);
 		if (count($galleries)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries));
+			$section = $this->section_galleries_thumbs($galleries);
+			$section->wide = false;
+			$this->view->add(View_Page::COLUMN_CENTER, $section);
 		}
 
 	}
@@ -495,15 +497,17 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->_set_flyer_actions();
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_month_pagination($months, 'flyers', '', $year, $month));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_month_pagination($months, 'flyers', '', $year, $month));
 
 		// Month browser
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'flyers', '', $year, $month));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_month_browser($months, 'flyers', '', $year, $month));
 
 		// Latest flyers
 		$flyers = Model_Flyer::factory()->find_by_month($year, $month);
 		if (count($flyers)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_flyers($flyers));
+			$section = $this->section_flyers_thumbs($flyers);
+			$section->wide = false;
+			$this->view->add(View_Page::COLUMN_CENTER, $section);
 		}
 
 	}
@@ -582,7 +586,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 		}
 		Anqh::share(true);
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_share());
 
 		// Event info
 		if ($event = $gallery->event()) {
@@ -591,16 +595,16 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$this->view->subtitle = Controller_Events::_event_subtitle($event);
 
 			// Event flyer
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_event_image($event));
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_event_image($event));
 
 		}
 
 		// Pictures
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_thumbs($gallery));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_gallery_thumbs($gallery));
 
 		// External links
 		if ($gallery->links || Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_links($gallery));
+			$this->view->add(View_Page::COLUMN_CENTER, $this->section_gallery_links($gallery));
 		}
 
 	}
@@ -880,15 +884,17 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->_set_flyer_actions();
 
 		// Galleries with latest images
-		$galleries = Model_Gallery::factory()->find_latest(20);
+		$galleries = Model_Gallery::factory()->find_latest(12);
 		if (count($galleries)) {
 			$this->view->add(View_Page::COLUMN_TOP, $this->section_galleries_thumbs($galleries));
 		}
 
 		// Latest flyers
-		$flyers = Model_Flyer::factory()->find_latest(20);
+		$flyers = Model_Flyer::factory()->find_latest(12);
 		if (count($flyers)) {
-			$this->view->add(View_Page::COLUMN_TOP, $this->section_flyers_latest($flyers));
+			$section = $this->section_flyers_thumbs($flyers);
+			$section->title  = __('Latest flyers');
+			$this->view->add(View_Page::COLUMN_TOP, $section);
 		}
 
 	}
@@ -1585,21 +1591,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param   Model_Flyer[]  $flyers
 	 * @return  View_Flyers_Thumbs
 	 */
-	public function section_flyers($flyers) {
+	public function section_flyers_thumbs($flyers) {
 		$section = new View_Flyers_Thumbs($flyers);
 
 		return $section;
-	}
-
-
-	/**
-	 * Get latest flyers.
-	 *
-	 * @param   Model_Flyer[]  $flyers
-	 * @return  View_Flyers_Latest
-	 */
-	public function section_flyers_latest($flyers) {
-		return new View_Flyers_Latest($flyers);
 	}
 
 
@@ -1612,7 +1607,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 */
 	public function section_galleries_thumbs($galleries, $years = false) {
 		$section = new View_Galleries_Thumbs($galleries);
-		$section->years        = $years;
+		$section->years = $years;
 
 		return $section;
 	}
