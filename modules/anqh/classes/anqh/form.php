@@ -511,14 +511,28 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
+	 * @param   boolean       $bbcode
 	 * @return  string
 	 */
-	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = null, $error = null, $tip = null) {
+	public static function textarea_wrap($name, $body = '', array $attributes = null, $double_encode = true, $label = null, $error = null, $tip = null, $bbcode = false) {
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$attributes['class'] .= ' form-control';
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		$input = Form::textarea($name, $body, $attributes, $double_encode);
+
+		// Add BBCode editor?
+		if ($bbcode) {
+			if ($element = Arr::get($attributes, 'id')) {
+				$element = '#' . $element;
+			} else {
+				$element = 'textarea[name=' . $name . ']';
+			}
+
+			$input = new View_Generic_Smileys($element)
+				. $input
+				. '<script>head.ready("vendor", function() { $("' . $element . '").markItUp(bbCodeSettings); });</script>';
+		}
 
 		return Form::form_group($input, $label, $error, $tip);
 	}

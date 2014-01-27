@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Blog_Edit
+ * Blog entry edit.
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Blog_Edit extends View_Section {
@@ -18,6 +18,11 @@ class View_Blog_Edit extends View_Section {
 	 * @var  string  Cancel URL
 	 */
 	public $cancel;
+
+	/**
+	 * @var  string  View class
+	 */
+	public $class = 'blog-entry';
 
 	/**
 	 * @var  array  Form errors
@@ -49,23 +54,32 @@ class View_Blog_Edit extends View_Section {
 
 ?>
 
-		<fieldset>
-			<?= Form::control_group(
-				Form::input('name', $this->blog_entry->name, array('class' => 'input-xxlarge')),
-				array('name' => __('Title')),
-				Arr::get($this->errors, 'name')) ?>
+<fieldset>
+	<?= Form::input_wrap(
+		'name',
+		$this->blog_entry->name,
+		array('class' => 'input-lg', 'placeholder' => __('Title')),
+		null,
+		Arr::get($this->errors, 'name')
+	) ?>
 
-			<?= Form::control_group(
-				Form::textarea_editor('content', $this->blog_entry->content, array('class' => 'input-xxlarge'), true),
-				array('content' => __('Content')),
-				Arr::get($this->errors, 'content')) ?>
-		</fieldset>
+	<?= Form::textarea_wrap(
+			'content',
+			$this->blog_entry->content,
+			array('class' => 'input-lg', 'placeholder' => __('Content')),
+			true,
+			null,
+			Arr::get($this->errors, 'content'),
+			null,
+			true
+	) ?>
+</fieldset>
 
-		<fieldset class="form-actions">
-			<?= Form::csrf(); ?>
-			<?= Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-			<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
-		</fieldset>
+<fieldset>
+	<?= Form::csrf(); ?>
+	<?= Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-primary btn-lg')) ?>
+	<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
+</fieldset>
 
 <?php
 

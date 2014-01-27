@@ -308,8 +308,8 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 			$cancel = Route::model($entry);
 
-			$this->view = new View_Page(HTML::chars($entry->name));
-			$entry->modified  = time();
+			$this->view->title = __('Edit blog entry');
+			$entry->modified   = time();
 			$entry->modify_count++;
 
 		} else {
@@ -321,9 +321,9 @@ class Anqh_Controller_Blog extends Controller_Page {
 			$cancel   = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;
 
-			$this->view = new View_Page(__('New blog entry'));
-			$entry->author_id = self::$user->id;
-			$entry->created   = time();
+			$this->view->title = __('New blog entry');
+			$entry->author_id  = self::$user->id;
+			$entry->created    = time();
 
 		}
 

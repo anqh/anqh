@@ -87,6 +87,17 @@ input.private                          { border-color: @brand-special; color: @b
 .kohana                                { display: none; position: relative; z-index: 1; }
 
 
+// BBCode
+.markItUpHeader                        { //height: 28px; position: relative;
+  & > ul                               { padding: 0; }
+/*  & > ul                               { left: 0; margin: 0; position: absolute; top: 0; }
+  ul ul                                { display: none; list-style-type: none; margin: 0; }
+  .btn                                 { text-shadow: none; }*/
+  .btn .fa                             { font-size: 14px; }
+}
+.smileys .smiley                       { margin: 1px; }
+
+
 // Main menu
 #mainmenu                              {
   #signin > .btn                       { margin-left: 10px; }
@@ -429,17 +440,6 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
   p                                    { color: @text-color; }
   figure                               { text-align: center; }
   .stats                               { background: @popover-title-bg; padding: 0 2px; position: absolute; right: 10px; top: 10px; }
-}
-
-// BBCode
-.markItUpHeader                        { height: 28px; position: relative;
-  & > ul                               { left: 0; margin: 0; position: absolute; top: 0; }
-  ul ul                                { display: none; list-style-type: none; margin: 0; }
-  .btn                                 { text-shadow: none; }
-}
-
-#map                                   { .size(100%, 250px);
-  img                                  { display: inline; max-width: none; width: auto; }
 }
 
 .share .addthis_32x32_style            { height: 32px; }

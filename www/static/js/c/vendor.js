@@ -12,10 +12,10 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,7 @@
 		if (typeof settings == 'string') {
 			method = settings;
 			params = extraSettings;
-		} 
+		}
 
 		options = {	id:						'',
 					nameSpace:				'',
@@ -117,7 +117,7 @@
 					case 'insert':
 						markup(params);
 					break;
-					default: 
+					default:
 						$.error('Method ' +  method + ' does not exist on jQuery.markItUp');
 				}
 				return;
@@ -176,7 +176,7 @@
 
 				// listen key events
 				$$.bind('keydown.markItUp', keyPressed).bind('keyup', keyPressed);
-				
+
 				// bind an event to catch external calls
 				$$.bind("insertion.markItUp", function(e, settings) {
 					if (settings.target !== false) {
@@ -212,7 +212,7 @@
 						for (j = levels.length -1; j >= 0; j--) {
 							t += levels[j]+"-";
 						}
-						li = $('<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="" '+key+' title="'+title+'">'+(button.name||'')+'</a></li>')
+						li = $('<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="" '+key+' title="'+title+'">'+(button.text||'')+'</a></li>')
 						.bind("contextmenu.markItUp", function() { // prevent contextmenu on mac and allow ctrl+click
 							return false;
 						}).bind('click.markItUp', function(e) {
@@ -239,7 +239,7 @@
 							$(li).addClass('markItUpDropMenu').append(dropMenus(button.dropMenu));
 						}
 					}
-				}); 
+				});
 				levels.pop();
 				return ul;
 			}
@@ -294,7 +294,7 @@
 				var openBlockWith 		= prepare(clicked.openBlockWith);
 				var closeBlockWith 		= prepare(clicked.closeBlockWith);
 				var multiline 			= clicked.multiline;
-				
+
 				if (replaceWith !== "") {
 					block = openWith + replaceWith + closeWith;
 				} else if (selection === '' && placeHolder !== '') {
@@ -303,11 +303,11 @@
 					string = string || selection;
 
 					var lines = [string], blocks = [];
-					
+
 					if (multiline === true) {
 						lines = string.split(/\r?\n/);
 					}
-					
+
 					for (var l = 0; l < lines.length; l++) {
 						line = lines[l];
 						var trailingSpaces;
@@ -317,16 +317,16 @@
 							blocks.push(openWith + line + closeWith);
 						}
 					}
-					
+
 					block = blocks.join("\n");
 				}
 
 				block = openBlockWith + block + closeBlockWith;
 
-				return {	block:block, 
+				return {	block:block,
 							openBlockWith:openBlockWith,
-							openWith:openWith, 
-							replaceWith:replaceWith, 
+							openWith:openWith,
+							replaceWith:replaceWith,
 							placeHolder:placeHolder,
 							closeWith:closeWith,
 							closeBlockWith:closeBlockWith
@@ -338,13 +338,13 @@
 				var len, j, n, i;
 				hash = clicked = button;
 				get();
-				$.extend(hash, {	line:"", 
+				$.extend(hash, {	line:"",
 						 			root:options.root,
-									textarea:textarea, 
-									selection:(selection||''), 
+									textarea:textarea,
+									selection:(selection||''),
 									caretPosition:caretPosition,
-									ctrlKey:ctrlKey, 
-									shiftKey:shiftKey, 
+									ctrlKey:ctrlKey,
+									shiftKey:shiftKey,
 									altKey:altKey
 								}
 							);
@@ -353,7 +353,7 @@
 				prepare(clicked.beforeInsert);
 				if ((ctrlKey === true && shiftKey === true) || button.multiline === true) {
 					prepare(clicked.beforeMultiInsert);
-				}			
+				}
 				$.extend(hash, { line:1 });
 
 				if ((ctrlKey === true && shiftKey === true)) {
@@ -389,7 +389,7 @@
 				}
 				if ((selection === '' && string.replaceWith === '')) {
 					caretOffset += fixOperaBug(string.block);
-					
+
 					start = caretPosition + string.openBlockWith.length + string.openWith.length;
 					len = string.block.length - string.openBlockWith.length - string.openWith.length - string.closeWith.length - string.closeBlockWith.length;
 
@@ -417,9 +417,9 @@
 
 				// refresh preview if opened
 				if (previewWindow && options.previewAutoRefresh) {
-					refreshPreview(); 
+					refreshPreview();
 				}
-																									
+
 				// reinit keyevent
 				shiftKey = altKey = ctrlKey = abort = false;
 			}
@@ -438,9 +438,9 @@
 				}
 				return 0;
 			}
-				
+
 			// add markup
-			function insert(block) {	
+			function insert(block) {
 				if (document.selection) {
 					var newSelection = document.selection.createRange();
 					newSelection.text = block;
@@ -458,8 +458,8 @@
 					}
 					range = textarea.createTextRange();
 					range.collapse(true);
-					range.moveStart('character', start); 
-					range.moveEnd('character', len); 
+					range.moveStart('character', start);
+					range.moveEnd('character', len);
 					range.select();
 				} else if (textarea.setSelectionRange ){
 					textarea.setSelectionRange(start, start + len);
@@ -490,7 +490,7 @@
 					caretPosition = textarea.selectionStart;
 
 					selection = textarea.value.substring(caretPosition, textarea.selectionEnd);
-				} 
+				}
 				return selection;
 			}
 
@@ -512,7 +512,7 @@
 							iFrame.insertAfter(footer);
 						} else {
 							iFrame.insertBefore(header);
-						}	
+						}
 						previewWindow = iFrame[iFrame.length - 1].contentWindow || frame[iFrame.length - 1];
 					}
 				} else if (altKey === true) {
@@ -524,7 +524,7 @@
 					previewWindow = iFrame = false;
 				}
 				if (!options.previewAutoRefresh) {
-					refreshPreview(); 
+					refreshPreview();
 				}
 				if (options.previewInWindow) {
 					previewWindow.focus();
@@ -542,7 +542,7 @@
 					options.previewHandler( $$.val() );
 				} else if (options.previewParser && typeof options.previewParser === 'function') {
 					var data = options.previewParser( $$.val() );
-					writeInPreview(localize(data, 1) ); 
+					writeInPreview(localize(data, 1) );
 				} else if (options.previewParserPath !== '') {
 					$.ajax({
 						type: options.previewParserAjaxType,
@@ -551,7 +551,7 @@
 						url: options.previewParserPath,
 						data: options.previewParserVar+'='+encodeURIComponent($$.val()),
 						success: function(data) {
-							writeInPreview( localize(data, 1) ); 
+							writeInPreview( localize(data, 1) );
 						}
 					});
 				} else {
@@ -568,25 +568,25 @@
 				}
 				return false;
 			}
-			
+
 			function writeInPreview(data) {
 				if (options.previewInElement) {
 					$(options.previewInElement).html(data);
-				} else if (previewWindow && previewWindow.document) {			
+				} else if (previewWindow && previewWindow.document) {
 					try {
 						sp = previewWindow.document.documentElement.scrollTop
 					} catch(e) {
 						sp = 0;
-					}	
+					}
 					previewWindow.document.open();
 					previewWindow.document.write(data);
 					previewWindow.document.close();
 					previewWindow.document.documentElement.scrollTop = sp;
 				}
 			}
-			
+
 			// set keys pressed
-			function keyPressed(e) { 
+			function keyPressed(e) {
 				shiftKey = e.shiftKey;
 				altKey = e.altKey;
 				ctrlKey = (!(e.altKey && e.ctrlKey)) ? (e.ctrlKey || e.metaKey) : false;
@@ -618,7 +618,7 @@
 					}
 					if (e.keyCode === 9) { // Tab key
 						if (shiftKey == true || ctrlKey == true || altKey == true) {
-							return false; 
+							return false;
 						}
 						if (caretOffset !== -1) {
 							get();
@@ -642,7 +642,7 @@
 				if (relativeRef.length) {
 				    relativeRef.replaceWith($$);
 				}
-				
+
 				$$.data('markItUp', null);
 			}
 
@@ -675,34 +675,34 @@ bbCodeSettings = {
 	onTab: { keepDefault: false, replaceWith: '	' },
 	//previewParserPath: 	'', // path to your BBCode parser
 	markupSet:  [
-		{ name: 'Bold', text: '<i class="icon-bold"></i>', className: 'btn btn-link button-bold', key: 'B', openWith: '[b]', closeWith: '[/b]' },
-		{ name: 'Italic', text: '<i class="icon-italic"></i>', className: 'btn btn-link button-italic', key: 'I', openWith: '[i]', closeWith: '[/i]' },
+		{ name: 'Bold', text: '<i class="fa fa-bold"></i>', className: 'btn btn-link button-bold', key: 'B', openWith: '[b]', closeWith: '[/b]' },
+		{ name: 'Italic', text: '<i class="fa fa-italic"></i>', className: 'btn btn-link button-italic', key: 'I', openWith: '[i]', closeWith: '[/i]' },
 //		{ name: 'Underline', className: 'btn btn-small button-underline', key: 'U', openWith: '[u]', closeWith: '[/u]' },
-//		{ name: 'Size', text: '<i class="icon-text-height"></i>', className: 'btn btn-link button-size', key: 'S', openWith: '[size=[![Text size]!]]', closeWith: '[/size]',
+//		{ name: 'Size', text: '<i class="fa fa-text-height"></i>', className: 'btn btn-link button-size', key: 'S', openWith: '[size=[![Text size]!]]', closeWith: '[/size]',
 //			dropMenu : [
-//				{ name: 'Small', text: '<i class="icon-zoom-in"></i>', className: 'btn btn-linkbutton-small', openWith: '[size=50]', closeWith: '[/size]' },
-//				{ name: 'Normal', text: '<i class="icon-font"></i>', className: 'btn btn-linkbutton-normal', openWith: '[size=100]', closeWith: '[/size]' },
-//				{ name: 'Big', text: '<i class="icon-zoom-out"></i>', className: 'btn btn-linkbutton-big', openWith: '[size=200]', closeWith: '[/size]' }
+//				{ name: 'Small', text: '<i class="fa fa-zoom-in"></i>', className: 'btn btn-linkbutton-small', openWith: '[size=50]', closeWith: '[/size]' },
+//				{ name: 'Normal', text: '<i class="fa fa-font"></i>', className: 'btn btn-linkbutton-normal', openWith: '[size=100]', closeWith: '[/size]' },
+//				{ name: 'Big', text: '<i class="fa fa-zoom-out"></i>', className: 'btn btn-linkbutton-big', openWith: '[size=200]', closeWith: '[/size]' }
 //			]},
-//		{ name: 'Small', text: '<i class="icon-minus"></i>', className: 'btn btn-link button-small', openWith: '[size=50]', closeWith: '[/size]' },
-//		{ name: 'Big', text: '<i class="icon-plus"></i>', className: 'btn btn-link button-big', openWith: '[size=200]', closeWith: '[/size]' },
+//		{ name: 'Small', text: '<i class="fa fa-minus"></i>', className: 'btn btn-link button-small', openWith: '[size=50]', closeWith: '[/size]' },
+//		{ name: 'Big', text: '<i class="fa fa-plus"></i>', className: 'btn btn-link button-big', openWith: '[size=200]', closeWith: '[/size]' },
 //		{ separator: '&bull;' },
-		{ name: 'Picture', text: '<i class="icon-picture"></i>', className: 'btn btn-link button-picture', key: 'P', replaceWith: '[img][![URL]!][/img]' },
-		{ name: 'Link', text: '<i class="icon-link"></i>', className: 'btn btn-link button-link', key: 'L', openWith: '[url=[![URL]!]]', closeWith: '[/url]', placeHolder: 'http://' },
+		{ name: 'Picture', text: '<i class="fa fa-picture-o"></i>', className: 'btn btn-link button-picture', key: 'P', replaceWith: '[img][![URL]!][/img]' },
+		{ name: 'Link', text: '<i class="fa fa-link"></i>', className: 'btn btn-link button-link', key: 'L', openWith: '[url=[![URL]!]]', closeWith: '[/url]', placeHolder: 'http://' },
 //		{ separator: '&bull;' },
-		{ name: 'Align left', text: '<i class="icon-align-left"></i>', className: 'btn btn-link button-align-left', openWith: '[left]', closeWith: '[/left]' },
-		{ name: 'Align center', text: '<i class="icon-align-center"></i>', className: 'btn btn-link button-align-center', openWith: '[center]', closeWith: '[/center]' },
-		{ name: 'Align right', text: '<i class="icon-align-right"></i>', className: 'btn btn-link button-align-right', openWith: '[right]', closeWith: '[/right]' },
-		{ name: 'Bulleted list', text: '<i class="icon-list-ul"></i>', className: 'btn btn-link button-list-bullets', openWith: '[list]\n[*]', closeWith: '\n[/list]' },
-		{ name: 'Numbered list', text: '<i class="icon-list-ol"></i>', className: 'btn btn-link button-list-numbers', openWith: '[list=[![Starting number]!]]\n', closeWith: '\n[/list]' },
-//		{ name: 'List item',     text: '<i class="icon-bold"></i>', className: 'btn btn-link button-list-item',    openWith: '[*] ' },
+		{ name: 'Align left', text: '<i class="fa fa-align-left"></i>', className: 'btn btn-link button-align-left', openWith: '[left]', closeWith: '[/left]' },
+		{ name: 'Align center', text: '<i class="fa fa-align-center"></i>', className: 'btn btn-link button-align-center', openWith: '[center]', closeWith: '[/center]' },
+		{ name: 'Align right', text: '<i class="fa fa-align-right"></i>', className: 'btn btn-link button-align-right', openWith: '[right]', closeWith: '[/right]' },
+		{ name: 'Bulleted list', text: '<i class="fa fa-list-ul"></i>', className: 'btn btn-link button-list-bullets', openWith: '[list]\n[*]', closeWith: '\n[/list]' },
+		{ name: 'Numbered list', text: '<i class="fa fa-list-ol"></i>', className: 'btn btn-link button-list-numbers', openWith: '[list=[![Starting number]!]]\n', closeWith: '\n[/list]' },
+//		{ name: 'List item',     text: '<i class="fa fa-bold"></i>', className: 'btn btn-link button-list-item',    openWith: '[*] ' },
 //		{ separator: '&bull;' },
-//		{ name: 'Quote', text: '<i class="icon-leaf"></i>', className: 'btn btn-link button-quote', openWith: '[quote]', closeWith: '[/quote]' },
+//		{ name: 'Quote', text: '<i class="fa fa-leaf"></i>', className: 'btn btn-link button-quote', openWith: '[quote]', closeWith: '[/quote]' },
 //		{ name: 'Code',  className: 'btn btn-link button-code',  openWith: '[code]', closeWith: '[/code]' },
 //		{ separator: '&bull;' },
-//		{ name: 'Remove BBCode', text: '<i class="icon-trash icon-white"></i>', className: 'btn btn-link button-clear', replaceWith: function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, ''); } }
+//		{ name: 'Remove BBCode', text: '<i class="fa fa-trash fa fa-white"></i>', className: 'btn btn-link button-clear', replaceWith: function(markitup) { return markitup.selection.replace(/\[(.*?)\]/g, ''); } }
 //		{ name: 'Preview', className: "preview", call: 'preview' }
-		{ name: 'Smileys', text: '<i class="icon-smile"></i>', className: 'btn btn-link button-list-numbers', beforeInsert: function(cb) {
+		{ name: 'Smileys', text: '<i class="fa fa-smile-o"></i>', className: 'btn btn-link button-list-numbers', beforeInsert: function(cb) {
 			var $smileys = $(cb.textarea).closest('form').find('.smileys');
 
 			if ($smileys.length) {
@@ -712,7 +712,7 @@ bbCodeSettings = {
 				});
 
 				$smileys
-					.on('shown', function() {
+					.on('shown.bs.collapse', function() {
 						$smileys.find('.lazy').trigger('lazy');
 					})
 					.collapse('toggle');
