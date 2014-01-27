@@ -4,7 +4,7 @@
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Blog extends Controller_Page {
@@ -135,26 +135,21 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 
 		// Build page
-		$this->view           = new View_Page($entry->name);
-		$this->view->subtitle = __('By :user, :date', array(
-			':user' => HTML::user($entry->author()),
-			':date' => date('l ', $entry->created) . Date::format(Date::DMY_SHORT, $entry->created)
-		));
 
 		// Set actions
 		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($entry, 'edit'),
-				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit blog entry'),
+				'text'  => '<i class="fa fa-edit"></i> ' . __('Edit blog entry'),
 			);
 		}
 
 		// Content
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_entry($entry));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_entry($entry, true));
 
 		// Comments
 		if (isset($section_comments)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+			$this->view->add(View_Page::COLUMN_CENTER, $section_comments);
 		}
 
 		// Update counts
@@ -175,7 +170,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		$author = Model_User::find_user($entry->author_id);
 		if ($months = $this->_build_months(Model_Blog_Entry::factory()->find_by_user($author))) {
 			$params = array('username' => urlencode($author->username));
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'blog_user', $params, date('Y', $entry->created), date('n', $entry->created)));
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_month_browser($months, 'blog_user', $params, date('Y', $entry->created), date('n', $entry->created)));
 		}
 
 	}
@@ -191,13 +186,13 @@ class Anqh_Controller_Blog extends Controller_Page {
 		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::url('blogs', array('action' => 'add')),
-				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Write new blog entry'),
+				'text'  => '<i class="fa fa-pencil"></i> ' . __('Write new blog entry'),
 				'class' => 'btn btn-primary'
 			);
 		}
 
 		foreach (Model_Blog_Entry::factory()->find_new(20) as $entry) {
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_entry($entry, true));
+			$this->view->add(View_Page::COLUMN_CENTER, $this->section_entry($entry, true));
 		}
 	}
 
@@ -232,26 +227,26 @@ class Anqh_Controller_Blog extends Controller_Page {
 			// Build page
 			$this->view        = Controller_User::_set_page($user);
 			$this->view->tab   = 'blog';
-			$this->view->add(View_Page::COLUMN_MAIN, '<h2>' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) . '</h2>');
+			$this->view->add(View_Page::COLUMN_CENTER, '<h2>' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))) . '</h2>');
 
 			// Pagination
 			$params = array('username' => urlencode($user->username));
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_month_pagination($months, 'blog_user', $params, $year, $month));
+			$this->view->add(View_Page::COLUMN_CENTER, $this->section_month_pagination($months, 'blog_user', $params, $year, $month));
 
 			// Entries
 			if (isset($months[$year]) && isset($months[$year][$month])) {
 				foreach ($months[$year][$month] as $entry) {
-					$this->view->add(View_Page::COLUMN_MAIN, $this->section_entry($entry, true));
+					$this->view->add(View_Page::COLUMN_CENTER, $this->section_entry($entry, true));
 				}
 			}
 
 			// Month browser
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_month_browser($months, 'blog_user', $params, $year, $month));
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_month_browser($months, 'blog_user', $params, $year, $month));
 
 		} else {
 
 			// No entires found
-			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(__('Alas, the quill seems to be dry, no blog entries found.'), View_Alert::INFO));
+			$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(__('Alas, the quill seems to be dry, no blog entries found.'), null, View_Alert::INFO));
 
 		}
 	}
@@ -355,7 +350,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		$section = $this->section_entry_edit($entry);
 		$section->cancel = $cancel;
 		$section->errors = $errors;
-		$this->view->add(View_Page::COLUMN_MAIN, $section);
+		$this->view->add(View_Page::COLUMN_CENTER, $section);
 	}
 
 
@@ -432,6 +427,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 	 */
 	public function section_month_browser(array $months, $route = 'blog_user', array $params = null, $year = null, $month = null) {
 		$section = new View_Generic_Months($months, $route, $params);
+		$section->aside = true;
 		$section->year  = $year;
 		$section->month = $month;
 

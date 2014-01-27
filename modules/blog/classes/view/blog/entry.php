@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Blog_Entry
+ * Blog entry
  *
  * @package    Blog
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Blog_Entry extends View_Section {
@@ -33,7 +33,7 @@ class View_Blog_Entry extends View_Section {
 
 		if ($show_title) {
 			$author = $blog_entry->author();
-			$this->avatar   = HTML::avatar($author['avatar'], $author['username']);
+//			$this->avatar   = HTML::avatar($author['avatar'], $author['username']);
 			$this->title    = HTML::anchor(Route::model($blog_entry), HTML::chars($blog_entry->name));
 			$this->subtitle = __('By :user, :date', array(
 				':user' => HTML::user($author),

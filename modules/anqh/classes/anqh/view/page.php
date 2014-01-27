@@ -691,7 +691,7 @@ class Anqh_View_Page extends View_Base {
 			<?php foreach ($this->actions as $action):
 					$attributes = $action;
 					unset($attributes['link'], $attributes['text']);
-					$attributes['class'] = $attributes['class'] ? 'btn ' . $attributes['class'] : 'btn btn-inverse';
+					$attributes['class'] = $attributes['class'] ? 'btn ' . $attributes['class'] : 'btn btn-default';
 
 					echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
 				endforeach; ?>
