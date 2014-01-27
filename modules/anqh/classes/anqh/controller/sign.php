@@ -111,7 +111,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 
 		// Handle request
 		if ($_POST && $email = trim(Arr::get($_POST, 'email', ''))) {
-			$message = new View_Alert(__('We could not find any user or the user is missing email address, sorry.'), __('Uh oh,'));
+			$message = new View_Alert(__('We could not find any user or the user is missing email address, sorry.'), true);
 
 			// Find the user, accept only strings
 			$user = Valid::digit($email) ? false : Model_User::find_user(trim($email));
@@ -131,7 +131,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 				if (Email::send($user->email, Kohana::$config->load('site.email_invitation'), $subject, $mail)) {
 					$message = new View_Alert(
 						__(':email should soon receive the generated password in their inbox.', array(':email' => $email)),
-						__('Mission accomplished!'),
+						true,
 						View_Alert::SUCCESS
 					);
 					$email = '';
@@ -225,9 +225,9 @@ class Anqh_Controller_Sign extends Controller_Page {
 				if (Email::send($invitation->email, Kohana::$config->load('site.email_invitation'), $subject, $mail)) {
 					$invitation->save();
 
-					$message = '<div class="alert alert-success">' . __('<strong>Yay!</strong> Invitation sent, should be already in your inbox.') . '</div>';
+					$message = new View_Alert(__('Invitation sent, should be already in your inbox.'), true, View_Alert::SUCCESS);
 				} else {
-					$message = '<div class="alert alert-warning">' . __('<strong>Uh oh!</strong> Could not send invite to :email', array(':email' => $invitation->email)) . '</div>';
+					$message = new View_Alert(__('Could not send invite to :email', array(':email' => $invitation->email)), true);
 				}
 
 			} catch (Validation_Exception $e) {

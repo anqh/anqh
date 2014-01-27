@@ -4,16 +4,16 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Alert extends View_Base {
 
 	/** Default alert class */
-	const ALERT   = '';
+	const ALERT   = 'alert-warning';
 
 	/** Error/danger class */
-	const ERROR   = 'alert-error';
+	const ERROR   = 'alert-danger';
 
 	/** Success class */
 	const SUCCESS = 'alert-success';
@@ -47,6 +47,53 @@ class View_Alert extends View_Base {
 
 
 	/**
+	 * Generate header based on alert type.
+	 */
+	public function generate_header() {
+		$headers = array();
+		switch ($this->class) {
+			case self::ALERT:
+			case self::ERROR:
+				$headers = array(
+					__('Frak!'),
+					__('Hold the press!'),
+					__('Noooooo!'),
+					__('Ouch!'),
+					__('Uh oh!'),
+					__('Umm..'),
+					__('Whoops!'),
+				);
+				break;
+
+			case self::SUCCESS:
+				$headers = array(
+					__('Aww yiss!'),
+					__('Great success!'),
+					__('Mission accomplished!'),
+					__('Most excellent!'),
+					__('We dunit!'),
+					__('Wohoo!'),
+					__('Yay!'),
+				);
+				break;
+
+			case self::INFO:
+				$headers = array(
+					__('Hear ye, hear ye!'),
+					__('Hey!'),
+					__('Oi!'),
+					__('Pssst!'),
+					__('This just in!'),
+				);
+				break;
+
+		}
+
+		return Arr::rand($headers);
+	}
+
+
+	/**
 	 * Render alert.
 	 *
 	 * @return  string
@@ -59,12 +106,16 @@ class View_Alert extends View_Base {
 			'class' => 'alert alert-block ' . $this->class,
 		);
 
+		if ($this->header === true):
+			$this->header = self::generate_header();
+		endif;
+
 ?>
 
-<div <?php echo HTML::attributes($attributes) ?>>
-	<?php if ($this->header): ?><h4 class="alert-heading"><?php echo HTML::chars($this->header) ?></h4><?php endif; ?>
+<div <?= HTML::attributes($attributes) ?>>
+	<?php if ($this->header): ?><strong><?= HTML::chars($this->header) ?></strong><?php endif; ?>
 
-	<?php echo $this->content ?>
+	<?= $this->content ?>
 </div>
 
 <?php

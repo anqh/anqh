@@ -5,7 +5,7 @@
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Arr extends Kohana_Arr {
@@ -63,6 +63,17 @@ abstract class Anqh_Arr extends Kohana_Arr {
 				return $value;
 			}
 		}
+	}
+
+
+	/**
+	 * Get random array entry.
+	 *
+	 * @param   array  $array
+	 * @return  mixed
+	 */
+	public static function rand($array) {
+		return Arr::get($array, array_rand($array, 1));
 	}
 
 

@@ -622,6 +622,7 @@ class Anqh_View_Page extends View_Base {
 			<?= Form::button(null, __('Login'), array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
 			<?= Form::hidden('remember', 'true') ?>
 			<?= Form::close(); ?>
+			<?= HTML::anchor(Route::url('sign', array('action' => 'password')), __('Forgot your password?'), array('class' => 'text-muted')) ?>
 			<hr>
 			<?= HTML::anchor(
 					Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
