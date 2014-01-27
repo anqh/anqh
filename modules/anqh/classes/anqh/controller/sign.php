@@ -141,8 +141,8 @@ class Anqh_Controller_Sign extends Controller_Page {
 		}
 
 		// Build page
-		$this->view = View_Page::factory(__('Misplaced your password?'));
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_password($message, $email));
+		$this->view->title = __('Misplaced your password?');
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_password($message, $email));
 	}
 
 
@@ -156,7 +156,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 			Request::back();
 		}
 
-		$this->view = View_Page::factory(__('Sign up'));
+		$this->view->title = __('Join :site', array(':site' => Kohana::$config->load('site.site_name')));
 
 		// Check external provider
 		if ($provider = Arr::get($_REQUEST, 'provider')) {
@@ -225,9 +225,9 @@ class Anqh_Controller_Sign extends Controller_Page {
 				if (Email::send($invitation->email, Kohana::$config->load('site.email_invitation'), $subject, $mail)) {
 					$invitation->save();
 
-					$message = '<div class="alert alert-success">' . __('Invitation sent, you can proceed to Step 2 when you receive your mail.') . '</div>';
+					$message = '<div class="alert alert-success">' . __('<strong>Yay!</strong> Invitation sent, should be already in your inbox.') . '</div>';
 				} else {
-					$message = '<div class="alert">' . __('Could not send invite to :email', array(':email' => $invitation->email)) . '</div>';
+					$message = '<div class="alert alert-warning">' . __('<strong>Uh oh!</strong> Could not send invite to :email', array(':email' => $invitation->email)) . '</div>';
 				}
 
 			} catch (Validation_Exception $e) {
@@ -235,7 +235,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 			}
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_invitation($invitation, $errors, $message));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_invitation($invitation, $errors, $message));
 	}
 
 

@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * User_Invite
+ * Send invite.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_Invite extends View_Section {
@@ -47,7 +47,6 @@ class View_User_Invite extends View_Section {
 
 		echo $this->message;
 
-		// Send invite
 		echo Form::open();
 
 ?>
@@ -55,45 +54,45 @@ class View_User_Invite extends View_Section {
 <fieldset>
 	<legend><?= __('Not yet invited?') ?></legend>
 
-	<?php echo Form::control_group(
-		Form::input('email', $this->invitation->email, array('class' => 'input-block-level', 'placeholder' => __('john.doe@domain.tld'))),
-		array('email' => __('Send an invitation to')),
+	<?= Form::input_wrap(
+		'email',
+		$this->invitation->email,
+		array('class' => 'input-lg', 'type' => 'email', 'placeholder' => 'john.doe@domain.tld', 'required'),
+		__('Send an invitation to'),
 		Arr::get($this->errors, 'email'),
-		__('Please remember: sign up is available only with a valid, invited email. You can invite yourself too!')
+		__('Please remember: Valid, invited email is required to join. You can invite yourself too!')
 	) ?>
 
 </fieldset>
 
-<fieldset class="form-actions">
-	<?= Form::button('invite', '<i class="icon-envelope icon-white"></i> ' . __('Send invitation'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
+<fieldset>
+	<?= Form::button('invite', '<i class="fa fa-envelope"></i> ' . __('Send invitation'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
 	<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
 </fieldset>
 
-<?php
+<?= Form::close() ?>
 
-		echo Form::close();
+<br>
 
-
-		// Enter code
-		echo Form::open();
-
-?>
+<?= Form::open() ?>
 
 <fieldset>
 	<legend><?= __('Got my invitation!') ?></legend>
 
-	<?php echo Form::control_group(
-		Form::input('code', null, array('class' => 'input-block-level', 'placeholder' => __('M0573XC3LL3N751R'))),
-		array('code' => __('Enter your invitation code')),
+	<?= Form::input_wrap(
+		'code',
+		null,
+		array('class' => 'input-lg', 'placeholder' => __('M0573XC3LL3N751R'), 'maxlength' => 16, 'required'),
+		__('Invitation code'),
 		Arr::get($this->errors, 'code'),
-	__('Your invitation code is included in the mail you received, 16 characters.')
+		__('Your invitation code is included in the mail you received, 16 characters.')
 	) ?>
 
 </fieldset>
 
-<fieldset class="form-actions">
+<fieldset>
 	<?= Form::hidden('signup', true) ?>
-	<?= Form::button('invited', __('Final step!') . ' <i class="icon-arrow-right icon-white"></i>', array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
+	<?= Form::button('invited', __('Final step!') . ' <i class="fa fa-arrow-right"></i>', array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
 	<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
 </fieldset>
 

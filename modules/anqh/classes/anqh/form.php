@@ -310,11 +310,6 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function input_wrap($name, $value = null, array $attributes = null, $label = null, $error = null, $tip = null, $append = null) {
-		if (is_array($value)) {
-			$value = Arr::get($value, $name);
-		} else if (is_object($value)) {
-			$value = $value->$name;
-		}
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
 		$attributes['class'] .= ' form-control';
 		$label      = $label ? array($attributes['id'] => $label) : '';
