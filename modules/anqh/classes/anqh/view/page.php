@@ -598,23 +598,40 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<?= Form::open(Route::url('sign', array('action' => 'in')), array('id' => 'signin', 'class' => 'form-inline')) ?>
+<div id="signin" class="navbar-right">
+
+	<?= HTML::anchor(
+		Route::url('sign', array('action' => 'up')),
+		__('Join'),
+		array('class' => 'btn btn-primary navbar-btn', 'title' => __("Did we mention it's FREE!"))
+	) ?>
+
+	<div class="dropdown">
 		<?= HTML::anchor(
-				Route::url('sign', array('action' => 'up')),
-				__('Sign up') . ' <i class="icon-heart"></i>',
-				array('class' => 'btn btn-lovely', 'title' => __("Did we mention it's FREE!"))
+			Route::url('sign', array('action' => 'in')),
+			__('Login'),
+			array('class' => 'btn btn-primary navbar-btn dropdown-toggle', 'title' => __("Did we mention it's FREE!"), 'data-toggle="dropdown"')
+		) ?>
+		<div class="dropdown-menu pull-right">
+			<?= Form::open(Route::url('sign', array('action' => 'in'))) ?>
+			<?= Form::input_wrap('username', null, null, __('Username or email')) ?>
+			<?= Form::password_wrap('password', null, null, __('Password')) ?>
+			<?= Form::form_group(
+				Form::checkbox_wrap('remember', 'true', true, null, __('Stay logged in'))
 			) ?>
-		<?= HTML::anchor(
-				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
-				__('Sign in with') . ' <i class="icon-facebook"></i>',
-				array('class' => 'btn btn-primary', 'title' => __('Sign in with your Facebook account'))
-			) ?>
-	|
-		<?= Form::input('username', null, array('class' => 'input-mini', 'placeholder' => __('Username'), 'title' => __('HOT TIP: You can also use your email'))) ?>
-		<?= Form::password('password', null, array('class' => 'input-mini', 'placeholder' => __('Password'), 'title' => __('Forgot it? Just leave me empty'))) ?>
-		<?= Form::button(null, __('Sign in') . ' <i class="icon-signin"></i>', array('class' => 'btn btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
-		<?= Form::hidden('remember', 'true') ?>
-	<?= Form::close(); ?>
+			<?= Form::button(null, __('Login'), array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
+			<?= Form::hidden('remember', 'true') ?>
+			<?= Form::close(); ?>
+			<hr>
+			<?= HTML::anchor(
+					Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+					'&nbsp;<i class="fa fa-facebook"></i> ' . __('Connect with Facebook') . '&nbsp;',
+					array('class' => 'btn btn-block btn-facebook', 'title' => __('Sign in with your Facebook account'))
+				) ?>
+		</div>
+	</div>
+
+</div>
 
 <?php
 

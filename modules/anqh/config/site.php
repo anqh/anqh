@@ -85,7 +85,7 @@ return array(
 		'friends'   => array('url' => URL::user(true, 'friends'),                   'text' => __('Friends'),          'icon' => 'fa fa-fw fa-group'),
 		'ignores'   => array('url' => URL::user(true, 'ignores'),                   'text' => __('Ignores'),          'icon' => 'fa fa-fw fa-ban'),
 		'settings'  => array('url' => URL::user(true, 'settings'),                  'text' => __('Settings'),         'icon' => 'fa fa-fw fa-cog'),
-		'signout'   => array('url' => Route::url('sign', array('action' => 'out')), 'text' => __('Sign out'),         'icon' => 'fa fa-fw fa-sign-out'),
+		'signout'   => array('url' => Route::url('sign', array('action' => 'out')), 'text' => __('Logout'),           'icon' => 'fa fa-fw fa-sign-out'),
 	),
 
 	'menu_admin' => array(

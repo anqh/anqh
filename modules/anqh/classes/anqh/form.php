@@ -61,20 +61,30 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function checkbox_wrap($name, $value = null, $checked = false, array $attributes = null, $label = null, $error = null, $tip = null) {
+		$attributes['class'] .= ' checkbox';
+
+		// Get value
 		if (is_array($value)) {
 			$value = Arr::get($value, $name);
 		} else if (is_object($value)) {
 			$value = $value->$name;
 		}
-		$checked    = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
-		$attributes = (array)$attributes + array('id' => self::input_id($name));
+		$checked = is_array($checked) ? Arr::get($checked, $name) == $value : $checked;
 
-		$input = Form::checkbox($name, $value, $checked, $attributes);
-		$label = is_array($label)
-			? Form::label(null, $input . current($label), array('class' => 'checkbox'))
-			: Form::label(null, $input . $label, array('class' => 'checkbox'));
+		// Input
+		$input = Form::checkbox($name, $value, $checked);
 
-		return Form::wrap(null, $name, $label, $error, $tip);
+		// Label
+		if ($label) {
+			$label = is_array($label)
+				? Form::label(null, $input . ' ' . current($label))
+				: Form::label(null, $input . ' ' . $label);
+		} else {
+			$label = $input;
+		}
+
+
+		return '<div' . HTML::attributes($attributes) . '>' . $label . "</div>\n";
 	}
 
 
@@ -228,6 +238,52 @@ class Anqh_Form extends Kohana_Form {
 
 
 	/**
+	 * Create Twitter bootstrap styled form group.
+	 *
+	 * @param   string        $input  Input string to be wrapped
+	 * @param   string        $label
+	 * @param   string|array  $label  'Label' or 'input-id' => 'Label'
+	 * @param   string|array  $error  'Fail' or 'error' => 'Fail', 'success' => 'Yay'
+	 * @param   string        $help
+	 * @param   array         $attr   Extra attributes
+	 * @return  string
+	 */
+	public static function form_group($input, $label = null, $error = null, $help = null, $attr = array()) {
+
+		// Wrapper basic class
+		$class = 'form-group ';
+
+		// Extra classes
+		if ($error) {
+			if (is_array($error)) {
+				$class .= implode(' ', array_keys($error));
+				$error  = implode('<br>', $error);
+			} else {
+				$class .= 'has-error';
+			}
+		}
+
+		// Label
+		if ($label) {
+			$label = Form::label(
+				is_array($label) ? key($label) : null,
+				is_array($label) ? current($label) : $label,
+				array('class' => 'control-label')
+			);
+		}
+
+		// Error / help messages
+		if ($error || $help) {
+			$help = '<p class="help-block">' . $error . ($error && $help ? '<br>' : '') . $help . '</p>';
+		}
+
+		$attr['class'] = trim($class . ' ' . $attr['class']);
+
+		return '<div' . HTML::attributes($attr) . '>' . $label .  $input . $help . '</div>';
+	}
+
+
+	/**
 	 * Return input element id based on input name
 	 *
 	 * @static
@@ -260,13 +316,14 @@ class Anqh_Form extends Kohana_Form {
 			$value = $value->$name;
 		}
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
+		$attributes['class'] .= ' form-control';
 		$label      = $label ? array($attributes['id'] => $label) : '';
 		$input      = Form::input($name, $value, $attributes);
-		if ($append) {
-			$input = '<div class="input-append">' . $input . '<span class="add-on">' . $append . '</span></div>';
-		}
+//		if ($append) {
+//			$input = '<div class="input-append">' . $input . '<span class="add-on">' . $append . '</span></div>';
+//		}
 
-		return Form::wrap($input, $name, $label, $error, $tip);
+		return Form::form_group($input, $label, $error, $tip);
 	}
 
 
@@ -297,12 +354,17 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function password_wrap($name, $value = null, array $attributes = null, $label = null, $error = null, $tip = null, $show_password = null) {
+		$attributes['type'] = 'password';
+
+		return Form::input_wrap($name, $value, $attributes, $label, $error, $tip);
+
 		if (is_array($value)) {
 			$value = Arr::get($value, $name);
 		} else if (is_object($value)) {
 			$value = $value->$name;
 		}
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
+		$attributes['class'] .= ' form-control';
 		$label      = $label ? array($attributes['id'] => $label) : '';
 
 		// Inject show password element id
@@ -317,7 +379,7 @@ class Anqh_Form extends Kohana_Form {
 			$input .= Form::checkbox($name . '_show', 'yes') . Form::label($name . '_show', $show_password);
 		}
 
-		return Form::wrap($input, $name, $label, $error, $tip);
+		return Form::form_group($input, $name, $label, $error, $tip);
 	}
 
 
@@ -520,16 +582,16 @@ head.ready("vendor", function initMarkItUp() {
 		// Find the input error if any
 		$error = HTML::error($error, $name);
 		if (!empty($error)) {
-			$attributes['class'] = trim('error ' . Arr::get($attributes, 'class'));
+			$attributes['class'] = trim('has-error ' . Arr::get($attributes, 'class'));
 		}
 
-		$attributes['class'] .= ' control-group';
+		$attributes['class'] .= ' form-group';
 
 		// Label
 		if ($label) {
 			$label = is_array($label)
-				? Form::label(key($label), current($label), array('class' => 'control-label'))
-				: Form::label($name, $label, array('class' => 'control-label'));
+				? Form::label(key($label), current($label))
+				: Form::label($name, $label);
 		}
 
 		// Tip
