@@ -247,7 +247,7 @@ $(function() {
 		$(this).closest('section, article, aside' + (parent ? ', ' + parent : ''))
 			.ajaxify($(this).attr('href'), null, 'get', function _counter(response) {
 				var notifications  = $(response).find('li').length
-				  , $notifications = $('.menuitem-notifications a.notifications');
+				  , $notifications = $('#visitor a.notifications');
 
 				if ($notifications) {
 					if (notifications) {

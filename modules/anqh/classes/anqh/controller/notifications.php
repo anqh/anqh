@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Notifications extends Controller_Page {
@@ -48,7 +48,7 @@ class Anqh_Controller_Notifications extends Controller_Page {
 			$this->response->body($section);
 		} else {
 			$this->view = new View_Page('Notifications');
-			$this->view->add(View_Page::COLUMN_MAIN, $section);
+			$this->view->add(View_Page::COLUMN_CENTER, $section);
 		}
 	}
 

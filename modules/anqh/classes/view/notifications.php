@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Notifications extends View_Section {
@@ -41,7 +41,7 @@ class View_Notifications extends View_Section {
 
 ?>
 
-<ul class="unstyled">
+<ul class="list-unstyled">
 
 	<?php foreach ($this->notifications as $id => $notification): ?>
 	<li><?= HTML::anchor(Route::url('notifications') . '?dismiss=' . $id, '&times;', array('class' => 'close notification')) ?><?= $notification ?></li>

@@ -777,7 +777,7 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <ul id="visitor" class="nav navbar-nav navbar-right">
-	<li><?= implode(' ', Anqh::notifications(self::$_user)) ?></li>
+	<li class="notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></li>
 
 	<li class="dropdown">
 		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
