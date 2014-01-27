@@ -318,7 +318,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 			}
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_register($user, $errors, $invitation->code));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_register($user, $errors, $invitation->code));
 	}
 
 

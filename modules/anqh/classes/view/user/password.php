@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * User_Password
+ * Forgotten password.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_Password extends View_Section {
@@ -32,14 +32,17 @@ class View_User_Password extends View_Section {
 
 		echo Form::open();
 
-		echo Form::control_group(
-			Form::input('email', $this->email, array('class' => 'input input-xxlarge', 'placeholder' => __('Username or email'))),
-			array('email' => __('Send my new password to')),
+		echo Form::input_wrap(
+			'email',
+			$this->email,
+			array('type' => 'email', 'required', 'class' => 'input-lg', 'placeholder' => __('Username or email')),
+			__('Send a new password to'),
 			null,
-			__('We will send you a "new" password generated from your old forgotten password.<br /><em>Please change your password after signing in!</em>')
+			__('We will send you a "new" password generated from the hash of your current, forgotten password.')
+				. '<br><em>' . __('Please change your password after signing in!') . '</em>'
 		);
 
-		echo Form::button(null, '<i class="icon-envelope icon-white"></i> ' . __('Send'), array('class' => 'btn btn-primary'));
+		echo Form::button(null, '<i class="fa fa-envelope"></i> ' . __('Send'), array('class' => 'btn btn-primary'));
 
 		echo Form::close();
 
