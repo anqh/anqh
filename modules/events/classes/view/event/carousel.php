@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Event_Carousel
+ * Flyer carousel.
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Event_Carousel extends View_Section {
@@ -12,17 +12,17 @@ class View_Event_Carousel extends View_Section {
 	/**
 	 * @var  string  View classes
 	 */
-	public $class = 'carousel full';
-
-	/**
-	 * @var  string  View id
-	 */
-	public $id = 'carousel';
+	public $class = 'carousel';
 
 	/**
 	 * @var  Model_Event
 	 */
 	public $event;
+
+	/**
+	 * @var  string  View id
+	 */
+	public $id = 'carousel';
 
 
 	/**
@@ -51,7 +51,7 @@ class View_Event_Carousel extends View_Section {
 		if (!count($flyers) && $this->event->flyer_front_url):
 
 			// Legacy support
-			echo HTML::image($this->event->flyer_front_url, array('width' => 290));
+			echo HTML::image($this->event->flyer_front_url);
 
 		elseif (count($flyers)):
 
@@ -74,17 +74,17 @@ class View_Event_Carousel extends View_Section {
 
 		<div class="item<?= $flyer->image_id == $active_id ? ' active' : '' ?>">
 
-			<?= HTML::anchor(Route::model($flyer), HTML::image($flyer->image()->get_url(), array('width' => 290))) ?>
+			<?= HTML::anchor(Route::model($flyer), HTML::image($flyer->image()->get_url())) ?>
 
 			<?php if (isset($action_uri)): ?>
 
 			<div class="btn-group">
 				<?php if ($flyer->image_id == $this->event->flyer_front_image_id):
-					echo HTML::anchor('#', '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn btn-mini image-change disabled'));
+					echo HTML::anchor('#', '<i class="fa fa-home"></i> ' . __('Set as default'), array('class' => 'btn btn-default btn-xs image-change disabled'));
 				else:
-					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $flyer->image_id, '<i class="icon-home"></i> ' . __('Set as default'), array('class' => 'btn btn-mini image-change'));
+					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $flyer->image_id, '<i class="fa fa-home"></i> ' . __('Set as default'), array('class' => 'btn btn-default btn-xs image-change'));
 				endif; ?>
-				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=' . $flyer->image_id, '<i class="icon-trash"></i> ' . __('Delete'), array('class' => 'btn btn-mini image-delete')) ?>
+				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=' . $flyer->image_id, '<i class="fa fa-trash-o"></i> ' . __('Delete'), array('class' => 'btn btn-default btn-xs image-delete')) ?>
 			</div>
 
 			<?php endif; ?>
