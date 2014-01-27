@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Users_Online extends View_Section {
@@ -36,7 +36,7 @@ class View_Users_Online extends View_Section {
 	public function __construct() {
 		parent::__construct();
 
-		$this->_guest_count = Model_User_Online::get_guest_count();
+//		$this->_guest_count = Model_User_Online::get_guest_count();
 		$users              = Model_User_Online::find_online_users();
 		$this->title        = __('Online');
 
@@ -65,13 +65,14 @@ class View_Users_Online extends View_Section {
 		echo implode(', ', $this->_friends);
 
 		if ($this->_friends && $this->_users):
-			echo '<br />';
+			echo '<br>';
 		endif;
 
 		// Others
 		echo implode(', ', $this->_users);
 
 		// Guests
+		/*
 		if ($this->_guest_count):
 			if ($this->_friends || $this->_users):
 				echo ' ' . __('and') . ' ';
@@ -79,6 +80,7 @@ class View_Users_Online extends View_Section {
 
 			echo __(':count guests', array(':count' => $this->_guest_count));
 		endif;
+		*/
 
 		return ob_get_clean();
 	}
