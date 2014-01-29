@@ -10,11 +10,6 @@
 class View_Event_Carousel extends View_Section {
 
 	/**
-	 * @var  string  View classes
-	 */
-	public $class = 'carousel';
-
-	/**
 	 * @var  Model_Event
 	 */
 	public $event;
@@ -68,6 +63,8 @@ class View_Event_Carousel extends View_Section {
 
 ?>
 
+<div class="carousel">
+
 	<div class="carousel-inner">
 
 		<?php foreach ($flyers as $flyer): ?>
@@ -91,14 +88,16 @@ class View_Event_Carousel extends View_Section {
 
 		</div>
 
-<?php endforeach; ?>
+		<?php endforeach; ?>
+
+	</div>
+
+	<?php if (count($flyers) > 1): ?>
+	<a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev"><i class="fa fa-chevron-left icon-prev"></i></a>
+	<a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next"><i class="fa fa-chevron-right icon-next"></i></a>
+	<?php endif; ?>
 
 </div>
-
-<?php if (count($flyers) > 1): ?>
-<a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev">&lsaquo;</a>
-<a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next">&rsaquo;</a>
-<?php endif; ?>
 
 <?php
 

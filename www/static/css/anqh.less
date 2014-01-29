@@ -106,9 +106,9 @@ input.private                          { border-color: @brand-special; color: @b
 .carousel                              {
   img                                  { width: 100%; }
   .carousel-control                    { opacity: .25; /*border-width: 2px; font-size: 20px; height: 20px; line-height: 18px; opacity: .25; margin-top: 0; top: 8px; width: 20px; }*/
-    .icon-right                        { margin-left: auto; margin-right: -15px; }
+    &:hover                            { opacity: .9; }
+    .icon-next                         { margin-left: auto; margin-right: -15px; }
   }
-  .carousel-control:hover              { opacity: .9; }
   .btn-group                           { display: none; position: absolute; right: 5px; top: 5px; }
   &:hover .btn-group                   { display: inherit; }
 }
