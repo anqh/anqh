@@ -4,7 +4,7 @@
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Calendar extends View_Section {
@@ -131,15 +131,16 @@ head.ready('jquery-ui', function() {
 		$options = json_encode($options);
 
 		// Highlight days
-		$options = substr_replace($options,	',
+		$options = substr_replace($options, ',
 beforeShowDay: function(date) {
 	return [ true, date.getDate() % 5 == 0 ? "highlight" : "" ];
 }}', -1, 1);
 
 		// Month change
 		if (isset($this->url_month)) {
-			$options = substr_replace($options,	',
+			$options = substr_replace($options, ',
 onChangeMonthYear: function(year, month, inst) {
+
 	var url = "' . $this->url_month . '"
 		.replace(":year", year)
 		.replace(":month", month);
@@ -148,7 +149,7 @@ onChangeMonthYear: function(year, month, inst) {
 
 		// Day change
 		if (isset($this->url_day)) {
-			$options = substr_replace($options,	',
+			$options = substr_replace($options, ',
 onSelect: function(date, inst) {
 	var url = "' . $this->url_day . '"
 		.replace(":year", inst.selectedYear)

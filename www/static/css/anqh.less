@@ -69,6 +69,26 @@ h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
 .thumbnails > li                       { margin-bottom: 10px; margin-left: 10px; }
 
 
+// jQuery
+.ui-datepicker                         {
+  .ui-datepicker-header                { position: relative;
+    .ui-datepicker-prev,
+    .ui-datepicker-next                { cursor: pointer; padding: @padding-base-vertical; position: absolute; text-align: center; top: 2px; }
+    .ui-datepicker-prev                { left: 0; }
+    .ui-datepicker-next                { right: 0; }
+    .ui-datepicker-title               { margin: 0 2em; text-align: center;
+      select                           { float: left; .form-control; text-align: center; width: 50%; }
+    }
+  }
+  &.ui-datepicker-inline               {
+    table                              { .table; width: 100%; }
+    th                                 { text-align: right; }
+    th.ui-datepicker-week-col,
+    td                                 { cursor: pointer; text-align: center; }
+  }
+}
+
+
 // Misc items
 .nowrap                                { white-space: nowrap; }
 .user                                  { color: @gray-darkest; font-weight: bold; }
