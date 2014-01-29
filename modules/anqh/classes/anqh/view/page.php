@@ -282,7 +282,7 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <nav role="navigation">
-	<ul role="menubar" class="nav nav-pills">
+	<ul role="menubar" class="nav nav-pills nav-justified">
 		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): ?>
 		<li role="menuitem" class="menu-<?= $id ?>"><?= HTML::anchor($item['url'], HTML::chars($item['text'])) ?></li>
 		<?php endforeach ?>
@@ -295,7 +295,7 @@ class Anqh_View_Page extends View_Base {
 
 </div>
 
-<hr />
+<hr>
 
 <small class="muted copyright">
 	&copy; 2000&ndash;<?= date('Y')?> <?= Kohana::$config->load('site.site_name') ?><br>
@@ -510,7 +510,7 @@ class Anqh_View_Page extends View_Base {
 <!-- /CONTENT -->
 
 
-<footer id="footer" class="content">
+<footer id="footer" class="dark content">
 	<div class="container">
 
 <?= $this->_footer() ?>
