@@ -89,20 +89,21 @@ class Anqh_Form extends Kohana_Form {
 
 
 	/**
-	 * Creates checkboxes list
+	 * Creates checkboxes list.
 	 *
-	 * @param   string        $name     input name
-	 * @param   array         $values   input values
-	 * @param   array         $checked  checked statuses
+	 * @param   string        $name        input name
+	 * @param   array         $values      input values
+	 * @param   array         $checked     checked statuses
+	 * @param   array         $attributes  html attributes
 	 *
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
-	 * @param   string        $class
 	 * @return  string
 	 */
-	public static function checkboxes_wrap($name, $values = array(), $checked = array(), $label = null, $error = null, $tip = null, $class = null) {
-		$input = ($class ? '<ul class="unstyled ' . $class . '">' : '<ul class="unstyled">') . "\n";
+	public static function checkboxes_wrap($name, $values = array(), $checked = array(), array $attributes = null, $label = null, $error = null, $tip = null) {
+		$list_class = 'list-unstyled ' . Arr::get_once($attributes, 'class');
+		$input = '<ul class="' . $list_class . '">' . "\n";
 		foreach ($values as $checkbox_value => $checkbox_title) {
 			$id = self::input_id($name) . '-' . $checkbox_value;
 			$input .= '<li>';
@@ -314,9 +315,9 @@ class Anqh_Form extends Kohana_Form {
 		$attributes['class'] .= ' form-control';
 		$label      = $label ? array($attributes['id'] => $label) : '';
 		$input      = Form::input($name, $value, $attributes);
-//		if ($append) {
-//			$input = '<div class="input-append">' . $input . '<span class="add-on">' . $append . '</span></div>';
-//		}
+		if ($append) {
+			$input = '<div class="input-group">' . $input . '<span class="input-group-addon">' . $append . '</span></div>';
+		}
 
 		return Form::form_group($input, $label, $error, $tip);
 	}
@@ -425,18 +426,12 @@ class Anqh_Form extends Kohana_Form {
 	 * @return  string
 	 */
 	public static function select_wrap($name, array $options = null, $selected = null, array $attributes = null, $label = null, $error = null, $tip = null) {
-		if (is_array($selected)) {
-			$selected = Arr::get($selected, $name);
-		} else if (is_object($selected)) {
-			$selected = $selected->$name;
-		}
-		$options    = Arr::get($options, $name, $options);
 		$attributes = (array)$attributes + array('id' => self::input_id($name));
+		$attributes['class'] .= ' form-control';
 		$label      = $label ? array($attributes['id'] => $label) : '';
+		$select     = Form::select($name, $options, $selected, $attributes);
 
-		$input = Form::select($name, $options, $selected, $attributes);
-
-		return Form::wrap($input, $name, $label, $error, $tip);
+		return Form::form_group($select, $label, $error, $tip);
 	}
 
 
