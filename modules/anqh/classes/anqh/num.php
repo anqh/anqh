@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Num extends Kohana_Num {
@@ -46,6 +46,19 @@ class Anqh_Num extends Kohana_Num {
 		$seconds = $seconds % 60;
 
 		return ($hours ? $hours . ':' : '') . $minutes . ':' . ($seconds < 10 ? '0' . $seconds : $seconds);
+	}
+
+
+	/**
+	 * Pad a number for total length.
+	 *
+	 * @param   integer  $number
+	 * @param   integer  $length  max length
+	 * @param   integer  $pad     number to pad with
+	 * @return  string
+	 */
+	public static function pad($number, $length = 2, $pad = 0) {
+		return str_pad((int)$number, $length, $pad, STR_PAD_LEFT);
 	}
 
 
