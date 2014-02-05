@@ -116,16 +116,26 @@ class Anqh_Controller_Events extends Controller_Page {
 		Permission::required($event, Model_Event::PERMISSION_READ, self::$user);
 
 		// Build page
-		$this->view = View_Page::factory($event->name);
+		$this->view->title    = $event->name;
 		$this->view->subtitle = self::_event_subtitle($event);
 
 		// Set actions
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
+			$this->view->actions[] = array(
+				'link' => Route::model($event, 'edit'),
+				'text' => __('Edit event'),
+			);
+			$this->view->actions[] = array(
+				'link'  => Route::model($event, 'image'),
+				'text'  => __('Add flyer'),
+				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
+			);
+		}
 		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
 			if ($event->is_favorite(self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
 					'text'  => '<i class="fa fa-heart"></i> ' . __('Remove favorite'),
-					'class' => 'btn-inverse favorite-delete',
 				);
 			} else {
 				$this->view->actions[] = array(
@@ -135,42 +145,32 @@ class Anqh_Controller_Events extends Controller_Page {
 				);
 			}
 		}
+
+		// Set tabs
 		$this->view->tab = 'event';
 		$this->view->tabs['event'] = array(
 			'link' => Route::model($event),
-			'text' => '<i class="fa fa-calendar"></i> ' . __('Event'),
+			'text' => __('Event'),
 		);
-
 		if ($event->author_id) {
 			$this->view->tabs['organizer'] = array(
 				'link' => URL::user($event->author_id),
-				'text' => '<i class="fa fa-user"></i> ' . __('Organizer') . ' &raquo;',
+				'text' => __('Organizer') . ' &raquo;',
 			);
 		}
-
-		// Link to gallery only after the event has begun
 		if ($event->stamp_begin < time()) {
+
+				// Link to gallery only after the event has begun
 			$this->view->tabs[] = array(
 				'link' => Route::get('gallery_event')->uri(array('id' => $event->id)),
-				'text' => '<i class="fa fa-camera-retro"></i> ' . __('Gallery') . ' &raquo;',
+				'text' => __('Gallery') . ' &raquo;',
 			);
-		}
 
+		}
 		$this->view->tabs[] = array(
 			'link' => Route::get('forum_event')->uri(array('id' => $event->id)),
-			'text' => '<i class="fa fa-comment"></i> ' . __('Forum') . ' &raquo;',
+			'text' => __('Forum') . ' &raquo;',
 		);
-		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
-			$this->view->actions[] = array(
-				'link' => Route::model($event, 'edit'),
-				'text' => '<i class="fa fa-edit"></i> ' . __('Edit event'),
-			);
-			$this->view->actions[] = array(
-				'link'  => Route::model($event, 'image'),
-				'text'  => '<i class="fa fa-picture-o"></i> ' . __('Add flyer'),
-				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
-			);
-		}
 
 
 		// Share
