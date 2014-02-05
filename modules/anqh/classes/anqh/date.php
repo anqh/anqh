@@ -1,77 +1,57 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Date
+ * Date helper.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Date extends Kohana_Date {
 
-	/**
-	 * ISO8601 date
-	 */
+	/** ISO8601 date */
 	const DATE_8601 = 'date_8601';
 
-	/**
-	 * SQL date
-	 */
+	/** SQL date */
 	const DATE_SQL = 'date_sql';
 
-	/**
-	 * Date and time
-	 */
+	/** Date and time */
 	const DATETIME = 'DMYYYY_HM';
 
-	/**
-	 * Day and month name
-	 */
+	/** Day and month name */
 	const DM_LONG = 'DM_LONG';
 
-	/**
-	 * Day and month
-	 */
+	/** Day and month */
 	const DM_SHORT  = 'DM';
 
-	/**
-	 * Zero padded day and month
-	 */
+	/** Zero padded day and month */
 	const DM_PADDED = 'DDMM';
 
-	/**
-	 * Day, month name and year
-	 */
+	/** Day, month name and year */
 	const DMY_LONG = 'DMY_LONG';
 
-	/**
-	 * Day, short month name and year
-	 */
+	/** Day, short month name and year */
 	const DMY_MEDIUM = 'DMY_MEDIUM';
 
-	/**
-	 * Day, month and year
-	 */
+	/** Day, month and year */
 	const DMY_SHORT  = 'DMYYYY';
 
-	/**
-	 * Zero padded day, month and year
-	 */
+	/** Zero padded day, month and year */
 	const DMY_PADDED = 'DDMMYYYY';
 
-	/**
-	 * Time
-	 */
+	/** Month and year */
+	const MY_LONG    = 'MY_LONG';
+
+	/** Month and year */
+	const MY_SHORT    = 'MY_SHORT';
+
+	/** Time */
 	const TIME = 'HHMM';
 
-	/**
-	 * ISO8601 time
-	 */
+	/** ISO8601 time */
 	const TIME_8601 = 'time_8601';
 
-	/**
-	 * SQL time
-	 */
+	/** SQL time */
 	const TIME_SQL = 'time_sql';
 
 
@@ -125,6 +105,8 @@ class Anqh_Date extends Kohana_Date {
 			case self::DMY_MEDIUM: return strftime(__('%b %e, %G'), $date);
 			case self::DMY_SHORT:  return date(__('j.n.Y'), $date);
 			case self::DMY_PADDED: return date(__('d.m.Y'), $date);
+			case self::MY_LONG:    return date(__('F Y'), $date);
+			case self::MY_SHORT:   return date(__('M Y'), $date);
 			case self::TIME:       return date(__('H:i'), $date);
 			case self::TIME_SQL:   return date('Y-m-d H:i:s', $date);
 			case self::TIME_8601:  return date(DateTime::ISO8601, $date);
