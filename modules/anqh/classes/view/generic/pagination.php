@@ -9,84 +9,55 @@
  */
 class View_Generic_Pagination extends View_Base {
 
-	/**
-	 * @var  boolean  Hide pagination if only 1 page
-	 */
+	/** @var  boolean  Hide pagination if only 1 page */
 	public $auto_hide = true;
 
-	/**
-	 * @var  string  Base URL
-	 */
+	/** @var  string  Base URL */
 	public $base_url;
 
-	/**
-	 * @var  integer  Current page number
-	 */
+	/** @var  integer  Current page number */
 	public $current_page;
 
-	/**
-	 * @var  string  Text for first page
-	 */
+	/** @var  string  URL for current page */
+	public $current_url;
+
+	/** @var  string  Text for first page */
 	public $first_text = '&laquo;';
 
-	/**
-	 * @var  string  First page URL
-	 */
+	/** @var  string  First page URL */
 	public $first_url;
 
-	/**
-	 * @var  integer  How many items to show per page
-	 */
+	/** @var  integer  How many items to show per page */
 	public $items_per_page;
 
-	/**
-	 * @var  string  Text for last page
-	 */
+	/** @var  string  Text for last page */
 	public $last_text = '&raquo;';
 
-	/**
-	 * @var  string  Last page URL
-	 */
+	/** @var  string  Last page URL */
 	public $last_url;
 
-	/**
-	 * @var  string  Text for next page
-	 */
+	/** @var  string  Text for next page */
 	public $next_text = '&rsaquo;';
 
-	/**
-	 * @var  string  Next page URL
-	 */
+	/** @var  string  Next page URL */
 	public $next_url;
 
-	/**
-	 * @var  integer  Pagination offset for SQL
-	 */
+	/** @var  integer  Pagination offset for SQL */
 	public $offset;
 
-	/**
-	 * @var  string  Query string parameter
-	 */
+	/** @var  string  Query string parameter */
 	public $parameter = 'page';
 
-	/**
-	 * @var  string  Text for previous page
-	 */
+	/** @var  string  Text for previous page */
 	public $previous_text = '&lsaquo;';
 
-	/**
-	 * @var  string  Previous page URL
-	 */
+	/** @var  string  Previous page URL */
 	public $previous_url;
 
-	/**
-	 * @var  integer  Total item count
-	 */
+	/** @var  integer  Total item count */
 	public $total_items;
 
-	/**
-	 * @var  integer  Total page count
-	 */
+	/** @var  integer  Total page count */
 	public $total_pages;
 
 
@@ -159,7 +130,11 @@ class View_Generic_Pagination extends View_Base {
 	<?php endif; ?>
 
 	<?php if ($this->current_page): ?>
+		<?php if ($this->current_url): ?>
+	<li><?= HTML::anchor($this->current_url, $this->current_page) ?></li>
+		<?php else: ?>
 	<li><span><?= $this->current_page ?></span></li>
+		<?php endif; ?>
 	<?php endif; ?>
 
 	<?php if ($this->last_url): ?>
