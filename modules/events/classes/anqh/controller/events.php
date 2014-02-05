@@ -387,48 +387,72 @@ class Anqh_Controller_Events extends Controller_Page {
 		$day   = (int)$this->request->param('day');
 		$week  = (int)$this->request->param('week');
 
-		// Default to upcoming events for current week
-		if (!$day && !$month && !$year && !$week) {
+		// Initial view shows todays events and current week
+		if (!$day && !$month && !$week) {
+
+			// Create todays events
 			$this->stamp_begin = strtotime('today');
-			$this->stamp_end   = strtotime('next monday', $this->stamp_begin);
-
-			// Add one week if less than 3 days to next monday
-			if ($this->stamp_end - $this->stamp_begin <= Date::DAY * 3) {
-				$this->stamp_end = strtotime('+1 week', $this->stamp_end);
+			$this->stamp_end   = strtotime('tomorrow -1 second');
+			if ($events = $this->_events()) {
+				$section_today = $this->sections_events($events);
 			}
 
-			$this->stamp_previous = strtotime('last monday', $this->stamp_begin);
-			$this->stamp_next     = $this->stamp_end;
-		} else {
-			$year = $year ? $year : date('Y');
-			if ($week) {
-				$this->stamp_begin = strtotime($year . '-W' . ($week < 10 ? '0' . $week : $week));
-			} else {
-				$day   = $day ? $day : date('j');
-				$month = $month ? $month : date('n');
-				$this->stamp_begin = mktime(0, 0, 0, $month, $day, $year);
-			}
-			$this->stamp_end      = strtotime('+1 week', $this->stamp_begin);
-			$this->stamp_previous = strtotime('-1 week', $this->stamp_begin);
-			$this->stamp_next     = $this->stamp_end;
+			$week = date('W');
 		}
 
+		$year  = $year ? $year : date('Y');
+		$month = $month ? $month : date('n');
+		if ($week) {
 
-		// Build page
-		$this->view->title = __('Events') . ' ' . Date::format(Date::DM_SHORT, $this->stamp_begin) . '–' . Date::format(Date::DMY_SHORT, $this->stamp_end);
+			// Show week
+			$this->stamp_begin    = strtotime($year . '-W' . Num::pad($week));
+			$this->stamp_end      = strtotime('next week', $this->stamp_begin);
+			$this->stamp_next     = $this->stamp_end;
+			$this->stamp_previous = strtotime('last week', $this->stamp_begin);
+			$section_pagination   = $this->section_pagination('week');
+			$this->view->title    = __('Events') . ' ' . Date::format(Date::DM_SHORT, $this->stamp_begin) . ' - ' . Date::format(Date::DMY_SHORT, $this->stamp_end);
+
+		} else if ($day) {
+
+			// Show day
+			$this->stamp_begin    = mktime(0, 0, 0, $month, $day, $year);
+			$this->stamp_end      = strtotime('tomorrow', $this->stamp_begin);
+			$this->stamp_next     = $this->stamp_end;
+			$this->stamp_previous = strtotime('yesterday', $this->stamp_begin);
+			$section_pagination   = $this->section_pagination('day');
+			$this->view->title    = __('Events') . ' ' . Date::format(Date::DM_SHORT, $this->stamp_begin) . ' - ' . Date::format(Date::DMY_SHORT, $this->stamp_end);
+
+		} else {
+
+			// Show month
+			$this->stamp_begin    = mktime(0, 0, 0, $month, 1, $year);
+			$this->stamp_end      = strtotime('next month', $this->stamp_begin);
+			$this->stamp_next     = $this->stamp_end;
+			$this->stamp_previous = strtotime('last month', $this->stamp_begin);
+			$section_pagination   = $this->section_pagination('month');
+			$this->view->title    = __('Events') . ' ' . Date::format(Date::MY_LONG, $this->stamp_begin);
+
+		}
+		$events = $this->_events();
+
+
+
+		// Today
+		if (isset($section_today)) {
+			$this->view->add(View_Page::COLUMN_CENTER, $section_today);
+		}
 
 		// Filters
-		$this->view->add(View_Page::COLUMN_CENTER, $this->section_filters());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_filters($events));
 
 		// Pagination
-		$pagination = $this->section_pagination();
-		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $section_pagination);
 
 		// Event list
-		$this->view->add(View_Page::COLUMN_CENTER, $this->sections_events());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->sections_events($events));
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $section_pagination);
 
 		// Calendar
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_calendar());
@@ -851,13 +875,7 @@ head.ready("anqh", function() {
 	 * @return  array
 	 */
 	private function _events() {
-		static $events = null;
-
-		if (is_null($events)) {
-			$events = Model_Event::factory()->find_grouped_between($this->stamp_begin, $this->stamp_end, 'ASC');
-		}
-
-		return $events;
+		return Model_Event::factory()->find_grouped_between($this->stamp_begin, $this->stamp_end, 'ASC');
 	}
 
 
@@ -976,11 +994,12 @@ head.ready("anqh", function() {
 	/**
 	 * Get filters.
 	 *
+	 * @param   array  $events
 	 * @return  View_Generic_Filters
 	 */
-	public function section_filters() {
+	public function section_filters(array $events = null) {
 		$section = new View_Generic_Filters();
-		$section->filters = $this->_filters($this->_events());
+		$section->filters = $this->_filters($events);
 
 		return $section;
 	}
@@ -1008,37 +1027,73 @@ head.ready("anqh", function() {
 	/**
 	 * Get pagination.
 	 *
+	 * @param   string  $period  day|week|month
 	 * @return  View_Generic_Pagination
 	 */
-	public function section_pagination() {
-		return new View_Generic_Pagination(array(
-//		  'current_page'  => Date::format(Date::DM_SHORT, $this->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_SHORT, $this->stamp_end),
-			'previous_text' => '&lsaquo; ' . __('Previous events'),
-			'next_text'     => __('Next events') . ' &rsaquo;',
-			'previous_url'  => Route::url('events_ymd', array(
-					'year'  => date('Y', $this->stamp_previous),
-					'month' => date('m', $this->stamp_previous),
-					'day'   => date('d', $this->stamp_previous))),
-			'next_url'      => Route::url('events_ymd', array(
-					'year'  => date('Y', $this->stamp_next),
-					'month' => date('m', $this->stamp_next),
-					'day'   => date('d', $this->stamp_next))),
-		));
+	public function section_pagination($period = 'week') {
+		switch ($period) {
+
+			case 'day':
+				return new View_Generic_Pagination(array(
+				  'current_page'  => __('Show week'),
+					'current_url'   => Route::url('events_yw', array(
+							'year' => date('Y', $this->stamp_begin),
+							'week' => date('W', $this->stamp_begin))),
+					'previous_text' => '&lsaquo; ' . __('Previous day'),
+					'next_text'     => __('Next day') . ' &rsaquo;',
+					'previous_url'  => Route::url('events_ymd', array(
+							'year'  => date('Y', $this->stamp_previous),
+							'month' => date('m', $this->stamp_previous),
+							'day'   => date('d', $this->stamp_previous))),
+					'next_url'      => Route::url('events_ymd', array(
+							'year'  => date('Y', $this->stamp_next),
+							'month' => date('m', $this->stamp_next),
+							'day'   => date('d', $this->stamp_next))),
+				));
+
+			case 'week':
+				return new View_Generic_Pagination(array(
+//				  'current_page'  => Date::format(Date::DM_SHORT, $this->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_SHORT, $this->stamp_end),
+					'previous_text' => '&lsaquo; ' . __('Previous week'),
+					'next_text'     => __('Next week') . ' &rsaquo;',
+					'previous_url'  => Route::url('events_yw', array(
+							'year' => date('Y', $this->stamp_previous),
+							'week' => date('W', $this->stamp_previous))),
+					'next_url'      => Route::url('events_yw', array(
+							'year' => date('Y', $this->stamp_next),
+							'week' => date('W', $this->stamp_next))),
+				));
+
+			case 'month':
+				return new View_Generic_Pagination(array(
+//				  'current_page'  => Date::format(Date::DM_SHORT, $this->stamp_begin) . ' &ndash; ' . Date::format(Date::DMY_SHORT, $this->stamp_end),
+					'previous_text' => '&lsaquo; ' . __('Previous month'),
+					'next_text'     => __('Next month') . ' &rsaquo;',
+					'previous_url'  => Route::url('events_ymd', array(
+							'year'  => date('Y', $this->stamp_previous),
+							'month' => date('m', $this->stamp_previous))),
+					'next_url'      => Route::url('events_ymd', array(
+							'year'  => date('Y', $this->stamp_next),
+							'month' => date('m', $this->stamp_next))),
+				));
+
+		}
 	}
 
 
 	/**
 	 * Get events.
 	 *
+	 * @param   array  $events
 	 * @return  View_Events_Day[]
 	 */
-	public function sections_events() {
-		if (!$this->_events()) {
+	public function sections_events(array $events = null) {
+		if (!$events) {
 			return new View_Alert(__('There be no events for selected period, period.'), null, View_Alert::INFO);
 		}
 
 		$days = array();
-		foreach ($this->_events() as $date => $cities) {
+		foreach ($events as $date => $cities) {
 			$section = new View_Events_Day();
 			$section->date   = $date;
 			$section->events = $cities;

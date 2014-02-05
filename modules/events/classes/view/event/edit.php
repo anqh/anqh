@@ -1,42 +1,30 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * View_Event_Edit
+ * Event edit form.
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Event_Edit extends View_Article {
 
-	/**
-	 * @var  string  URL for cancel action
-	 */
+	/** @var  string  URL for cancel action */
 	public $cancel;
 
-	/**
-	 * @var  Model_Event
-	 */
+	/** @var  Model_Event */
 	public $event;
 
-	/**
-	 * @var  array
-	 */
+	/** @var  array */
 	public $event_errors;
 
-	/**
-	 * @var  string
-	 */
+	/** @var  string */
 	public $flyer_error;
 
-	/**
-	 * @var  Model_Venue
-	 */
+	/** @var  Model_Venue */
 	public $venue;
 
-	/**
-	 * @var  array
-	 */
+	/** @var  array */
 	public $venue_errors;
 
 
@@ -64,12 +52,12 @@ class View_Event_Edit extends View_Article {
 
 <div id="preview"></div>
 
-<?= Form::open(null, array('id' => 'form-event', 'class' => 'row-fluid')) ?>
+<?= Form::open(null, array('id' => 'form-event', 'class' => 'row')) ?>
 
-<div class="span8">
+<div class="col-md-8">
 
 	<?php if ($this->event_errors || $this->venue_errors): ?>
-	<div class="alert alert-error">
+	<div class="alert alert-danger">
 		<strong><?= __('Error happens!') ?></strong>
 		<ul class="">
 			<?php foreach ((array)$this->event_errors as $error): ?>
@@ -83,21 +71,31 @@ class View_Event_Edit extends View_Article {
 	<?php endif; ?>
 
 	<fieldset id="fields-primary">
-		<?= Form::control_group(
-			Form::input('name', $this->event->name, array('class' => 'input-block-level')),
-			array('name' => __('Event')),
-			Arr::get($this->event_errors, 'name')) ?>
+		<?= Form::input_wrap(
+				'name',
+				$this->event->name,
+				array('class' => 'input-lg'),
+				__('Name'),
+				Arr::get($this->event_errors, 'name'),
+				__("Please don't use dates in the name, looks nasty everywhere as the date is usually shown automagically.")
+		) ?>
 
-		<?= Form::control_group(
-			Form::textarea_editor('info', $this->event->info, array('class' => 'input-block-level', 'rows' => 20), true),
-			array('info' => __('Information')),
-			Arr::get($this->event_errors, 'info')) ?>
+		<?= Form::textarea_wrap(
+				'info',
+				$this->event->info,
+				array('class' => 'input-lg', 'rows' => 20),
+				true,
+				__('Information'),
+				Arr::get($this->event_errors, 'info'),
+				__('Remember, only the first few rows are visible in the calendar view.'),
+				true
+		) ?>
 	</fieldset>
 
-	<fieldset class="form-actions">
-		<?= Form::button('save', __('Save event'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
+	<fieldset>
+		<?= Form::button('save', __('Save event'), array('type' => 'submit', 'class' => 'btn btn-success btn-lg')) ?>
 		<?= Form::button('preview', __('Preview'), array(
-				'class'              => 'btn btn-inverse btn-large',
+				'class'              => 'btn btn-default btn-lg',
 				'data-content-class' => '*',
 				'data-prepend'       => '#preview',
 			)) ?>
@@ -110,133 +108,161 @@ class View_Event_Edit extends View_Article {
 	</fieldset>
 </div>
 
-<div class="span4">
+<div class="col-md-4">
 
-	<fieldset id="fields-when" class="row-fluid">
-		<?= Form::control_group(
-			Form::input(
+	<fieldset id="fields-when" class="row form-inline">
+		<div class="col-md-3">
+			<?= Form::input_wrap(
 				'stamp_begin[date]',
 				is_numeric($this->event->stamp_begin) ? Date::format('DMYYYY', $this->event->stamp_begin) : $this->event->stamp_begin,
-				array('class' => 'date', 'maxlength' => 10, 'placeholder' => 'd.m.yyyy')),
-			array('stamp_begin[date]' => __('From')),
-			Arr::get($this->event_errors, 'stamp_begin'),
-			null,
-			array('class' => 'span3')) ?>
+				array('class' => 'date', 'maxlength' => 10, 'size' => 7, 'placeholder' => 'd.m.yyyy'),
+				__('From'),
+				Arr::Get($this->event_errors, 'stamp_begin')
+			) ?>
+		</div>
 
-		<?= Form::control_group(
-			Form::select(
+		<div class="col-md-3">
+			<?= Form::select_wrap(
 				'stamp_begin[time]',
 				array_reverse(Date::hours_minutes(30, true)),
 				is_numeric($this->event->stamp_begin) ? Date::format('HHMM', $this->event->stamp_begin) : (empty($this->event->stamp_begin) ? '22:00' : $this->event->stamp_begin),
-				array('class' => 'time')),
-			array('stamp_begin[time]' => '&nbsp;'),
-			Arr::get($this->event_errors, 'stamp_begin'),
-			null,
-			array('class' => 'span3')) ?>
+				array('class' => 'time'),
+				'&nbsp;',
+				Arr::get($this->event_errors, 'stamp_begin')
+			) ?>
+		</div>
 
-		<?= Form::control_group(
-			Form::select(
+		<div class="col-md-3">
+			<?= Form::select_wrap(
 				'stamp_end[time]',
 				Date::hours_minutes(30, true),
 				is_numeric($this->event->stamp_end) ? Date::format('HHMM', $this->event->stamp_end) : (empty($this->event->stamp_end) ? '04:00' : $this->event->stamp_end),
-				array('class' => 'time')),
-			array('stamp_end[time]' => __('To')),
-			Arr::get($this->event_errors, 'stamp_end'),
-			null,
-			array('class' => 'span3')) ?>
+				array('class' => 'time'),
+				__('To'),
+				Arr::get($this->event_errors, 'stamp_end')
+			) ?>
+		</div>
 
-		<?= Form::control_group(
-			Form::input(
+		<div class="col-md-3">
+			<?= Form::input_wrap(
 				'stamp_end[date]',
 				is_numeric($this->event->stamp_end) ? Date::format('DMYYYY', $this->event->stamp_end) : $this->event->stamp_end,
-				array('class' => 'date', 'maxlength' => 10, 'placeholder' => 'd.m.yyyy')),
-			array('stamp_end[date]' => '&nbsp;'),
-			Arr::get($this->event_errors, 'stamp_end'),
-			null,
-			array('class' => 'span3')) ?>
+				array('class' => 'date', 'maxlength' => 10, 'size' => 7, 'placeholder' => 'd.m.yyyy'),
+				'&nbsp;',
+				Arr::Get($this->event_errors, 'stamp_end')
+			) ?>
+		</div>
+	</fieldset>
+	<br>
+	<fieldset>
+		<?php if (!$this->event->flyer_front_image_id) echo
+			Form::input_wrap(
+					'flyer',
+					$this->event->flyer_front_url,
+					array('type' => 'url', 'placeholder' => 'http://'),
+					__('Flyer'),
+					$this->flyer_error,
+					__('If you have the flyer only locally you can upload it after saving the event.')
+		) ?>
+
+		<?= Form::input_wrap(
+			'homepage',
+			$this->event->homepage,
+			array('type' => 'url', 'placeholder' => 'http://'),
+			__('Homepage'),
+			Arr::get($this->event_errors, 'homepage')
+		) ?>
 	</fieldset>
 
-	<?php if (!$this->event->flyer_front_image_id) echo Form::control_group(
-		Form::input('flyer', $this->event->flyer_front_url, array('class' => 'input-block-level', 'placeholder' => 'http://')),
-		array('flyer' => __('Flyer')),
-		$this->flyer_error,
-		'<span class="label label-info">' . __('Tip!') . '</span> ' . __('If you have the flyer only locally you can upload it after saving the event.')) ?>
+	<fieldset id="fields-venue" class="row">
+		<div class="col-md-7">
+			<?= Form::input_wrap(
+				'venue_name',
+				$this->event->venue_name,
+				(bool)$this->event->venue_hidden ? array('disabled') : null,
+				__('Venue'),
+				Arr::get($this->event_errors, 'venue_name')
+			) ?>
+		</div>
 
-	<?= Form::control_group(
-		Form::input('homepage', $this->event->homepage, array('class' => 'input-block-level', 'placeholder' => 'http://')),
-		array('homepage' => __('Homepage')),
-		Arr::get($this->event_errors, 'homepage')) ?>
+		<div class="col-md-5">
+			<br>
+			<?= Form::checkbox_wrap(
+				'venue_hidden',
+				'true',
+				(bool)$this->event->venue_hidden,
+				array('id' => 'field-ug'),
+				__('Underground')
+			) ?>
+		</div>
 
-	<fieldset id="fields-venue">
-		<legend>
-			<?= Form::control_group(
-				'<label class="checkbox">'
-					. Form::checkbox('venue_hidden', 'true', (bool)$this->event->venue_hidden, array('id' => 'field-ug'))
-					. ' ' . __('Underground')
-					. '</label>',
-				null, null, null,
-				array('class' => 'span8 pull-right')) ?>
-
-			<?= __('Venue') ?>
-		</legend>
-		<?= Form::control_group(
-			Form::input('venue_name', $this->event->venue_name, (bool)$this->event->venue_hidden ? array('class' => 'input-block-level', 'disabled' => 'disabled') : array('class' => 'input-block-level')),
-			array('venue_name' => __('Venue')),
-			Arr::get($this->event_errors, 'venue_name'),
-			null,
-			array('class' => 'group-venue')) ?>
-
-		<?= Form::control_group(
-			Form::input('city_name', $this->event->city_name, array('class' => 'input-block-level')),
-			array('city_name' => __('City')),
-			Arr::get($this->event_errors, 'city_name')) ?>
+		<div class="col-md-12">
+			<?= Form::input_wrap(
+				'city_name',
+				$this->event->city_name,
+				null,
+				__('City'),
+				Arr::get($this->event_errors, 'city_name')
+			) ?>
+		</div>
 	</fieldset>
 
-	<fieldset id="fields-tickets">
-		<legend>
-			<?= Form::control_group(
-				'<label class="checkbox">'
-					. Form::checkbox('free', 'true', $this->event->price === '0.00', array('id' => 'field-free'))
-					. ' ' . __('Free entry')
-					. '</label>',
-				null, null, null,
-				array('class' => 'span8 pull-right')) ?>
+	<fieldset id="fields-tickets" class="row">
+		<div class="col-md-4">
+			<?= Form::input_wrap(
+				'price',
+				$this->event->price,
+				$this->event->price === '0.00' ? array('disabled', 'type' => 'number', 'min' => 0, 'step' => 0.5) : array('type' => 'number', 'min' => 0, 'step' => 0.5),
+				__('Tickets'),
+				Arr::get($this->event_errors, 'tickets'),
+				null,
+				'&euro;'
+			) ?>
+		</div>
 
-			<?= __('Tickets') ?>
-		</legend>
+		<div class="col-md-8">
+			<br>
+			<?= Form::checkbox_wrap(
+				'free',
+				'true',
+					$this->event->price === '0.00',
+				array('id' => 'field-free'),
+				__('Free entry')
+			) ?>
+		</div>
 
-		<?= Form::control_group(
-			'<div class="input-append">'
-				. Form::input('price', $this->event->price, $this->event->price === '0.00'
-						? array('class' => 'input-mini', 'disabled' => 'disabled')
-						: array('class' => 'input-mini')
-					)
-				. '<span class="add-on">&euro;</span>'
-				. '</div>',
-			array('price' => __('Tickets')),
-			Arr::get($this->event_errors, 'price'),
-			null,
-			array('class' => 'group-price')) ?>
+		<div class="col-md-12">
+			<?= Form::input_wrap(
+				'tickets_url',
+				$this->event->tickets_url,
+				array('placeholder' => 'http://'),
+				__('Buy tickets from'),
+				Arr::get($this->event_errors, 'tickets_url')
+			) ?>
+		</div>
 
-		<?= Form::control_group(
-			Form::input('tickets_url', $this->event->tickets_url, array('class' => 'input-block-level', 'placeholder' => 'http://')),
-			array('tickets_url' => __('Buy tickets from')),
-			Arr::get($this->event_errors, 'tickets_url'),
-			null,
-			array('class' => 'group-price')) ?>
-
-		<?= Form::control_group(
-			'<div class="input-append">'
-				. Form::input('age', $this->event->age, array('class' => 'input-mini'))
-				. '<span class="add-on">years</span>'
-				. '</div>',
-			array('age' => __('Age limit')),
-			Arr::get($this->event_errors, 'age')) ?>
+		<div class="col-md-5">
+			<?= Form::input_wrap(
+				'age',
+				$this->event->age,
+				array('type' => 'number', 'min' => 0, 'max' => 50, 'maxlength' => 3),
+				__('Age limit'),
+				Arr::get($this->event_errors, 'age'),
+				null,
+				__('years')
+			) ?>
+		</div>
 	</fieldset>
 
 	<fieldset id="fields-music">
-		<legend><?= __('Music') ?></legend>
-		<?= Form::checkboxes_wrap('tag', $this->tags(), $this->event->tags(), null, $this->event_errors, null, 'block-grid two-up') ?>
+		<?= Form::checkboxes_wrap(
+				'tag',
+				$this->tags(),
+				$this->event->tags(),
+				array('class' => 'block-grid three-up'),
+				__('Music'),
+				$this->event_errors
+		) ?>
 	</fieldset>
 </div>
 
@@ -277,8 +303,8 @@ class View_Event_Edit extends View_Article {
 				__('Jan'), __('Feb'), __('Mar'), __('Apr'),	__('May'), __('Jun'),
 				__('Jul'), __('Aug'), __('Sep'), __('Oct'), __('Nov'), __('Dec')
 			),
-			'nextText'        => __('&raquo;'),
-			'prevText'        => __('&laquo;'),
+			'nextText'        => '&#9658;',
+			'prevText'        => '&#9668;',
 			'showWeek'        => true,
 			'showOtherMonths' => true,
 			'weekHeader'      => __('Wk'),
@@ -292,6 +318,26 @@ class View_Event_Edit extends View_Article {
 ?>
 <script>
 head.ready('anqh', function() {
+
+	// Tickets
+	$('#field-free input').on('click', function() {
+		console.log($(this).is(':checked'));
+		if ($(this).is(':checked')) {
+			$('input[name=price]').attr('disabled', 'disabled');
+		} else {
+			$('input[name=price]').removeAttr('disabled');
+		}
+	});
+
+	// Venue
+	$('#field-ug input').on('click', function() {
+		console.log(this.checked);
+		if ($(this).is(':checked')) {
+			$('input[name=venue_name]').attr('disabled', 'disabled');
+		} else {
+			$('input[name=venue_name]').removeAttr('disabled');
+		}
+	});
 
 	// Datepicker
 	var pickerOptions = <?= json_encode($datepicker) ?>
@@ -313,27 +359,6 @@ head.ready('anqh', function() {
 	var venues = <?= json_encode($venues) ?>;
 	$('input[name=venue_name]').autocompleteVenue({ source: venues });
 
-	// Tickets
-	$('#field-free').change(function _togglePrice() {
-		if (this.checked) {
-			$('input[name=price]').attr('disabled', 'disabled');
-			$('.group-price').slideUp();
-		} else {
-			$('input[name=price]').removeAttr('disabled');
-			$('.group-price').slideDown();
-		}
-	});
-
-	// Venue
-	$('#field-ug').change(function _toggleVenue() {
-		if (this.checked) {
-			$('input[name=venue_name]').attr('disabled', 'disabled');
-			$('.group-venue').slideUp();
-		} else {
-			$('input[name=venue_name]').removeAttr('disabled');
-			$('.group-venue').slideDown();
-		}
-	});
 });
 </script>
 <?php
