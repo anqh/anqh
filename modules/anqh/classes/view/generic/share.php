@@ -7,12 +7,12 @@
  * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-class View_Generic_Share extends View_Section {
+class View_Generic_Share extends View_Base {
 
 	/**
-	 * @var  string  Section class
+	 * @var  string  Section id
 	 */
-	public $class = 'share full';
+	public $id = 'share';
 
 	/**
 	 * @var  string  Shared title
@@ -42,9 +42,7 @@ class View_Generic_Share extends View_Section {
 	 *
 	 * @return  string
 	 */
-	public function content() {
-		static $script = true;
-
+	public function render() {
 		$attributes = array();
 
 		// Custom URL
@@ -63,57 +61,22 @@ class View_Generic_Share extends View_Section {
 
 ?>
 
-<div class="addthis_toolbox addthis_default_style addthis_32x32_style"<?= HTML::attributes($attributes) ?>>
+<div class="addthis_toolbox addthis_floating_style addthis_32x32_style"<?= HTML::attributes($attributes) ?>>
 	<a class="addthis_button_facebook"></a>
 	<a class="addthis_button_twitter"></a>
-	<a class="addthis_button_google"><?= HTML::image('static/img/google-plus.png', array('alt' => 'Google +1', 'width' => 32, 'height' => 32)) ?></a>
+	<a class="addthis_button_google_plusone_share"></a>
 	<a class="addthis_button_email"></a>
-	<a class="addthis_button_compact"></a>
-	<a class="addthis_counter addthis_bubble_style"></a>
 </div>
 
-<?php if ($script): ?>
-	<?php if (Kohana::$config->load('site.google_analytics')): ?>
-
 <script>
-	var addthis_config = {
-		data_track_clickback: true,
-		pubid: '<?= Kohana::$config->load('site.share') ?>'
-	};
-	var addthis_share = {
-		templates: {
-			twitter: '{{title}}: {{url}} (via @<?= Kohana::$config->load('site.share') ?>)'
-		}
-	};
-
-	var at = document.createElement('script'); at.type = 'text/javascript'; at.async = true;
-	at.src = 'http://s7.addthis.com/js/250/addthis_widget.js';
-	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(at);
+var addthis_config = { data_track_clickback: true, pubid: '<?= Kohana::$config->load('site.share') ?>' }
+  , addthis_share  = { templates: { twitter: '{{title}}: {{url}} (via @<?= Kohana::$config->load('site.share') ?>)' } };
 </script>
-
-	<?php else: ?>
-
-<script src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=<?= Kohana::$config->load('site.share') ?>"></script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=<?= Kohana::$config->load('site.share') ?>"></script>
 
 <?php
 
-			endif;
-		endif;
-
-		// Add JavaScript only once
-		$script = false;
-
 		return ob_get_clean();
-	}
-
-
-	/**
-	 * Render <header>.
-	 *
-	 * @return  string
-	 */
-	public function header() {
-		return '';
 	}
 
 }

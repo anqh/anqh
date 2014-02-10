@@ -186,8 +186,6 @@ class Anqh_Controller_Events extends Controller_Page {
 		// Event main info
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_event_main($event));
 
-		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_share());
-
 		// Flyers
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_carousel($event));
 

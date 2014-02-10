@@ -586,7 +586,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 		}
 		Anqh::share(true);
-		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_share());
 
 		// Event info
 		if ($event = $gallery->event()) {
@@ -865,7 +864,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			Anqh::page_meta('image', URL::site($current->get_url('thumbnail'), true));
 			Anqh::page_meta('twitter:card', 'photo');
 			Anqh::share(true);
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_share());
 
 		}
 

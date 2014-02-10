@@ -267,6 +267,10 @@ class Anqh_View_Page extends View_Base {
 
 		echo Ads::foot();
 
+		if (Anqh::share()) {
+			echo new View_Generic_Share();
+		}
+
 		return ob_get_clean();
 	}
 
@@ -358,6 +362,8 @@ class Anqh_View_Page extends View_Base {
 	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
 	<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
 
+	<?= $this->_open_graph() ?>
+
 	<?= Widget::get('head'); ?>
 
 	<?= Ads::head() ?>
@@ -432,6 +438,23 @@ class Anqh_View_Page extends View_Base {
 <?php
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Render Open Graph.
+	 *
+	 * @return  string
+	 */
+	protected function _open_graph() {
+		$meta = array();
+		foreach ((array)Anqh::page_meta() as $key => $value) {
+			$meta[] = strpos($key, 'twitter:') === 0
+				? '<meta name="' . $key . '" content="' . HTML::chars($value) . '" />'
+				: '<meta property="' . $key . '" content="' . HTML::chars($value) . '" />';
+		}
+
+		return $meta ? implode("\n", $meta) : '';
 	}
 
 

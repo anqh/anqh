@@ -179,7 +179,6 @@ class Anqh_Controller_Music extends Controller_Page {
 
 		// Content
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_track_main($track));
-		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_share());
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_track_info($track));
 
 	}
