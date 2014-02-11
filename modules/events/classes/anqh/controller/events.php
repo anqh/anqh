@@ -611,13 +611,14 @@ class Anqh_Controller_Events extends Controller_Page {
 
 				// Create new venue
 				$venue = Model_Venue::factory();
-				$venue->name       = Arr::get($_POST, 'venue_name');
-				$venue->address    = Arr::get($_POST, 'address');
-				$venue->latitude   = Arr::get($_POST, 'latitude');
-				$venue->longitude  = Arr::get($_POST, 'longitude');
-				$venue->event_host = true;
-				$venue->author_id  = self::$user->id;
-				$venue->city_name  = $event->city_name;
+				$venue->name          = Arr::get($_POST, 'venue_name');
+				$venue->address       = Arr::get($_POST, 'address');
+				$venue->latitude      = Arr::get($_POST, 'latitude');
+				$venue->longitude     = Arr::get($_POST, 'longitude');
+				$venue->foursquare_id = Arr::get($_POST, 'foursquare_id');
+				$venue->event_host    = true;
+				$venue->author_id     = self::$user->id;
+				$venue->city_name     = $event->city_name;
 
 				if (!$preview) {
 					try {

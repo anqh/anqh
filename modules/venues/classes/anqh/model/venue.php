@@ -59,8 +59,8 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 		'latitude'               => array('numeric'),
 		'longitude'              => array('numeric'),
 
-		'foursquare_id'          => array('digit'),
-		'foursquare_category_id' => array('digit'),
+		'foursquare_id'          => array('alpha_numeric'),
+		'foursquare_category_id' => array('alpha_numeric'),
 
 		'author_id'              => array('digit'),
 	);
@@ -124,7 +124,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 
 			$venues[] = array(
 				'id'        => $venue->id,
-				'label'     => $venue->name,
+				'name'      => $venue->name,
 				'value'     => $venue->name,
 				'city'      => $venue->city_name,
 				'latitude'  => $venue->latitude,

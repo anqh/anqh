@@ -102,10 +102,11 @@ class View_Event_Edit extends View_Article {
 		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
 		<?= Form::csrf() ?>
-		<?= Form::hidden('latitude',  $this->venue->latitude,  array('data-geo' => 'lat')) ?>
-		<?= Form::hidden('longitude', $this->venue->longitude, array('data-geo' => 'lng')) ?>
-		<?= Form::hidden('city',      $this->event->city_name, array('data-geo' => 'locality')) ?>
-		<?= Form::hidden('venue_id',  $this->venue->id) ?>
+		<?= Form::hidden('latitude',       $this->venue->latitude,  array('data-geo' => 'lat')) ?>
+		<?= Form::hidden('longitude',      $this->venue->longitude, array('data-geo' => 'lng')) ?>
+		<?= Form::hidden('city',           $this->event->city_name, array('data-geo' => 'locality')) ?>
+		<?= Form::hidden('venue_id',       $this->venue->id) ?>
+		<?= Form::hidden('foursquare_id',  $this->venue->foursquare_id) ?>
 	</fieldset>
 </div>
 
@@ -372,7 +373,8 @@ head.ready('anqh', function() {
 			types: [ '(cities)' ]
 		}
 	});*/
-	$('input[name=city_name]').geocomplete({
+	var $city = $('input[name=city_name]');
+	$city.geocomplete({
 		map:              '#map',
 		details:          '#form-event',
 		detailsAttribute: 'data-geo',
@@ -387,41 +389,71 @@ head.ready('anqh', function() {
 		$('#fields-venue .venue-placeholder').toggleClass('hidden', !toggle);
 	}
 
+	var $latitude  = $('input[name=latitude]')
+	  , $longitude = $('input[name=longitude]');
+
 	var venues = <?= json_encode($venues) ?>;
 	$('input[name=venue_name]')
 		.on('change', function() {
 			$('input[name=venue_id]').val('');
 		})
 		.on('typeahead:selected', function(event, selection, name) {
+			var map    = $city.geocomplete('map')
+			  , marker = $city.geocomplete('marker');
 
 			// Update form
-			$('input[name=venue_id]').val(selection.id);
-			if (selection.latitude && selection.longitude) {
-				$('input[name=latitude]').val(selection.latitude);
-				$('input[name=longitude]').val(selection.longitude);
-				$('#map').googleMap({
-					lat:    selection.latitude,
-					long:   selection.longitude,
-					marker: true
-				});
+			if (selection.foursquare_id) {
+				$('input[name=venue_id]').val('');
+				$('input[name=foursquare_id]').val(selection.foursquare_id);
 			} else {
-				$('#map').googleMap({
+				$('input[name=venue_id]').val(selection.id);
+				$('input[name=foursquare_id]').val('');
+			}
+			if (selection.latitude && selection.longitude) {
+				$latitude.val(selection.latitude);
+				$longitude.val(selection.longitude);
+				var center = new google.maps.LatLng(selection.latitude, selection.longitude);
+				map.setCenter(center);
+				marker.setPosition(center);
+//				$('#map').googleMap({
+//					lat:    selection.latitude,
+//					long:   selection.longitude,
+//					marker: true
+//				});
+			} else {
+				$city.geocomplete('find', selection.city);
+/*				$('#map').googleMap({
 					city:   selection.city,
 					marker: true
-				});
+				});*/
 			}
 			$('input[name=city_name], input[name=city]').val(selection.city);
 
 			// Update label
-			$('#fields-venue .venue-name').text(selection.label);
-			$('#fields-venue .venue-city').text(selection.city);
+			$('#fields-venue .venue-name').text(selection.value);
+			$('#fields-venue .venue-city').text(selection.city || '');
 			toggleVenue(true);
 		})
-		.typeahead({
-			name:       'venue',
-			displayKey: 'label',
-			local:      venues
-		});
+		.typeahead([
+			{
+				name:   'local',
+				header: '<header class="dropdown-header"><?= __('Existing') ?></header>',
+				local:  venues
+			},
+			{
+				name:   'foursquare',
+				header: '<header class="dropdown-header"><i class="fa fa-foursquare"></i> <?= __('Foursquare') ?></header>',
+				remote: {
+					url:     Anqh.APIURL + '/v1/venues/foursquare',
+					replace: function(url, uriEncodedQuery) {
+						return url += '?method=venues&ll=' + $latitude.val() + ',' + $longitude.val() + '&query=' + uriEncodedQuery;
+					},
+					filter: function(parsedResponse) {
+						return parsedResponse.venues || [];
+					}
+				}
+			}
+		]);
 
 	$('.venue-placeholder a').on('click', function() {
 		toggleVenue(false);
