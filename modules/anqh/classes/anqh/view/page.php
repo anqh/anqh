@@ -229,20 +229,29 @@ class Anqh_View_Page extends View_Base {
 		// todo: Move to page controller
 ?>
 
+<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
+
 <script>
+	var Anqh = {
+		APIURL: '<?= Kohana::$config->load('api.url') ?>' || '/api'
+	};
+
 	head.js(
-		{ 'jquery':    '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js' },
-		{ 'jquery-ui': '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js' },
-		{ 'bootstrap': '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js' },
-		{ 'vendor':    '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
-		{ 'anqh':      '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
+		{ 'jquery':        '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js' },
+		{ 'jquery-ui':     '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js' },
+		{ 'bootstrap':     '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js' },
+		{ 'typeahead':     '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.9.3/typeahead.min.js' },
+		{ 'geocomplete':   '//cdnjs.cloudflare.com/ajax/libs/geocomplete/1.4/jquery.geocomplete.min.js' },
+		{ 'imgareaselect': '//cdnjs.cloudflare.com/ajax/libs/imgareaselect/0.9.10/js/jquery.imgareaselect.min.js' },
+		{ 'lazyload':      '//cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js' },
+		{ 'vendor':        '<?= $this->base ?>static/js/c/vendor.min.js?_=<?= filemtime('static/js/c/vendor.min.js') ?>' },
+		{ 'anqh':          '<?= $this->base ?>static/js/c/anqh.min.js?_=<?= filemtime('static/js/c/anqh.min.js') ?>' },
 		function _loaded() {
-			Anqh.APIURL = '<?= Kohana::$config->load('api.url') ?>';
 
 			// Search
 			var $search = $('#form-search-events, #form-search-users, #form-search-images');
 			if ($search.length) {
-				$search.on('submit', function _disable(event) {
+				$search.on('submit', function(event) {
 					event.preventDefault();
 				});
 				$search.find('[name=search-events]').autocompleteEvent({
@@ -360,7 +369,6 @@ class Anqh_View_Page extends View_Base {
 	<?= HTML::style('//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css') ?>
 
 	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
-	<?= HTML::script('//maps.googleapis.com/maps/api/js?sensor=false&libraries=places') ?>
 
 	<?= $this->_open_graph() ?>
 

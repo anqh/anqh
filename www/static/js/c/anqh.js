@@ -1,56 +1,19 @@
 /**
- * Various generic JavaScripts for Anqh
+ * Various generic JavaScripts for Anqh.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
-// Anqh 'namespace'
-var Anqh = {
+Anqh = Anqh || {};
 
-	// Anqh API URL
-	APIURL: '/api',
+// Google Maps Geocoder
+Anqh.geocoder = null;
 
-	// GeoNames API URL
-	geoNamesURL: null,
-
-	// GeoNames username
-	geoNamesUser: null,
-
-	// Google Maps Geocoder
-	geocoder: null,
-
-	// Google Maps Map
-	map: null,
-
-	// Delete confirmation dialog
-	confirm_delete: function(title, action) {
-		if (title === undefined) title = 'Are you sure you want to do this?';
-		if (action === undefined) action = function() { return true; };
-		if ($('#dialog-confirm').length == 0) {
-			$('body').append('<div id="dialog-confirm" title="' + title + '">Are you sure?</div>');
-			$('#dialog-confirm').dialog({
-				dialogClass: 'confirm-delete',
-				modal: true,
-				close: function(ev, ui) { $(this).remove(); },
-				closeText: '☓',
-/*				buttons: {
-					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
-					'✕ No, cancel': function() { $(this).dialog('close'); }
-				},*/
-				buttons: [
-					{ 'text': '✓ Yes, do it!', 'class': 'btn btn-danger', click: function() { $(this).dialog('close'); action(); } },
-					{ 'text': '☓ No, cancel',  'class': 'btn btn-inverse', click: function() { $(this).dialog('close'); } }
-				]
-			});
-		} else {
-			$('#confirm-dialog').dialog('open');
-		}
-	}
-
-};
+// Google Maps Map
+Anqh.map = null;
 
 
 // Ajax loader
@@ -166,15 +129,37 @@ $(function() {
 		e.preventDefault();
 
 		var $this = $(this)
-			, title = $this.data('confirm') || $this.attr('title') || $this.text();
+		  , title = $this.data('confirm') || $this.attr('title') || $this.text() || 'Are you sure you want to do this?'
+		  , callback;
 
 		if ($this.data('action')) {
-			Anqh.confirm_delete(title, function _confirm() { $this.data('action')(); });
+			callback = function _confirm() { $this.data('action')(); };
 		} else if ($this.is('a')) {
-			Anqh.confirm_delete(title, function _confirm() { window.location = $this.attr('href'); });
+			callback = function _confirm() { window.location = $this.attr('href'); };
 		} else {
-			Anqh.confirm_delete(title, function _confirm() { $this.parent('form').submit(); });
+			callback = function _confirm() { $this.parent('form').submit(); };
 		}
+
+		if ($('#dialog-confirm').length == 0) {
+			$('body').append('<div id="dialog-confirm" title="' + title + '">Are you sure?</div>');
+			$('#dialog-confirm').dialog({
+				dialogClass: 'confirm-delete',
+				modal: true,
+				close: function(ev, ui) { $(this).remove(); },
+				closeText: '☓',
+	/*				buttons: {
+					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
+					'✕ No, cancel': function() { $(this).dialog('close'); }
+				},*/
+				buttons: [
+					{ 'text': '✓ Yes, do it!', 'class': 'btn btn-danger', click: function() { $(this).dialog('close'); callback(); } },
+					{ 'text': '☓ No, cancel',  'class': 'btn btn-inverse', click: function() { $(this).dialog('close'); } }
+				]
+			});
+		} else {
+			$('#confirm-dialog').dialog('open');
+		}
+
 	});
 
 
@@ -434,7 +419,7 @@ $(function() {
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 (function ($, Anqh) {
@@ -442,9 +427,7 @@ $(function() {
 	$.fn.googleMap = function(options) {
 
 		// Asynchronous loading
-		if (!Anqh.geocoder) {
-			Anqh.geocoder = new google.maps.Geocoder();
-		}
+		Anqh.geocoder = Anqh.geocoder ||new google.maps.Geocoder();
 
 		var defaults = {
 			lat:        60.1695,
@@ -470,22 +453,22 @@ $(function() {
 			});
 		}
 
-		var center = new google.maps.LatLng(options.lat, options.long);
-		Anqh.map = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
+		var center = new google.maps.LatLng(options.lat, options.long)
+		  , map    = new google.maps.Map(this.get(0), $.extend(options, { center: center }));
 
 		// Add marker
 		if (options.marker) {
 			var marker = new google.maps.Marker({
 				position: center,
-				map: Anqh.map,
-				title: options.marker ? '' : options.marker
+				map:      map,
+				title:    options.marker ? '' : options.marker
 			});
 			if (options.infowindow) {
 				var infowindow = new google.maps.InfoWindow({
 					content: options.infowindow
 				});
 				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.open(Anqh.map, marker);
+					infowindow.open(map, marker);
 				});
 			}
 		}
@@ -959,6 +942,12 @@ $(function() {
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 (function ($, Anqh) {
+
+	$.fn.autocompleteVenue = function(options) {
+		var defaults = {
+
+		};
+	};
 
 	$.fn.autocompleteVenue = function(options) {
 		var $field = $(this);

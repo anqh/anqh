@@ -9,6 +9,12 @@
 (function ($, Anqh) {
 
 	$.fn.autocompleteVenue = function(options) {
+		var defaults = {
+
+		};
+	};
+
+	$.fn.autocompleteVenue = function(options) {
 		var $field = $(this);
 
 		var defaults = {

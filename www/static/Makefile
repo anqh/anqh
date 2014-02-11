@@ -16,9 +16,7 @@ build:
 
 	@cat \
 		${JS}vendor/jquery.markitup.js \
-		${JS}vendor/markitup.bbcode.js \
-		${JS}vendor/jquery.imgareaselect.js \
-		${JS}vendor/jquery.lazyload.js > ${JS}c/vendor.js
+		${JS}vendor/markitup.bbcode.js > ${JS}c/vendor.js
 	@uglifyjs -nc -v ${JS}c/vendor.js > ${JS}c/vendor.min.js
 	@cat \
 		${JS}anqh/anqh.js \

@@ -102,8 +102,9 @@ class View_Event_Edit extends View_Article {
 		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
 		<?= Form::csrf() ?>
-		<?= Form::hidden('latitude',  $this->venue->latitude) ?>
-		<?= Form::hidden('longitude', $this->venue->longitude) ?>
+		<?= Form::hidden('latitude',  $this->venue->latitude,  array('data-geo' => 'lat')) ?>
+		<?= Form::hidden('longitude', $this->venue->longitude, array('data-geo' => 'lng')) ?>
+		<?= Form::hidden('city',      $this->event->city_name, array('data-geo' => 'locality')) ?>
 		<?= Form::hidden('venue_id',  $this->venue->id) ?>
 	</fieldset>
 </div>
@@ -153,28 +154,20 @@ class View_Event_Edit extends View_Article {
 			) ?>
 		</div>
 	</fieldset>
-	<br>
-	<fieldset>
-		<?php if (!$this->event->flyer_front_image_id) echo
-			Form::input_wrap(
-					'flyer',
-					$this->event->flyer_front_url,
-					array('type' => 'url', 'placeholder' => 'http://'),
-					__('Flyer'),
-					$this->flyer_error,
-					__('If you have the flyer only locally you can upload it after saving the event.')
-		) ?>
 
-		<?= Form::input_wrap(
-			'homepage',
-			$this->event->homepage,
-			array('type' => 'url', 'placeholder' => 'http://'),
-			__('Homepage'),
-			Arr::get($this->event_errors, 'homepage')
-		) ?>
-	</fieldset>
+	<br>
 
 	<fieldset id="fields-venue" class="row">
+		<div class="col-md-12">
+			<?= Form::input_wrap(
+				'city_name',
+				$this->event->city_name,
+				null,
+				__('City'),
+				Arr::get($this->event_errors, 'city_name')
+			) ?>
+		</div>
+
 		<div class="col-md-7">
 			<?= Form::input_wrap(
 				'venue_name',
@@ -196,15 +189,36 @@ class View_Event_Edit extends View_Article {
 			) ?>
 		</div>
 
-		<div class="col-md-12">
-			<?= Form::input_wrap(
-				'city_name',
-				$this->event->city_name,
-				null,
-				__('City'),
-				Arr::get($this->event_errors, 'city_name')
-			) ?>
+		<div class="col-md-12 venue-placeholder hidden">
+			<label><?= __('Venue') ?></label>
+			<p>
+				<span class="venue-name"><?= $this->event->venue_name ?></span>,
+				<span class="venue-city"><?= $this->event->city_name ?></span>
+				<a href="#venue"><?= __('Change') ?></a>
+			</p>
 		</div>
+	</fieldset>
+
+	<div id="map" class="well"></div>
+
+	<fieldset>
+		<?php if (!$this->event->flyer_front_image_id) echo
+			Form::input_wrap(
+					'flyer',
+					$this->event->flyer_front_url,
+					array('type' => 'url', 'placeholder' => 'http://'),
+					__('Flyer'),
+					$this->flyer_error,
+					__('If you have the flyer only locally you can upload it after saving the event.')
+		) ?>
+
+		<?= Form::input_wrap(
+			'homepage',
+			$this->event->homepage,
+			array('type' => 'url', 'placeholder' => 'http://'),
+			__('Homepage'),
+			Arr::get($this->event_errors, 'homepage')
+		) ?>
 	</fieldset>
 
 	<fieldset id="fields-tickets" class="row">
@@ -353,11 +367,72 @@ head.ready('anqh', function() {
 	}));
 
 	// City autocomplete
-	$('input[name=city_name]').autocompleteGeo();
+/*	$('input[name=city_name]').placecomplete({
+		requestParams: {
+			types: [ '(cities)' ]
+		}
+	});*/
+	$('input[name=city_name]').geocomplete({
+		map:              '#map',
+		details:          '#form-event',
+		detailsAttribute: 'data-geo',
+		location:         '<?= $this->event->city_name ? $this->event->city_name : 'Helsinki' ?>',
+		types:            [ '(cities)' ]
+	});
+	//$('input[name=city_name]').autocompleteGeo();
 
 	// Venue autocomplete
+	function toggleVenue(toggle) {
+		$('#fields-venue div').toggleClass('hidden', toggle);
+		$('#fields-venue .venue-placeholder').toggleClass('hidden', !toggle);
+	}
+
 	var venues = <?= json_encode($venues) ?>;
-	$('input[name=venue_name]').autocompleteVenue({ source: venues });
+	$('input[name=venue_name]')
+		.on('change', function() {
+			$('input[name=venue_id]').val('');
+		})
+		.on('typeahead:selected', function(event, selection, name) {
+
+			// Update form
+			$('input[name=venue_id]').val(selection.id);
+			if (selection.latitude && selection.longitude) {
+				$('input[name=latitude]').val(selection.latitude);
+				$('input[name=longitude]').val(selection.longitude);
+				$('#map').googleMap({
+					lat:    selection.latitude,
+					long:   selection.longitude,
+					marker: true
+				});
+			} else {
+				$('#map').googleMap({
+					city:   selection.city,
+					marker: true
+				});
+			}
+			$('input[name=city_name], input[name=city]').val(selection.city);
+
+			// Update label
+			$('#fields-venue .venue-name').text(selection.label);
+			$('#fields-venue .venue-city').text(selection.city);
+			toggleVenue(true);
+		})
+		.typeahead({
+			name:       'venue',
+			displayKey: 'label',
+			local:      venues
+		});
+
+	$('.venue-placeholder a').on('click', function() {
+		toggleVenue(false);
+
+		return false;
+	});
+
+	<?php if (!$this->venue_errors && $this->event->venue_name && $this->event->city_name): ?>
+	toggleVenue(true);
+	<?php endif; ?>
+	//$('input[name=venue_name]').autocompleteVenue({ source: venues });
 
 });
 </script>
