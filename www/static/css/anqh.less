@@ -20,6 +20,7 @@ h1 small                               { font-size: 18px; }
 h2 small                               { font-size: 14px; }
 h3 small,
 h4 small                               { font-size: 12px; line-height: @line-height-base; }
+p:last-child                           { margin-bottom: 0; }
 
 dl,
 ul,
@@ -182,6 +183,22 @@ input.private                          { border-color: @brand-special; color: @b
 
   section.calendar                     { margin-bottom: @line-height-computed; }
 }
+
+// Forum
+//.forum-topics .replies                 { text-align: right; }
+.post                                  {
+/*  &.owner                              { color: @text-color-owner; }
+  &.my                                 { color: @text-color-me; }
+  &.admin                              { color: @text-color-admin; }
+
+  &.permalink:target .bubble           { background: @gray-dark; padding-top: @navbar-height;
+    .arrow                             { border-right-color: @gray-dark; }
+  }*/
+  blockquote                           { font-family: @font-family-serif; font-size: inherit; font-style: italic; line-height: inherit; }
+
+  footer.panel-body                    { font-family: @font-family-monospace; font-size: @font-size-small; line-height: @line-height-base - 2px; .text-muted; }
+}
+//.post-old                              { margin-top: 15px; text-align: center; }
 
 // Galleries
 #galleries                             {
@@ -519,24 +536,6 @@ div.loading                            { .ajax; position: absolute; right: 5px; 
   textarea[name=signature]             { font-family: @font-family-monospace; }
 }
 
-
-// Forum
-.forum-topics .replies                 { text-align: right; }
-.post                                  {
-  &.owner                              { color: @text-color-owner; }
-  &.my                                 { color: @text-color-me; }
-  &.admin                              { color: @text-color-admin; }
-
-  &.permalink:target .bubble           { background: @gray-dark; padding-top: @navbar-height;
-    .arrow                             { border-right-color: @gray-dark; }
-  }
-  blockquote                           { font-family: @font-family-serif; font-style: italic;
-    p                                  { font-family: @font-family-serif; font-size: inherit; line-height: inherit; }
-  }
-
-  footer                               { font-family: @font-family-monospace; font-size: @font-size-base - 2px; line-height: @line-height-base - 2px; margin-top: 10px; .text-muted; }
-}
-.post-old                              { margin-top: 15px; text-align: center; }
 
 // Notes
 div.image                              { text-align: center;

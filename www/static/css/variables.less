@@ -41,6 +41,9 @@
 @font-weight-light-custom:   100;
 
 @font-size-base:             12px;
+@font-size-large:            ceil((@font-size-base * 1.25)); // ~15px
+@font-size-small:            floor((@font-size-base * 0.85)); // ~10px
+@line-height-computed:       ceil((@font-size-base * @line-height-base)); // ~18px
 
 @headings-font-family:       @font-family-custom;
 @headings-font-weight:       @font-weight-light-custom;

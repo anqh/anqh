@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Forum_Post
+ * Forum Post.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_Post extends View_Article {
@@ -84,6 +84,14 @@ class View_Forum_Post extends View_Article {
 
 		ob_start();
 
+		if ($this->my):
+			$panel_class = 'panel-warning';
+		elseif ($this->owner):
+			$panel_class = 'panel-info';
+		else:
+			$panel_class = 'panel-default';
+		endif;
+
 ?>
 
 <div class="pull-left">
@@ -101,11 +109,9 @@ class View_Forum_Post extends View_Article {
 
 </div>
 
-<div class="arrow"></div>
-
-<div class="media-body">
-	<header<?= $this->forum_post->id == $this->forum_topic->last_post_id ? ' id="last"' : '' ?>>
-		<small class="ago">
+<div class="media-body panel <?= $panel_class ?>">
+	<header class="panel-heading"<?= $this->forum_post->id == $this->forum_topic->last_post_id ? ' id="last"' : '' ?>>
+		<small class="pull-right">
 			<?= HTML::anchor(
 				Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 					'id'       => Route::model_id($this->forum_post),
@@ -122,7 +128,7 @@ class View_Forum_Post extends View_Article {
 						'topic_id' => Route::model_id($this->forum_topic),
 						'action'   => 'edit')),
 						__('Edit'),
-					array('class' => 'post-edit')) . ' &bull; ' ?>
+					array('class' => 'post-edit')) ?>
 
 			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, self::$_user)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
@@ -130,7 +136,7 @@ class View_Forum_Post extends View_Article {
 						'topic_id' => Route::model_id($this->forum_topic),
 						'action'   => 'delete')) . '?token=' . Security::csrf(),
 						__('Delete'),
-					array('class' => 'post-delete')) . ' &bull; ' ?>
+					array('class' => 'post-delete')) ?>
 
 			<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, self::$_user)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
@@ -138,9 +144,20 @@ class View_Forum_Post extends View_Article {
 						'topic_id' => Route::model_id($this->forum_topic),
 						'action'   => 'quote')),
 						__('Reply'),
-					array('class' => 'post-quote')) . ' &bull; ' ?>
+					array('class' => 'post-quote')) ?>
+
+			&bull;
 
 			<?= HTML::time(Date::short_span($this->forum_post->created, true, true), $this->forum_post->created) ?>
+
+			<?php if ($this->forum_post->modify_count > 0): ?>
+			&bull;
+			<span title="<?= __($this->forum_post->modify_count == 1 ? ':edits edit, :ago' : ':edits edits, last :ago', array(
+				':edits' => $this->forum_post->modify_count,
+				':ago'   => Date::fuzzy_span($this->forum_post->modified)
+			)) ?>"><?= __('Edited') ?></span>
+			<?php endif; ?>
+
 		</small>
 
 		<?php if ($this->author):
@@ -154,28 +171,32 @@ class View_Forum_Post extends View_Article {
 			endif; ?>
 	</header>
 
-	<?php if ($this->forum_post->parent_id) echo '<p class="muted">' . __('Replying to :parent', array(
-		':parent' => HTML::anchor(
-			Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
-				'topic_id' => Route::model_id($this->forum_topic),
-				'id'       => $this->forum_post->parent_id)) . '#post-' . $this->forum_post->parent_id,
-			HTML::chars($this->forum_post->parent()->topic()->name)
-		))) . ':</p>' ?>
+	<div class="panel-body">
 
-	<?= $bbcode->render($this->forum_post->post) ?>
+		<?php if ($this->forum_post->parent_id) echo '<p class="text-muted">' . __('Replying to :parent', array(
+			':parent' => HTML::anchor(
+				Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
+					'topic_id' => Route::model_id($this->forum_topic),
+					'id'       => $this->forum_post->parent_id)) . '#post-' . $this->forum_post->parent_id,
+				HTML::chars($this->forum_post->parent()->topic()->name)
+			))) . ':</p>' ?>
 
-	<?php if ($this->forum_post->attachment):
-			$attachment = 'images/liitteet/' . $this->forum_post->attachment;
-			if (file_exists($attachment)):
-				echo HTML::image($attachment);
-			endif;
-		endif; ?>
+		<?= $bbcode->render($this->forum_post->post) ?>
 
-	<footer>
+		<?php if ($this->forum_post->attachment):
+				$attachment = 'images/liitteet/' . $this->forum_post->attachment;
+				if (file_exists($attachment)):
+					echo HTML::image($attachment);
+				endif;
+			endif; ?>
+
+	</div>
+
+	<?php if ($this->author && $this->author->signature): ?>
+	<footer class="panel-body">
 		<?= $this->author && $this->author->signature ? $bbcode->render("\n--\n" . $this->author->signature, true) : '' ?>
-
-		<?php if ($this->forum_post->modify_count > 0) echo '<br /><br />' . __('Edited :ago', array(':ago' => HTML::time(Date::fuzzy_span($this->forum_post->modified), $this->forum_post->modified))); ?>
 	</footer>
+	<?php endif; ?>
 </div>
 
 <?php
