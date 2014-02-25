@@ -95,7 +95,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			);
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_edit($area, $errors));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_edit($area, $errors));
 	}
 
 
@@ -186,13 +186,13 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 		// Pagination
 		$pagination = $this->section_pagination($area->topic_count);
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		// Posts
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics($area->find_active_topics($pagination->offset, $pagination->items_per_page), true));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_topics($area->find_active_topics($pagination->offset, $pagination->items_per_page), true));
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		$this->_side_views();
 	}
@@ -220,16 +220,16 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 		// Pagination
 		$pagination = $this->section_pagination(Model_Forum_Private_Topic::factory()->get_count(self::$user));
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		// Posts
 		$this->view->add(
-			View_Page::COLUMN_MAIN,
+			View_Page::COLUMN_CENTER,
 			$this->section_topics(Model_Forum_Private_Area::factory()->find_topics(self::$user, $pagination->offset, $pagination->items_per_page), true)
 		);
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		$this->_side_views();
 	}

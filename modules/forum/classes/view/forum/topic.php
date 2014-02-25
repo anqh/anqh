@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_Topic extends View_Section {
@@ -70,8 +70,8 @@ class View_Forum_Topic extends View_Section {
 
 ?>
 
-		<div class="offset1 post-old">
-			<span class="label label-inverse muted">&iexcl; <?= __('Previous post :ago', array(':ago' => $difference)) ?> !</span>
+		<div class="alert alert-warning post-old">
+			&iexcl; <?= __('Previous post :ago', array(':ago' => $difference)) ?> !
 		</div>
 
 <?php

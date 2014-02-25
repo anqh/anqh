@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Anqh Forum controller
+ * Forum controller.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum extends Controller_Page {
@@ -137,7 +137,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 	public function _side_views() {
 
 		// New posts
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_topic_list(Model_Forum_Topic::factory()->find_active(20)));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_topic_list(Model_Forum_Topic::factory()->find_active(20)));
 
 		// New topics
 //		$section = $this->section_topic_list(Model_Forum_Topic::factory()->find_new(20));

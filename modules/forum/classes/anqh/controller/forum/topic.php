@@ -4,7 +4,7 @@
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Topic extends Controller_Forum {
@@ -18,7 +18,9 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		// Are we deleting a post, if so we have a topic_id
 		$topic_id = (int)$this->request->param('topic_id');
 		if ($topic_id) {
-			return $this->_delete_post($topic_id, $id);
+			$this->_delete_post($topic_id, $id);
+
+			return;
 		}
 
 		$this->_delete_topic($id);
@@ -162,7 +164,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 /*					// Set views
 					foreach ((array)$bind['view'] as $view) {
-						$this->view->add(View_Page::COLUMN_SIDE, View_Module::factory($view, array(
+						$this->view->add(View_Page::COLUMN_RIGHT, View_Module::factory($view, array(
 							$bind['model'] => $model,
 						)), Widget::TOP);
 					}*/
@@ -193,7 +195,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination = $this->section_pagination($topic));
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination = $this->section_pagination($topic));
 		$this->view->subtitle .= ', ' . __($pagination->total_pages == 1 ? ':pages page' : ':pages pages', array(':pages' => Num::format($pagination->total_pages, 0)));
 		$this->view->subtitle .= ', ' . __($topic->read_count == 1 ? ':views view' : ':views views', array(':views' => Num::format($topic->read_count, 0)));
 
@@ -208,28 +210,28 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Recipients
 		if ($this->private) {
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_recipients($topic));
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_recipients($topic));
 		}
 
 		// Posts
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topic($topic, $pagination));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_topic($topic, $pagination));
 
 		// Reply
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
 
 			// Old post warning
 			if ($topic->last_posted && time() - $topic->last_posted > Date::YEAR) {
-				$this->view->add(View_Page::COLUMN_MAIN, $this->section_ancient_warning($topic->last_posted));
+				$this->view->add(View_Page::COLUMN_CENTER, $this->section_ancient_warning($topic->last_posted));
 			}
 
 			$section = $this->section_post_edit(View_Forum_PostEdit::REPLY, $this->private ? Model_Forum_Private_Post::factory() : Model_Forum_Post::factory());
 			$section->forum_topic = $topic;
 
-			$this->view->add(View_Page::COLUMN_MAIN, $section);
+			$this->view->add(View_Page::COLUMN_CENTER, $section);
 		}
 
 		// Pagination
-		$this->view->add(View_Page::COLUMN_MAIN, $pagination);
+		$this->view->add(View_Page::COLUMN_CENTER, $pagination);
 
 		$this->_side_views();
 	}
@@ -515,7 +517,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$this->view->title      = $topic->name;
 		$this->view->title_html = Forum::topic($topic);
 
-		$this->view->add(View_Page::COLUMN_MAIN, $section);
+		$this->view->add(View_Page::COLUMN_CENTER, $section);
 
 	}
 
@@ -762,7 +764,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$section->cancel      = $cancel;
 		$section->recipients  = isset($recipients) ? implode(', ', $recipients) : null;
 
-		$this->view->add(View_Page::COLUMN_MAIN, $section);
+		$this->view->add(View_Page::COLUMN_CENTER, $section);
 	}
 
 
@@ -777,8 +779,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 ?>
 
-<div class="offset1 post-old">
-	<span class="label label-warning">&iexcl; <?= __('You are replying to a dead topic.') ?> <?= __('Previous post :ago', array(':ago' => Date::fuzzy_span($previous))) ?> !</span>
+<div class="alert alert-warning post-old">
+	&iexcl; <?= __('You are replying to a dead topic.') ?> <?= __('Previous post :ago', array(':ago' => Date::fuzzy_span($previous))) ?> !
 </div>
 
 <?php

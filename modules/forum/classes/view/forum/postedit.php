@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Forum_PostEdit
+ * Forum Edit Post.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_PostEdit extends View_Article {
@@ -28,11 +28,6 @@ class View_Forum_PostEdit extends View_Article {
 	 * @var  string
 	 */
 	public $cancel;
-
-	/**
-	 * @var  string  View class
-	 */
-	public $class = 'media speech';
 
 	/**
 	 * @var  array
@@ -115,12 +110,14 @@ class View_Forum_PostEdit extends View_Article {
 		ob_start();
 
 		// Create form attributes
-		$attributes = array('class' => 'form-horizontal small-labels');
+		$attributes = array('class' => 'media');
 		if ($this->form_id):
 			$attributes['id'] = $this->form_id;
 		endif;
 
 		$button = __('Save');
+
+		$author = self::$_user;
 
 		if (!$this->form_action):
 			switch ($this->mode):
@@ -145,6 +142,7 @@ class View_Forum_PostEdit extends View_Article {
 						'id'       => $this->forum_post->id,
 						'action'   => 'edit'
 					));
+					$author = $this->forum_post->author();
 					break;
 
 			endswitch;
@@ -175,48 +173,82 @@ class View_Forum_PostEdit extends View_Article {
 						endforeach;
 					endforeach;
 
-
 ?>
 
-<fieldset class="row-fluid">
-	<div class="span6">
-		<?= Form::radios_wrap('sticky', array(
+<div class="panel panel-danger">
+	<header class="panel-heading"><?= __('Admin tools') ?></header>
+	<fieldset class="form-horizontal panel-body">
+		<div class="col-md-6">
+			<?= Form::radios_wrap(
+				'sticky',
+				array(
 					Model_Forum_Topic::STICKY_NORMAL => __('Normal'),
-					Model_Forum_Topic::STICKY_STICKY => '<i class="icon-pushpin text-warning"></i> ' . __('Pinned'),
-				), (int)$this->forum_topic->sticky, null, __('Pinning'), Arr::get($this->errors, 'pinned'), null, 'inline') ?>
-	</div>
+					Model_Forum_Topic::STICKY_STICKY => '<i class="fa fa-thumb-tack text-warning"></i> ' . __('Pinned'),
+				),
+				(int)$this->forum_topic->sticky,
+				array('class' => 'radios'),
+				__('Pinning'),
+				Arr::get($this->errors, 'sticky'),
+				null,
+				'radio-inline'
+			) ?>
+		</div>
 
-	<div class="span6">
-		<?= Form::radios_wrap('status', array(
+		<div class="col-md-6">
+			<?= Form::radios_wrap(
+				'status',
+				array(
 					Model_Forum_Topic::STATUS_NORMAL => __('Normal'),
-					Model_Forum_Topic::STATUS_SINK   => '<i class="icon-unlock muted"></i> ' . __('Sink'),
-					Model_Forum_Topic::STATUS_LOCKED => '<i class="icon-lock muted"></i> ' . __('Locked'),
-				), (int)$this->forum_topic->status, null, __('Status'), Arr::get($this->errors, 'status'), null, 'inline') ?>
-	</div>
-</fieldset>
+					Model_Forum_Topic::STATUS_SINK   => '<i class="fa fa-unlock text-muted"></i> ' . __('Sink'),
+					Model_Forum_Topic::STATUS_LOCKED => '<i class="fa fa-lock text-muted"></i> ' . __('Locked'),
+				),
+				(int)$this->forum_topic->status,
+				array('class' => 'radios'),
+				__('Status'),
+				Arr::get($this->errors, 'status'),
+				null,
+				'radio-inline'
+			) ?>
+		</div>
 
-	<?php if (!$this->private) echo Form::control_group(
-		Form::select('forum_area_id', $areas, $this->forum_topic->forum_area_id, array('class' => 'input-block-level')),
-		array('forum_area_id' => __('Area')),
-		Arr::get($this->errors, 'forum_area_id')) ?>
+		<div class="col-md-12">
+			<?php if (!$this->private) echo Form::select_wrap(
+					'forum_area_id',
+					$areas,
+					$this->forum_topic->forum_area_id,
+					null,
+					__('Area'),
+					Arr::get($this->errors, 'forum_area_id')
+			) ?>
+		</div>
+
+	</fieldset>
+</div>
 
 		<?php endif; // admin ?>
 
-	<?= Form::control_group(
-		Form::input('name', $this->forum_topic->name, array('class' => 'input-block-level')),
-		array('name' => __('Topic')),
-		Arr::get($this->errors, 'name')) ?>
+	<?= Form::input_wrap(
+			'name',
+			$this->forum_topic->name,
+			null,
+			__('Topic'),
+			Arr::get($this->errors, 'name')
+	) ?>
 
-	<?php if ($this->private) echo Form::control_group(
-		Form::textarea('recipients', $this->recipients, array('rows' => 3, 'placeholder' => __('Required'), 'class' => 'input-block-level'), true),
-		array('recipients' => __('Recipients')),
-		Arr::get($this->errors, 'recipients')) ?>
+	<?php if ($this->private) echo Form::textarea_wrap(
+			'recipients',
+			$this->recipients,
+			array('rows' => 3, 'placeholder' => __('Required')),
+			true,
+			__('Recipients'),
+			Arr::get($this->errors, 'recipients')
+	) ?>
 
 	<?php if ($this->mode === self::EDIT_TOPIC && !$is_admin): ?>
 
-<fieldset class="form-actions">
+<fieldset>
 	<?= Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-	<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-inverse btn-large')) ?>
+	<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-default btn-large')) ?>
 	<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
 	<?= Form::csrf() ?>
@@ -237,8 +269,6 @@ class View_Forum_PostEdit extends View_Article {
 	<?= HTML::avatar(self::$_user->avatar, self::$_user->username) ?>
 </div>
 
-<div class="arrow"></div>
-
 <?php
 
 			// Editing old post
@@ -246,21 +276,27 @@ class View_Forum_PostEdit extends View_Article {
 
 ?>
 
-<div class="post-edit media-body form-vertical">
-	<header>
-		<?= HTML::user(self::$_user) ?>
+<div class="post-edit media-body panel panel-success form-vertical">
+	<header class="panel-heading">
+		<?= $author ? HTML::user($author) : HTML::chars($this->forum_post->author_name) ?>
 	</header>
 
-	<fieldset>
-		<?= Form::control_group(
-			Form::textarea_editor('post', $this->forum_post->post, array('id' => uniqid(), 'class' => 'input-block-level'), true),
+	<fieldset class="panel-body">
+		<?= Form::textarea_wrap(
+			'post',
+			$this->forum_post->post,
+			array('id' => uniqid()),
+			true,
 			null,
-			Arr::get($this->errors, 'post')) ?>
+			Arr::get($this->errors, 'post'),
+			null,
+			true
+		) ?>
 	</fieldset>
 
-	<fieldset class="form-actions">
+	<fieldset class="panel-body">
 		<?= Form::button('save', $button, array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-		<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-inverse btn-large')) ?>
+		<?= Form::button('preview', __('Preview'), array('class' => 'btn btn-default btn-large')) ?>
 		<?= $this->cancel ? HTML::anchor($this->cancel, __('Cancel'), array('class' => 'cancel')) : '' ?>
 
 		<?= Form::csrf() ?>

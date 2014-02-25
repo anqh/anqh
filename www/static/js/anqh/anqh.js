@@ -190,7 +190,7 @@ $(function() {
 			// Mangle
 			$preview
 				.removeClass(preClass).addClass('preview ' + addClass)
-				.find('.ago').remove();
+				.find('header small.pull-right').remove();
 
 			// Add to view
 			$post.find(prepend).prepend($preview);

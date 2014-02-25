@@ -85,7 +85,7 @@ class View_Forum_Post extends View_Article {
 		ob_start();
 
 		if ($this->my):
-			$panel_class = 'panel-warning';
+			$panel_class = 'panel-success';
 		elseif ($this->owner):
 			$panel_class = 'panel-info';
 		else:
