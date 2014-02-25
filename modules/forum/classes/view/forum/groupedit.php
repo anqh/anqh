@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Forum_GroupEdit
+ * Forum Edit Group.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Forum_GroupEdit extends View_Section {
@@ -46,26 +46,35 @@ class View_Forum_GroupEdit extends View_Section {
 
 	<fieldset>
 
-		<?= Form::control_group(
-			Form::input('name', $this->group->name),
-			array('name' => __('Name')),
-			Arr::get($this->errors, 'name')) ?>
+		<?= Form::input_wrap(
+			'name',
+			$this->group->name,
+			null,
+			__('Name'),
+			Arr::get($this->errors, 'name')
+		) ?>
 
-		<?= Form::control_group(
-			Form::input('description', $this->group->description),
-			array('description' => __('Description')),
-			Arr::get($this->errors, 'description')) ?>
+		<?= Form::input_wrap(
+			'description',
+			$this->group->description,
+			null,
+			__('Description'),
+			Arr::get($this->errors, 'description')
+		) ?>
 
-		<?= Form::control_group(
-			Form::input('sort', $this->group->sort, array('class' => 'input-mini')),
-			array('sort' => __('Sort')),
-			Arr::get($this->errors, 'sort')) ?>
+		<?= Form::input_wrap(
+			'sort',
+			$this->group->sort,
+			null,
+			__('Sort'),
+			Arr::get($this->errors, 'sort')
+		) ?>
 
 	</fieldset>
 
-	<fieldset class="form-actions">
+	<fieldset>
 		<?= Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-		<?= HTML::anchor(Request::back(Route::url('forum_group'), true), __('Cancel'), array('class' => 'cancel')) ?>
+		<?= HTML::anchor(Request::back(Route::url('forum'), true), __('Cancel'), array('class' => 'cancel')) ?>
 
 		<?= Form::csrf() ?>
 	</fieldset>

@@ -177,7 +177,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		} else {
 
-			
+
 			$this->page_breadcrumbs[] = HTML::anchor(Forum::private_messages_url(), __('Private messages'));
 
 		}
