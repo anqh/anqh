@@ -55,25 +55,18 @@ class View_Topics_Index extends View_Section {
 	<?php foreach ($this->topics as $topic):
 		$last_poster = $topic->last_post()->author();
 		$area        = $this->area ? false : $topic->area();
-		if ($topic->recipient_count > 2):
-			$icon = '<i class="fa fa-group" title="' . __(':recipients recipients', array(':recipients' => Num::format($topic->recipient_count, 0))) . '"></i> ';
-		elseif ($topic->recipient_count > 0):
-			$icon = '<i class="fa fa-envelope" title="' .  __('Personal message') . '"></i> ';
-		else:
-			$icon = '';
-		endif;
 
-		?>
+	?>
 
 	<tr>
 
 		<td>
 			<h4 class="media-heading">
 			<?php if ($this->area || $topic->recipient_count): ?>
-				<?= $icon . HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
+				<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
 				<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted icon-level-down"></i>', array('title' => __('Last post'))) ?></small>
 			<?php else: ?>
-				<?= $icon . HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
+				<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
 				<small class="transparent"><?= HTML::anchor(Route::model($topic), '<i class="muted icon-level-up"></i>', array('title' => __('First post'))) ?></small>
 			<?php endif; ?>
 			</h4>

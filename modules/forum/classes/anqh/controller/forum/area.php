@@ -262,15 +262,4 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		));
 	}
 
-
-	/**
-	 * Get bigger private topic list view.
-	 *
-	 * @param   Model_Forum_Private_Topic[]  $topics
-	 * @return  View_Topics_Private
-	 */
-	public function section_topics_private($topics) {
-		return new View_Topics_Private($topics);
-	}
-
 }

@@ -55,13 +55,22 @@ class Anqh_Forum {
 	public static function topic(Model_Forum_Topic $topic) {
 		$prefix = array();
 
+		// Private topic
+		if ($topic->recipient_count) {
+			$prefix[] = $topic->recipient_count > 2
+				? '<i class="fa fa-group text-muted" title="' . __(':recipients recipients', array(':recipients' => Num::format($topic->recipient_count, 0))) . '"></i>'
+				: '<i class="fa fa-envelope text-muted" title="' .  __('Personal message') . '"></i>';
+		}
+
+		// Stickyness
 		if ($topic->sticky) {
 			$prefix[] = '<i class="fa fa-thumb-tack text-warning" title="' . __('Pinned') . '"></i>';
 		}
 
+		// Status
 		switch ($topic->status) {
-			case Model_Forum_Topic::STATUS_LOCKED: $prefix[] = '<i class="fa fa-lock muted" title="' . __('Locked') . '"></i>'; break;
-			case Model_Forum_Topic::STATUS_SINK:   $prefix[] = '<i class="fa fa-unlock muted" title="' . __('Sink') . '"></i>'; break;
+			case Model_Forum_Topic::STATUS_LOCKED: $prefix[] = '<i class="fa fa-lock text-muted" title="' . __('Locked') . '"></i>'; break;
+			case Model_Forum_Topic::STATUS_SINK:   $prefix[] = '<i class="fa fa-unlock text-muted" title="' . __('Sink') . '"></i>'; break;
 		}
 
 		return implode(' ', $prefix) . ' ' . HTML::chars($topic->name);

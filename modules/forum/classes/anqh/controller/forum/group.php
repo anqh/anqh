@@ -75,7 +75,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			);
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_edit($group, $errors));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_edit($group, $errors));
 	}
 
 
@@ -99,7 +99,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 			);
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_groups($groups));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_groups($groups));
 
 		$this->_side_views();
 	}

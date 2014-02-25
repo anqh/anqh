@@ -126,11 +126,15 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		$this->page_actions['topic'] = array(
 			'link' => Route::model($topic),
-			'text' => '<i class="icon-comment icon-white"></i> ' . __('Topic'),
+			'text' => __('Topic'),
 		);
+
+		// Breadcrumbs
+		$this->page_breadcrumbs[] = HTML::anchor(Route::url('forum'), __('Forum'));
 
 		// Public topic extras
 		if (!$this->private) {
+			$this->page_breadcrumbs[] = HTML::anchor(Route::model($topic->area()), $topic->area()->name);
 
 			// Quotes are supported only in public forum as we get notifications anyway in private
 			if (self::$user) {
@@ -143,7 +147,6 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 						}
 					}
 				}
-
 			}
 
 			// Facebook
@@ -172,26 +175,27 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				}
 			}
 
-		} // Public topic extras
+		} else {
+
+			
+			$this->page_breadcrumbs[] = HTML::anchor(Forum::private_messages_url(), __('Private messages'));
+
+		}
 
 		// Set actions
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
-			$this->view->actions[] = array(
-				'link'  => Request::current_uri() . '#reply',
-				'text'  => '<i class="icon-comment icon-white"></i> ' . __('Reply to topic'),
-				'class' => 'btn btn-primary topic-post'
-			);
-		}
 		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($topic, 'edit'),
-				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit topic'),
+				'text'  => __('Edit topic'),
 			);
 		}
-
-		// Breadcrumbs
-		$this->page_breadcrumbs[] = HTML::anchor(Route::url('forum'), __('Forum'));
-		$this->page_breadcrumbs[] = HTML::anchor(Route::model($topic->area()), $topic->area()->name);
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
+			$this->view->actions[] = array(
+				'link'  => Request::current_uri() . '#reply',
+				'text'  => __('Reply to topic'),
+				'class' => 'btn btn-primary topic-post'
+			);
+		}
 
 
 		// Pagination
@@ -600,7 +604,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($topic, 'delete') . '?' . Security::csrf_query(),
-					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete topic'),
+					'text'  => '<i class="fa fa-trash"></i> ' . __('Delete topic'),
 					'class' => 'btn btn-danger topic-delete');
 			}
 
@@ -845,7 +849,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 	 */
 	public function section_recipients(Model_Forum_Private_Topic $topic) {
 		$section = new View_Users_List($recipients = $topic->recipients());
-		$section->title = __('Recipients') . ' <small><i class="icon-group"></i> ' . count($recipients) . '</small>';
+		$section->title = __('Recipients') . ' <small><i class="fa fa-group"></i> ' . count($recipients) . '</small>';
 
 		return $section;
 	}
