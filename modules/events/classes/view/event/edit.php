@@ -64,7 +64,7 @@ class View_Event_Edit extends View_Article {
 			<li><?= $error ?></li>
 			<?php endforeach; ?>
 			<?php foreach ((array)$this->venue_errors as $error): ?>
-			<li><?= $error ?></li>
+			<li><?= __('Venue') ?>: <?= $error ?></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>
@@ -381,7 +381,6 @@ head.ready('anqh', function() {
 		location:         '<?= $this->event->city_name ? $this->event->city_name : 'Helsinki' ?>',
 		types:            [ '(cities)' ]
 	});
-	//$('input[name=city_name]').autocompleteGeo();
 
 	// Venue autocomplete
 	function toggleVenue(toggle) {
@@ -415,17 +414,8 @@ head.ready('anqh', function() {
 				var center = new google.maps.LatLng(selection.latitude, selection.longitude);
 				map.setCenter(center);
 				marker.setPosition(center);
-//				$('#map').googleMap({
-//					lat:    selection.latitude,
-//					long:   selection.longitude,
-//					marker: true
-//				});
 			} else {
 				$city.geocomplete('find', selection.city);
-/*				$('#map').googleMap({
-					city:   selection.city,
-					marker: true
-				});*/
 			}
 			$('input[name=city_name], input[name=city]').val(selection.city);
 
@@ -464,7 +454,6 @@ head.ready('anqh', function() {
 	<?php if (!$this->venue_errors && $this->event->venue_name && $this->event->city_name): ?>
 	toggleVenue(true);
 	<?php endif; ?>
-	//$('input[name=venue_name]').autocompleteVenue({ source: venues });
 
 });
 </script>
