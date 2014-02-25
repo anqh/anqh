@@ -414,11 +414,11 @@ class Anqh_Controller_Events extends Controller_Page {
 
 			// Show day
 			$this->stamp_begin    = mktime(0, 0, 0, $month, $day, $year);
-			$this->stamp_end      = strtotime('tomorrow', $this->stamp_begin);
+			$this->stamp_end      = strtotime('tomorrow -1 second', $this->stamp_begin);
 			$this->stamp_next     = $this->stamp_end;
 			$this->stamp_previous = strtotime('yesterday', $this->stamp_begin);
 			$section_pagination   = $this->section_pagination('day');
-			$this->view->title    = __('Events') . ' ' . Date::format(Date::DM_SHORT, $this->stamp_begin) . ' - ' . Date::format(Date::DMY_SHORT, $this->stamp_end);
+			$this->view->title    = __('Events') . ' ' . Date::format(Date::DMY_SHORT, $this->stamp_begin);
 
 		} else {
 

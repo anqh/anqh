@@ -92,6 +92,10 @@ h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
   th                                   { text-align: right; }
   th.ui-datepicker-week-col,
   td                                   { cursor: pointer; text-align: center; }
+  .ui-datepicker-unselectable          { cursor: default; }
+  .ui-datepicker-today                 { border: 1px solid @state-danger-border; }
+  .ui-datepicker-current-day           { background-color: @state-info-bg; }
+  .ui-datepicker-other-month           { .text-muted; }
 }
 
 // Misc items
@@ -166,8 +170,8 @@ input.private                          { border-color: @brand-special; color: @b
 /*#main .dj p                            { font-size: @font-size-large; }*/
 #carousel .empty                       { background: @body-bg; border: 1px dashed @link-color; display: block; line-height: 200px; text-align: center; }
 #carousel .empty:hover                 { border-color: @link-hover-color; text-decoration: none; }
-#events .events                        {
-  .event                               {
+#events                                {
+  .events .event                       {
     .flyer                             { text-align: center; width: 120px; }
     .flyer i                           { font-size: 60px; opacity: .1; padding: 30px; }
     .media-body                        { padding: 10px 10px 10px 0; }
@@ -175,6 +179,8 @@ input.private                          { border-color: @brand-special; color: @b
     img                                { max-width: 100%; }
     h4                                 { margin: 0; }
   }
+
+  section.calendar                     { margin-bottom: @line-height-computed; }
 }
 
 // Galleries
