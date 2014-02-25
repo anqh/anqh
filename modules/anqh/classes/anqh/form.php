@@ -280,7 +280,7 @@ class Anqh_Form extends Kohana_Form {
 
 		$attr['class'] = trim($class . ' ' . $attr['class']);
 
-		return '<div' . HTML::attributes($attr) . '>' . $label .  $input . $help . '</div>';
+		return '<div' . HTML::attributes($attr) . '>' . $label . $input . $help . '</div>';
 	}
 
 
@@ -395,11 +395,6 @@ class Anqh_Form extends Kohana_Form {
 	 */
 	public static function radios_wrap($name, $values = array(), $checked = '', $attributes = null, $label = null, $error = null, $tip = null, $class = null) {
 		$values = Arr::get($values, $name, $values);
-		if (is_object($checked)) {
-			$checked->$name;
-		} else if (is_array($checked)) {
-			$checked = Arr::get($checked, $name);
-		}
 
 		$input = '';
 		foreach ($values as $radio_value => $radio_title) {
@@ -408,7 +403,7 @@ class Anqh_Form extends Kohana_Form {
 			$input .= Form::label(null, $radio . $radio_title, array('class' => 'radio ' . $class));
 		}
 
-		return Form::wrap($label ? '<div class="controls">' . $input . '</div>' : $input, $name, $label, $error, $tip);
+		return Form::form_group($input, $label, $error, $tip, $attributes);
 	}
 
 
