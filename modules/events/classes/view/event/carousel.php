@@ -104,7 +104,7 @@ class View_Event_Carousel extends View_Section {
 		elseif (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
 
 			// Add new flyer
-			echo HTML::anchor(Route::model($this->event, 'image'), '<i class="icon-picture icon-white"></i> ' . __('Add flyer'), array('class' => 'empty ajaxify'));
+			echo HTML::anchor(Route::model($this->event, 'image'), '<i class="fa fa-picture-o"></i> ' . __('Upload flyer'), array('class' => 'empty ajaxify'));
 
 		endif;
 

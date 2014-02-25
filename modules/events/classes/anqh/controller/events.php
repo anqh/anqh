@@ -127,7 +127,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			);
 			$this->view->actions[] = array(
 				'link'  => Route::model($event, 'image'),
-				'text'  => __('Add flyer'),
+				'text'  => __('Upload flyer'),
 				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
 			);
 		}
@@ -1014,7 +1014,7 @@ head.ready("anqh", function() {
 	 */
 	public function section_flyer_upload($action = null, $cancel = null, $errors = null) {
 		$section = new View_Generic_Upload();
-		$section->title  = __('Add flyer');
+		$section->title  = __('Upload flyer');
 		$section->action = $action;
 		$section->cancel = $cancel;
 		$section->errors = $errors;
