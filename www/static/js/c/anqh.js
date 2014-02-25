@@ -422,13 +422,9 @@ $(function() {
  * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-(function ($, Anqh) {
+(function ($) {
 
 	$.fn.googleMap = function(options) {
-
-		// Asynchronous loading
-		Anqh.geocoder = Anqh.geocoder ||new google.maps.Geocoder();
-
 		var defaults = {
 			lat:        60.1695,
 			long:       24.9355,
@@ -442,12 +438,13 @@ $(function() {
 		options = $.extend(defaults, options || {});
 
 		// Geocode address if given
-		if (options.address && options.city && options.address != '' && options.city != '') {
-			var geocode = options.address + ", " + options.city;
-			Anqh.geocoder.geocode({ address: geocode }, function(results, status) {
+		if (options.city) {
+			var geocoder = new google.maps.Geocoder()
+			  , geocode  = (options.address ? options.address + ", " : '') + options.city;
+			geocoder.geocode({ address: geocode }, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK && results.length) {
-					options.lat = results[0].geometry.location.lat();
-					options.long = results[0].geometry.location.lng();
+					options.lat    = results[0].geometry.location.lat();
+					options.long   = results[0].geometry.location.lng();
 					options.marker = true;
 				}
 			});
@@ -475,7 +472,7 @@ $(function() {
 
 	};
 
-})(jQuery, Anqh);
+})(jQuery);
 /**
  * Ajax dialog.
  *
