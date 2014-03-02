@@ -241,6 +241,7 @@ class Anqh_View_Page extends View_Base {
 		{ 'jquery-ui':     '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js' },
 		{ 'bootstrap':     '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js' },
 		{ 'typeahead':     '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.9.3/typeahead.min.js' },
+		{ 'typeahead':     '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.min.js' },
 		{ 'geocomplete':   '//cdnjs.cloudflare.com/ajax/libs/geocomplete/1.4/jquery.geocomplete.min.js' },
 		{ 'imgareaselect': '//cdnjs.cloudflare.com/ajax/libs/imgareaselect/0.9.10/js/jquery.imgareaselect.min.js' },
 		{ 'lazyload':      '//cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js' },
@@ -367,6 +368,8 @@ class Anqh_View_Page extends View_Base {
 
 	<?= HTML::style('static/css/anqh.css?_=' . filemtime('static/css/anqh.css')) ?>
 	<?= HTML::style('//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css') ?>
+	<?= HTML::style('//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.min.css') ?>
+	<?= HTML::style('//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2-bootstrap.css') ?>
 
 	<?= HTML::script('//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.3/head.load.js') ?>
 

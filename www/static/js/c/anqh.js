@@ -753,14 +753,14 @@ $(function() {
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 (function ($, Anqh) {
 
 	$.fn.autocompleteUser = function(options) {
 		var $field = $(this);
-		var cache = {};
+		var cache  = {};
 		var lastXhr;
 
 		var defaults = {
@@ -769,7 +769,6 @@ $(function() {
 			limit:     15,
 			minLength: 2,
 			maxUsers:  1,
-			tokenized: false,
 			action:    'form',
 			search:    'username',
 			field:     'id:username:avatar:url',
@@ -778,19 +777,8 @@ $(function() {
 		};
 		options = $.extend(defaults, options || {});
 
-		// Facebook style tokenized list
-		if (options.tokenized) {
-			var width = $field.width();
-			$field.wrap('<div class="tokenized" />');
-			$field.parent()
-				.width(width)
-				.click(function() {
-					$field.focus();
-				});
-		}
-
 		// Multiple users in one select
-		var multiple = (options.maxUsers > 1 && !options.tokenized);
+		var multiple = options.maxUsers > 1;
 
 		function split(val) {
 			return val.split(/,\s*/);
@@ -800,6 +788,145 @@ $(function() {
 			return split(term).pop();
 		}
 
+		$field.select2({
+			minimumInputLength: options.minLength,
+			multiple:           options.multiple,
+			containerCss:       { width: '100%' },
+			tags:               true,
+			ajax: {
+				url:      Anqh.APIURL + '/v1/users/search',
+				dataType: 'jsonp',
+				data:     function(term, page) {
+					return {
+						q:     term,
+						user:  options.user,
+						limit: options.limit,
+						field: options.field,
+						order: options.order
+					};
+				},
+				results: function(data, page) {
+					return {
+						results: data.users || [],
+						text:    'username'
+					};
+				}
+			},
+			formatResult: function(user) {
+				return user.username || '';
+			},
+			formatSelection: function(user) {
+				return user.username || '';
+			},
+			initSelection: function($element, callback) {
+				var tags = $.map(split($element.val()), function(username) {
+					return { id: username, username: username };
+				});
+
+				callback(tags);
+			}
+		});
+
+		return;
+
+		$field
+			.on('typeahead:selected', function(event, selection, name) {
+				switch (options.action) {
+
+					// Fill form
+					case 'form':
+						if (multiple) {
+
+							// Multiple users, one input
+							var terms = split(this.value);
+							terms.pop();
+							terms.push(selection.value);
+							terms.push('');
+							$field.val(terms.join(', '));
+							return false;
+
+						} else if (options.maxUsers > 1) {
+
+							// Multiple users, tokenized
+							// @todo  Values to post
+							var span = $('<span>')
+								.attr({ 'user-id': selection.id })
+								.text(selection.value);
+							var link = $('<a>')
+								.attr({ 'href': '#remove' })
+								.text('x')
+								.click(function() {
+									$(this).parent().remove();
+									return false;
+								})
+								.appendTo(span);
+
+							span.insertBefore($field);
+							$field.val('');
+							return false;
+
+						} else {
+
+							// Single user
+							$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(selection.id);
+							$field.val(selection.value);
+
+						}
+						break;
+
+					// Navigate URL
+					case 'redirect':
+						var location = $field.attr('data-redirect') || selection.url;
+						$.each(selection, function _replace(key, value) {
+							location = location.replace(':' + key, value);
+						});
+						window.location = location;
+						break;
+
+					// Execute action
+					default:
+						if (typeof options.action == 'function') {
+							options.action(event, selection);
+						}
+				}
+			})
+			.typeahead(
+				{
+					minLength: options.minLength
+				},
+				{
+					displayKey: 'username',
+					source:     users.ttAdapter(),
+					updater: function(item) {
+						console.log('updater', item);
+					},
+					matcher: function(item) {
+						console.log('matcher', item);
+					},
+					highlighter: function(item) {
+						console.log('highlighter', item);
+					}
+/*					remote: {
+						url:     Anqh.APIURL + '/v1/users/search',
+						replace: function(url, uriEncodedQuery) {
+							console.log(url, uriEncodedQuery);
+							return url += '?query=' + uriEncodedQuery;
+						},
+						filter: function(parsedResponse) {
+							return $.map(parsedResponse.users || [], function(user) {
+								return {
+									'label': item.username,
+									'value': item.username,
+									'image': item.avatar,
+									'id':    item.id,
+									'url':   item.url
+								};
+							});
+						}
+					}*/
+				}
+			);
+/*
 		$(this)
 			.autocomplete({
 				minLength: options.minLength,
@@ -858,66 +985,6 @@ $(function() {
 				},
 
 				select: function(event, ui) {
-					switch (options.action) {
-
-						// Fill form
-						case 'form':
-							if (multiple) {
-
-								// Multiple users, one input
-								var terms = split(this.value);
-								terms.pop();
-								terms.push(ui.item.value);
-								terms.push('');
-								this.value = terms.join(', ');
-								return false;
-
-							} else if (options.maxUsers > 1) {
-
-								// Multiple users, tokenized
-								// @todo  Values to post
-								var span = $('<span>')
-									.attr({ 'user-id': ui.item.id })
-									.text(ui.item.value);
-								var link = $('<a>')
-									.attr({ 'href': '#remove' })
-									.text('x')
-									.click(function() {
-										$(this).parent().remove();
-										return false;
-									})
-									.appendTo(span);
-
-								span.insertBefore(field);
-								this.value = '';
-								return false;
-
-							} else {
-
-								// Single user
-								$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(ui.item.id);
-								$field.val(ui.item.value);
-
-							}
-							break;
-
-						// Navigate URL
-						case 'redirect':
-							var location = $field.attr('data-redirect') || ui.item.url;
-							$.each(ui.item, function _replace(key, value) {
-								location = location.replace(':' + key, value);
-							});
-							window.location = location;
-							break;
-
-						// Execute action
-						default:
-							if (typeof options.action == 'function') {
-								options.action(event, ui);
-							}
-
-
-					}
 				}
 			})
 			.data('autocomplete')._renderItem = function(ul, item) {
@@ -926,7 +993,7 @@ $(function() {
 					.append('<a>' + (item.image ? '<img src="' + item.image + '" alt="Avatar" width="22" height="22" align="middle" />' : '') + item.label + '</a>')
 					.appendTo(ul);
 			};
-
+*/
 	};
 
 })(jQuery, Anqh);

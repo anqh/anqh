@@ -321,7 +321,10 @@ class View_Forum_PostEdit extends View_Article {
 
 <script>
 head.ready('anqh', function() {
-	$('textarea[name=recipients]').autocompleteUser({ user: <?= self::$_user_id ?>, maxUsers: 100 });
+	$('textarea[name=recipients]').autocompleteUser({
+		user: <?= self::$_user_id ?>,
+		maxUsers: 100
+	});
 });
 </script>
 
