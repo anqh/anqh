@@ -64,10 +64,10 @@ class View_Topics_Index extends View_Section {
 			<h4 class="media-heading">
 			<?php if ($this->area || $topic->recipient_count): ?>
 				<?= HTML::anchor(Route::model($topic), Forum::topic($topic)) ?>
-				<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="muted icon-level-down"></i>', array('title' => __('Last post'))) ?></small>
+				<small class="transparent"><?= HTML::anchor(Route::model($topic, '?page=last#last'), '<i class="text-muted fa fa-level-down"></i>', array('title' => __('Last post'))) ?></small>
 			<?php else: ?>
 				<?= HTML::anchor(Route::model($topic, '?page=last#last'), Forum::topic($topic)) ?>
-				<small class="transparent"><?= HTML::anchor(Route::model($topic), '<i class="muted icon-level-up"></i>', array('title' => __('First post'))) ?></small>
+				<small class="transparent"><?= HTML::anchor(Route::model($topic), '<i class="text-muted fa fa-level-up"></i>', array('title' => __('First post'))) ?></small>
 			<?php endif; ?>
 			</h4>
 
