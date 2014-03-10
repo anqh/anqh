@@ -128,38 +128,46 @@ $(function() {
 	$(document).on('click', 'a[class*="-delete"]', function(e) {
 		e.preventDefault();
 
-		var $this = $(this)
-		  , title = $this.data('confirm') || $this.attr('title') || $this.text() || 'Are you sure you want to do this?'
-		  , callback;
+		var
+				$this  = $(this),
+				title  = $this.data('confirm') || $this.attr('title') || $this.text() || 'Are you sure you want to do this?',
+				$modal = $('#dialog-confirm'),
+				callback;
 
 		if ($this.data('action')) {
-			callback = function _confirm() { $this.data('action')(); };
+			callback = function() { $this.data('action')(); $modal.modal('hide'); };
 		} else if ($this.is('a')) {
-			callback = function _confirm() { window.location = $this.attr('href'); };
+			callback = function() { window.location = $this.attr('href'); };
 		} else {
-			callback = function _confirm() { $this.parent('form').submit(); };
+			callback = function() { $this.parent('form').submit(); $modal.modal('hide'); };
 		}
 
-		if ($('#dialog-confirm').length == 0) {
-			$('body').append('<div id="dialog-confirm" title="' + title + '">Are you sure?</div>');
-			$('#dialog-confirm').dialog({
-				dialogClass: 'confirm-delete',
-				modal: true,
-				close: function(ev, ui) { $(this).remove(); },
-				closeText: '☓',
-	/*				buttons: {
-					'✓ Yes, do it!': function() { $(this).dialog('close'); action(); },
-					'✕ No, cancel': function() { $(this).dialog('close'); }
-				},*/
-				buttons: [
-					{ 'text': '✓ Yes, do it!', 'class': 'btn btn-danger', click: function() { $(this).dialog('close'); callback(); } },
-					{ 'text': '☓ No, cancel',  'class': 'btn btn-inverse', click: function() { $(this).dialog('close'); } }
-				]
-			});
-		} else {
-			$('#confirm-dialog').dialog('open');
+		// Clear old modal
+		if ($modal.length) {
+			$modal.remove();
 		}
 
+		// Create new modal
+		var $header = $('<div class="modal-header" />')
+				.append('<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>')
+				.append('<h4 class="modal-title" id="dialog-confirm-title">' + title + '</h4>');
+		var $body = $('<div class="modal-body" />')
+				.append('Are you sure?');
+		var $confirm = $('<button type="button" class="btn btn-danger" />')
+				.append('Yes, do it!')
+				.on('click', callback);
+		var $footer = $('<div class="modal-footer" />')
+				.append($confirm)
+				.append('<button type="button" class="btn btn-default" data-dismiss="modal">No, cancel</button>');
+		$modal = $('<div class="modal fade" id="dialog-confirm" tabindex="-1" role="dialog" aria-labelledby="dialog-confirm-title" aria-hidden="true" />')
+				.append($('<div class="modal-dialog modal-sm" />')
+						.append($('<div class="modal-content" />')
+							.append($header)
+							.append($body)
+							.append($footer)));
+		$('body').append($modal);
+
+		$modal.modal('show');
 	});
 
 
