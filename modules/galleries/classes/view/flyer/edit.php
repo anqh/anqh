@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Flyer_Edit
+ * Flyer Edit Form.
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Flyer_Edit extends View_Section {
@@ -41,9 +41,22 @@ class View_Flyer_Edit extends View_Section {
 	public function content() {
 		ob_start();
 
-		echo $this->event();
+?>
 
-		echo $this->date();
+<div class="row">
+	<div class="col-md-6">
+
+<?= $this->event() ?>
+
+	</div>
+	<div class="col-md-6">
+
+<?= $this->date() ?>
+
+	</div>
+</div>
+
+<?php
 
 		return ob_get_clean();
 	}
@@ -66,17 +79,15 @@ class View_Flyer_Edit extends View_Section {
 		}
 
 		// Form
-		echo Form::open(null, array('id' => 'form-flyer-edit-event', 'class' => 'form-inline'));
+		echo Form::open(null, array('id' => 'form-flyer-edit-event'));
 
-		echo Form::label('field-known-event', __('Event')), ' ';
-		echo Form::input('event', null, array(
-			'id'          => 'field-known-event',
-			'class'       => 'input-xxlarge',
-			'title'       => __('Existing event'),
-			'placeholder' => __('Add to an existing event')
-		)), ' ';
+		echo Form::input_wrap('event', null, array(
+		'id'          => 'field-known-event',
+		'title'       => __('Existing event'),
+		'placeholder' => __('Add to an existing event')
+		));
 
-		echo Form::submit('save', __('Save'), array('class' => 'btn'));
+		echo Form::submit('save', __('Save'), array('class' => 'btn btn-default'));
 		echo Form::hidden('event_id', $this->flyer->event_id);
 		echo Form::csrf();
 
@@ -85,7 +96,6 @@ class View_Flyer_Edit extends View_Section {
 ?>
 
 <script>
-// Event autocomplete
 head.ready('anqh', function() {
 	$('#field-known-event').autocompleteEvent(<?= json_encode($event_options) ?>);
 });
@@ -135,30 +145,29 @@ head.ready('anqh', function() {
 		// Form
 		echo Form::open(null, array('id' => 'form-flyer-edit', 'class' => 'form-inline'));
 
-		echo Form::label('field-unknown-event', __('Event')), ' ';
-		echo Form::input('name', $this->flyer->name, array(
+		echo Form::input_wrap('name', $this->flyer->name, array(
 			'id'          => 'field-unknown-event',
 			'class'       => 'input-xxlarge',
 			'title'       => __('Clean event name'),
 			'placeholder' => __('Clean event name')
-		)), ' ';
+		), __('Event')) . ' ';
 
-		echo Form::label('field-date', __('Date')), ' ';
-		echo Form::input(
+		echo Form::input_wrap(
 			'stamp_begin[date]',
 			is_numeric($this->flyer->stamp_begin) ? Date::format('DMYYYY', $this->flyer->stamp_begin) : $this->flyer->stamp_begin,
-			array('id' => 'field-date', 'class' => 'input-small date', 'maxlength' => 10)
-		), ' ';
+			array('id' => 'field-date', 'class' => 'input-small date', 'maxlength' => 10),
+			__('Date')
+		) . ' ';
 
-		echo Form::label('field-time', __('At')), ' ';
-		echo Form::select(
+		echo Form::select_wrap(
 			'stamp_begin[time]',
-			Date::hours_minutes(30, true),
+			array_reverse(Date::hours_minutes(30, true), true),
 			is_numeric($this->flyer->stamp_begin) ? Date::format('HHMM', $this->flyer->stamp_begin) : (empty($this->flyer->stamp_begin) ? '22:00' : $this->flyer->stamp_begin),
-			array('id' => 'field-time', 'class' => 'input-small time')
-		), ' ';
+			array('id' => 'field-time', 'class' => 'input-small time'),
+			__('At')
+		) . ' ';
 
-		echo Form::submit('save', __('Save'), array('class' => 'btn'));
+		echo Form::submit('save', __('Save'), array('class' => 'btn btn-default'));
 		echo Form::csrf();
 
 		echo Form::close();
@@ -166,7 +175,6 @@ head.ready('anqh', function() {
 ?>
 
 <script>
-// Date picker
 head.ready('jquery-ui', function() {
 	$('#field-date').datepicker(<?= json_encode($options) ?>);
 });
