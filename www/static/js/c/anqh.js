@@ -569,13 +569,13 @@ $(function() {
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 (function ($, Anqh) {
 
 	$.fn.autocompleteEvent = function(options) {
-		var field = $(this);
+		var $field = $(this);
 		var cache = {};
 		var lastXhr;
 
@@ -591,6 +591,61 @@ $(function() {
 		};
 		options = $.extend(defaults, options || {});
 
+		$field
+			.on('change', function() {
+				if (options.action == 'form') {
+					$('input[name=' + options.eventId + ']') && $('input[name=' + options.eventId + ']').val('');
+				}
+			})
+			.on('typeahead:selected', function(event, selection, name) {
+					console.log(selection, name);
+					switch (options.action) {
+
+						// Fill form
+						case 'form':
+							$('input[name=' + options.eventId + ']') && $('input[name=' + options.eventId + ']').val(selection.id);
+							break;
+
+						// Navigate URL
+						case 'redirect':
+							window.location = selection.url;
+							break;
+
+						// Execute action
+						default:
+							if (typeof options.action == 'function') {
+								options.action(event, selection);
+							}
+
+					}
+			})
+			.typeahead([
+				{
+					name:     'events',
+					valueKey: 'name',
+					remote: {
+						url:     Anqh.APIURL + '/v1/events/search',
+						replace: function(url, uriEncodedQuery) {
+							return url += '?' + $.param({
+								q:      decodeURIComponent(uriEncodedQuery),
+								limit:  25,
+								filter: options.filter,
+								search: options.search,
+								field:  options.field,
+								order:  options.order
+							});
+						},
+						filter: function(parsedResponse) {
+							return parsedResponse.events || [];
+						}
+					},
+					template: function(event) {
+						return $.datepicker.formatDate('dd.mm.yy', new Date(event.stamp_begin * 1000)) + ' ' + event.name + ', ' + event.city;
+					}
+				}
+			]);
+
+		return;
 		$(this)
 			.autocomplete({
 				minLength: options.minLength,
@@ -606,14 +661,6 @@ $(function() {
 					lastXhr = $.ajax({
 						url: Anqh.APIURL + '/v1/events/search',
 						dataType: 'jsonp',
-						data: {
-							'q':      request.term,
-							'limit':  25,
-							'filter': options.filter,
-							'search': options.search,
-							'field':  options.field,
-							'order':  options.order
-						},
 						success: function(data, status, xhr) {
 							cache[request.term] = $.map(data.events, function(item) {
 								return {
