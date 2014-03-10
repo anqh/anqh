@@ -670,7 +670,7 @@
 		}
 	};
 })(jQuery);
-bbCodeSettings = {
+;bbCodeSettings = {
 	nameSpace: 'bbcode',
 	onTab: { keepDefault: false, replaceWith: '	' },
 	//previewParserPath: 	'', // path to your BBCode parser

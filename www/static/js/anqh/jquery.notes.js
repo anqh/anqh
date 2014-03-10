@@ -45,7 +45,7 @@
 				width:  note_data.width * scaleX + 'px',
 				height: note_data.height * scaleY + 'px'
 			});
-			var $text = $('<div class="notet label label-inverse" />')
+			var $text = $('<div class="notet label label-default" />')
 				.append(note_data.url ? $('<a href="' + note_data.url + '" class="hoverable">' + note_data.name + '</a>') : note_data.name);
 
 			$note

@@ -257,7 +257,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				'text' => '<i class="icon-calendar"></i> ' . __('Event') . ' &raquo;'
 			);
 
-			$this->view->add(View_Page::COLUMN_MAIN, $this->section_gallery_empty($event));
+			$this->view->add(View_Page::COLUMN_CENTER, $this->section_gallery_empty($event));
 			//$this->request->redirect(Route::get('galleries')->uri(array('action' => 'upload')) . '?event=' . $event->id);
 
 		}
@@ -448,7 +448,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Comments
 		if (isset($section_comments)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+			$this->view->add(View_Page::COLUMN_CENTER, $section_comments);
 		}
 
 	}
@@ -852,7 +852,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			// Comments
 			if (isset($section_comments)) {
-				$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+				$this->view->add(View_Page::COLUMN_CENTER, $section_comments);
 			}
 
 			// Share
@@ -968,14 +968,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Galleries
 		$galleries = Model_Gallery::factory()->find_by_user($user->id);
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_galleries_thumbs($galleries, true));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_galleries_thumbs($galleries, true));
 
 		// Top images
 		foreach (array(Model_Image::TOP_RATED, Model_Image::TOP_COMMENTED, Model_Image::TOP_VIEWED) as $type) {
 			$section = $this->section_top($type, 6, $user->id);
 			$section->class = 'full';
 
-			$this->view->add(View_Page::COLUMN_SIDE, $section);
+			$this->view->add(View_Page::COLUMN_RIGHT, $section);
 		}
 
 	}
@@ -1071,9 +1071,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 
 			if (count($images)) {
-				$this->view->add(View_Page::COLUMN_MAIN, $this->section_search_results($images));
+				$this->view->add(View_Page::COLUMN_CENTER, $this->section_search_results($images));
 			} else {
-				$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(__('No images found.'), null, View_Alert::INFO));
+				$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(__('No images found.'), null, View_Alert::INFO));
 			}
 
 			return;
@@ -1312,10 +1312,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->view->subtitle = __($images == 1 ? ':images image' : ':images images', array(':images' => $images)) . ' - ' . HTML::time(Date::format('DMYYYY', $gallery->date), $gallery->date, true);
 
 		// Upload
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_upload());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_upload());
 
 		// Help
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_upload_help());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_upload_help());
 
 	}
 
@@ -1399,9 +1399,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Gallery edit form
 		$section = $this->section_gallery_edit(isset($event) ? $event : null);
 		$section->errors = $errors;
-		$this->view->add(View_Page::COLUMN_MAIN, $section);
+		$this->view->add(View_Page::COLUMN_CENTER, $section);
 
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_upload_help());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_upload_help());
 	}
 
 
@@ -1703,7 +1703,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 */
 	public function section_image(Model_Image $image, Model_Gallery $gallery, $url = null) {
 		$section = new View_Image_Full($image, $gallery);
-		$section->url          = $url;
+		$section->url = $url;
 
 		return $section;
 	}

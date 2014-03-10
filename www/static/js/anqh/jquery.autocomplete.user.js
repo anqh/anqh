@@ -6,7 +6,7 @@
  * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
-(function ($, Anqh) {
+(function ($, Anqh, undefined) {
 
 	$.fn.autocompleteUser = function(options) {
 		var $field = $(this);
@@ -34,48 +34,68 @@
 			return val.split(/,\s*/);
 		}
 
-		function lastTerm(term) {
-			return split(term).pop();
-		}
+		$field
+				.select2({
+					minimumInputLength: options.minLength,
+					multiple:           multiple,
+					containerCss:       { width: '100%' },
+					tags:               multiple || undefined,
+					ajax: {
+						url:      Anqh.APIURL + '/v1/users/search',
+						dataType: 'jsonp',
+						data:     function(term, page) {
+							return {
+								q:     term,
+								user:  options.user,
+								limit: options.limit,
+								field: options.field,
+								order: options.order
+							};
+						},
+						results: function(data, page) {
+							return {
+								results: data.users || [],
+								text:    'username'
+							};
+						}
+					},
+					createSearchChoice: function(term) {
+						return { id: term, username: term };
+					},
+					formatResult: function(user) {
 
-		$field.select2({
-			minimumInputLength: options.minLength,
-			multiple:           options.multiple,
-			containerCss:       { width: '100%' },
-			tags:               true,
-			ajax: {
-				url:      Anqh.APIURL + '/v1/users/search',
-				dataType: 'jsonp',
-				data:     function(term, page) {
-					return {
-						q:     term,
-						user:  options.user,
-						limit: options.limit,
-						field: options.field,
-						order: options.order
-					};
-				},
-				results: function(data, page) {
-					return {
-						results: data.users || [],
-						text:    'username'
-					};
-				}
-			},
-			formatResult: function(user) {
-				return user.username || '';
-			},
-			formatSelection: function(user) {
-				return user.username || '';
-			},
-			initSelection: function($element, callback) {
-				var tags = $.map(split($element.val()), function(username) {
-					return { id: username, username: username };
+						// Optgroup?
+						if (!~~user.id) {
+							return '<i class="text-muted">' + user.username + '</i>';
+						}
+
+						return (user.avatar ? '<img src="' + user.avatar + '" alt="Avatar" width="22" height="22" align="middle"> ' : '') + (user.username || '');
+					},
+					formatSelection: function(user) {
+						return user.username || '';
+					},
+					initSelection: function($element, callback) {
+						var tags = $.map(split($element.val()), function(username) {
+							return { id: username, username: username };
+						});
+
+						callback(tags);
+					}
+				})
+				.on('select2-selecting', function(event) {
+					switch (options.action) {
+
+						// Fill form
+						case 'form':
+							var $userId = $('input[name=' + options.userId + ']');
+
+							if ($userId.length && ~~event.val) {
+								$userId.val(event.val);
+							}
+							break;
+
+					}
 				});
-
-				callback(tags);
-			}
-		});
 
 		return;
 
