@@ -378,7 +378,7 @@ head.ready('anqh', function() {
 		map:              '#map',
 		details:          '#form-event',
 		detailsAttribute: 'data-geo',
-		location:         '<?= $this->event->city_name ? $this->event->city_name : 'Helsinki' ?>',
+		location:         <?= $this->venue->latitude ? ('[ ' . $this->venue->latitude . ', ' . $this->venue->longitude . ' ]') : ("'" . ($this->event->city_name ? $this->event->city_name : 'Helsinki') . "'")  ?>,
 		types:            [ '(cities)' ]
 	});
 
