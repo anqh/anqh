@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Gallery_Top
+ * Gallery Top List.
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Gallery_Top extends View_Section {
@@ -50,41 +50,47 @@ class View_Gallery_Top extends View_Section {
 
 ?>
 
-<ul class="thumbnails">
+<div class="row">
 
 	<?php foreach($this->images as $image): $gallery = $image->gallery(); ?>
 
-		<li>
-			<a class="thumbnail" href="<?= Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id)) ?>">
+	<div class="col-xs-6 col-sm-3 col-md-2">
+		<div class="thumbnail">
+			
+			<?= HTML::anchor(
+					Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id)),
+					HTML::image($image->get_url('thumbnail', $gallery->dir))
+			) ?>
 
-				<?= HTML::image($image->get_url('thumbnail', $gallery->dir)) ?>
+			<div class="caption">
+				<h4><?= HTML::anchor(Route::model($gallery), HTML::chars($gallery->name)) ?></h4>
+			</div>
 
-				<p class="description"><?= HTML::chars($gallery->name) ?></p>
-				<span class="stats">
+			<small class="stats label label-default">
 
 	<?php switch ($this->type):
 
 		case Model_Image::TOP_COMMENTED:
-			echo '<i class="icon-comment"></i> ', Num::format($image->comment_count, 0);
+			echo '<i class="fa fa-comment"></i> ', Num::format($image->comment_count, 0);
 			break;
 
 		case Model_Image::TOP_RATED:
-			echo '<i class="icon-star"></i> ', round($image->rate_total / $image->rate_count, 2);
+			echo '<i class="fa fa-star"></i> ', round($image->rate_total / $image->rate_count, 2);
 			break;
 
 		case Model_Image::TOP_VIEWED:
-			echo '<i class="icon-eye-open"></i> ', Num::format($image->view_count, 0);
+			echo '<i class="fa fa-eye"></i> ', Num::format($image->view_count, 0);
 			break;
 
 	endswitch; ?>
 
-				</span>
-			</a>
-		</li>
+			</small>
+		</div>
+	</div>
 
 <?php	endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 

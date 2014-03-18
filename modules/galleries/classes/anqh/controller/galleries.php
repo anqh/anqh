@@ -1091,15 +1091,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	public function action_top() {
 
 		// Build page
-		$this->view        = View_Page::factory(__('Top 10'));
-		$this->view->spans = View_Page::SPANS_84;
-		$this->view->tab   = 'top';
+		$this->view      = View_Page::factory(__('Top 10'));
+		$this->view->tab = 'top';
 		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
 		$this->_set_flyer_actions();
 
 		// Top images
 		foreach (array(Model_Image::TOP_RATED, Model_Image::TOP_COMMENTED, Model_Image::TOP_VIEWED) as $type) {
-			$this->view->add(View_Page::COLUMN_TOP, $this->section_top($type, 10));
+			$this->view->add(View_Page::COLUMN_TOP, $this->section_top($type, 12));
 		}
 
 	}
