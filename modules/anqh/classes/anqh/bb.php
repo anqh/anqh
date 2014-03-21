@@ -7,7 +7,7 @@ require_once(Kohana::find_file('vendor', 'nbbc/nbbc'));
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_BB extends BBCode {
@@ -26,11 +26,11 @@ class Anqh_BB extends BBCode {
 		'audio' => array(
 			'soundcloud' => array(
 				'pattern'  => '/^https?:\/\/soundcloud\.com\/([^\/]+)\/([^\/]+)\/?$/i',
-				'template' => '<iframe width="100%" height="166" src="https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2F$1%2F$2&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe>'
+				'template' => '<iframe width="100%" height="166" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F$1%2F$2&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe><br><a href="$0" target="_blank">$0</a>'
 			),
 			'soundcloud_user' => array(
 				'pattern'  => '/^https?:\/\/soundcloud\.com\/([^\/]+)\/?$/i',
-				'template' => '<iframe width="100%" height="292" src="https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2F$1&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe>'
+				'template' => '<iframe width="100%" height="292" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F$1&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe><br><a href="$0" target="_blank">$0</a>'
 			),
 			'spotify' => array(
 				'pattern'  => '/^http:\/\/open\.spotify\.com\/(track|album)\/(\w+)$/i',
