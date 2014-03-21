@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Venue_Combine
+ * Venue Combine form.
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Venue_Combine extends View_Section {
@@ -52,7 +52,7 @@ class View_Venue_Combine extends View_Section {
 
 ?>
 
-<div class="span2">
+<div class="col-sm-3">
 
 	<h3><?= HTML::anchor(Route::model($this->venue_duplicate), HTML::chars($this->venue_duplicate->name)) ?></h3>
 	#<?= $this->venue_duplicate->id ?>
@@ -61,13 +61,13 @@ class View_Venue_Combine extends View_Section {
 
 </div>
 
-<div class="span1">
+<div class="col-sm-1">
 
 	<h3><?= __('to') ?></h3>
 
 </div>
 
-<div class="span2">
+<div class="col-sm-3">
 
 	<h3><?= HTML::anchor(Route::model($this->venue), HTML::chars($this->venue->name)) ?></h3>
 	#<?= $this->venue->id ?>
@@ -76,7 +76,7 @@ class View_Venue_Combine extends View_Section {
 
 </div>
 
-<div class="span1">
+<div class="col-sm-1">
 
 	<?= HTML::anchor(
 			Route::model($this->venue, 'combine') . '/' . $this->venue_duplicate->id . '?' . Security::csrf_query(),
@@ -91,7 +91,7 @@ class View_Venue_Combine extends View_Section {
 		else:
 
 			// Select duplicate
-			echo Form::control_group(Form::input('venue'), array(__('Combine to')));
+			echo Form::input_wrap('venue', null, null, __('Combine to'));
 
 ?>
 
