@@ -58,8 +58,9 @@
 					name:     'events',
 					valueKey: 'name',
 					remote: {
-						url:     Anqh.APIURL + '/v1/events/search',
-						replace: function(url, uriEncodedQuery) {
+						url:      Anqh.APIURL + '/v1/events/search',
+						dataType: 'jsonp',
+						replace:  function(url, uriEncodedQuery) {
 							return url += '?' + $.param({
 								q:      decodeURIComponent(uriEncodedQuery),
 								limit:  25,

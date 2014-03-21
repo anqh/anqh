@@ -434,8 +434,9 @@ head.ready('anqh', function() {
 				name:   'foursquare',
 				header: '<header class="dropdown-header"><i class="fa fa-foursquare"></i> <?= __('Foursquare') ?></header>',
 				remote: {
-					url:     Anqh.APIURL + '/v1/venues/foursquare',
-					replace: function(url, uriEncodedQuery) {
+					url:      Anqh.APIURL + '/v1/venues/foursquare',
+					dataType: 'jsonp',
+					replace:  function(url, uriEncodedQuery) {
 						return url += '?method=venues&ll=' + $latitude.val() + ',' + $longitude.val() + '&query=' + uriEncodedQuery;
 					},
 					filter: function(parsedResponse) {
