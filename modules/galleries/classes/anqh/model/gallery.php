@@ -192,6 +192,7 @@ class Anqh_Model_Gallery extends AutoModeler_ORM implements Permission_Interface
 		return $this->load(
 			DB::select_array($this->fields())
 				->where('image_count', '>', 0)
+				->and_where('updated', 'IS NOT', null)
 				->order_by('updated', 'DESC'),
 			$limit
 		);

@@ -1251,6 +1251,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					if (!$gallery->default_image_id) {
 						$gallery->default_image_id = $image->id;
 					}
+					$gallery->updated = time();
 					$gallery->save();
 
 					// Newsfeed item
@@ -1387,6 +1388,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			}
 
 			try {
+				$gallery->updated = time();
 				$gallery->save();
 				$this->request->redirect(Route::model($gallery, $upload ? 'upload' : null));
 			} catch (Validation_Exception $e) {
