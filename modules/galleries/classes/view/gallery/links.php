@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2013.2014 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Gallery_Links extends View_Section {
@@ -53,7 +53,7 @@ class View_Gallery_Links extends View_Section {
 	<li>
 		<?= HTML::anchor($url, Text::limit_url($url, 75)) ?> &copy; <?= HTML::user($user_id) ?>
 		<?php if ($user_id == self::$_user_id || Permission::has($this->gallery, Model_Gallery::PERMISSION_UPDATE, self::$_user)): ?>
-		<?= HTML::anchor(Route::model($this->gallery) . '?delete_link=' . $count . '&' . Security::csrf_query(), __('Remove'), array('class' => 'btn btn-danger btn-sm link-delete')) ?>
+		<?= HTML::anchor(Route::model($this->gallery) . '?delete_link=' . $count . '&' . Security::csrf_query(), __('Remove'), array('class' => 'btn btn-danger btn-xs link-delete')) ?>
 		<?php endif; ?>
 	</li>
 	<?php $count++; endforeach ?>
@@ -84,10 +84,12 @@ class View_Gallery_Links extends View_Section {
 
 		echo Form::open(null, array('id' => 'form-link', 'class' => 'collapse'));
 
-		echo '<hr />';
+		echo '<hr>';
 
-		echo Form::control_group(
-			Form::input('link', null, array('class'=> 'input-block-level', 'placeholder' => __('http://'))),
+		echo Form::input_wrap(
+			'link',
+			null,
+			array('placeholder' => 'http://'),
 			null,
 			Arr::get($this->errors, 'link')
 		);
