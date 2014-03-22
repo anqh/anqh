@@ -598,7 +598,6 @@ $(function() {
 				}
 			})
 			.on('typeahead:selected', function(event, selection, name) {
-					console.log(selection, name);
 					switch (options.action) {
 
 						// Fill form
