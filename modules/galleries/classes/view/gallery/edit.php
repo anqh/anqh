@@ -86,8 +86,8 @@ class View_Gallery_Edit extends View_Section {
 // Name autocomplete
 head.ready('anqh', function() {
 	$('#field-name').autocompleteEvent({
-		action: function(event, ui) {
-			window.location = '<?= URL::site(Route::url('galleries', array('action' => 'upload'))) ?>?from=' + ui.item.id;
+		action: function(event, selection) {
+			window.location = '<?= URL::site(Route::url('galleries', array('action' => 'upload'))) ?>?from=' + selection.id;
 		}
 	});
 });

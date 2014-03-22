@@ -1210,9 +1210,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				}
 
 				// Upload info for JSON
-				$info = new stdClass();
-				$info->name = HTML::chars($file['name']);
-				$info->size = intval($file['size']);
+				$info = array();
+				$info['name'] = HTML::chars($file['name']);
+				$info['size'] = intval($file['size']);
 
 				// Save image
 				try {
@@ -1267,20 +1267,21 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 					// Show image if uploaded with ajax
 					if ($this->ajax || $multiple) {
-						$info->url           = $image->get_url();
-						$info->thumbnail_url = $image->get_url(Model_Image::SIZE_THUMBNAIL);
-						$info->gallery_url   = Route::url('gallery_image', array(
+						$info['url']           = $image->get_url();
+						$info['thumbnail_url'] = $image->get_url(Model_Image::SIZE_THUMBNAIL);
+						$info['gallery_url']   = Route::url('gallery_image', array(
 							'gallery_id' => Route::model_id($gallery),
 							'id'         => $image->id,
 						));
-						$info->delete_url    = Route::url('gallery_image', array(
+						$info['delete_url']    = Route::url('gallery_image', array(
 							'gallery_id' => Route::model_id($gallery),
 							'id'         => $image->id,
 							'action'     => 'delete',
 						)) . '?token=' . Security::csrf();
-						$info->delete_type   = 'GET';
+						$info['delete_type']   = 'GET';
 
-						$this->response->body(json_encode(array($info)));
+						$this->response->headers('Content-Type', 'application/json');
+						$this->response->body(json_encode($info));
 
 						return;
 					}
@@ -1295,8 +1296,10 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 				// Show errors if uploading with ajax, skip form
 				if (($this->ajax || $multiple) && !empty($errors)) {
-					$info->error = Arr::get($errors, 'file');
-					$this->response->body(json_encode(array($info)));
+					$info['error'] = Arr::get($errors, 'file');
+					$this->response->status(400);
+					$this->response->headers('Content-Type', 'application/json');
+					$this->response->body(json_encode($info));
 
 					return;
 				}
@@ -1314,7 +1317,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_upload());
 
 		// Help
-		$this->view->add(View_Page::COLUMN_CENTER, $this->section_upload_help());
+//		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_upload_help());
 
 	}
 
@@ -1400,7 +1403,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$section->errors = $errors;
 		$this->view->add(View_Page::COLUMN_CENTER, $section);
 
-		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_upload_help());
+//		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_upload_help());
 	}
 
 
