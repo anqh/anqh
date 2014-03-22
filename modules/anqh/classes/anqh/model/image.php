@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  *
  * @todo  Refactor to use uniqid instead of id_postfix for filename
@@ -560,8 +560,8 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			// Make sure we have the new target directory
 			$new_path = Kohana::$config->load('image.path') . URL::id($this->id);
 			if (!is_dir($new_path)) {
-				mkdir($new_path, 0777, true);
-				chmod($new_path, 0777);
+				mkdir($new_path, 0775, true);
+				chmod($new_path, 0775);
 			}
 			if (is_writable($new_path)) {
 				$new_path = rtrim($new_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
