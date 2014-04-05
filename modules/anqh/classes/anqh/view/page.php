@@ -16,6 +16,9 @@ class Anqh_View_Page extends View_Base {
 	const COLUMN_BOTTOM = 'bottom';
 	const COLUMN_FOOTER = 'footer';
 
+	const SEARCH_EVENTS = 'events';
+	const SEARCH_USERS  = 'users';
+
 	/**
 	 * @var  array  Page actions
 	 */
@@ -55,6 +58,11 @@ class Anqh_View_Page extends View_Base {
 	 * @var  array  JavaScripts for footer
 	 */
 	public $scripts = array();
+
+	/**
+	 * @var  string  Default search
+	 */
+	public $search = self::SEARCH_USERS;
 
 	/**
 	 * @var  string  Active tab
@@ -534,13 +542,50 @@ class Anqh_View_Page extends View_Base {
 	protected function _search() {
 		ob_start();
 
-		echo Form::open(null, array('id' => 'search', 'role' => 'search', 'class' => 'navbar-form navbar-right'));
+		$searches = array(
+			self::SEARCH_EVENTS => array(
+				'icon' => 'fa fa-fw fa-calendar',
+				'text' => __('Search events'),
+			),
+			self::SEARCH_USERS  => array(
+				'icon' => 'fa fa-fw fa-user',
+				'text' => __('Search users'),
+			),
+		);
 
 ?>
 
-<div class="form-group">
-	<?= Form::input('search', null, array('class' => 'form-control', 'placeholder' => __('Search'))) ?>
-</div>
+<ul id="search" class="nav navbar-nav navbar-right">
+
+	<li class="dropdown">
+
+		<?php foreach($searches as $search_type => $search): ?>
+		<a class="dropdown-toggle search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>" data-toggle="dropdown">
+			<i class="<?= $search['icon'] ?>"></i><span class="caret"></span>
+		</a>
+		<?php endforeach ?>
+
+		<ul class="dropdown-menu dropdown-menu-left">
+			<?php foreach($searches as $search_type => $search): ?>
+			<li><a href="#" data-toggle="show" data-parent="#search" data-target=".search-<?= $search_type ?>"><i class="<?= $search['icon'] ?>"></i> <?= $search['text'] ?></a></li>
+			<?php endforeach ?>
+		</ul>
+
+	</li>
+
+	<li class="navbar-form">
+		<?= Form::open(null, array('role' => 'search', 'class' => '')); ?>
+
+			<div class="form-group">
+				<?php foreach($searches as $search_type => $search): ?>
+				<?= Form::input('search', null, array('class' => 'form-control search-' . $search_type . ($search_type == $this->search ? ' show' : ' hidden'), 'placeholder' => $search['text'] . '...')) ?>
+				<?php endforeach ?>
+			</div>
+
+		<?= Form::close() ?>
+	</li>
+
+</ul>
 
 <!--
 <div id="search">
@@ -575,8 +620,6 @@ class Anqh_View_Page extends View_Base {
 -->
 
 <?php
-
-		echo Form::close();
 
 		return ob_get_clean();
 	}

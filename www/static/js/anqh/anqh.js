@@ -348,4 +348,18 @@ $(function() {
 		return false;
 	});
 
+
+	// Element visibility toggle
+	$('[data-toggle=show]').on('click', function(e) {
+		e.preventDefault();
+
+		var $this    = $(this);
+		var selector = $this.data('target');
+		var parent   = $this.data('parent') || 'body';
+		var $parent  = $(parent);
+
+		$parent.find('.show').removeClass('show').addClass('hidden');
+		$parent.find(selector).removeClass('hidden').addClass('show');
+	});
+
 });

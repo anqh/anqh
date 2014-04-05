@@ -49,6 +49,8 @@ class Anqh_Controller_Events extends Controller_Page {
 		parent::before();
 
 		$this->date = new DateTime;
+
+		$this->view->search = View_Page::SEARCH_EVENTS;
 	}
 
 
