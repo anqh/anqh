@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Developers extends Controller_Page {
@@ -26,11 +26,11 @@ class Anqh_Controller_Developers extends Controller_Page {
 		$this->view = new View_Page('Developers');
 
 		// Docs
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_introduction());
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_api());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_introduction());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_api());
 
 		// Side bar
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_menu());
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_menu());
 
 	}
 
@@ -61,7 +61,10 @@ class Anqh_Controller_Developers extends Controller_Page {
 	 * @return  View_Developers_Menu
 	 */
 	public function section_menu() {
-		return new View_Developers_Menu();
+		$section = new View_Developers_Menu();
+		$section->aside = true;
+
+		return $section;
 	}
 
 }

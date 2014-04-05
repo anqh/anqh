@@ -53,9 +53,6 @@ class Anqh_View_ErrorPage extends Anqh_View_Page {
 <?= $this->content(self::COLUMN_CENTER) ?>
 <?= $this->content(self::COLUMN_RIGHT) ?>
 
-<?= $this->content(self::COLUMN_MAIN) ?>
-<?= $this->content(self::COLUMN_SIDE) ?>
-
 		</div>
 	</div>
 </div>

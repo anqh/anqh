@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_OAuth extends Controller_Page {
@@ -32,16 +32,23 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 		// See if we already have a token
 		$provider = $this->request->param('provider');
-		if (self::$user && $this->external = Model_User_External::factory()->find_by_user_id(self::$user->id, $provider)) {
+		if ($provider) {
+			if (self::$user && $this->external = Model_User_External::factory()
+			->find_by_user_id(self::$user->id, $provider)
+			) {
 
-			// Access token should be available
-			$this->consumer = new OAuth2_Consumer($provider, $this->external->loaded() ? $this->external->access_token() : false);
+				// Access token should be available
+				$this->consumer = new OAuth2_Consumer(
+				$provider, $this->external->loaded()
+				? $this->external->access_token() : false
+				);
 
-		} else {
+			} else {
 
-			// No access token available
-			$this->consumer = new OAuth2_Consumer($provider, false);
+				// No access token available
+				$this->consumer = new OAuth2_Consumer($provider, false);
 
+			}
 		}
 	}
 
@@ -99,7 +106,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 		if ($provider != 'facebook') {
 
 			// Unsupported provider
-			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
+			$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(
 					__('We are not entirely sure what 3rd party service redirected you here'),
 					__('Failed to load your profile :('),
 					View_Alert::ERROR));
@@ -134,7 +141,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 							if ($error = Arr::get($response, 'error')) {
 
 								// .. but it was an error
-								$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
+								$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(
 										__('They said ":error"', array(':error' => HTML::chars($error->message))),
 										__('Failed to load your profile :('),
 										View_Alert::ERROR));
@@ -177,7 +184,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 						if ($error = Arr::get($response, 'error')) {
 
 							// .. but it was an error
-							$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
+							$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(
 									__('They said ":error"', array(':error' => HTML::chars($error->message))),
 									__('Failed to load your profile :('),
 									View_Alert::ERROR));
@@ -209,7 +216,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 									// User with same email found, ask to sign in
 									Kohana::$log->add(Log::DEBUG, 'OAuth2: Existing user with same email found');
-									$this->view->add(View_Page::COLUMN_MAIN, $this->section_signin($user, $response));
+									$this->view->add(View_Page::COLUMN_CENTER, $this->section_signin($user, $response));
 
 								} else {
 
@@ -234,7 +241,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 			} catch (OAuth2_Exception_InvalidGrant $e) {
 
-				$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
+				$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(
 						HTML::chars($e->getMessage()),
 						__('Failed to load your profile :('),
 						View_Alert::ERROR));
@@ -244,7 +251,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 			} catch (Kohana_Exception $e) {
 
-				$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
+				$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(
 						HTML::chars($e->getMessage()),
 						__('Failed to load your profile :('),
 						View_Alert::ERROR));
@@ -255,7 +262,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 
 		} else {
 
-			$this->view->add(View_Page::COLUMN_MAIN, new View_Alert(
+			$this->view->add(View_Page::COLUMN_CENTER, new View_Alert(
 					__('Did not receive required code from 3rd party'),
 					__('Failed to load your profile :('),
 					View_Alert::ERROR));

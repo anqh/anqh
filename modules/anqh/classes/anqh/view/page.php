@@ -16,33 +16,6 @@ class Anqh_View_Page extends View_Base {
 	const COLUMN_BOTTOM = 'bottom';
 	const COLUMN_FOOTER = 'footer';
 
-	/** @deprecated */
-	const COLUMN_MAIN = 'main';
-
-	/** @deprecated */
-	const COLUMN_SIDE = 'side';
-
-	/** @deprecated */
-	const SPANS_93    = '9+3';
-
-	/** @deprecated */
-	const SPANS_84    = '8+4';
-
-	/** @deprecated */
-	const SPANS_82    = '8+2';
-
-	/** @deprecated */
-	const SPANS_73    = '7+3';
-
-	/** @deprecated */
-	const SPANS_66    = '6+6';
-
-	/** @deprecated */
-	const SPANS_64    = '6+4';
-
-	/** @deprecated */
-	const SPANS_55    = '5+5';
-
 	/**
 	 * @var  array  Page actions
 	 */
@@ -82,11 +55,6 @@ class Anqh_View_Page extends View_Base {
 	 * @var  array  JavaScripts for footer
 	 */
 	public $scripts = array();
-
-	/**
-	 * @var  string  Content column span sizes
-	 */
-	public $spans = self::SPANS_84;
 
 	/**
 	 * @var  string  Active tab
@@ -179,11 +147,6 @@ class Anqh_View_Page extends View_Base {
 				case self::COLUMN_LEFT:   $class = $center && $right ? 'col-sm-3' : ($center ? 'col-sm-4' : 'col-sm-6'); break;
 				case self::COLUMN_CENTER: $class = $left && $right ? 'col-sm-6' : ($left || $right ? 'col-sm-8' : 'col-sm-12'); break;
 				case self::COLUMN_RIGHT:  $class = $left && $center ? 'col-sm-3' : ($center ? 'col-sm-4' : 'col-sm-6'); break;
-
-				// Deprecated
-				case self::COLUMN_MAIN: $class = 'col-sm-8'; break;
-				case self::COLUMN_SIDE: $class = 'col-sm-4'; break;
-
 				default:                $class = 'col-sm-12';
 			endswitch;
 
@@ -521,9 +484,6 @@ class Anqh_View_Page extends View_Base {
 <?= $this->content(self::COLUMN_LEFT) ?>
 <?= $this->content(self::COLUMN_CENTER) ?>
 <?= $this->content(self::COLUMN_RIGHT) ?>
-
-<?= $this->content(self::COLUMN_MAIN) ?>
-<?= $this->content(self::COLUMN_SIDE) ?>
 
 		</div>
 	</div>

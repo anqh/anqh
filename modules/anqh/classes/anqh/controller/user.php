@@ -66,7 +66,7 @@ class Anqh_Controller_User extends Controller_Page {
 			'text'  => '<i class="icon-download-alt"></i> ' . __('Download as .ics'),
 		);
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_favorites($user));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_favorites($user));
 
 	}
 
@@ -149,11 +149,11 @@ class Anqh_Controller_User extends Controller_Page {
 
 		$this->view->tab = 'friends';
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_friends($user, Arr::get($_GET, 'of') == 'me'));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_friends($user, Arr::get($_GET, 'of') == 'me'));
 
 		// Show suggestions on our own page
 		if ($user->id === self::$user->id) {
-			$this->view->add(View_Page::COLUMN_SIDE, $this->section_friend_suggestions($user));
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_friend_suggestions($user));
 		}
 
 	}
@@ -208,7 +208,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->view = self::_set_page($user);
 		$this->view->tab = 'ignores';
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_ignores($user));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_ignores($user));
 
 	}
 
@@ -309,7 +309,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->view = self::_set_page($user);
 		$this->view->tab = 'profile';
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_upload(URL::user($user), $errors));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_upload(URL::user($user), $errors));
 	}
 
 
@@ -393,18 +393,18 @@ class Anqh_Controller_User extends Controller_Page {
 		}
 
 		// Newsfeed
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_newsfeed($user));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_newsfeed($user));
 
 		// Comments
 		if (isset($section_comments)) {
-			$this->view->add(View_Page::COLUMN_MAIN, $section_comments);
+			$this->view->add(View_Page::COLUMN_CENTER, $section_comments);
 		}
 
 		// Portrait
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_carousel($user));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_carousel($user));
 
 		// Info
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_info($user));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_info($user));
 
 	}
 

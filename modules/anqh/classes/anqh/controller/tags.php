@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Tags extends Controller_Page {
@@ -86,7 +86,7 @@ class Anqh_Controller_Tags extends Controller_Page {
 			'class' => 'btn btn-primary group-add'
 		);
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_groups());
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_groups());
 	}
 
 
@@ -142,7 +142,7 @@ class Anqh_Controller_Tags extends Controller_Page {
 			}
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_group($group, $errors));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_group($group, $errors));
 	}
 
 
@@ -201,7 +201,7 @@ class Anqh_Controller_Tags extends Controller_Page {
 			}
 		}
 
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_tag($tag, $errors));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_tag($tag, $errors));
 	}
 
 

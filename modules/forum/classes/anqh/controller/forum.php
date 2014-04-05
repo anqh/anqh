@@ -82,11 +82,11 @@ class Anqh_Controller_Forum extends Controller_Page {
 		}
 
 		// New posts
-		$this->view->add(View_Page::COLUMN_MAIN, $this->section_topics(Model_Forum_Topic::factory()->find_active(20)));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_topics(Model_Forum_Topic::factory()->find_active(20)));
 
 		// Areas
 		$groups = Model_Forum_Group::factory()->find_all();
-		$this->view->add(View_Page::COLUMN_SIDE, $this->section_groups($groups));
+		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_groups($groups));
 
 //		$this->_side_views();
 	}
