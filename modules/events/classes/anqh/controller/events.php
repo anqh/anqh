@@ -245,7 +245,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 
 		$event = Model_Event::factory((int)$this->request->param('id'));
-		if ($event->loaded())	{
+		if ($event->loaded()) {
 			$this->response->body(new View_Event_HoverCard($event));
 		}
 	}

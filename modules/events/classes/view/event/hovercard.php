@@ -58,7 +58,7 @@ class View_Event_HoverCard extends View_Section {
 
 		// Favorites
 		if ($this->event->favorite_count):
-			echo '<span class="stats"><i class="icon-heart"></i> ' . $this->event->favorite_count . '</span>';
+			echo '<span class="stats"><i class="fa fa-heart"></i> ' . $this->event->favorite_count . '</span>';
 		endif;
 
 		return ob_get_clean();

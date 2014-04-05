@@ -1,0 +1,71 @@
+
+// Bootstrap overrides
+html                                   { height: 100%; }
+article                                { position: relative; }
+legend                                 { margin-bottom: 0; }
+h1                                     { font-size: 24px; font-weight: normal; letter-spacing: 1px; margin-top: 0; }
+h2                                     { font-size: 20px; }
+h3                                     { font-size: @font-size-base; letter-spacing: .1em; text-transform: uppercase; /*font-size: 18px;*/ line-height: 20px; }
+h4                                     { font-family: inherit; font-size: 14px; font-weight: bold; }
+h5,
+h6                                     { font-family: inherit; font-size: 12px; }
+h1 small                               { font-size: 18px; }
+h2 small                               { font-size: 14px; }
+h3 small,
+h4 small                               { font-size: 12px; line-height: @line-height-base; }
+p:last-child                           { margin-bottom: 0; }
+
+dl,
+ul,
+form                                   {
+  &:last-child                         { margin-bottom: 0; }
+  &:only-child                         { margin-top: 0; }
+}
+select.form-control                    { padding: @padding-base-vertical (@padding-base-horizontal / 2); }
+legend .control-group                  { float: right; }
+.form-horizontal .radios .control-label { float: left; margin-right: 5px; }
+/*
+i[class^="icon-"],
+i[class*=" icon-"]                     { font-size: 14px; display: inline-block !important; text-align: center; text-decoration: none !important; width: 14px; }
+h1 i[class^="icon-"],
+h1 i[class*=" icon-"]                  { font-size: 21px; width: 21px; }
+.icon-facebook                         { background: #3B5998; border-radius: 2px; padding: 2px 0 0 2px; }
+*/
+.label-special                         { background-color: @brand-special; }
+.label-special:hover                   { background-color: darken(@brand-special, 10%); }
+.btn-lovely                            { .button-variant(@btn-lovely-color; @btn-lovely-bg; @btn-lovely-border); }
+.btn-special                           { .button-variant(@btn-special-color; @btn-special-bg; @btn-special-border); }
+.btn-facebook                          { .button-variant(@btn-primary-color; #4C66A4; darken(#4C66A4, 5%))}
+
+.media,
+.media .media                          { margin-top: 10px; }
+
+.popover                               {
+  .popover-title                       { padding-right: 40px; }
+  figure                               { text-align: center; }
+  .stats                               { position: absolute; right: 10px; top: 10px; }
+}
+
+/*.pager                                 { margin: 5px 0;
+  li > a,
+  li > span                            { background-color: @pagination-bg; border-color: @pagination-border; }
+  li > a:hover                         { background-color: @pagination-active-bg; }
+  .disabled > a,
+  .disabled > a:hover,
+  .disabled > span                     { background-color: @gray-darker; }
+}
+.pagination                            { margin-top: 0; }
+*/
+/*
+.nav-tabs > li > a                     { border-width: 0 0 4px 0; padding-bottom: 5px; }
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover        { border-width: 0 0 4px 0; }
+*/
+
+.table:last-child                      { margin-bottom: 0; }
+
+.panel                                 {
+  .panel-title                         { font-size: @font-size-base;  }
+}
+
+.thumbnails > li                       { margin-bottom: 10px; margin-left: 10px; }

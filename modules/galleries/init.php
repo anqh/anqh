@@ -45,7 +45,7 @@ Route::set('gallery_image', 'gallery/<gallery_id>/<id>(/<action>)', array('actio
 		'action'     => 'image',
 		'type'       => 'image',
 	));
-Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|upload'))
+Route::set('gallery', 'gallery/<id>(/<action>)', array('action' => 'update|upload|hover'))
 	->defaults(array(
 		'controller' => 'galleries',
 		'action'     => 'gallery',

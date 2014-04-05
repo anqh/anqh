@@ -615,35 +615,53 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	public function action_hover() {
 		$this->history = false;
 
-		if ($this->request->param('type') === 'flyer') {
+		switch ($this->request->param('type')) {
 
-			// Flyer hover card, ajax only
-			if ($this->_request_type !== Controller::REQUEST_AJAX) {
-				return $this->action_flyer();
-			}
+			// Flyer hover card
+			case  'flyer':
+				if ($this->_request_type !== Controller::REQUEST_AJAX) {
+					$this->action_flyer();
 
-			$flyer_id = (int)$this->request->param('id');
-			$flyer    = new Model_Flyer((int)$flyer_id);
-			if ($flyer->loaded()) {
-				$this->response->body($this->section_flyer_hovercard($flyer));
-			}
-
-		} else {
-
-			// Image hover card, ajax only
-			if ($this->_request_type !== Controller::REQUEST_AJAX) {
-				return $this->action_image();
-			}
-
-			$gallery_id = (int)$this->request->param('gallery_id');
-			$image_id   = (int)$this->request->param('id');
-			$gallery    = Model_Gallery::factory($gallery_id);
-			if ($gallery->loaded()) {
-				$image = Model_Image::factory($image_id);
-				if ($image->loaded()) {
-					$this->response->body($this->section_image_hovercard($image, $gallery));
+					return;
 				}
-			}
+
+				$flyer_id = (int)$this->request->param('id');
+				$flyer    = new Model_Flyer((int)$flyer_id);
+				if ($flyer->loaded()) {
+					$this->response->body($this->section_flyer_hovercard($flyer));
+				}
+				break;
+
+			// Image hover card
+			case 'image';
+				if ($this->_request_type !== Controller::REQUEST_AJAX) {
+					$this->action_image();
+
+					return;
+				}
+
+				$gallery_id = (int)$this->request->param('gallery_id');
+				$image_id   = (int)$this->request->param('id');
+				$gallery    = Model_Gallery::factory($gallery_id);
+				if ($gallery->loaded()) {
+					$image = Model_Image::factory($image_id);
+					if ($image->loaded()) {
+						$this->response->body($this->section_image_hovercard($image, $gallery));
+					}
+				}
+				break;
+
+			// Gallery hover card
+			default:
+				$gallery_id = (int)$this->request->param('id');
+				$gallery    = Model_Gallery::factory($gallery_id);
+				if ($gallery->loaded()) {
+					$image = $gallery->default_image();
+					if ($image->loaded()) {
+						$this->response->body($this->section_image_hovercard($image, $gallery));
+					}
+				}
+
 
 		}
 	}
