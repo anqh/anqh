@@ -32,48 +32,61 @@ $.fn.loading = function(loaded) {
 $(function() {
 
 	// Hover card, disabled until hover out fixed, use only one?
-	var hoverTimeout;
+	var
+			hoverTimeout,
+			hovercards = {};
 	$(document).on({
-		mouseenter: function() {
-			var $this    = $(this)
-				, $popover = $this.data('popover');
 
-			// Initialize popover
-			if (!$popover) {
-				hoverTimeout = setTimeout(function _delay() {
-					$.get($this.attr('href') + '/hover', function _loaded(response) {
+		'mouseenter.hoverable': function() {
+			var
+					$this = $(this),
+					href  = $this.attr('href');
+
+			function popover(element, title, content) {
+				element
+						.removeClass('hoverable')
+						.popover({
+							trigger:   'hover',
+							delay:     500,
+							html:      true,
+							title:     title,
+							content:   content,
+							container: 'body',
+							placement: function () {
+								var offset = element.offset();
+
+								return offset.top < 100
+										? 'bottom'
+										: (offset.left > window.innerWidth / 2 ? 'left' : 'right');
+							}
+						})
+						.popover('show');
+			}
+
+			hoverTimeout = setTimeout(function () {
+				if (hovercards[href]) {
+					popover($this, hovercards[href].title, hovercards[href].content);
+				} else {
+					$.get(href + '/hover', function (response) {
 						var $card = $(response);
 
-						$this.popover({
-							trigger:   'manual',
-							html:      true,
-							title:     $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
-							content:   $card.html(),
-							container: 'body',
-							placement: function() {
-								var offset = $this.offset();
+						hovercards[href] = {
+							title:   $card.find('header').remove().text().replace('<', '&lt;').replace('>', '&gt;'),
+							content: $card.html()
+						};
 
-								return offset.top < 100 ? 'bottom' : (offset.left > window.innerWidth / 2 ? 'left' : 'right');
-							}
-						});
-
-						$this.popover('show');
+						popover($this, hovercards[href].title, hovercards[href].content);
 					});
-				}, 500);
-			} else {
-				$this.popover('show');
-			}
-		},
-		mouseleave: function() {
-			var $this = $(this);
+				}
+			}, 500);
 
-			if (!$this.data('popover')) {
-				clearInterval(hoverTimeout);
-			} else {
-				$this.popover('hide');
-			}
+		},
+
+		'mouseleave.hoverable': function() {
+			clearTimeout(hoverTimeout);
 		}
-	}, 'a.hoverablee');
+
+	}, 'a.hoverable');
 
 
 	// Delete comment
