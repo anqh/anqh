@@ -31,7 +31,6 @@ $.fn.loading = function(loaded) {
 // Initialize
 $(function() {
 
-	// Hover card, disabled until hover out fixed, use only one?
 	var
 			hoverTimeout,
 			hovercards = {};
@@ -52,21 +51,31 @@ $(function() {
 							title:     title,
 							content:   content,
 							container: 'body',
-							placement: function () {
-								var offset = element.offset();
-
-								return offset.top < 100
-										? 'bottom'
-										: (offset.left > window.innerWidth / 2 ? 'left' : 'right');
-							}
+							placement: 'auto right'
 						})
-						.popover('show');
+						.popover('show')
+						.on('hide.bs.popover', function() {
+
+							// Don't hide hovercard if hovering it
+							var
+									$this = $(this),
+									$tip  = $this.data('bs.popover').tip();
+							if ($tip.is(':hover')) {
+								$tip.mouseleave(function() {
+									$this.popover('hide')
+								});
+
+								return false;
+							}
+						});
 			}
 
 			hoverTimeout = setTimeout(function () {
 				if (hovercards[href]) {
 					popover($this, hovercards[href].title, hovercards[href].content);
 				} else {
+
+					// Load hovercard contents with ajax
 					$.get(href + '/hover', function (response) {
 						var $card = $(response);
 
