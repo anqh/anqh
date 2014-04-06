@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Users_Friend
+ * Friend view.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Users_Friend extends View_Base {
@@ -53,8 +53,12 @@ class View_Users_Friend extends View_Base {
 		<?= HTML::avatar($this->user['avatar'], $this->user['username']) ?>
 	</div>
 	<div class="media-body">
-		<?php if ($this->user['last_login']): ?>
-		<small class="ago"><?= HTML::time(Date::short_span($this->user['last_login'], true, true), $this->user['last_login']) ?></small>
+
+		<?php if (self::$_user && !self::$_user->is_friend($this->user)): ?>
+		<?= HTML::anchor(
+			URL::user($this->user, 'friend') . '?token=' . Security::csrf(),
+			'<i class="fa fa-heart"></i> ' . __('Add to friends'),
+			array('class' => 'ajaxify btn btn-lovely btn-sm pull-right', 'data-ajaxify-target' => 'li.media')) ?>
 		<?php endif; ?>
 
 		<?= HTML::user($this->user) ?><br />
@@ -62,12 +66,6 @@ class View_Users_Friend extends View_Base {
 		<small><?= __(':friends mutual friends', array(':friends' => $this->common)) ?></small><br />
 		<?php endif; ?>
 
-		<?php if (self::$_user && !self::$_user->is_friend($this->user)): ?>
-		<?= HTML::anchor(
-			URL::user($this->user, 'friend') . '?token=' . Security::csrf(),
-			'<i class="icon-heart icon-white"></i> ' . __('Add to friends'),
-			array('class' => 'ajaxify btn btn-lovely btn-small', 'data-ajaxify-target' => 'li.media')) ?>
-		<?php endif; ?>
 	</div>
 </li>
 

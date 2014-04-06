@@ -685,7 +685,10 @@ class Anqh_Controller_User extends Controller_Page {
 	 * @return  View_Users_FriendSuggestions
 	 */
 	public function section_friend_suggestions(Model_User $user) {
-		return new View_Users_FriendSuggestions($user);
+		$section = new View_Users_FriendSuggestions($user);
+		$section->aside = true;
+
+		return $section;
 	}
 
 
