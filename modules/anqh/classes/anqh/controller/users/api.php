@@ -148,7 +148,11 @@ class Anqh_Controller_Users_API extends Controller_API {
 					break;
 
 				case 'avatar':
-					$data[$field] = $user->avatar ? URL::site($user->avatar, true) : URL::site('avatar/unknown.png');
+					if (strpos($user->avatar, 'http') === 0) {
+						$data[$field] = $user->avatar;
+					} else {
+						$data[$field] = $user->avatar ? URL::site($user->avatar, true) : URL::site('avatar/unknown.png');
+					}
 					break;
 
 				case 'picture':
