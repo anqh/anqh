@@ -660,9 +660,12 @@ $(function() {
 					name:     'events',
 					valueKey: 'name',
 					remote: {
-						url:      Anqh.APIURL + '/v1/events/search',
-						dataType: 'jsonp',
-						replace:  function(url, uriEncodedQuery) {
+						url:        Anqh.APIURL + '/v1/events/search',
+						dataType:   'jsonp',
+						beforeSend: function() {
+							$field.closest('.form-group').toggleClass('loading', true);
+						},
+						replace: function(url, uriEncodedQuery) {
 							return url += '?' + $.param({
 								q:      decodeURIComponent(uriEncodedQuery),
 								limit:  options.limit,
@@ -673,6 +676,8 @@ $(function() {
 							});
 						},
 						filter: function(parsedResponse) {
+							$field.closest('.form-group').toggleClass('loading', false);
+
 							return parsedResponse.events || [];
 						}
 					},
@@ -1013,6 +1018,9 @@ $(function() {
 							remote: {
 								url:      Anqh.APIURL + '/v1/users/search',
 								dataType: 'jsonp',
+								beforeSend: function() {
+									$field.closest('.form-group').toggleClass('loading', true);
+								},
 								replace:  function(url, uriEncodedQuery) {
 									return url += '?' + $.param({
 										q:      decodeURIComponent(uriEncodedQuery),
@@ -1024,12 +1032,12 @@ $(function() {
 									});
 								},
 								filter: function(parsedResponse) {
+									$field.closest('.form-group').toggleClass('loading', false);
+
 									return parsedResponse.users || [];
 								}
 							},
 							template: function(user) {
-								console.log('template', user.username, user.avatar);
-
 								return '<img src="' + user.avatar + '" alt="Avatar" width="22" height="22" align="middle"> ' + user.username;
 							}
 /*						{ minLength: options.minLength },

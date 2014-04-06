@@ -95,6 +95,8 @@ input.private                          { border-color: @brand-special; color: @b
   #visitor > li > a                    { background: transparent; float: left; }
   #visitor .notifications .popover-content { min-width: 250px; }
   #search                              {
+    .loader                            { display: none; position: absolute; right: @navbar-padding-horizontal * 2; top: 10px; }
+    .loading .loader                   { display: inline-block; }
     .tt-dropdown-menu                  { left: auto !important; right: 0 !important; width: 250px; }
     .tt-suggestion                     { .text-overflow(); }
   }

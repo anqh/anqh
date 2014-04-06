@@ -58,9 +58,12 @@
 					name:     'events',
 					valueKey: 'name',
 					remote: {
-						url:      Anqh.APIURL + '/v1/events/search',
-						dataType: 'jsonp',
-						replace:  function(url, uriEncodedQuery) {
+						url:        Anqh.APIURL + '/v1/events/search',
+						dataType:   'jsonp',
+						beforeSend: function() {
+							$field.closest('.form-group').toggleClass('loading', true);
+						},
+						replace: function(url, uriEncodedQuery) {
 							return url += '?' + $.param({
 								q:      decodeURIComponent(uriEncodedQuery),
 								limit:  options.limit,
@@ -71,6 +74,8 @@
 							});
 						},
 						filter: function(parsedResponse) {
+							$field.closest('.form-group').toggleClass('loading', false);
+
 							return parsedResponse.events || [];
 						}
 					},

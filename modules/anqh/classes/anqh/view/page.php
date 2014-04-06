@@ -579,6 +579,7 @@ class Anqh_View_Page extends View_Base {
 		<?php foreach($searches as $search_type => $search): ?>
 			<div class="form-group search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>">
 				<?= Form::input('search_' . $search_type, null, array('class' => 'form-control', 'placeholder' => $search['text'] . '...')) ?>
+				<i class="loader fa fa-spin fa-spinner"></i>
 			</div>
 		<?php endforeach ?>
 
