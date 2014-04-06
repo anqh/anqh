@@ -50,7 +50,9 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		$this->date = new DateTime;
 
-		$this->view->search = View_Page::SEARCH_EVENTS;
+		if ($this->_request_type !== Controller::REQUEST_AJAX) {
+			$this->view->search = View_Page::SEARCH_EVENTS;
+		}
 	}
 
 
