@@ -54,6 +54,7 @@
 			})
 			.typeahead([
 				{
+					limit:    options.limit,
 					name:     'events',
 					valueKey: 'name',
 					remote: {
@@ -62,7 +63,7 @@
 						replace:  function(url, uriEncodedQuery) {
 							return url += '?' + $.param({
 								q:      decodeURIComponent(uriEncodedQuery),
-								limit:  25,
+								limit:  options.limit,
 								filter: options.filter,
 								search: options.search,
 								field:  options.field,

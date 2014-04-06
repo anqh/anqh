@@ -212,7 +212,7 @@ class Anqh_View_Page extends View_Base {
 		{ 'jquery-ui':     '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js' },
 		{ 'bootstrap':     '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js' },
 		{ 'typeahead':     '//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.9.3/typeahead.min.js' },
-		{ 'typeahead':     '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.min.js' },
+		{ 'select2':       '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.min.js' },
 		{ 'geocomplete':   '//cdnjs.cloudflare.com/ajax/libs/geocomplete/1.4/jquery.geocomplete.min.js' },
 		{ 'imgareaselect': '//cdnjs.cloudflare.com/ajax/libs/imgareaselect/0.9.10/js/jquery.imgareaselect.min.js' },
 		{ 'lazyload':      '//cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js' },
@@ -221,18 +221,19 @@ class Anqh_View_Page extends View_Base {
 		function _loaded() {
 
 			// Search
-			var $search = $('#form-search-events, #form-search-users, #form-search-images');
+			var $search = $('#search form');
 			if ($search.length) {
 				$search.on('submit', function(event) {
 					event.preventDefault();
 				});
-				$search.find('[name=search-events]').autocompleteEvent({
+
+				$search.find('[name=search_events]').autocompleteEvent({
 					action:   'redirect'
 				});
-				$search.find('[name=search-users]').autocompleteUser({
+				$search.find('[name=search_users]').autocompleteUser({
 					action:   'redirect'
 				});
-				$search.find('[name=search-images]').autocompleteUser({
+				$search.find('[name=search_images]').autocompleteUser({
 					action:   'redirect',
 					position: { my: 'right top', at: 'right bottom', of: '#form-search-images', collision: 'flip' }
 				});
@@ -575,12 +576,11 @@ class Anqh_View_Page extends View_Base {
 
 	<li class="navbar-form">
 		<?= Form::open(null, array('role' => 'search', 'class' => '')); ?>
-
-			<div class="form-group">
-				<?php foreach($searches as $search_type => $search): ?>
-				<?= Form::input('search', null, array('class' => 'form-control search-' . $search_type . ($search_type == $this->search ? ' show' : ' hidden'), 'placeholder' => $search['text'] . '...')) ?>
-				<?php endforeach ?>
+		<?php foreach($searches as $search_type => $search): ?>
+			<div class="form-group search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>">
+				<?= Form::input('search_' . $search_type, null, array('class' => 'form-control', 'placeholder' => $search['text'] . '...')) ?>
 			</div>
+		<?php endforeach ?>
 
 		<?= Form::close() ?>
 	</li>

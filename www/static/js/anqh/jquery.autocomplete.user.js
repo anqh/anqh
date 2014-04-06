@@ -34,168 +34,197 @@
 			return val.split(/,\s*/);
 		}
 
-		$field
-				.select2({
-					minimumInputLength: options.minLength,
-					multiple:           multiple,
-					containerCss:       { width: '100%' },
-					tags:               multiple || undefined,
-					ajax: {
-						url:      Anqh.APIURL + '/v1/users/search',
-						dataType: 'jsonp',
-						data:     function(term, page) {
-							return {
-								q:     term,
-								user:  options.user,
-								limit: options.limit,
-								field: options.field,
-								order: options.order
-							};
-						},
-						results: function(data, page) {
-							return {
-								results: data.users || [],
-								text:    'username'
-							};
-						}
-					},
-					createSearchChoice: function(term) {
-						return { id: term, username: term };
-					},
-					formatResult: function(user) {
-
-						// Optgroup?
-						if (!~~user.id) {
-							return '<i class="text-muted">' + user.username + '</i>';
-						}
-
-						return (user.avatar ? '<img src="' + user.avatar + '" alt="Avatar" width="22" height="22" align="middle"> ' : '') + (user.username || '');
-					},
-					formatSelection: function(user) {
-						return user.username || '';
-					},
-					initSelection: function($element, callback) {
-						var tags = $.map(split($element.val()), function(username) {
-							return { id: username, username: username };
-						});
-
-						callback(tags);
-					}
-				})
-				.on('select2-selecting', function(event) {
-					switch (options.action) {
-
-						// Fill form
-						case 'form':
-							var $userId = $('input[name=' + options.userId + ']');
-
-							if ($userId.length && ~~event.val) {
-								$userId.val(event.val);
-							}
-							break;
-
-					}
-				});
-
-		return;
-
-		$field
-			.on('typeahead:selected', function(event, selection, name) {
-				switch (options.action) {
-
-					// Fill form
-					case 'form':
-						if (multiple) {
-
-							// Multiple users, one input
-							var terms = split(this.value);
-							terms.pop();
-							terms.push(selection.value);
-							terms.push('');
-							$field.val(terms.join(', '));
-							return false;
-
-						} else if (options.maxUsers > 1) {
-
-							// Multiple users, tokenized
-							// @todo  Values to post
-							var span = $('<span>')
-								.attr({ 'user-id': selection.id })
-								.text(selection.value);
-							var link = $('<a>')
-								.attr({ 'href': '#remove' })
-								.text('x')
-								.click(function() {
-									$(this).parent().remove();
-									return false;
-								})
-								.appendTo(span);
-
-							span.insertBefore($field);
-							$field.val('');
-							return false;
-
-						} else {
-
-							// Single user
-							$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(selection.id);
-							$field.val(selection.value);
-
-						}
-						break;
-
-					// Navigate URL
-					case 'redirect':
-						var location = $field.attr('data-redirect') || selection.url;
-						$.each(selection, function _replace(key, value) {
-							location = location.replace(':' + key, value);
-						});
-						window.location = location;
-						break;
-
-					// Execute action
-					default:
-						if (typeof options.action == 'function') {
-							options.action(event, selection);
-						}
-				}
-			})
-			.typeahead(
-				{
-					minLength: options.minLength
-				},
-				{
-					displayKey: 'username',
-					source:     users.ttAdapter(),
-					updater: function(item) {
-						console.log('updater', item);
-					},
-					matcher: function(item) {
-						console.log('matcher', item);
-					},
-					highlighter: function(item) {
-						console.log('highlighter', item);
-					}
-/*					remote: {
-						url:     Anqh.APIURL + '/v1/users/search',
-						replace: function(url, uriEncodedQuery) {
-							console.log(url, uriEncodedQuery);
-							return url += '?query=' + uriEncodedQuery;
-						},
-						filter: function(parsedResponse) {
-							return $.map(parsedResponse.users || [], function(user) {
+		if (multiple) {
+			$field
+					.select2({
+						minimumInputLength: options.minLength,
+						multiple: multiple,
+						containerCss: { width: '100%' },
+						tags: multiple || undefined,
+						ajax: {
+							url: Anqh.APIURL + '/v1/users/search',
+							dataType: 'jsonp',
+							data: function (term, page) {
 								return {
-									'label': item.username,
-									'value': item.username,
-									'image': item.avatar,
-									'id':    item.id,
-									'url':   item.url
+									q: term,
+									user: options.user,
+									limit: options.limit,
+									field: options.field,
+									order: options.order
 								};
+							},
+							results: function (data, page) {
+								return {
+									results: data.users || [],
+									text: 'username'
+								};
+							}
+						},
+						createSearchChoice: function (term) {
+							return { id: term, username: term };
+						},
+						formatResult: function (user) {
+
+							// Optgroup?
+							if (!~~user.id) {
+								return '<i class="text-muted">' + user.username + '</i>';
+							}
+
+							return (user.avatar
+									? '<img src="' + user.avatar + '" alt="Avatar" width="22" height="22" align="middle"> '
+									: '') + (user.username || '');
+						},
+						formatSelection: function (user) {
+							return user.username || '';
+						},
+						initSelection: function ($element, callback) {
+							var tags = $.map(split($element.val()), function (username) {
+								return { id: username, username: username };
 							});
+
+							callback(tags);
 						}
-					}*/
-				}
-			);
+					})
+					.on('select2-selecting', function (event) {
+						switch (options.action) {
+
+							// Fill form
+							case 'form':
+								var $userId = $('input[name=' + options.userId + ']');
+
+								if ($userId.length && ~~event.val) {
+									$userId.val(event.val);
+								}
+								break;
+
+						}
+					});
+
+		} else {
+
+			$field
+					.on('typeahead:selected', function (event, selection, name) {
+						switch (options.action) {
+
+							// Fill form
+							case 'form':
+								if (multiple) {
+/*
+									// Multiple users, one input
+									var terms = split(this.value);
+									terms.pop();
+									terms.push(selection.value);
+									terms.push('');
+									$field.val(terms.join(', '));
+									return false;
+
+								} else if (options.maxUsers > 1) {
+
+									// Multiple users, tokenized
+									// @todo  Values to post
+									var span = $('<span>')
+											.attr({ 'user-id': selection.id })
+											.text(selection.value);
+									var link = $('<a>')
+											.attr({ 'href': '#remove' })
+											.text('x')
+											.click(function () {
+												$(this).parent().remove();
+												return false;
+											})
+											.appendTo(span);
+
+									span.insertBefore($field);
+									$field.val('');
+									return false;
+*/
+								} else {
+
+									// Single user
+									$('input[name=' + options.userId + ']') && $('input[name=' + options.userId + ']').val(selection.id);
+									$field.val(selection.value);
+
+								}
+								break;
+
+							// Navigate URL
+							case 'redirect':
+								var location = $field.attr('data-redirect') || selection.url;
+								$.each(selection, function _replace(key, value) {
+									location = location.replace(':' + key, value);
+								});
+								window.location = location;
+								break;
+
+							// Execute action
+							default:
+								if (typeof options.action == 'function') {
+									options.action(event, selection);
+								}
+						}
+					})
+					.typeahead([
+						{
+							limit:    options.limit,
+							name:     'users',
+							valueKey: 'username',
+							remote: {
+								url:      Anqh.APIURL + '/v1/users/search',
+								dataType: 'jsonp',
+								replace:  function(url, uriEncodedQuery) {
+									return url += '?' + $.param({
+										q:      decodeURIComponent(uriEncodedQuery),
+										user:   options.user,
+										limit:  options.limit,
+										search: options.search,
+										field:  options.field,
+										order:  options.order
+									});
+								},
+								filter: function(parsedResponse) {
+									return parsedResponse.users || [];
+								}
+							},
+							template: function(user) {
+								console.log('template', user.username, user.avatar);
+
+								return '<img src="' + user.avatar + '" alt="Avatar" width="22" height="22" align="middle"> ' + user.username;
+							}
+/*						{ minLength: options.minLength },
+						{
+							displayKey: 'username',
+							source: users.ttAdapter(),
+							updater: function (item) {
+								console.log('updater', item);
+							},
+							matcher: function (item) {
+								console.log('matcher', item);
+							},
+							highlighter: function (item) {
+								console.log('highlighter', item);
+							}*/
+							/*					remote: {
+							 url:     Anqh.APIURL + '/v1/users/search',
+							 replace: function(url, uriEncodedQuery) {
+							 console.log(url, uriEncodedQuery);
+							 return url += '?query=' + uriEncodedQuery;
+							 },
+							 filter: function(parsedResponse) {
+							 return $.map(parsedResponse.users || [], function(user) {
+							 return {
+							 'label': item.username,
+							 'value': item.username,
+							 'image': item.avatar,
+							 'id':    item.id,
+							 'url':   item.url
+							 };
+							 });
+							 }
+							 }*/
+						}
+					]);
+
+		}
 /*
 		$(this)
 			.autocomplete({
