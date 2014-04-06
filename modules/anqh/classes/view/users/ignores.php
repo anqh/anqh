@@ -57,8 +57,8 @@ class View_Users_Ignores extends View_Section {
 			<?= HTML::user($ignore) ?><br />
 			<?= HTML::anchor(
 				URL::user($ignore, 'unignore') . '?token=' . Security::csrf(),
-				'<i class="icon-ban-circle icon-white"></i> ' . __('Unignore'),
-				array('class' => 'btn btn-inverse btn-small ignore-delete')
+				'<i class="fa fa-ban"></i> ' . __('Unignore'),
+				array('class' => 'btn btn-default btn-sm ignore-delete')
 			) ?>
 		</div>
 	</li>
