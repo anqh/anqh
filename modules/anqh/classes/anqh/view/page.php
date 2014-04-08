@@ -561,19 +561,15 @@ class Anqh_View_Page extends View_Base {
 <ul id="search" class="nav navbar-nav navbar-right">
 
 	<li class="dropdown">
-
-		<?php foreach($searches as $search_type => $search): ?>
-		<a href="#menu-search" class="dropdown-toggle search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>" data-toggle="dropdown">
-			<i class="<?= $search['icon'] ?>"></i><span class="caret"></span>
+		<a href="#menu-search" class="dropdown-toggle" data-toggle="dropdown">
+			<i class="fa fa-search"></i></i><span class="caret"></span>
 		</a>
-		<?php endforeach ?>
 
 		<ul class="dropdown-menu dropdown-menu-left">
 			<?php foreach($searches as $search_type => $search): ?>
 			<li><a href="#" data-toggle="show" data-parent="#search" data-target=".search-<?= $search_type ?>"><i class="<?= $search['icon'] ?>"></i> <?= $search['text'] ?></a></li>
 			<?php endforeach ?>
 		</ul>
-
 	</li>
 
 	<li class="navbar-form">
@@ -628,15 +624,15 @@ class Anqh_View_Page extends View_Base {
 
 	<?= HTML::anchor(
 		Route::url('sign', array('action' => 'up')),
-		__('Join'),
-		array('class' => 'btn btn-primary navbar-btn', 'title' => __("Did we mention it's FREE!"))
+		'<i class="fa fa-heart"></i> ' . __('Sign up'),
+		array('class' => 'btn btn-lovely navbar-btn', 'title' => __("Did we mention it's FREE!"))
 	) ?>
 
 	<div class="dropdown">
 		<?= HTML::anchor(
 			Route::url('sign', array('action' => 'in')),
-			__('Login'),
-			array('class' => 'btn btn-primary navbar-btn dropdown-toggle', 'title' => __("Did we mention it's FREE!"), 'data-toggle="dropdown"')
+			'<i class="fa fa-sign-in"></i> ' . __('Login'),
+			array('class' => 'btn btn-primary navbar-btn dropdown-toggle', 'data-toggle' => 'dropdown')
 		) ?>
 		<div class="dropdown-menu pull-right">
 			<?= Form::open(Route::url('sign', array('action' => 'in'))) ?>
