@@ -73,10 +73,16 @@ abstract class Anqh_Controller_Page extends Controller {
 				}
 			}*/
 
+			// Theme
+
+			$theme = Arr::get($_COOKIE, 'theme');
+			if (!in_array($theme, array('light', 'mixed', 'dark'))) {
+				$theme = 'mixed';
+			}
 
 			// Do some CSS magic to page class
 			$page_class = array_merge(array(
-				'theme-mixed',
+				'theme-' . $theme,
 				self::$user ? 'authenticated' : 'unauthenticated',
 			), explode(' ' , $this->page_class));
 			$page_class = implode(' ', array_unique($page_class));

@@ -15,7 +15,8 @@ module.exports = function(grunt) {
 			vendor: {
 				src: [
 					'www/static/js/vendor/jquery.markitup.js',
-					'www/static/js/vendor/markitup.bbcode.js'
+					'www/static/js/vendor/markitup.bbcode.js',
+					'www/static/js/vendor/jquery.cookie.js'
 				],
 				dest: 'www/static/js/c/vendor.js'
 			},
