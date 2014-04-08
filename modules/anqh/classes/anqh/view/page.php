@@ -412,6 +412,8 @@ class Anqh_View_Page extends View_Base {
 		<?php endforeach; ?>
 	</ul>
 
+	<?= $this->_theme() ?>
+
 	<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
 
 	<?= $this->_search() ?>
@@ -561,7 +563,7 @@ class Anqh_View_Page extends View_Base {
 	<li class="dropdown">
 
 		<?php foreach($searches as $search_type => $search): ?>
-		<a class="dropdown-toggle search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>" data-toggle="dropdown">
+		<a href="#menu-search" class="dropdown-toggle search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>" data-toggle="dropdown">
 			<i class="<?= $search['icon'] ?>"></i><span class="caret"></span>
 		</a>
 		<?php endforeach ?>
@@ -591,13 +593,6 @@ class Anqh_View_Page extends View_Base {
 <!--
 <div id="search">
 
-	<?= Form::open(null, array('id' => 'form-search-events', 'class' => 'hidden-phone')) ?>
-		<label>
-			<i class="icon-calendar"></i>
-			<?= Form::input('search-events', null, array('class' => 'input-small search-query', 'placeholder' => __('Search events..'), 'title' => __('Enter at least 3 characters'))); ?>
-		</label>
-	<?= Form::close(); ?>
-
 	<?= Form::open(null, array('id' => 'form-search-images', 'class' => 'hidden-phone')) ?>
 		<label>
 			<i class="icon-camera-retro"></i>
@@ -607,13 +602,6 @@ class Anqh_View_Page extends View_Base {
 					'title'         => __('Enter at least 2 characters'),
 					'data-redirect' => Route::url('galleries', array('action' => 'search')) . '?user=:value'
 				)); ?>
-		</label>
-	<?= Form::close(); ?>
-
-	<?= Form::open(null, array('id' => 'form-search-users', 'class' => 'hidden-phone')) ?>
-		<label>
-			<i class="icon-user"></i>
-			<?= Form::input('search-users', null, array('class' => 'input-small search-query', 'placeholder' => __('Search users..'), 'title' => __('Enter at least 2 characters'))); ?>
 		</label>
 	<?= Form::close(); ?>
 
@@ -701,6 +689,33 @@ class Anqh_View_Page extends View_Base {
 			':database_queries' => $queries,
 			':included_files'   => count(get_included_files()),
 		));
+	}
+
+
+	/**
+	 * Render theme selector.
+	 *
+	 * @return  string
+	 */
+	protected function _theme() {
+		ob_start();
+
+?>
+
+<ul id="theme" class="nav navbar-nav navbar-right">
+	<li class="dropdown">
+		<?= HTML::anchor('#menu-theme', '<i class="fa fa-adjust"></i> <span class="caret"></span>', array('class' => 'dropdown-toggle', 'data-toggle' => 'dropdown', 'title' => __('Change theme'))) ?>
+		<ul class="dropdown-menu" role="menu">
+			<li role="menuitem"><?= HTML::anchor('#theme-light', '<i class="fa fa-fw fa-circle-o"></i> ' . __('Light'), array('data-toggle' => 'theme', 'data-theme' => 'light')) ?></li>
+			<li role="menuitem"><?= HTML::anchor('#theme-mixed', '<i class="fa fa-fw fa-adjust"></i> ' . __('Mixed'), array('data-toggle' => 'theme', 'data-theme' => 'mixed')) ?></li>
+			<li role="menuitem"><?= HTML::anchor('#theme-dark',  '<i class="fa fa-fw fa-circle"></i> ' . __('Dark'), array('data-toggle' => 'theme', 'data-theme' => 'dark')) ?></li>
+		</ul>
+	</li>
+</ul>
+
+<?php
+
+		return ob_get_clean();
 	}
 
 
@@ -819,7 +834,7 @@ class Anqh_View_Page extends View_Base {
 
 	<li class="dropdown">
 		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
-		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <i class="fa fa-caret-down"></i></a>
+		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <span class="caret"></span></i></a>
 		<ul class="dropdown-menu pull-right" role="menu">
 			<?php foreach (Kohana::$config->load('site.menu_visitor') as $item): ?>
 			<li role="menuitem"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i> ' . $item['text']) ?></li>

@@ -362,4 +362,16 @@ $(function() {
 		$parent.find(selector).removeClass('hidden').addClass('show');
 	});
 
+
+	// Theme selector
+	$('[data-toggle=theme]').on('click', function(e) {
+		e.preventDefault();
+
+		var theme = $(this).data('theme') || 'mixed';
+		
+		$('body').removeClass('theme-light theme-mixed theme-dark').addClass('theme-' + theme);
+
+		// @todo: Save
+	});
+
 });

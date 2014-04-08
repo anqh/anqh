@@ -362,6 +362,18 @@ $(function() {
 		$parent.find(selector).removeClass('hidden').addClass('show');
 	});
 
+
+	// Theme selector
+	$('[data-toggle=theme]').on('click', function(e) {
+		e.preventDefault();
+
+		var theme = $(this).data('theme') || 'mixed';
+		
+		$('body').removeClass('theme-light theme-mixed theme-dark').addClass('theme-' + theme);
+
+		// @todo: Save
+	});
+
 });
 ;/**
  * Form helper
@@ -1016,12 +1028,12 @@ $(function() {
 							name:     'users',
 							valueKey: 'username',
 							remote: {
-								url:      Anqh.APIURL + '/v1/users/search',
-								dataType: 'jsonp',
+								url:        Anqh.APIURL + '/v1/users/search',
+								dataType:   'jsonp',
 								beforeSend: function() {
 									$field.closest('.form-group').toggleClass('loading', true);
 								},
-								replace:  function(url, uriEncodedQuery) {
+								replace: function(url, uriEncodedQuery) {
 									return url += '?' + $.param({
 										q:      decodeURIComponent(uriEncodedQuery),
 										user:   options.user,
