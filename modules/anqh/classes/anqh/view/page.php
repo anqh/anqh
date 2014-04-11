@@ -146,16 +146,16 @@ class Anqh_View_Page extends View_Base {
 		endif;
 
 		if (!empty($this->_content[$column])):
-			$left   = !(empty($this->_content[self::COLUMN_LEFT]));
-			$center = !(empty($this->_content[self::COLUMN_CENTER]));
-			$right  = !(empty($this->_content[self::COLUMN_RIGHT]));
+			$left   = !empty($this->_content[self::COLUMN_LEFT]);
+			$center = !empty($this->_content[self::COLUMN_CENTER]);
+			$right  = !empty($this->_content[self::COLUMN_RIGHT]);
 			ob_start();
 
 			switch ($column):
 				case self::COLUMN_LEFT:   $class = $center && $right ? 'col-sm-3' : ($center ? 'col-sm-4' : 'col-sm-6'); break;
 				case self::COLUMN_CENTER: $class = $left && $right ? 'col-sm-6' : ($left || $right ? 'col-sm-8' : 'col-sm-12'); break;
 				case self::COLUMN_RIGHT:  $class = $left && $center ? 'col-sm-3' : ($center ? 'col-sm-4' : 'col-sm-6'); break;
-				default:                $class = 'col-sm-12';
+				default:                  $class = 'col-sm-12';
 			endswitch;
 
 ?>
@@ -481,7 +481,7 @@ class Anqh_View_Page extends View_Base {
 	<div class="container">
 		<div class="row">
 
-<?= $this->content(self::COLUMN_TOP) ?>
+<?= $top ?>
 
 		</div>
 	</div>
@@ -505,7 +505,7 @@ class Anqh_View_Page extends View_Base {
 	<div class="container">
 		<div class="row">
 
-<?= $this->content(self::COLUMN_BOTTOM) ?>
+<?= $bottom ?>
 
 		</div>
 	</div>

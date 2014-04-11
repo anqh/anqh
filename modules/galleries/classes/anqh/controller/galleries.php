@@ -713,7 +713,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			}
 		}
 
-
 		// Show image
 		if (!is_null($current)) {
 
@@ -813,7 +812,6 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 			// Build page
-			$this->view = View_Page::factory(__('Gallery'));
 
 			// Image actions
 			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
