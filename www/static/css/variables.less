@@ -19,12 +19,14 @@
 @brand-lovely:               #c3325f;
 @brand-special:              #7a43b6;
 
+
 // Scaffolding
 // -------------------------
 @body-bg:                    #f5f2ed;
 @text-color:                 @gray;
 @dark-body-bg:               #1a1a1a;
 @dark-text-color:            @gray-light;
+
 
 // Links
 // -------------------------
@@ -34,7 +36,7 @@
 
 // Typography
 // -------------------------
-@import url(http://fonts.googleapis.com/css?family=Roboto:900,100);
+@import url(//fonts.googleapis.com/css?family=Roboto:900,100);
 
 @font-family-custom:         Roboto, @font-family-sans-serif;
 @font-weight-bold-custom:    900;
@@ -57,8 +59,8 @@
 // Tables
 // -------------------------
 @table-bg-hover:             rgba(0, 0, 0, .025);
-@dark-table-bg-accent:       rgba(0, 0, 0, .05); // for striping
-@dark-table-border:          @gray-dark; // table and cell border
+@table-bg-accent:            rgba(128, 128, 128, .05);
+@table-border-color:         rgba(128, 128, 128, .15);
 
 
 // Buttons
@@ -107,34 +109,96 @@
 @dark-hr-border:             #6a6a6a;
 
 
-// Panels
-@dark-panel-bg:              #2b292b;
-@dark-panel-inner-border:    @dark-body-bg;
-@dark-panel-footer-bg:       @dark-panel-bg;
-@dark-panel-default-text:    @dark-text-color;
-@dark-panel-default-border:  @dark-panel-bg;
-@dark-panel-default-heading-bg: @dark-panel-bg;
-
-// Wells
-// -------------------------
-@dark-well-bg:               #202020;
-
-
-@navbar-height:              40px;
-
 // Navs
 // -------------------------
-@dark-nav-link-hover-bg:     @gray-darkest;
+@navbar-height:              40px;
+@dark-nav-link-hover-bg:     rgba(128, 128, 128, .15);
+@dark-nav-tabs-border-color:                   rgba(128, 128, 128, .15);
+@dark-nav-tabs-link-hover-border-color:        @dark-nav-link-hover-bg;
+@dark-nav-tabs-active-link-hover-bg:           @dark-nav-link-hover-bg;
+@dark-nav-tabs-active-link-hover-color:        @gray;
+@dark-nav-tabs-active-link-hover-border-color: transparent;
+
 
 // Pagination
 // -------------------------
-@dark-pagination-bg:         @black;
-@dark-pagination-border:     @gray-darkest;
-@dark-pagination-active-bg:  @gray-dark;
+@dark-pagination-color:           @link-color;
+@dark-pagination-bg:              @black;
+@dark-pagination-border:          @gray-darkest;
 
+@dark-pagination-hover-color:     @dark-link-hover-color;
+@dark-pagination-hover-bg:        @gray-dark;
+@dark-pagination-hover-border:    @gray-darkest;
+
+@dark-pagination-active-color:    #fff;
+@dark-pagination-active-bg:       @gray-dark;
+@dark-pagination-active-border:   @brand-primary;
+
+@dark-pagination-disabled-color:  @gray-dark;
+@dark-pagination-disabled-bg:     @gray-darkest;
+@dark-pagination-disabled-border: @gray-darkest;
+
+
+// Form states and alerts
+// -------------------------
+/*
+@dark-state-success-text:    #3c763d;
+@dark-state-success-bg:      #dff0d8;
+@dark-state-success-border:  darken(spin(@state-success-bg, -10), 5%);
+
+@dark-state-info-text:       #31708f;
+@dark-state-info-bg:         #d9edf7;
+@dark-state-info-border:     darken(spin(@state-info-bg, -10), 7%);
+
+@dark-state-warning-text:    #8a6d3b;
+@dark-state-warning-bg:      #fcf8e3;
+@dark-state-warning-border:  darken(spin(@state-warning-bg, -10), 5%);
+
+@dark-state-danger-text:     #a94442;
+@dark-state-danger-bg:       #f2dede;
+@dark-state-danger-border:   darken(spin(@state-danger-bg, -10), 5%);
+*/
 
 // Tooltips and popovers
 // -------------------------
 @dark-popover-bg:            @gray-darker;
 @dark-popover-arrow-color:   @gray-darker;
 @dark-popover-title-bg:      darken(@popover-bg, 3%);
+
+
+// Panels
+// -------------------------
+@panel-border-radius:        0;
+
+@dark-panel-bg:              #2b292b;
+@dark-panel-inner-border:    @dark-body-bg;
+@dark-panel-footer-bg:       @dark-panel-bg;
+
+@dark-panel-default-text:    @dark-text-color;
+@dark-panel-default-border:  @dark-panel-bg;
+@dark-panel-default-heading-bg: @dark-panel-bg;
+
+@dark-panel-primary-text:       #fff;
+@dark-panel-primary-border:     @brand-primary;
+@dark-panel-primary-heading-bg: @brand-primary;
+
+@dark-panel-success-text:       @state-success-text;
+@dark-panel-success-border:     multiply(@state-success-border, @dark-panel-bg);
+@dark-panel-success-heading-bg: multiply(@state-success-bg, @dark-panel-bg);
+
+@dark-panel-info-text:          @panel-info-text;
+@dark-panel-info-border:        multiply(@state-info-border, @dark-panel-bg);
+@dark-panel-info-heading-bg:    multiply(@panel-info-heading-bg, @dark-panel-bg);
+
+@dark-panel-warning-text:       @state-warning-text;
+@dark-panel-warning-border:     multiply(@state-warning-border, @dark-panel-bg);
+@dark-panel-warning-heading-bg: multiply(@state-warning-bg, @dark-panel-bg);
+
+@dark-panel-danger-text:        @state-danger-text;
+@dark-panel-danger-border:      multiply(@state-danger-border, @dark-panel-bg);
+@dark-panel-danger-heading-bg:  multiply(@state-danger-bg, @dark-panel-bg);
+
+
+// Wells
+// -------------------------
+@dark-well-bg:               #202020;

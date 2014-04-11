@@ -27,7 +27,10 @@ h4 small                               { font-size: 12px; line-height: @line-hei
 //
 // Tables
 // --------------------------------------------------
-.table:last-child                      { margin-bottom: 0; }
+.table                                 {
+  &:last-child                         { margin-bottom: 0; }
+  .table                               { background: none; }
+}
 
 
 //
@@ -75,7 +78,7 @@ select.form-control                    { padding: @padding-base-vertical (@paddi
 // Panels
 // --------------------------------------------------
 .panel                                 {
-  .panel-title                         { font-size: @font-size-base;  }
+  .panel-title                         { font-size: @font-size-base; text-align: center; }
 }
 
 

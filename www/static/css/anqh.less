@@ -138,19 +138,36 @@ input.private                          { border-color: @brand-special; color: @b
 body.theme-dark                        { background: @dark-body-bg url(../img/background.png); color: @dark-text-color;
   h1                                   { color: @white; text-shadow: 2px 2px 2px fade(@text-color, 20%); }
   h3                                   { color: @white; }
+  .popover-title                       { color: @headings-color; }
 }
-.content.dark aside.panel,
-body.theme-dark aside.panel,
-body.theme-mixed aside.panel           { background-color: @dark-panel-bg; border-radius: 0; color: @dark-panel-default-text; .panel-variant(@dark-panel-default-border; @dark-headings-color; @dark-panel-default-heading-bg; @dark-panel-default-border);
+.content.dark .panel,
+body.theme-dark .panel,
+body.theme-mixed aside.panel           { background-color: @dark-panel-bg; color: @dark-panel-default-text; .panel-variant(@dark-panel-default-border; @dark-headings-color; @dark-panel-default-heading-bg; @dark-panel-default-border);
   .panel-heading                       { border-bottom-color: @dark-panel-inner-border; }
-  .panel-title                         { text-align: center; }
-  .panel-title a                       { color: @dark-headings-color; }
+  .panel-title,
+  .panel-title a                       { color: @dark-headings-color !important; }
+
+  &.panel-primary {
+    .panel-variant(@dark-panel-primary-border; @dark-panel-primary-text; @dark-panel-primary-heading-bg; @dark-panel-primary-border);
+  }
+  &.panel-success {
+    .panel-variant(@dark-panel-success-border; @dark-panel-success-text; @dark-panel-success-heading-bg; @dark-panel-success-border);
+  }
+  &.panel-info {
+    .panel-variant(@dark-panel-info-border; @dark-panel-info-text; @dark-panel-info-heading-bg; @dark-panel-info-border);
+  }
+  &.panel-warning {
+    .panel-variant(@dark-panel-warning-border; @dark-panel-warning-text; @dark-panel-warning-heading-bg; @dark-panel-warning-border);
+  }
+  &.panel-danger {
+    .panel-variant(@dark-panel-danger-border; @dark-panel-danger-text; @dark-panel-danger-heading-bg; @dark-panel-danger-border);
+  }
 }
 .content.dark,
 body.theme-dark,
 body.theme-mixed aside                 {
   hr                                   { border-color: @dark-hr-border; }
-  a:not(.btn)                          { color: @dark-link-color; }
+  a:not(.btn):not(.user)               { color: @dark-link-color; }
   a:not(.btn):hover                    { color: @dark-link-hover-color; }
   .user                                { color: @gray-lighter; font-weight: bold; }
   .male                                { color: @brand-info; }
@@ -173,29 +190,79 @@ body.theme-mixed aside                 {
   input[type="search"],
   input[type="tel"],
   input[type="color"],
-  .uneditable-input                      { box-shadow: inset 0 2px 2px rgba(0, 0, 0, .25), 0 1px 0 rgba(255, 255, 255, .1); color: @white; }
-  select                                 { color: @white; }
+  .uneditable-input                    { box-shadow: inset 0 2px 2px rgba(0, 0, 0, .25), 0 1px 0 rgba(255, 255, 255, .1); color: @white; }
+  select                               { color: @white; }
   .input-append .add-on,
-  .input-prepend .add-on                 { background: @gray-darker; border-color: @input-border; text-shadow: 0 1px 0 @black; }*/
+  .input-prepend .add-on               { background: @gray-darker; border-color: @input-border; text-shadow: 0 1px 0 @black; }*/
 
-  .close                                 { color: @text-color; }
+  .close                               { color: @text-color; }
 
-  .text-muted                            { color: @gray; }
-  .text-muted a                          { color: @gray-light; }
+  .text-muted                          { color: @gray; }
+  .text-muted a                        { color: @gray-light; }
 
-  .pager                                 {
-    li > a,
-    li > span                            { background-color: @pagination-bg; border-color: @pagination-border; }
-    li > a:hover                         { background-color: @pagination-active-bg; }
-    .disabled > a,
-    .disabled > a:hover,
-    .disabled > span                     { background-color: @gray-darker; }
+  .pager                               {
+    li                                 {
+      > a,
+      > span                           { background-color: @dark-pagination-bg; border-color: @dark-pagination-border; }
+      > a:hover,
+      > a:focus                        { background-color: @dark-pagination-hover-bg; }
+    }
+    .disabled                          {
+      > a,
+      > a:hover,
+      > a:focus,
+      > span                           { background-color: @dark-pagination-disabled-bg; color: @dark-pagination-disabled-color; }
+    }
   }
 
-  .nav-pills                             {
-    > li > a                             {
+  .pagination                          {
+    > li {
+      > a,
+      > span                           { background-color: @dark-pagination-bg; border-color: @dark-pagination-border; color: @dark-pagination-color; }
+    }
+    > li > a,
+    > li > span                        {
       &:hover,
-      &:focus                            { background-color: @dark-nav-link-hover-bg; }
+      &:focus                          { background-color: @dark-pagination-hover-bg; border-color: @dark-pagination-hover-border; color: @dark-pagination-hover-color; }
+    }
+    > .active > a,
+    > .active > span                   {
+      &,
+      &:hover,
+      &:focus                          { background-color: @dark-pagination-active-bg; border-color: @dark-pagination-active-border; color: @dark-pagination-active-color; }
+    }
+    > .disabled                        {
+      > span,
+      > span:hover,
+      > span:focus,
+      > a,
+      > a:hover,
+      > a:focus                        { background-color: @dark-pagination-disabled-bg; border-color: @dark-pagination-disabled-border; color: @dark-pagination-disabled-color; }
+    }
+  }
+
+  .nav > li > a:hover                  { background-color: @dark-nav-tabs-active-link-hover-bg; }
+  .nav-tabs                            { border-bottom: 1px solid @dark-nav-tabs-border-color;
+    > li                               {
+      > a:hover                        { border-color: @dark-nav-tabs-link-hover-border-color @dark-nav-tabs-link-hover-border-color @dark-nav-tabs-border-color; }
+      &.active > a                     {
+        &,
+        &:hover,
+        &:focus                        { background-color: @dark-nav-tabs-active-link-hover-bg; border-color: @dark-nav-tabs-active-link-hover-border-color; color: @dark-nav-tabs-active-link-hover-color; }
+      }
+    }
+  }
+  .nav-pills                           {
+    > li > a                           {
+      &:hover,
+      &:focus                          { background-color: @dark-nav-link-hover-bg; }
+    }
+    > li {
+      &.active > a {
+        &,
+        &:hover,
+        &:focus                        { background-color: @dark-nav-tabs-active-link-hover-bg; color: @dark-nav-tabs-active-link-hover-color; }
+      }
     }
   }
 
@@ -211,7 +278,7 @@ body.theme-mixed aside                 {
   .nav > li.dropdown.open.active > a:hover { background-color: @gray-dark; border-color: @gray-dark; }
 */
 
-  .thumbnail                             { border: 1px solid @gray-darkest; }
+  .thumbnail                             { background: @gray-darkest; border: 1px solid @gray-darkest; }
 
   blockquote                             { border-left-color: @gray-dark; }
 }
