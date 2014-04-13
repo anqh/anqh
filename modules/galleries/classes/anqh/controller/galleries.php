@@ -1392,6 +1392,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				$gallery->name     = $event->name;
 				$gallery->date     = $event->stamp_begin;
 				$gallery->event_id = $event->id;
+				$gallery->created  = time();
 
 			} else if ($gallery->loaded()) {
 
