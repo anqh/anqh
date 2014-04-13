@@ -66,7 +66,7 @@ return array(
 	 * Main menu
 	 */
 	'menu' => array(
-		'home'       => array('url' => URL::site(),              'text' => __('Home'),       'icon' => 'fa fa-home'),
+		'home'       => array('url' => URL::site(),              'text' => __('Home'),       'icon' => 'fa fa-home', 'footer' => true),
 		'events'     => array('url' => Route::url('events'),     'text' => __('Events'),     'icon' => 'fa fa-calendar'),
 		'forum'      => array('url' => Route::url('forum'),      'text' => __('Forum'),      'icon' => 'fa fa-comments-o'),
 		'galleries'  => array('url' => Route::url('galleries'),  'text' => __('Galleries'),  'icon' => 'fa fa-camera-retro'),

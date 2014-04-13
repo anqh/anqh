@@ -221,7 +221,7 @@ class Anqh_View_Page extends View_Base {
 		function _loaded() {
 
 			// Search
-			var $search = $('#search form');
+			var $search = $('form[role=search]');
 			if ($search.length) {
 				$search.on('submit', function(event) {
 					event.preventDefault();
@@ -360,40 +360,6 @@ class Anqh_View_Page extends View_Base {
 
 
 	/**
-	 * Render <header> - visitor, main menu, search etc.
-	 *
-	 * @return  string
-	 */
-	protected function _header() {
-		ob_start();
-
-		$menu = Kohana::$config->load('site.menu.' . $this->id);
-
-?>
-
-	<header>
-		<div class="pull-left">
-			<?= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
-			<?= ($this->id != 'home' && $menu) ? HTML::anchor($menu['url'], $menu['text'], array('class' => 'section-title')) : '' ?>
-		</div>
-
-		<div class="pull-right">
-			<?php if (self::$_user_id):
-				echo $this->_search();
-				echo $this->_visitor();
-			else:
-				echo $this->_signin();
-			endif; ?>
-		</div>
-	</header>
-
-<?php
-
-		return ob_get_clean();
-	}
-
-
-	/**
 	 * Render main menu.
 	 *
 	 * @return  string
@@ -404,19 +370,25 @@ class Anqh_View_Page extends View_Base {
 ?>
 
 <nav id="mainmenu" role="navigation" class="navbar navbar-inverse navbar-static-top">
-<!--	--><?//= HTML::anchor('', Kohana::$config->load('site.site_name'), array('class' => 'brand')) ?>
 
-	<ul class="nav navbar-nav" role="menubar">
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainmenu [role=menubar]">
+			<i class="fa fa-bars"></i>
+		</button>
+		<?= HTML::anchor(URL::site(), Kohana::$config->load('site.site_name'), array('class' => 'navbar-brand')) ?>
+	</div>
+
+	<ul class="nav navbar-nav collapse navbar-collapse" role="menubar">
 		<?php foreach (Kohana::$config->load('site.menu') as $id => $item): if ($item['footer']) continue; ?>
-		<li role="menuitem" class="<?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . ' visible-xs"></i><span class="hidden-xs">' . $item['text'] . '</span>') ?></li>
+		<li role="menuitem" class="<?= $id == $this->id ? 'active' : '' ?>"><?= HTML::anchor($item['url'], $item['text']) ?></li>
 		<?php endforeach; ?>
 	</ul>
 
-	<?= $this->_theme() ?>
-
-	<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
-
-	<?= $this->_search() ?>
+	<ul class="nav navbar-nav navbar-right collapse navbar-collapse" role="menubar">
+		<?= $this->_search() ?>
+		<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
+		<?= $this->_theme() ?>
+	</ul>
 
 </nav><!-- #mainmenu -->
 
@@ -546,24 +518,21 @@ class Anqh_View_Page extends View_Base {
 		ob_start();
 
 		$searches = array(
-			self::SEARCH_EVENTS => array(
-				'icon' => 'fa fa-fw fa-calendar',
-				'text' => __('Search events'),
-			),
 			self::SEARCH_USERS  => array(
 				'icon' => 'fa fa-fw fa-user',
 				'text' => __('Search users'),
+			),
+			self::SEARCH_EVENTS => array(
+				'icon' => 'fa fa-fw fa-calendar',
+				'text' => __('Search events'),
 			),
 		);
 
 ?>
 
-<ul id="search" class="nav navbar-nav navbar-right">
-
 	<li class="dropdown">
-		<a href="#menu-search" class="dropdown-toggle" data-toggle="dropdown">
-			<i class="fa fa-search"></i></i><span class="caret"></span>
-		</a>
+		<?= HTML::anchor('#menu-search', __('Search') . ' <span class="caret"></span>', array('class' => 'dropdown-toggle visible-xs', 'data-toggle' => 'dropdown')) ?>
+		<?= HTML::anchor('#menu-search', '<i class="fa fa-search"></i><span class="caret"></span>', array('class' => 'dropdown-toggle hidden-xs', 'data-toggle' => 'dropdown')) ?>
 
 		<ul class="dropdown-menu dropdown-menu-left">
 			<?php foreach($searches as $search_type => $search): ?>
@@ -572,8 +541,8 @@ class Anqh_View_Page extends View_Base {
 		</ul>
 	</li>
 
-	<li class="navbar-form">
-		<?= Form::open(null, array('role' => 'search', 'class' => '')); ?>
+	<li id="search" class="navbar-form">
+		<?= Form::open(null, array('role' => 'search')); ?>
 		<?php foreach($searches as $search_type => $search): ?>
 			<div class="form-group search-<?= $search_type . ($search_type == $this->search ? ' show' : ' hidden') ?>">
 				<?= Form::input('search_' . $search_type, null, array('class' => 'form-control', 'placeholder' => $search['text'] . '...')) ?>
@@ -583,8 +552,6 @@ class Anqh_View_Page extends View_Base {
 
 		<?= Form::close() ?>
 	</li>
-
-</ul>
 
 <!--
 <div id="search">
@@ -620,21 +587,21 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<div id="signin" class="navbar-right">
+	<li>
+		<?= HTML::anchor(
+			Route::url('sign', array('action' => 'up')),
+			'<i class="fa fa-heart"></i> ' . __('Sign up'),
+			array('class' => '', 'title' => __("Did we mention it's FREE!"))
+		) ?>
+	</li>
 
-	<?= HTML::anchor(
-		Route::url('sign', array('action' => 'up')),
-		'<i class="fa fa-heart"></i> ' . __('Sign up'),
-		array('class' => 'btn btn-lovely navbar-btn', 'title' => __("Did we mention it's FREE!"))
-	) ?>
-
-	<div class="dropdown">
+	<li id="signin" class="dropdown">
 		<?= HTML::anchor(
 			Route::url('sign', array('action' => 'in')),
 			'<i class="fa fa-sign-in"></i> ' . __('Login'),
-			array('class' => 'btn btn-primary navbar-btn dropdown-toggle', 'data-toggle' => 'dropdown')
+			array('class' => 'dropdown-toggle', 'data-toggle' => 'dropdown')
 		) ?>
-		<div class="dropdown-menu pull-right">
+		<div class="dropdown-menu dropdown-menu-right">
 			<?= Form::open(Route::url('sign', array('action' => 'in'))) ?>
 			<?= Form::input_wrap('username', null, null, __('Username or email')) ?>
 			<?= Form::password_wrap('password', null, null, __('Password')) ?>
@@ -642,7 +609,6 @@ class Anqh_View_Page extends View_Base {
 				Form::checkbox_wrap('remember', 'true', true, null, __('Stay logged in'))
 			) ?>
 			<?= Form::button(null, __('Login'), array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
-			<?= Form::hidden('remember', 'true') ?>
 			<?= Form::close(); ?>
 			<?= HTML::anchor(Route::url('sign', array('action' => 'password')), __('Forgot your password?'), array('class' => 'text-muted')) ?>
 			<hr>
@@ -652,9 +618,7 @@ class Anqh_View_Page extends View_Base {
 					array('class' => 'btn btn-block btn-facebook', 'title' => __('Sign in with your Facebook account'))
 				) ?>
 		</div>
-	</div>
-
-</div>
+	</li>
 
 <?php
 
@@ -698,16 +662,15 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<ul id="theme" class="nav navbar-nav navbar-right">
-	<li class="dropdown">
-		<?= HTML::anchor('#menu-theme', '<i class="fa fa-adjust"></i> <span class="caret"></span>', array('class' => 'dropdown-toggle', 'data-toggle' => 'dropdown', 'title' => __('Change theme'))) ?>
+	<li id="theme" class="dropdown">
+		<?= HTML::anchor('#menu-theme', __('Theme') . ' <span class="caret"></span>', array('class' => 'dropdown-toggle visible-xs', 'data-toggle' => 'dropdown', 'title' => __('Change theme'))) ?>
+		<?= HTML::anchor('#menu-theme', '<i class="fa fa-adjust"></i><span class="caret"></span>', array('class' => 'dropdown-toggle hidden-xs', 'data-toggle' => 'dropdown', 'title' => __('Change theme'))) ?>
 		<ul class="dropdown-menu" role="menu">
 			<li role="menuitem"><?= HTML::anchor('#theme-light', '<i class="fa fa-fw fa-circle-o"></i> ' . __('Light'), array('data-toggle' => 'theme', 'data-theme' => 'light')) ?></li>
 			<li role="menuitem"><?= HTML::anchor('#theme-mixed', '<i class="fa fa-fw fa-adjust"></i> ' . __('Mixed'), array('data-toggle' => 'theme', 'data-theme' => 'mixed')) ?></li>
 			<li role="menuitem"><?= HTML::anchor('#theme-dark',  '<i class="fa fa-fw fa-circle"></i> ' . __('Dark'), array('data-toggle' => 'theme', 'data-theme' => 'dark')) ?></li>
 		</ul>
 	</li>
-</ul>
 
 <?php
 
@@ -825,11 +788,13 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-<ul id="visitor" class="nav navbar-nav navbar-right">
-	<li class="notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></li>
+	<li id="notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></li>
 
-	<li class="dropdown">
+	<li class="hidden-xs">
 		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
+	</li>
+
+	<li id="visitor" class="dropdown">
 		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <span class="caret"></span></i></a>
 		<ul class="dropdown-menu pull-right" role="menu">
 			<?php foreach (Kohana::$config->load('site.menu_visitor') as $item): ?>
@@ -843,7 +808,6 @@ class Anqh_View_Page extends View_Base {
 			<?php endif; ?>
 		</ul>
 	</li>
-</ul>
 
 <?php
 
