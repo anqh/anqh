@@ -46,7 +46,7 @@ class Anqh_Controller_Index extends Controller_Page {
 		}
 
 		// Online
-		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_online());
+//		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_online());
 
 	}
 
@@ -83,7 +83,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 * @return  View_Topics_List
 	 */
 	public function section_news() {
-		$section = new View_Topics_List(Model_Forum_Topic::factory()->find_news(10));
+		$section = new View_Topics_List(Model_Forum_Topic::factory()->find_news(5));
 		$section->title = __('News');
 		$section->aside = true;
 

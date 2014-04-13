@@ -77,7 +77,7 @@ abstract class Anqh_Controller_Page extends Controller {
 
 			$theme = Arr::get($_COOKIE, 'theme');
 			if (!in_array($theme, array('light', 'mixed', 'dark'))) {
-				$theme = 'mixed';
+				$theme = 'dark';
 			}
 
 			// Do some CSS magic to page class
