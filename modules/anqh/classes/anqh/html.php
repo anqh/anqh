@@ -141,6 +141,33 @@ class Anqh_HTML extends Kohana_HTML {
 
 
 	/**
+	 * Creates a image link.
+	 *
+	 *     echo HTML::image('media/img/logo.png', array('alt' => 'My Company'));
+	 *
+	 * @param   string  $file       file name
+	 * @param   array   $attributes default attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
+	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
+	 */
+	public static function image($file, array $attributes = null, $protocol = null, $index = false) {
+
+		// Add the base URL
+		if (strpos($file, '//') === false) {
+			$file = URL::site($file, $protocol, $index);
+		}
+
+		// Add the image link
+		$attributes['src'] = $file;
+
+		return '<img' . HTML::attributes($attributes) . ' />';
+	}
+
+
+	/**
 	 * Creates a script link.
 	 *
 	 *     echo HTML::script('media/js/jquery.min.js');

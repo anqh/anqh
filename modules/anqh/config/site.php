@@ -12,9 +12,6 @@ return array(
 	/** Site name */
 	'site_name' => 'Anqh',
 
-	/** Use HTTPS */
-	'secure' => false,
-
 	/** Domain name for static images, for CDN like */
 	'image_server' => 'images.domain.tld',
 

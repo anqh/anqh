@@ -418,10 +418,10 @@ class Anqh_Model_Image extends AutoModeler_ORM implements Permission_Interface {
 			} else {
 				$size = 'pieni_';
 			}
-			$url = ($server ? 'http://' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
+			$url = ($server ? '//' . $server : '') . '/kuvat/' . $legacy_dir . '/' . $size . $this->legacy_filename;
 		} else {
 			$postfix = ($size == self::SIZE_ORIGINAL) ? Kohana::$config->load('image.postfix_original') : Arr::path(Kohana::$config->load('image.sizes'), $size . '.postfix');
-			$url     = ($server ? 'http://' . $server : '') . '/' . Kohana::$config->load('image.url') . URL::id($this->id) . '/';
+			$url     = ($server ? '//' . $server : '') . '/' . Kohana::$config->load('image.url') . URL::id($this->id) . '/';
 			$url     = $url . $this->id . ($this->postfix ? '_' . $this->postfix : '') . $postfix . '.jpg';
 		}
 
