@@ -981,12 +981,12 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Galleries
 		$galleries = Model_Gallery::factory()->find_by_user($user->id);
-		$this->view->add(View_Page::COLUMN_CENTER, $this->section_galleries_thumbs($galleries, true));
+		$this->view->add(View_Page::COLUMN_CENTER, $this->section_galleries_thumbs($galleries, true, false));
 
 		// Top images
 		foreach (array(Model_Image::TOP_RATED, Model_Image::TOP_COMMENTED, Model_Image::TOP_VIEWED) as $type) {
-			$section = $this->section_top($type, 6, $user->id);
-			$section->class = 'full';
+			$section = $this->section_top($type, 6, $user->id, false);
+			$section->aside = true;
 
 			$this->view->add(View_Page::COLUMN_RIGHT, $section);
 		}
@@ -1619,11 +1619,13 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 *
 	 * @param   Model_Gallery[]  $galleries
 	 * @param   boolean          $years      Show year titles
+	 * @param   boolean          $wide
 	 * @return  View_Galleries_Thumbs
 	 */
-	public function section_galleries_thumbs($galleries, $years = false) {
+	public function section_galleries_thumbs($galleries, $years = false, $wide = true) {
 		$section = new View_Galleries_Thumbs($galleries);
 		$section->years = $years;
+		$section->wide  = $wide;
 
 		return $section;
 	}
@@ -1893,10 +1895,14 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @param   string   $type
 	 * @param   integer  $top
 	 * @param   integer  $user_id
+	 * @param   boolean  $wide
 	 * @return  View_Gallery_Top
 	 */
-	public function section_top($type, $top = 10, $user_id = null) {
-		return new View_Gallery_Top($type, Model_Image::factory()->find_top($type, $top, null, $user_id));
+	public function section_top($type, $top = 10, $user_id = null, $wide = true) {
+		$section = new View_Gallery_Top($type, Model_Image::factory()->find_top($type, $top, null, $user_id));
+		$section->wide = $wide;
+
+		return $section;
 	}
 
 
