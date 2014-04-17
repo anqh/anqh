@@ -390,17 +390,21 @@ class Anqh_Form extends Kohana_Form {
 	 * @param   string        $label
 	 * @param   string|array  $error
 	 * @param   string|array  $tip
-	 * @param   string        $class
+	 * @param   boolean       $inline
 	 * @return  string
 	 */
-	public static function radios_wrap($name, $values = array(), $checked = '', $attributes = null, $label = null, $error = null, $tip = null, $class = null) {
+	public static function radios_wrap($name, $values = array(), $checked = '', $attributes = null, $label = null, $error = null, $tip = null, $inline = null) {
 		$values = Arr::get($values, $name, $values);
 
 		$input = '';
 		foreach ($values as $radio_value => $radio_title) {
 			$id = self::input_id($name) . '-' . $radio_value;
 			$radio  = Form::radio($name, $radio_value, $checked === $radio_value, array('id' => $id));
-			$input .= Form::label(null, $radio . $radio_title, array('class' => 'radio ' . $class));
+			$input .= Form::label(null, $radio . $radio_title, array('class' => $inline ? 'radio-inline' : 'radio'));
+		}
+
+		if ($inline) {
+			$attributes['class'] .= ' inline-block';
 		}
 
 		return Form::form_group($input, $label, $error, $tip, $attributes);

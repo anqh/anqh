@@ -190,7 +190,7 @@ class View_Forum_PostEdit extends View_Article {
 				__('Pinning'),
 				Arr::get($this->errors, 'sticky'),
 				null,
-				'radio-inline'
+				true
 			) ?>
 		</div>
 
@@ -207,7 +207,7 @@ class View_Forum_PostEdit extends View_Article {
 				__('Status'),
 				Arr::get($this->errors, 'status'),
 				null,
-				'radio-inline'
+				true
 			) ?>
 		</div>
 
