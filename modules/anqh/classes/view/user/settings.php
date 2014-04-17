@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * User_Settings
+ * User Settings.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012-2013 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_Settings extends View_Section {
@@ -62,130 +62,154 @@ class View_User_Settings extends View_Section {
 
 ?>
 
-<div class="row-fluid">
+<div class="col-md-6">
+	<fieldset id="fields-basic">
+		<legend><?= __('Basic information') ?></legend>
 
-	<div class="span6">
-		<fieldset id="fields-basic">
-			<legend><?= __('Basic information') ?></legend>
-
-			<?= Form::control_group(
-				Form::input('name', $this->user->name, array('class' => 'input-block-level')),
-				array('name' => __('Name')),
-				Arr::get($this->errors, 'name')) ?>
-
-			<?= Form::control_group(
-				Form::input('email', $this->user->email, array('class' => 'input-block-level')),
-				array('email' => __('Email')),
-				Arr::get($this->errors, 'email')) ?>
-
-			<?= Form::control_group(
-				Form::input('homepage', $this->user->homepage, array('class' => 'input-block-level')),
-				array('homepage' => __('Homepage')),
-				Arr::get($this->errors, 'homepage')) ?>
-
-			<?= Form::radios_wrap('gender',
-				array('f' => __('Female'), 'm' => __('Male')),
-				$this->user,
+		<?= Form::input_wrap(
+				'name',
+				$this->user->name,
 				null,
-				__('Gender'),
-				$this->errors,
+				__('Name'),
+				Arr::get($this->errors, 'name')
+		) ?>
+
+		<?= Form::input_wrap(
+				'email',
+				$this->user->email,
 				null,
-				'inline') ?>
+				__('Email'),
+				Arr::get($this->errors, 'email')
+		) ?>
 
-			<?= Form::control_group(
-				'<div class="input-prepend"><span class="add-on"><i class="icon-calendar"></i></span>'
-					. Form::input('dob', $this->user->dob ? Date::format('DMYYYY', $this->user->dob) : null, array('class' => 'date input-small', 'maxlength' => 10, 'placeholder' => __('d.m.yyyy')))
-					. '</div>',
-				array('dob' => __('Date of Birth')),
-				Arr::get($this->errors, 'dob')) ?>
+		<?= Form::input_wrap(
+				'homepage',
+				$this->user->homepage,
+				null,
+				__('Homepage'),
+				Arr::get($this->errors, 'homepage')
+		) ?>
 
-		</fieldset>
+		<?= Form::radios_wrap('gender',
+			array('f' => '<i class="fa fa-female"></i> ' . __('Female'), 'm' => '<i class="fa fa-male"></i> ' . __('Male'), '' => __('Other')),
+			$this->user->gender,
+			null,
+			__('Gender'),
+			$this->errors,
+			null,
+			'radio-inline'
+		) ?>
 
-		<fieldset id="fields-forum">
-			<legend><?= __('Forum settings') ?></legend>
+		<?= Form::input_wrap(
+			'dob',
+			$this->user->dob ? Date::format('DMYYYY', $this->user->dob) : null,
+			array('class' => 'date', 'maxlength' => 10, 'size' => 7, 'placeholder' => 'd.m.yyyy'),
+			__('Date of Birth'),
+			Arr::get($this->errors, 'dob')
+		) ?>
 
-			<?= Form::control_group(
-				Form::input('title', $this->user->title, array('class' => 'input-block-level')),
-				array('title' => __('Title')),
-				Arr::get($this->errors, 'title')) ?>
+	</fieldset>
 
-			<?= Form::control_group(
-				Form::textarea('signature', $this->user->signature, array('class' => 'input-block-level', 'rows' => 5), true),
-				array('signature' => __('Signature')),
-				Arr::get($this->errors, 'signature')) ?>
+	<fieldset id="fields-forum">
+		<legend><?= __('Forum settings') ?></legend>
 
-		</fieldset>
-	</div>
+		<?= Form::input_wrap(
+			'title',
+			$this->user->title,
+			null,
+			__('Title'),
+			Arr::get($this->errors, 'title')
+		) ?>
 
-	<div class="span6">
-		<fieldset id="fields-contact">
-			<legend><?= __('Location') ?></legend>
+		<?= Form::textarea_wrap(
+			'signature',
+			$this->user->signature,
+			array('class' => 'monospace', 'rows' => 5),
+			true,
+			__('Signature'),
+			Arr::get($this->errors, 'signature')
+		) ?>
 
-			<?= Form::control_group(
-				Form::input('location', $this->user->location, array('class' => 'input-block-level')),
-				array('location' => __('Where are you')),
-				Arr::get($this->errors, 'location'),
-				__('e.g. <em>"Helsinki"</em> or <em>"Asema-aukio, Helsinki"</em>')) ?>
+	</fieldset>
 
-			<?= Form::control_group(
-				Form::input('city_name', $this->user->city_name, array('class' => 'input-block-level')),
-				array('city_name' => __('City')),
-				Arr::get($this->errors, 'city_name')) ?>
+	<fieldset>
+		<?= Form::hidden('latitude', $this->user->latitude) ?>
+		<?= Form::hidden('longitude', $this->user->longitude) ?>
 
-			<div id="map"></div>
-		</fieldset>
+		<?= Form::csrf() ?>
+		<?= Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-success btn-lg')) ?>
+		<?= HTML::anchor(URL::user($this->user), __('Cancel'), array('class' => 'cancel')) ?>
+	</fieldset>
 
-		<fieldset id="fields-connections">
-			<legend>Facebook</legend>
-
-		<?php if (!$this->external || !$this->external->loaded()): ?>
-
-			<?= HTML::anchor(
-					Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
-					'<i class="icon-facebook"></i> ' . __('Connect to Facebook'),
-					array('class' => 'btn btn-primary', 'title' => __('Connect with your Facebook account'))
-				) ?>
-
-		<?php elseif (is_array($facebook)): $avatar = 'https://graph.facebook.com/' . $facebook['id'] . '/picture'; ?>
-
-			<div class="media">
-				<?= HTML::avatar($avatar, null, 'pull-left facebook') ?>
-				<div class="media-body">
-					<?= HTML::anchor($facebook['link'], HTML::chars($facebook['name']), array('target' => '_blank')) ?>
-					<?= Form::checkbox_wrap('avatar', $avatar, $this->user->avatar == $avatar, null, __('Set as your avatar')) ?>
-					<?= Form::checkbox_wrap('picture', $avatar . '?type=large', $this->user->picture == $avatar . '?type=large', null, __('Set as your profile image')) ?>
-					<?= HTML::anchor(
-								Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),
-								'<i class="icon-facebook"></i> ' . __('Disconnect your Facebook account'),
-								array('class' => 'btn btn-danger facebook-delete', 'title' => __('Disconnect your Facebook account'))
-							) ?>
-				</div>
-			</div>
-
-		<?php elseif ($facebook): ?>
-
-			<?= $facebook ?>
-
-			<?= HTML::anchor(
-						Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),
-						'<i class="icon-facebook"></i> ' . __('Disconnect your Facebook account'),
-						array('class' => 'btn btn-danger facebook-delete', 'title' => __('Disconnect your Facebook account'))
-					) ?>
-
-		<?php endif; ?>
-
-		</fieldset>
-	</div>
 </div>
 
-<fieldset class="form-actions">
-	<?= Form::hidden('latitude', $this->user->latitude) ?>
-	<?= Form::hidden('longitude', $this->user->longitude) ?>
+<div class="col-md-6">
 
-	<?= Form::csrf() ?>
-	<?= Form::button('save', __('Save'), array('type' => 'submit', 'class' => 'btn btn-success btn-large')) ?>
-	<?= HTML::anchor(URL::user($this->user), __('Cancel'), array('class' => 'cancel')) ?>
-</fieldset>
+	<fieldset id="fields-connections">
+		<legend>Facebook</legend>
+
+	<?php if (!$this->external || !$this->external->loaded()): ?>
+
+		<?= HTML::anchor(
+				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+				'<i class="icon-facebook"></i> ' . __('Connect to Facebook'),
+				array('class' => 'btn btn-primary', 'title' => __('Connect with your Facebook account'))
+			) ?>
+
+	<?php elseif (is_array($facebook)): $avatar = 'https://graph.facebook.com/' . $facebook['id'] . '/picture'; ?>
+
+		<div class="media">
+			<?= HTML::avatar($avatar, null, 'pull-left facebook') ?>
+			<div class="media-body">
+				<?= HTML::anchor($facebook['link'], HTML::chars($facebook['name']), array('target' => '_blank')) ?>
+				<?= Form::checkbox_wrap('avatar', $avatar, $this->user->avatar == $avatar, null, __('Set as your avatar')) ?>
+				<?= Form::checkbox_wrap('picture', $avatar . '?type=large', $this->user->picture == $avatar . '?type=large', null, __('Set as your profile image')) ?>
+				<?= HTML::anchor(
+							Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),
+							'<i class="icon-facebook"></i> ' . __('Disconnect your Facebook account'),
+							array('class' => 'btn btn-danger facebook-delete', 'title' => __('Disconnect your Facebook account'))
+						) ?>
+			</div>
+		</div>
+
+	<?php elseif ($facebook): ?>
+
+		<?= $facebook ?>
+
+		<?= HTML::anchor(
+					Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),
+					'<i class="icon-facebook"></i> ' . __('Disconnect your Facebook account'),
+					array('class' => 'btn btn-danger facebook-delete', 'title' => __('Disconnect your Facebook account'))
+				) ?>
+
+	<?php endif; ?>
+
+	</fieldset>
+
+	<fieldset id="fields-contact">
+		<legend><?= __('Location') ?></legend>
+
+		<?= Form::input_wrap(
+			'location',
+			$this->user->location,
+			null,
+			__('Where you at?'),
+			Arr::get($this->errors, 'location'),
+			__('e.g. <em>"Helsinki"</em> or <em>"Asema-aukio, Helsinki"</em>')
+		) ?>
+
+		<?= Form::input_wrap(
+			'city_name',
+			$this->user->city_name,
+			null,
+			__('City'),
+			Arr::get($this->errors, 'city_name')
+		) ?>
+
+		<div id="map"></div>
+	</fieldset>
+
+</div>
 
 <?php
 
