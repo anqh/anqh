@@ -4,7 +4,7 @@
  *
  * @package    Galleries
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Galleries_Search extends View_Section {
@@ -44,12 +44,12 @@ class View_Galleries_Search extends View_Section {
 			if ($year !== $current_year):
 				if ($current_year): ?>
 
-</ul>
+</div>
 
-<?php endif; ?>
+				<?php endif; ?>
 
 <header><h3><?= $year ?></h3></header>
-<ul class="thumbnails">
+<div class="row">
 
 <?php
 
@@ -58,35 +58,30 @@ class View_Galleries_Search extends View_Section {
 
 ?>
 
-	<li class="span2">
-		<a class="thumbnail" href="<?= Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id)) ?>">
+	<article class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
+		<div class="thumbnail">
 
-			<?= HTML::image($image->get_url('thumbnail', $gallery->dir)) ?>
+			<?= HTML::anchor(
+					Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id)),
+					HTML::image($image->get_url('thumbnail', $gallery->dir))
+			) ?>
 
-			<p class="description"><?= HTML::chars($gallery->name) ?></p>
+			<div class="caption">
+				<h4><?= HTML::anchor(Route::model($gallery), HTML::chars($gallery->name)) ?></h4>
+			</div>
 
-<?php
-
-			echo '<span class="stats">';
-
-			// Image count
-			echo '<i class="icon-camera-retro"></i> ', $gallery->image_count;
-
-			// Comment count
-			if ($gallery->comment_count > 0):
-				echo '<i class="icon-comment"></i> ', $gallery->comment_count;
-			endif;
-
-			echo '</span>';
-
-?>
-
-		</a>
-	</li>
+			<small class="stats label label-default">
+				<?= (int)$image->view_count ?> <i class="fa fa-eye"></i>
+				<?php if ($image->comment_count): ?>
+					&nbsp; <?= (int)$image->comment_count ?> <i class="fa fa-comment"></i>
+				<?php endif; ?>
+			</small>
+		</div>
+	</article>
 
 <?php endforeach; ?>
 
-</ul>
+</div>
 
 <?php
 
