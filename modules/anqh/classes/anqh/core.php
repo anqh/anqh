@@ -10,7 +10,7 @@
 class Anqh_Core {
 
 	/** Anqh version */
-	const VERSION = 0.9;
+	const VERSION = '1.0';
 
 	/**
 	 * @var  array  Static local cache in front of external cache

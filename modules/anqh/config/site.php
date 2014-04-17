@@ -4,67 +4,48 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 return array(
 
-	/**
-	 * Site name
-	 */
+	/** Site name */
 	'site_name' => 'Anqh',
 
-	/**
-	 * Domain name for static images, for CDN like
-	 */
+	/** Use HTTPS */
+	'secure' => false,
+
+	/** Domain name for static images, for CDN like */
 	'image_server' => 'images.domain.tld',
 
-	/**
-	 * Set the site as invite only
-	 */
+	/** Set the site as invite only */
 	'inviteonly' => false,
 
-	/**
-	 * Email address for contact
-	 */
+	/** Email address for contact */
 	'email_contact' => 'noreply@domain.tld',
 
-	/**
-	 * Email address of the invitation sending
-	 */
+	/** Email address of the invitation sending */
 	'email_invitation' => 'noreply@domain.tld',
 
-	/**
-	 * Google configs
-	 */
+	/** Google configs */
 	'google_api_key'          => false,
 	'google_analytics'        => false, // UA-123456-7
 	'google_analytics_domain' => false, // domain.tld
 
-	/**
-	 * Facebook configs
-	 */
+	/** Facebook configs */
 	'facebook' => false, // Facebook App id
 
-	/**
-	 * Foursquare configs
-	 */
+	/** Foursquare configs */
 	'foursquare_client_id'     => null,
 	'foursquare_client_secret' => null,
 
-	/**
-	 * Twitter configs
-	 */
+	/** Twitter configs */
 	'twitter_username' => null,
 
-	/**
-	 * 3rd party share id
-	 */
+	/** 3rd party share id */
 	'share' => false,
 
-	/**
-	 * Main menu
-	 */
+	/** Main menu */
 	'menu' => array(
 		'home'       => array('url' => URL::site(),              'text' => __('Home'),       'icon' => 'fa fa-home', 'footer' => true),
 		'events'     => array('url' => Route::url('events'),     'text' => __('Events'),     'icon' => 'fa fa-calendar'),
@@ -100,26 +81,26 @@ return array(
 		'author_id'     => 1,
 	),
 
-	/**
-	 * Available skins
-	 */
-	'skins' => array(
+	/** Available skins */
+	'themes' => array(
 		'light' => array(
 			'name' => __('Light'),
+			'icon' => 'fa fa-fw fa-circle-o'
+		),
+		'mixed' => array(
+			'name' => 'Mixed',
+			'icon' => 'fa fa-fw fa-adjust'
 		),
 		'dark' =>array(
 			'name' => __('Dark'),
+			'icon' => 'fa fa-fw fa-circle'
 		),
 	),
 
-	/**
-	 * Default skin
-	 */
-	'skin' => 'dark',
+	/** Default skin */
+	'theme' => 'dark',
 
-	/**
-	 * Ad zones
-	 */
+	/** Ad zones */
 	'ads' => array(
 		'enabled' => false,
 		'slots' => array(
@@ -128,9 +109,7 @@ return array(
 		),
 	),
 
-	/**
-	 * Smileys
-	 */
+	/** Smileys */
 	'smiley' => array(
 		'dir' => 'smiley',
 		'smileys' => array(

@@ -658,6 +658,8 @@ class Anqh_View_Page extends View_Base {
 	 * @return  string
 	 */
 	protected function _theme() {
+		$themes = Kohana::$config->load('site.themes');
+
 		ob_start();
 
 ?>
@@ -666,9 +668,9 @@ class Anqh_View_Page extends View_Base {
 		<?= HTML::anchor('#menu-theme', __('Theme') . ' <span class="caret"></span>', array('class' => 'dropdown-toggle visible-xs', 'data-toggle' => 'dropdown', 'title' => __('Change theme'))) ?>
 		<?= HTML::anchor('#menu-theme', '<i class="fa fa-adjust"></i><span class="caret"></span>', array('class' => 'dropdown-toggle hidden-xs', 'data-toggle' => 'dropdown', 'title' => __('Change theme'))) ?>
 		<ul class="dropdown-menu" role="menu">
-			<li role="menuitem"><?= HTML::anchor('#theme-light', '<i class="fa fa-fw fa-circle-o"></i> ' . __('Light'), array('data-toggle' => 'theme', 'data-theme' => 'light')) ?></li>
-			<li role="menuitem"><?= HTML::anchor('#theme-mixed', '<i class="fa fa-fw fa-adjust"></i> ' . __('Mixed'), array('data-toggle' => 'theme', 'data-theme' => 'mixed')) ?></li>
-			<li role="menuitem"><?= HTML::anchor('#theme-dark',  '<i class="fa fa-fw fa-circle"></i> ' . __('Dark'), array('data-toggle' => 'theme', 'data-theme' => 'dark')) ?></li>
+			<?php foreach ($themes as $name => $theme): ?>
+			<li role="menuitem"><?= HTML::anchor('#theme-' . $name, '<i class="' . $theme['icon'] . '"></i> ' . $theme['name'], array('data-toggle' => 'theme', 'data-theme' => $name)) ?></li>
+			<?php endforeach ?>
 		</ul>
 	</li>
 

@@ -74,10 +74,9 @@ abstract class Anqh_Controller_Page extends Controller {
 			}*/
 
 			// Theme
-
 			$theme = Arr::get($_COOKIE, 'theme');
-			if (!in_array($theme, array('light', 'mixed', 'dark'))) {
-				$theme = 'dark';
+			if (!in_array($theme, array_keys(Kohana::$config->load('site.themes')))) {
+				$theme = Kohana::$config->load('site.theme');
 			}
 
 			// Do some CSS magic to page class
