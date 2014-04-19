@@ -10,22 +10,23 @@
 class Anqh_HTML extends Kohana_HTML {
 
 	/**
-	 * Print user avatar
+	 * Print user avatar.
 	 *
-	 * @param   string  $avatar
-	 * @param   string  $title
-	 * @param   string  $class
+	 * @param   string   $avatar
+	 * @param   string   $title
+	 * @param   string   $class
+	 * @param   boolean  $lazy
 	 * @return  string
 	 */
-	public static function avatar($avatar, $title = '', $class = null) {
+	public static function avatar($avatar, $title = '', $class = null, $lazy = true) {
 		$placeholder = URL::site('avatar/unknown.png');
-		$ajax        = Request::$current->is_ajax();
+		$lazy        = $lazy && !Request::$current->is_ajax();
 		if (empty($avatar) || strpos($avatar, '/') === false) {
 			$avatar = 'avatar/unknown.png';
 		}
 
 		// Absolute uri
-		if (strpos($avatar, '://') === false) {
+		if (strpos($avatar, '//') === false) {
 			$avatar = URL::site($avatar);
 		}
 
@@ -36,13 +37,13 @@ class Anqh_HTML extends Kohana_HTML {
 		}
 
 		if (empty($title)) {
-			return '<span class="' . $class . '">' . ($ajax
-				? HTML::image($avatar, array('alt' => __('Avatar')))
+			return '<span class="' . $class . '">' . (!$lazy
+				? HTML::image($avatar, array('alt' => __('Avatar'), 'class' => 'img-circle'))
 				: HTML::image($placeholder, array('alt' => __('Avatar'), 'class' => 'img-circle lazy', 'data-original' => $avatar))
 			) . '</span>';
 		} else {
-			return HTML::anchor(URL::user($title), ($ajax
-				? HTML::image($avatar, array('title' => $title, 'alt' => $title))
+			return HTML::anchor(URL::user($title), (!$lazy
+				? HTML::image($avatar, array('title' => $title, 'alt' => $title, 'class' => 'img-circle'))
 				: HTML::image($placeholder, array('title' => $title, 'alt' => $title, 'class' => 'img-circle lazy', 'data-original' => $avatar))
 			), array('class' => $class . ' hoverable'));
 		}

@@ -90,6 +90,22 @@ class View_User_Settings extends View_Section {
 	<div id="settings-basic" class="tab-pane<?= $this->tab == 'basic' ? ' active' : '' ?>">
 		<fieldset id="fields-basic" class="col-md-6">
 
+			<div class="row">
+			<div class="col-sm-10">
+				<?= Form::input_wrap(
+						'avatar',
+						$this->user->avatar,
+						null,
+						__('Avatar'),
+						Arr::get($this->errors, 'avatar')
+				) ?>
+			</div>
+			<div class="col-sm-2">
+				<?= HTML::avatar($this->user->avatar, null, null, false) ?>
+			</div>
+			</div>
+
+
 			<?= Form::input_wrap(
 					'name',
 					$this->user->name,
@@ -209,7 +225,7 @@ class View_User_Settings extends View_Section {
 		<?php elseif (is_array($facebook)): $avatar = 'https://graph.facebook.com/' . $facebook['id'] . '/picture'; ?>
 
 			<div class="media">
-				<?= HTML::avatar($avatar, null, 'pull-left facebook') ?>
+				<?= HTML::avatar($avatar, null, 'pull-left facebook', false) ?>
 				<div class="media-body">
 					<?= HTML::anchor($facebook['link'], HTML::chars($facebook['name']), array('target' => '_blank')) ?>
 					<?= Form::checkbox_wrap('avatar', $avatar, $this->user->avatar == $avatar, null, __('Set as your avatar')) ?>
@@ -329,8 +345,15 @@ class View_User_Settings extends View_Section {
 ?>
 <script>
 
+	// Avatar
+	head.ready('jquery', function() {
+		$('input[name=avatar]').on('change', function() {
+			$('#fields-basic .avatar img').attr('src', $(this).val());
+		});
+	});
+
 	// Date picker
-	head.ready('jquery-ui', function _datePicker() {
+	head.ready('jquery-ui', function() {
 		$('input[name=dob]').datepicker(<?= json_encode($options) ?>);
 	});
 
