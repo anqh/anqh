@@ -14,7 +14,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 	 */
 	public static $_fields = array(
 		'id', 'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'city',
-		'country', 'dj', 'info', 'age', 'price', 'price2', 'created', 'modified',
+		'dj', 'info', 'age', 'price', 'price2', 'created', 'modified',
 		'flyer_front', 'flyer_front_thumb', 'flyer_front_icon',
 		'flyer_back', 'flyer_back_thumb', 'flyer_back_icon',
 		'favorite_count', 'music', 'url'
@@ -24,7 +24,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 	 * @var  array  Orderable fields
 	 */
 	public static $_orderable = array(
-		'id', 'name', 'stamp_begin', 'stamp_end', 'venue', 'city', 'country', 'age',
+		'id', 'name', 'stamp_begin', 'stamp_end', 'venue', 'city', 'age',
 		'price', 'created', 'modified', 'favorite_count'
 	);
 
