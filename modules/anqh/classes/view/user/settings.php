@@ -57,7 +57,7 @@ class View_User_Settings extends View_Section {
 			'basic'    => '<i class="hidden-sm fa fa-fw fa-user"></i> ' . __('Profile'),
 			'auth'     => '<i class="hidden-sm fa fa-fw fa-key"></i> ' . __('Login'),
 			'facebook' => '<i class="hidden-sm fa fa-fw fa-facebook"></i> ' . 'Facebook',
-			'forum'    => '<i class="hidden-sm fa fa-fw fa-comment"></i> ' . __('Forum'),
+			'forum'    => '<i class="hidden-sm fa fa-fw fa-comments"></i> ' . __('Forum'),
 		);
 
 		echo Form::open();
