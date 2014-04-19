@@ -118,12 +118,12 @@ class View_Venue_Edit extends View_Section {
 
 			<?= Form::input_wrap(
 				'foursquare',
-				null,
+				$this->venue->foursquare_id ? $this->venue->name : null,
 				null,
 				'<i class="fa fa-foursquare"></i> '
-					. __('Foursquare Venue') 
+					. __('Foursquare Venue')
 					. ' '
-					. ($this->venue->foursquare_id 
+					. ($this->venue->foursquare_id
 						? ('<span class="text-success" title="' . $this->venue->foursquare_id . '">(' . __('Set') . ')</span>')
 						: ('<span class="text-warning">(' . __('Not set') . ')</span>'))
 			) ?>
@@ -158,7 +158,7 @@ head.ready('anqh', function() {
 		$latitude  = $('input[name=latitude]'),
 		$longitude = $('input[name=longitude]'),
 		$address   = $('input[name=address]')
-		
+
 	$('input[name=foursquare]')
 		.on('typeahead:selected', function(event, selection, name) {
 			var map    = $city.geocomplete('map')
@@ -202,7 +202,7 @@ head.ready('anqh', function() {
 				}
 			}
 		]);
-		
+
 /*
 	$('input[name=address], input[name=city_name]').on('blur', function geoCode(event) {
 		var address = $("input[name=address]").val()
