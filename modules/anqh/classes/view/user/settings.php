@@ -107,7 +107,11 @@ class View_User_Settings extends View_Section {
 			) ?>
 
 			<?= Form::radios_wrap('gender',
-				array('f' => '<i class="fa fa-female female"></i> ' . __('Female'), 'm' => '<i class="fa fa-male male"></i> ' . __('Male'), '' => __('Other')),
+				array(
+					'f' => '<i class="fa fa-female female"></i> ' . __('Female'),
+					'm' => '<i class="fa fa-male male"></i> ' . __('Male'),
+					'o' => __('Other')
+				),
 				$this->user->gender,
 				null,
 				__('Gender'),

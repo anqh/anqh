@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
@@ -87,7 +87,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 		'name'               => array('max_length' => array(':value', 50)),
 		'dob'                => array('date'),
-		'gender'             => array('in_array' => array(':value', array('f', 'm'))),
+		'gender'             => array('in_array' => array(':value', array('f', 'm', 'o'))),
 		'homepage'           => array('url'),
 		'picture'            => array('url'),
 		'default_image_id'   => array('digit'),

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_HTML extends Kohana_HTML {
@@ -319,8 +319,9 @@ class Anqh_HTML extends Kohana_HTML {
 				if ($viewer && $viewer->is_friend($user)) {
 					$class[] = 'friend ';
 				}
-				if ($user['gender']) {
-					$class[] = $user['gender'] == 'f' ? 'female ' : 'male ';
+				switch ($user['gender']) {
+					case 'f': $class[] = 'female '; break;
+					case 'm': $class[] = 'male '; break;
 				}
 			}
 		}
