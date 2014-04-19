@@ -40,7 +40,7 @@ class View_User_Info extends View_Section {
 <dl>
 
 		<?= $this->user->homepage ? '<dt>' . __('Homepage')      . '</dt><dd>' . HTML::anchor($this->user->homepage, HTML::chars($this->user->homepage)) . '</dd>' : '' ?>
-		<?= $this->user->gender   ? '<dt>' . __('Gender')        . '</dt><dd>' . ($this->user->gender == 'm' ? __('Male') : __('Female'))  . '</dd>' : '' ?>
+		<?= ($this->user->gender == 'm' || $this->user->gender == 'f') ? '<dt>' . __('Gender') . '</dt><dd>' . ($this->user->gender == 'm' ? __('Male') : __('Female'))  . '</dd>' : '' ?>
 		<?= $this->user->dob      ? '<dt>' . __('Date of Birth') . '</dt><dd>' . Date::format('DMYYYY', $this->user->dob) . ' (' . Date::age($this->user->dob) . ')</dd>' : '' ?>
 
 		<dt><?= __('Registered') ?></dt><dd><?php echo HTML::time(Date::fuzzy_span($this->user->created), $this->user->created) ?>
