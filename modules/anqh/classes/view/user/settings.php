@@ -54,10 +54,10 @@ class View_User_Settings extends View_Section {
 		$facebook = $this->consumer ? $this->load_facebook() : false;
 
 		$tabs = array(
-			'basic'    => __('Basic information'),
-			'auth'     => __('Login information'),
-			'facebook' => 'Facebook',
-			'forum'    => __('Forum settings'),
+			'basic'    => '<i class="hidden-sm fa fa-fw fa-user"></i> ' . __('Profile'),
+			'auth'     => '<i class="hidden-sm fa fa-fw fa-key"></i> ' . __('Login'),
+			'facebook' => '<i class="hidden-sm fa fa-fw fa-facebook"></i> ' . 'Facebook',
+			'forum'    => '<i class="hidden-sm fa fa-fw fa-comment"></i> ' . __('Forum'),
 		);
 
 		echo Form::open();
@@ -75,7 +75,7 @@ class View_User_Settings extends View_Section {
 </div>
 <?php endif; ?>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-pills nav-stacked col-sm-2">
 	<?php foreach ($tabs as $tab => $title): ?>
 	<li<?= $tab == $this->tab ? ' class="active"' : '' ?>>
 		<a href="#settings-<?= $tab ?>" data-toggle="tab"><?= $title ?></a>
@@ -83,12 +83,10 @@ class View_User_Settings extends View_Section {
 	<?php endforeach; ?>
 </ul>
 
-<br>
-
-<div class="tab-content">
+<div class="tab-content col-md-10">
 
 	<div id="settings-basic" class="tab-pane<?= $this->tab == 'basic' ? ' active' : '' ?>">
-		<fieldset id="fields-basic" class="col-md-6">
+		<fieldset id="fields-basic" class="col-sm-6">
 
 			<div class="row">
 			<div class="col-sm-10">

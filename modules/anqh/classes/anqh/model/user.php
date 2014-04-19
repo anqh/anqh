@@ -823,7 +823,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		    return $user && ($this->id != $user->id);
 
 			case self::PERMISSION_UPDATE:
-				return $user && ($this->id == $user->id || $user->has_role('admin'));
+				return $user && ($this->id == $user->id/* || $user->has_role('admin')*/);
 
 			case self::PERMISSION_CREATE:
 			case self::PERMISSION_DELETE:
