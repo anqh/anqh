@@ -421,6 +421,30 @@ class Anqh_Controller_User extends Controller_Page {
 		// Handle post
 		$errors = array();
 		if ($_POST && Security::csrf_valid()) {
+
+			// Login information
+			if ($user->username !== Arr::get($_POST, 'username')
+				|| $user->email !== UTF8::strtolower(Arr::get($_POST, 'email'))
+				|| Arr::get($_POST, 'password')) {
+				$visitor       = Visitor::instance();
+				$old_password  = Arr::get($_POST, 'current_password');
+				$new_password  = Arr::get($_POST, 'password');
+
+				$validation    = Validation::factory(array('current_password' => $old_password));
+				$validation->rule('current_password', 'not_empty');
+				if (!$visitor->check_password($old_password)) {
+					$validation->rule('current_password', 'equals', array(':validation', __('current password')));
+				} else if ($new_password) {
+
+					// Change password only if correct old one given
+					$user->password = $new_password;
+
+				}
+
+				$user->username = Arr::get($_POST, 'username');
+				$user->email    = Arr::get($_POST, 'email');
+			}
+
 			$user->set_fields(Arr::intersect($_POST, Model_User::$editable_fields));
 
 			// Clear default image id if Facebook image is set
@@ -431,7 +455,7 @@ class Anqh_Controller_User extends Controller_Page {
 			$user->modified = time();
 
 			try {
-				$user->save();
+				$user->save(isset($validation) ? $validation : null);
 				$this->request->redirect(URL::user($user));
 			} catch (Validation_Exception $e) {
 				$errors = $e->array->errors('validation');

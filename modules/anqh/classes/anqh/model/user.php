@@ -125,7 +125,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'avatar', 'city', 'description', 'dob', 'email', 'gender', 'homepage', 'title',
+		'avatar', 'city', 'description', 'dob', 'gender', 'homepage', 'title',
 		'picture', 'signature', 'location', 'city_name', 'latitude', 'longitude',
 	);
 
