@@ -27,8 +27,6 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'venue_name'           => null,
 		'venue_url'            => null,
 		'city_name'            => null,
-		'geo_city_id'          => null,
-		'geo_country_id'       => null,
 
 		'dj'                   => null,
 		'info'                 => null,
@@ -59,9 +57,6 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'venue_hidden'         => array('in_array' => array(':value', array(0, 1))),
 		'venue_id'             => array('digit'),
 		'venue_url'            => array('url'),
-		//'city_name'            => array('not_empty'),
-		'geo_city_id'          => array('digit'),
-		'geo_country_id'       => array('digit'),
 
 		'age'                  => array('digit', 'range' => array(':value', 0, 99)),
 		'price'                => array('numeric'),
@@ -83,7 +78,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public static $editable_fields = array(
 		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
-		'geo_city_id', 'city_name', 'age', 'price', 'price2', 'tickets_url', 'dj', 'info',
+		'city_name', 'age', 'price', 'price2', 'tickets_url', 'dj', 'info',
 	);
 
 	/**
@@ -190,26 +185,6 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		return false;
-	}
-
-
-	/**
-	 * Get event city.
-	 *
-	 * @return  Model_Geo_City
-	 */
-	public function city() {
-		return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
-	}
-
-
-	/**
-	 * Get event country.
-	 *
-	 * @return  Model_Geo_Country
-	 */
-	public function country() {
-		return $this->geo_country_id ? new Model_Geo_Country($this->geo_country_id) : null;
 	}
 
 

@@ -233,16 +233,6 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	}
 
 
-	/**
-	 * Get city.
-	 *
-	 * @return  Model_Geo_City|null
-	 */
-	public function city() {
-		return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
-	}
-
-
 	/***** COMMENTS *****/
 
 	/**

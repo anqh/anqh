@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Venue model
+ * Venue model.
  *
  * @package    Venues
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
@@ -29,8 +29,6 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 		'address'                => null,
 		'zip'                    => null,
 		'city_name'              => null,
-		'geo_city_id'            => null,
-		'geo_country_id'         => null,
 		'latitude'               => null,
 		'longitude'              => null,
 
@@ -54,8 +52,6 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 		'address'                => array('max_length' => array(':value', 50)),
 		'zip'                    => array('digit', 'length' => array(':value', 4, 5)),
 		'city_name'              => array('not_empty'),
-		'geo_city_id'            => array('digit'),
-		'geo_country_id'         => array('digit'),
 		'latitude'               => array('numeric'),
 		'longitude'              => array('numeric'),
 
@@ -74,23 +70,9 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public static $editable_fields = array(
 		'name', 'description', 'homepage', 'hours', 'info', 'event_host',
-		'address', 'zip', 'city_name', 'geo_city_id', 'geo_country_id', 'latitude', 'longitude',
+		'address', 'zip', 'city_name', 'latitude', 'longitude',
 		'foursquare_id', 'foursquare_category_id',
 	);
-
-
-	/**
-	 * Get venue city.
-	 *
-	 * @return  Model_Geo_City
-	 */
-	public function city() {
-		try {
-			return $this->geo_city_id ? new Model_Geo_City($this->geo_city_id) : null;
-		} catch (AutoModeler_Exception $e) {
-			return null;
-		}
-	}
 
 
 	/**

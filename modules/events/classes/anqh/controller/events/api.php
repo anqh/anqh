@@ -244,11 +244,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 			    break;
 
 				case 'city':
-					$data[$field] = ($city = $event->city()) ? $city->name : $event->city_name;
-			    break;
-
-				case 'country':
-					$data[$field] = ($country = $event->country()) ? $country->name : '';
+					$data[$field] = ($venue = $event->venue()) ? $venue->city_name : $event->city_name;
 			    break;
 
 				case 'flyer_front':

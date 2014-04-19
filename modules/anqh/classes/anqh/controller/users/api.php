@@ -144,7 +144,7 @@ class Anqh_Controller_Users_API extends Controller_API {
 
 				// Custom value
 				case 'city':
-					$data[$field] = ($city = $user->city()) ? $city->name : $user->city_name;
+					$data[$field] = $user->city_name;
 					break;
 
 				case 'avatar':
