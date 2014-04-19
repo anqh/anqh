@@ -447,7 +447,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 			// Build grouped array
 			foreach ($events as $event) {
-				$city = UTF8::ucfirst(mb_strtolower($event->city_id ? $event->city()->name : $event->city_name));
+				$city = UTF8::ucfirst(mb_strtolower($event->city_name));
 
 				$days = ceil(($event->stamp_end - $event->stamp_begin) / Date::DAY);
 				for ($day = 0; $day < $days; $day++) {

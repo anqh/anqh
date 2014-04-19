@@ -130,10 +130,9 @@ class View_Venue_Foursquare extends View_Section {
 				array('foursquare_id' => __('Foursquare ID'))) ?>
 			<?= Form::control_group(
 				Form::input('foursquare_category_id', $this->venue->foursquare_category_id, array('class' => 'input', 'readonly' => 'readonly')),
-				array('foursquare_id' => __('Foursquare ID'))) ?>
+				array('foursquare_category_id' => __('Foursquare Category ID'))) ?>
 		</fieldset>
 		<fieldset>
-			<?= Form::hidden('city_id', $this->venue->city_id) ?>
 			<?= Form::hidden('latitude', Arr::pick($this->venue->latitude, $this->venue->city ? $this->venue->city->latitude : 0)) ?>
 			<?= Form::hidden('longitude', Arr::pick($this->venue->longitude, $this->venue->city ? $this->venue->city->longitude : 0)) ?>
 

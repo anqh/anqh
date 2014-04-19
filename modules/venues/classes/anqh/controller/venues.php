@@ -156,7 +156,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		if (Security::csrf_valid() && isset($_POST['foursquare_id'])) {
 			try {
 				$venue->set_fields(Arr::intersect($_POST, array(
-					'foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'city_id', 'address'
+					'foursquare_id', 'foursquare_category_id', 'latitude', 'longitude', 'address'
 				)));
 				$venue->save();
 
