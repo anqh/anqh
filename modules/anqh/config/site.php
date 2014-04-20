@@ -32,6 +32,11 @@ return array(
 	/** Facebook configs */
 	'facebook' => false, // Facebook App id
 
+	/** Default open graph image */
+	'og' => array(
+		'image' => null,
+	),
+
 	/** Foursquare configs */
 	'foursquare_client_id'     => null,
 	'foursquare_client_secret' => null,

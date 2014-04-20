@@ -250,13 +250,17 @@ class Anqh_Core {
 
 		// Initialize required meta data when setting first value
 	  if ($value && empty($meta)) {
+		  $config = Kohana::$config->load('site.og');
+
 			$meta = array(
 				'title' => Kohana::$config->load('site.site_name'),
 				'type'  => 'article',
-				'image' => URL::site('/ui/opengraph.jpg', true),
 				'url'   => URL::site('', true),
 				'site'  => Kohana::$config->load('site.site_name'),
 			);
+		  if ($config['image']) {
+			  $meta['image'] = URL::site($config['image'], true);
+		  }
 
 		  // Facebook
 		  if ($app_id = Kohana::$config->load('site.facebook')) {
@@ -307,15 +311,15 @@ class Anqh_Core {
 
 	  } else if ($value === false) {
 
-	    // Delete
-	    unset($data[$key]);
+			// Delete
+			unset($data[$key]);
 
-    } else {
+		} else {
 
-	    // Set
-	    $data[$key] = $value;
+			// Set
+			$data[$key] = $value;
 
-    }
+		}
 	}
 
 

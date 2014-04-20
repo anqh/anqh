@@ -98,6 +98,10 @@ abstract class Anqh_Controller_Page extends Controller {
 				$this->view->breadcrumbs = $this->page_breadcrumbs;
 			}
 
+			// Set meta data
+			if (!Anqh::page_meta('title')) {
+				Anqh::page_meta('title', $this->view->title ? $this->view->title : Kohana::$config->load('site.site_name'));
+			}
 
 			// And finally the profiler stats
 			if (self::$user && self::$user->has_role('admin')) {
