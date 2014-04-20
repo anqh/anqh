@@ -255,7 +255,7 @@ class Anqh_Core {
 			$meta = array(
 				'title' => Kohana::$config->load('site.site_name'),
 				'type'  => 'article',
-				'url'   => URL::site('', true),
+//				'url'   => URL::site('', true),
 				'site'  => Kohana::$config->load('site.site_name'),
 			);
 		  if ($config['image']) {
@@ -294,8 +294,7 @@ class Anqh_Core {
 				foreach ($meta as $_key => $_value) {
 					if (isset($opengraph_tags[$_key])) {
 						$combined[$opengraph_tags[$_key]] = $_value;
-					}
-					if (strpos($_key, 'og:') === 0) {
+					} else {
 						$combined[$_key] = $_value;
 					}
 				}

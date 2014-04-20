@@ -4,10 +4,34 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2012 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_User extends Controller_Page {
+
+	/**
+	 * Construct controller
+	 */
+	public function after() {
+		if ($user = self::_get_user(false)) {
+			Anqh::page_meta('type', 'profile');
+			Anqh::page_meta('title', HTML::chars($user->username));
+			Anqh::page_meta('profile:username', HTML::chars($user->username));
+			switch ($user->gender) {
+				case 'f': Anqh::page_meta('profile:gender', 'female'); break;
+				case 'm': Anqh::page_meta('profile:gender', 'male'); break;
+			}
+
+			if ($image = $user->get_image_url()) {
+				Anqh::page_meta('image',  $image);
+			}
+
+			Anqh::share(true);
+		}
+
+		parent::after();
+	}
+
 
 	/**
 	 * Action: comment
@@ -505,11 +529,15 @@ class Anqh_Controller_User extends Controller_Page {
 	 * @return  Model_User
 	 */
 	protected function _get_user($redirect = true) {
+		static $user;
 
 		// Get our user, default to logged in user if no username given
-		$username = urldecode((string)$this->request->param('username'));
-		$user = ($username == '') ? self::$user : Model_User::find_user($username);
-		if (!$user && $redirect)	{
+		if (!$user) {
+			$username = urldecode((string)$this->request->param('username'));
+			$user     = ($username == '') ? self::$user : Model_User::find_user($username);
+		}
+
+		if (!$user && $redirect) {
 			$this->request->redirect(Route::get('users')->uri());
 		}
 

@@ -27,7 +27,7 @@ class Anqh_Controller_Index extends Controller_Page {
 		}
 
 		// Build page
-		$this->view = new View_Page();
+		Anqh::page_meta('type', 'website');
 
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_newsfeed());
