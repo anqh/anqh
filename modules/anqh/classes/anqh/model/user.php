@@ -503,14 +503,14 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  string
 	 */
 	public function get_image_url($size = null) {
+		$image = null;
+
 		if ($this->default_image_id) {
 			$image = Model_Image::factory($this->default_image_id)->get_url($size);
 		} else if (Valid::url($this->picture)) {
 			$image = $this->picture;
-		} else if ($images = $this->images()) {
+		} else if (count($images = $this->images())) {
 			$image = $images->current()->get_url($size);
-		} else {
-			$image = null;
 		}
 
 		return $image;
