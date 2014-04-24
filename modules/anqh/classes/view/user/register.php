@@ -68,7 +68,7 @@ class View_User_Register extends View_Section {
 		'password',
 		null,
 		array('class' => 'input-lg', 'required'),
-		__('Username'),
+		__('Password'),
 		Arr::get($this->errors, 'password'),
 		__('Try to use letters, numbers and special characters for a stronger password, with at least <var>8</var> characters.')
 	) ?>
