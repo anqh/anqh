@@ -47,58 +47,82 @@ class View_User_Invite extends View_Section {
 
 		echo $this->message;
 
-		echo Form::open();
-
 ?>
 
-<fieldset>
-	<legend><?= __('Not yet invited?') ?></legend>
+<div class="row">
+	<div class="col-sm-6">
 
-	<?= Form::input_wrap(
-		'email',
-		$this->invitation->email,
-		array('class' => 'input-lg', 'type' => 'email', 'placeholder' => 'john.doe@domain.tld', 'required'),
-		__('Send an invitation to'),
-		Arr::get($this->errors, 'email'),
-		__('Please remember: Valid, invited email is required to join. You can invite yourself too!')
-	) ?>
+		<?= Form::open() ?>
 
-</fieldset>
+		<fieldset>
+			<legend><?= __('Not yet invited?') ?></legend>
 
-<fieldset>
-	<?= Form::button('invite', '<i class="fa fa-envelope"></i> ' . __('Send invitation'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
-	<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
-</fieldset>
+			<?= Form::input_wrap(
+				'email',
+				$this->invitation->email,
+				array('class' => 'input-lg', 'type' => 'email', 'placeholder' => 'john.doe@domain.tld', 'required'),
+				__('Send an invitation to'),
+				Arr::get($this->errors, 'email'),
+				__('Please remember: Valid, invited email is required to join. You can invite yourself too!')
+			) ?>
 
-<?= Form::close() ?>
+		</fieldset>
 
-<br>
+		<fieldset>
+			<?= Form::button('invite', '<i class="fa fa-envelope"></i> ' . __('Send invitation'), array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
+			<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
+		</fieldset>
 
-<?= Form::open() ?>
+		<?= Form::close() ?>
 
-<fieldset>
-	<legend><?= __('Got my invitation!') ?></legend>
+		<br>
 
-	<?= Form::input_wrap(
-		'code',
-		null,
-		array('class' => 'input-lg', 'placeholder' => __('M0573XC3LL3N751R'), 'maxlength' => 16, 'required'),
-		__('Invitation code'),
-		Arr::get($this->errors, 'code'),
-		__('Your invitation code is included in the mail you received, 16 characters.')
-	) ?>
+		<?= Form::open() ?>
 
-</fieldset>
+		<fieldset>
+			<legend><?= __('Got my invitation!') ?></legend>
 
-<fieldset>
-	<?= Form::hidden('signup', true) ?>
-	<?= Form::button('invited', __('Final step!') . ' <i class="fa fa-arrow-right"></i>', array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
-	<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
-</fieldset>
+			<?= Form::input_wrap(
+				'code',
+				null,
+				array('class' => 'input-lg', 'placeholder' => __('M0573XC3LL3N751R'), 'maxlength' => 16, 'required'),
+				__('Invitation code'),
+				Arr::get($this->errors, 'code'),
+				__('Your invitation code is included in the mail you received, 16 characters.')
+			) ?>
+
+		</fieldset>
+
+		<fieldset>
+			<?= Form::hidden('signup', true) ?>
+			<?= Form::button('invited', __('Final step!') . ' <i class="fa fa-arrow-right"></i>', array('type' => 'submit', 'class' => 'btn btn-primary btn-large')) ?>
+			<?= HTML::anchor(Request::back('/', true), __('Cancel'), array('class' => 'cancel')) ?>
+		</fieldset>
+
+		<?= Form::close() ?>
+
+	</div>
+
+
+	<div class="col-md-1 hidden-xs text-center lead">
+
+		<?= __('or') ?>
+
+	</div>
+
+
+	<div class="col-sm-5">
+
+		<?= HTML::anchor(
+				Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
+				'&nbsp;<i class="fa fa-facebook"></i> ' . __('Connect with Facebook') . '&nbsp;',
+				array('class' => 'btn btn-lg btn-facebook', 'title' => __('Sign in with your Facebook account'))
+			) ?>
+
+	</div>
+</div>
 
 <?php
-
-		echo Form::close();
 
 		return ob_get_clean();
 	}
