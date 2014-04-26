@@ -13,7 +13,7 @@ Route::set('api_events', 'api/<version>/events/<action>(.<format>)', array('vers
 		'controller' => 'events_api',
 		'version'    => 'v1',
 	));
-Route::set('event', 'event/<id>(/<action>(/<param>))', array('action' => 'edit|delete|favorite|unfavorite|hover|image'))
+Route::set('event', 'event/<id>(/<action>(/<param>))', array('action' => 'edit|delete|favorite|unfavorite|hover|flyer'))
 	->defaults(array(
 		'controller' => 'events',
 		'action'     => 'event',

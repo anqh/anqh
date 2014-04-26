@@ -126,14 +126,9 @@ class View_Event_Day extends View_Article {
 	 * @return  string
 	 */
 	public function flyer() {
-		if ($image = $this->event->flyer_front()):
-			$icon = $image->get_url($image::SIZE_THUMBNAIL);
-		elseif (count($flyers = $this->event->flyers())):
-			$image = $flyers[0]->image();
-			$icon  = $image->get_url($image::SIZE_THUMBNAIL);
-		else:
-			$icon = null;
-		endif;
+		$icon = ($flyer = $this->event->flyer())
+			? $flyer->image()->get_url(Model_Image::SIZE_THUMBNAIL)
+			: null;
 
 		return HTML::anchor(
 			Route::model($this->event),

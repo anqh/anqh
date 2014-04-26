@@ -203,10 +203,10 @@ class View_Event_Edit extends View_Article {
 	<div id="map" class="well"></div>
 
 	<fieldset>
-		<?php if (!$this->event->flyer_front_image_id) echo
+		<?php if (!$this->event->flyer_id) echo
 			Form::input_wrap(
 					'flyer',
-					$this->event->flyer_front_url,
+					$this->event->flyer_url,
 					array('type' => 'url', 'placeholder' => 'http://'),
 					__('Flyer'),
 					$this->flyer_error,

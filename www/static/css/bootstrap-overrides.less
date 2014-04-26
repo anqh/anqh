@@ -98,12 +98,12 @@ select.form-control                    { padding: @padding-base-vertical (@paddi
 // --------------------------------------------------
 .carousel                              {
   img                                  { width: 100%; }
-  .carousel-control                    { opacity: .25; /*border-width: 2px; font-size: 20px; height: 20px; line-height: 18px; opacity: .25; margin-top: 0; top: 8px; width: 20px; }*/
-    &:hover                            { opacity: .9; }
+  .carousel-control                    { background: rgba(0, 0, 0, 0.25);
+    &:hover                            { background: rgba(0, 0, 0, 0.5); }
     .icon-next                         { margin-left: auto; margin-right: -15px; }
   }
-  .btn-group                           { display: none; position: absolute; right: 5px; top: 5px; }
-  &:hover .btn-group                   { display: inherit; }
+  .actions                             { display: none; left: @carousel-control-width; position: absolute; right: @carousel-control-width; text-align: center; top: 20px; }
+  &:hover .actions                     { display: block; }
 }
 
 

@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2013 Antti Qvickström
+ * @copyright  (c) 2013-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Developers_API extends View_Section {
@@ -137,9 +137,9 @@ $.ajax({
 				"price":"-1.00",
 				"created":"1014461180",
 				"modified":"1023514641",
-				"flyer_front":null,
-				"flyer_front_thumb":null,
-				"flyer_front_icon":null,
+				"flyer":null,
+				"flyer_thumb":null,
+				"flyer_icon":null,
 				"favorite_count":"0",
 				"music":"kiksu, pesukonetechno, progepsyketechnohouse, polkka, chill..",
 				"url":"http://alpha.klubitus.org/event/1501-massive-the-birthday-bash"

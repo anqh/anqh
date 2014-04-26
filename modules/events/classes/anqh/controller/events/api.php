@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Anqh Events API controller
+ * Anqh Events API controller.
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Events_API extends Controller_API {
@@ -13,10 +13,9 @@ class Anqh_Controller_Events_API extends Controller_API {
 	 * @var  array  Fetchable fields
 	 */
 	public static $_fields = array(
-		'id', 'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'city',
+		'id', 'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'venue_id', 'city',
 		'dj', 'info', 'age', 'price', 'price2', 'created', 'modified',
-		'flyer_front', 'flyer_front_thumb', 'flyer_front_icon',
-		'flyer_back', 'flyer_back_thumb', 'flyer_back_icon',
+		'flyer', 'flyer_thumb', 'flyer_icon', 'flyer_id',
 		'favorite_count', 'music', 'url'
 	);
 
@@ -222,19 +221,21 @@ class Anqh_Controller_Events_API extends Controller_API {
 			switch ($field) {
 
 				// Raw value
-				case 'id':
-				case 'name':
-				case 'homepage':
-				case 'stamp_begin':
-				case 'stamp_end':
-				case 'dj':
-				case 'info':
 				case 'age':
+				case 'created':
+				case 'favorite_count':
+				case 'flyer_id':
+				case 'dj':
+				case 'homepage':
+				case 'id':
+				case 'info':
+				case 'modified':
+				case 'name':
 				case 'price':
 				case 'price2':
-				case 'created':
-				case 'modified':
-				case 'favorite_count':
+				case 'stamp_begin':
+				case 'stamp_end':
+				case 'venue_id':
 					$data[$field] = $event->$field;
 					break;
 
@@ -247,25 +248,19 @@ class Anqh_Controller_Events_API extends Controller_API {
 					$data[$field] = ($venue = $event->venue()) ? $venue->city_name : $event->city_name;
 			    break;
 
-				case 'flyer_front':
-				case 'flyer_back':
-				case 'flyer_front_icon':
-				case 'flyer_back_icon':
-				case 'flyer_front_thumb':
-				case 'flyer_back_thumb':
-					if (strpos($field, 'icon')) {
-						$column = str_replace('_icon', '', $field) . '_image_id';
-						$size   = Model_Image::SIZE_ICON;
-					} else if (strpos($field, '_thumb')) {
-						$column = str_replace('_thumb', '', $field) . '_image_id';
-						$size   = Model_Image::SIZE_THUMBNAIL;
+				case 'flyer':
+				case 'flyer_icon':
+				case 'flyer_thumb':
+					if ($field === 'flyer_icon') {
+						$size = Model_Image::SIZE_ICON;
+					} else if ($field === 'flyer__thumb') {
+						$size = Model_Image::SIZE_THUMBNAIL;
 					} else {
-						$column = $field . '_image_id';
-						$size   = null;
+						$size = null;
 					}
-					$image  = new Model_Image($event->$column);
-			    $data[$field] = $image->loaded() ? $image->get_url($size) : null;
-			    break;
+
+					$data[$field] = ($flyer = $event->flyer()) ? $flyer->image()->get_url($size) : null;
+					break;
 
 				case 'music':
 					if ($tags = $event->tags()) {

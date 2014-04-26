@@ -578,8 +578,8 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		Anqh::page_meta('title', __('Gallery') . ': ' . $gallery->name);
 		Anqh::page_meta('url', URL::site(Route::get('gallery')->uri(array('id' => $gallery->id, 'action' => '')), true));
 		Anqh::page_meta('description', __($gallery->image_count == 1 ? ':images image' : ':images images', array(':images' => $gallery->image_count)) . ' - ' . date('l ', $gallery->date) . Date::format(Date::DMY_SHORT, $gallery->date) . ($event ? ' @ ' . $event->venue_name : ''));
-		if ($event && $image = $event->flyer_front()) {
-			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
+		if ($event && $flyer = $event->flyer()) {
+			Anqh::page_meta('image', URL::site($flyer->image()->get_url('thumbnail'), true));
 		} else if ($image = $gallery->default_image()) {
 			Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
 		}
@@ -592,7 +592,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$this->view->subtitle = Controller_Events::_event_subtitle($event);
 
 			// Event flyer
-			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_event_image($event));
+			if ($event->flyer_id) {
+				$this->view->add(View_Page::COLUMN_RIGHT, $this->section_event_image($event));
+			}
 
 		}
 
@@ -1552,11 +1554,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function section_event_image(Model_Event $event) {
 
 		// Display front flyer by default
-		if ($image = $event->flyer_front()) {
-			$flyer = Model_Flyer::factory()->find_by_image($image->id);
-			$link  = Route::model($flyer);
-		} else if (count($flyers = $event->flyers())) {
-			$flyer = $flyers[0];
+		if ($flyer = $event->flyer()) {
 			$image = $flyer->image();
 			$link  = Route::model($flyer);
 		} else {

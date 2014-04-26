@@ -90,7 +90,7 @@ class View_User_Carousel extends View_Section {
 					<?= HTML::image($this->user->picture) ?>
 
 					<?php if (isset($action_uri)): ?>
-			<div class="btn-group">
+			<div class="actions">
 				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=facebook', '<i class="fa fa-trash-o"></i> ' . __('Delete'), array('class' => 'btn btn-xs btn-default image-delete')) ?>
 			</div>
 					<?php endif; ?>
@@ -106,11 +106,11 @@ class View_User_Carousel extends View_Section {
 
 				<?php if (isset($action_uri)): ?>
 
-			<div class="btn-group">
+			<div class="actions">
 					<?php if ($image->id == $this->user->default_image_id):
 						echo HTML::anchor('#', '<i class="fa fa-home"></i> ' . __('Set as default'), array('class' => 'btn btn-xs btn-default image-change disabled'));
 					else:
-						echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $image->id, '<i class="fa fa-home"></i> ' . __('Set as default'), array('class' => 'btn btn-xs btn-default image-change'));
+						echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $image->id, '<i class="fa fa-user"></i> ' . __('Set as default'), array('class' => 'btn btn-xs btn-default image-change'));
 					endif; ?>
 				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=' . $image->id, '<i class="fa fa-trash-o"></i> ' . __('Delete'), array('class' => 'btn btn-xs btn-default image-delete')) ?>
 			</div>
@@ -136,7 +136,7 @@ class View_User_Carousel extends View_Section {
 		// Image search
 		echo HTML::anchor(
 			Route::url('galleries', array('action' => 'search')) . '?user=' . urlencode($this->user->username),
-			'<i class="icon-picture"></i> ' . __('Search from galleries'),
+			'<i class="fa fa-search"></i> ' . __('Search from galleries'),
 			array('class' => 'btn btn-default btn-block')
 		);
 

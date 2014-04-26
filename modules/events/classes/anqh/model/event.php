@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Event model
+ * Event model.
  *
  * @package    Events
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2013 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
@@ -35,6 +35,8 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'price2'               => null,
 		'tickets_url'          => null,
 		'music'                => null,
+		'flyer_id'             => null,
+		'flyer_url'            => null,
 		'flyer_front_url'      => null,
 		'flyer_back_url'       => null,
 		'flyer_front_image_id' => null,
@@ -61,6 +63,8 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'age'                  => array('digit', 'range' => array(':value', 0, 99)),
 		'price'                => array('numeric'),
 		'tickets_url'          => array('url'),
+		'flyer_id'             => array('digit'),
+		'flyer_url'            => array('url'),
 		'flyer_front_url'      => array('url'),
 		'flyer_back_url'       => array('url'),
 		'flyer_front_image_id' => array('digit'),
@@ -382,27 +386,17 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get front flyer image.
-	 *
-	 * @return  Model_Image
-	 */
-	public function flyer_front() {
-		try {
-			return $this->flyer_front_image_id ? Model_Image::factory($this->flyer_front_image_id) : null;
-		} catch (AutoModeler_Exception $e) {
-			return null;
-		}
-	}
-
-
-	/**
-	 * Get event flyer.
+	 * Get flyer.
 	 *
 	 * @return  Model_Flyer
 	 */
 	public function flyer() {
-		if ($flyers = $this->flyers()) {
-			return $flyers->current();
+		if ($this->flyer_id) {
+			return new Model_Flyer($this->flyer_id);
+		} else {
+			if (count($flyers = $this->flyers())) {
+				return $flyers[0];
+			}
 		}
 
 		return null;
@@ -561,6 +555,28 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		} else {
 			return null;
 		}
+	}
+
+
+	/**
+	 * Set default flyer.
+	 *
+	 * @param   Model_Flyer  $flyer  empty for first available if not set
+	 * @return  boolean      true if changed
+	 */
+	public function set_flyer(Model_Flyer $flyer = null) {
+		$old_id = $this->flyer_id;
+
+		// If no flyer given and none set, get first available
+		if (!$flyer && !$this->flyer_id && $flyers = $this->flyers()) {
+			$flyer = $flyers->current();
+		}
+
+		if ($flyer) {
+			$this->flyer_id = $flyer->id;
+		}
+
+		return $this->flyer_id != $old_id;
 	}
 
 

@@ -52,36 +52,48 @@ class View_Event_Carousel extends View_Section {
 
 			// Check for actions
 			if (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
-				$action_uri = Route::model($this->event, 'image');
+				$action_uri = Route::model($this->event, 'flyer');
 			endif;
 
 			// Check for missing default image
-			$active_id = $this->event->flyer_front_image_id;
+			$active_id = $this->event->flyer_id;
 			if (!$active_id):
-				$active_id = $flyers->current()->image_id;
+				$active_id = $flyers->current()->id;
 			endif;
+
+			$slide = 0;
 
 ?>
 
 <div class="carousel">
 
+	<?php if (count($flyers) > 1): ?>
+	<ol class="carousel-indicators">
+
+		<?php foreach ($flyers as $flyer): ?>
+		<li data-target="#<?= $this->id ?>" data-slide-to="<?= $slide++ ?>"<?= $flyer->id == $active_id ? ' class="active"' : '' ?>></li>
+		<?php endforeach ?>
+
+	</ol>
+	<?php endif; ?>
+
 	<div class="carousel-inner">
 
 		<?php foreach ($flyers as $flyer): ?>
 
-		<div class="item<?= $flyer->image_id == $active_id ? ' active' : '' ?>">
+		<div class="item<?= $flyer->id == $active_id ? ' active' : '' ?>">
 
 			<?= HTML::anchor(Route::model($flyer), HTML::image($flyer->image()->get_url())) ?>
 
 			<?php if (isset($action_uri)): ?>
 
-			<div class="btn-group">
-				<?php if ($flyer->image_id == $this->event->flyer_front_image_id):
-					echo HTML::anchor('#', '<i class="fa fa-home"></i> ' . __('Set as default'), array('class' => 'btn btn-default btn-xs image-change disabled'));
+			<div class="actions">
+				<?php if ($flyer->id == $this->event->flyer_id):
+					echo HTML::anchor('#', '<i class="fa fa-picture-o"></i> ' . __('Set as default'), array('class' => 'btn btn-default btn-xs image-change disabled'));
 				else:
-					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $flyer->image_id, '<i class="fa fa-home"></i> ' . __('Set as default'), array('class' => 'btn btn-default btn-xs image-change'));
+					echo HTML::anchor($action_uri . '?token=' . Security::csrf() . '&default=' . $flyer->id, '<i class="fa fa-picture-o"></i> ' . __('Set as default'), array('class' => 'btn btn-default btn-xs image-change'));
 				endif; ?>
-				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=' . $flyer->image_id, '<i class="fa fa-trash-o"></i> ' . __('Delete'), array('class' => 'btn btn-default btn-xs image-delete')) ?>
+				<?= HTML::anchor($action_uri . '?token=' . Security::csrf() . '&delete=' . $flyer->id, '<i class="fa fa-trash-o"></i> ' . __('Delete'), array('class' => 'btn btn-default btn-xs image-delete')) ?>
 			</div>
 
 			<?php endif; ?>
@@ -104,7 +116,7 @@ class View_Event_Carousel extends View_Section {
 		elseif (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
 
 			// Add new flyer
-			echo HTML::anchor(Route::model($this->event, 'image'), '<i class="fa fa-picture-o"></i> ' . __('Upload flyer'), array('class' => 'empty ajaxify'));
+			echo HTML::anchor(Route::model($this->event, 'flyer'), '<i class="fa fa-picture-o"></i> ' . __('Upload flyer'), array('class' => 'empty ajaxify'));
 
 		endif;
 
