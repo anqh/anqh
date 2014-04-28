@@ -4,7 +4,7 @@
  *
  * @package    Music
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Music_Info extends View_Section {
@@ -37,30 +37,32 @@ class View_Music_Info extends View_Section {
 
 		// Cover
 		if (Valid::url($this->track->cover)):
-			echo HTML::image($this->track->cover, array('class' => 'cover', 'alt' => __('Cover')));
+			echo HTML::image($this->track->cover, array('class' => 'cover img-responsive', 'alt' => __('Cover')));
 		endif;
 
 		// Time
 		if ($this->track->size_time):
-			echo '<i class="icon-time icon-white"></i> ', $this->track->size_time, '<br />';
+			echo '<i class="fa fa-fw fa-clock-o"></i> ' . $this->track->size_time . '<br />';
 		endif;
 
 		// Listen count
 		if ($this->track->listen_count > 1):
-			echo '<i class="icon-headphones icon-white"></i> ', __(':count plays', array(':count' => $this->track->listen_count)), '<br />';
+			echo '<i class="fa fa-fw fa-play"></i> ' . ($this->track->listen_count == 1
+					? __(':count play', array(':count' => $this->track->listen_count))
+					: __(':count plays', array(':count' => $this->track->listen_count))) . '<br />';
 		endif;
 
 		// Tags
 		if ($tags = $this->track->tags()):
-			echo '<i class="icon-music icon-white"></i> ', implode(', ', $tags), '<br />';
+			echo '<i class="fa fa-fw fa-music"></i> ' . implode(', ', $tags) . '<br />';
 		elseif (!empty($this->track->music)):
-			echo '<i class="icon-music icon-white"></i> ', $this->track->music, '<br />';
+			echo '<i class="fa fa-fw fa-music"></i> ' . $this->track->music . '<br />';
 		endif;
 
 
 		// Meta
-		echo '<footer class="meta">';
-		echo __('Added'),  ' ', HTML::time(Date::format(Date::DMY_SHORT, $this->track->created), $this->track->created);
+		echo '<footer class="meta text-muted">';
+		echo __('Added :date', array(':date' => HTML::time(Date::format(Date::DMY_SHORT, $this->track->created), $this->track->created)));
 		echo '</footer>';
 
 

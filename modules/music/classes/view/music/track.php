@@ -37,6 +37,8 @@ class View_Music_Track extends View_Article {
 		// Meta
 		if ($tags = $track->tags()) {
 			$this->meta = '<small>' . implode(', ', $tags) . '</small>';
+		} else if ($track->music) {
+			$this->meta = '<small>' . $track->music . '</small>';
 		}
 	}
 
