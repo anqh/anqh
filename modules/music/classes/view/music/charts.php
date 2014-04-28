@@ -62,18 +62,25 @@ class View_Music_Charts extends View_Section {
 
 		ob_start();
 
+		foreach ($tracks as $track):
+			$view = new View_Music_Track($track['track']);
+			$view->rank      = $track['rank'] + 1;
+			$view->rank_last = $track['last'] === false ? false : $track['last'] + 1;
+			echo $view;
+		endforeach;
+
 ?>
 
 <table class="charts">
 	<tbody>
 
-		<?php foreach ($tracks as $track): ?>
+		<?php foreach ($tracks as $track): $author = $track['track']->author(); ?>
 		<tr>
 			<th class="current"><?= $track['rank'] + 1 ?></th>
 			<td class="previous"><?= $this->_change($track) ?></td>
 			<td class="track">
 				<?= HTML::anchor(Route::model($track['track']), HTML::chars($track['track']->name), array('class' => 'track')) ?><br />
-				<?= HTML::user($track['track']->author_id) ?>
+				<?= HTML::user($author, null, null, Route::url('profile_music', array('username' => urlencode($author['username'])))) ?>
 			</td>
 		</tr>
 		<?php endforeach ?>

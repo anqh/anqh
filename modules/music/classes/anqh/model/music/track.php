@@ -227,6 +227,43 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 
 
 	/**
+	 * Browse music by user.
+	 *
+	 * @param   integer  $user_id
+	 * @param   string   $type
+	 * @param   integer  $limit
+	 * @param   integer  $offset
+	 * @param   string   $order_by
+	 * @param   string   $order
+	 * @return  Model_Music_Track[]
+	 */
+	public function find_by_user($user_id, $type, $limit = 10, $offset = 0, $order_by = 'id', $order = 'DESC') {
+
+		// Validate type
+		if ($type !== self::TYPE_TRACK && $type !== self::TYPE_MIX) {
+			$type = self::TYPE_MIX;
+		}
+
+		// Validate order
+		if (!in_array($order_by, array('id', 'name', 'size_time', 'listen_count'))) {
+			$order_by = 'id';
+		}
+
+		// Build query
+		$query = DB::select_array($this->fields())
+			->where('author_id', '=', $user_id)
+			->where('type', '=', $type)
+			->order_by($order_by, $order);
+
+		if ($limit || $offset) {
+			return $this->load($query->offset($offset), $limit);
+		} else {
+			return $this->load($query, 0);
+		}
+	}
+
+
+	/**
 	 * Find latest musics.
 	 *
 	 * @param   integer  $type

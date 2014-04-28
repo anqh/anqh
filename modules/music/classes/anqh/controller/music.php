@@ -133,6 +133,16 @@ class Anqh_Controller_Music extends Controller_Page {
 		$this->view      = Controller_User::_set_page($user);
 		$this->view->tab = 'music';
 
+		// Browse
+		$tracks = Model_Music_Track::factory()->find_by_user($user->id, Model_Music_Track::TYPE_MIX, 0);
+		if ($count = count($tracks)) {
+			$this->view->add(View_Page::COLUMN_LEFT, $this->section_browse($tracks, __('Mixtapes') . ' <small>(' . $count . ')</small>'));
+		}
+		$tracks = Model_Music_Track::factory()->find_by_user($user->id, Model_Music_Track::TYPE_TRACK, 0);
+		if ($count = count($tracks)) {
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_browse($tracks, __('Tracks') . ' <small>(' . $count . ')</small>'));
+		}
+
 	}
 
 
@@ -215,12 +225,12 @@ class Anqh_Controller_Music extends Controller_Page {
 		// Top charts
 		$this->view->add(View_Page::COLUMN_LEFT, $this->section_charts(
 			Model_Music_Track::factory()->find_top_weekly(Model_Music_Track::TYPE_MIX, 10),
-			__('Top :top Mixtapes', array(':top' => 10))
+			__('Top Mixtapes')
 		));
 
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_charts(
 			Model_Music_Track::factory()->find_top_weekly(Model_Music_Track::TYPE_TRACK, 10),
-			__('Top :top Tracks', array(':top' => 10))
+			__('Top Tracks')
 		));
 
 
@@ -329,14 +339,20 @@ class Anqh_Controller_Music extends Controller_Page {
 	 * Get browse view.
 	 *
 	 * @param   Model_Music_Track[]  $tracks
+	 * @param   string               $title
 	 * @return  View_Music_Browse
 	 */
-	public function section_browse($tracks) {
+	public function section_browse($tracks, $title = null) {
 		if (!$tracks) {
-			return new View_Alert(__('Listen to the sound of silence.'), __('No music found'), View_Alert::INFO);
+			return new View_Alert(__('Listen to the sound of silence.'), $title ? $title : __('No music found'), View_Alert::INFO);
 		}
 
-		return new View_Music_Browse($tracks);
+		$section = new View_Music_Browse($tracks);
+		if ($title) {
+			$section->title = $title;
+		}
+
+		return $section;
 	}
 
 

@@ -15,6 +15,16 @@ class View_Music_Track extends View_Article {
 	public $class = 'track panel media';
 
 	/**
+	 * @var  integer
+	 */
+	public $rank;
+
+	/**
+	 * @var  integer
+	 */
+	public $rank_last;
+
+	/**
 	 * @var  Model_Music_Track
 	 */
 	public $track;
@@ -30,9 +40,10 @@ class View_Music_Track extends View_Article {
 
 		$this->track = $track;
 
-		$this->id       = 'music-' . $track->id;
-		$this->title    = HTML::anchor(Route::model($track), HTML::chars($track->name));
-		$this->subtitle = HTML::user($track->author_id);
+		$this->id    = 'music-' . $track->id;
+		$this->title = HTML::anchor(Route::model($track), HTML::chars($track->name));
+		$author = $this->track->author();
+		$this->subtitle = HTML::user($author, null, null, Route::url('profile_music', array('username' => urlencode($author['username']))));
 
 		// Meta
 		if ($tags = $track->tags()) {
@@ -40,6 +51,38 @@ class View_Music_Track extends View_Article {
 		} else if ($track->music) {
 			$this->meta = '<small>' . $track->music . '</small>';
 		}
+	}
+
+
+	/**
+	 * Get rank change.
+	 *
+	 * @return  string
+	 */
+	protected function _change() {
+		if ($this->rank_last === false) {
+
+			// No previous rank
+			$class  = 'new';
+			$change = __('New');
+
+		} else {
+
+			// Rank changed
+			$change = $this->rank_last - $this->rank;
+			if ($change < 0) {
+				$class  = 'text-danger';
+				$change = '<i class="fa fa-arrow-down"></i>' . abs($change);
+			} else if ($change > 0) {
+				$class  = 'text-success';
+				$change = '<i class="fa fa-arrow-up"></i>' . $change;
+			} else  {
+				$class  = 'text-muted';
+				$change = '-';
+			}
+		}
+
+		return '<small class="pull-right rank ' . $class . '">' . $change . '</small>';
 	}
 
 
@@ -75,10 +118,11 @@ class View_Music_Track extends View_Article {
 	 */
 	public function cover() {
 		$icon = $this->track->cover();
+		$rank = $this->rank ? '<div class="rank">' . $this->rank . '</div>' : '';
 
 		return HTML::anchor(
 			Route::model($this->track),
-			$icon ? HTML::image($icon, array('alt' => __('Cover'))) : '<i class="fa fa-music"></i>'
+			($icon ? HTML::image($icon, array('alt' => __('Cover'))) : '<i class="fa fa-music"></i>') . $rank
 		);
 	}
 
@@ -89,6 +133,9 @@ class View_Music_Track extends View_Article {
 	 * @return  string
 	 */
 	public function render() {
+		if ($this->rank && $this->rank_last !== null) {
+			$this->title = $this->_change() . $this->title;
+		}
 
 		// Start benchmark
 		if (Kohana::$profiling === true and class_exists('Profiler', false)):

@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * HTML helper
+ * HTML helper.
  *
  * @package    Anqh
  * @author     Antti Qvickström
@@ -303,9 +303,10 @@ class Anqh_HTML extends Kohana_HTML {
 	 * @param   mixed   $user
 	 * @param   string  $nick
 	 * @param   array   $attributes
+	 * @param   string  $url         override url
 	 * @return  string
 	 */
-	public static function user($user, $nick = null, array $attributes = null) {
+	public static function user($user, $nick = null, array $attributes = null, $url = null) {
 		static $viewer = true;
 
 		// Load current user for friend styling
@@ -321,15 +322,15 @@ class Anqh_HTML extends Kohana_HTML {
 					$class[] = 'friend ';
 				}
 				switch ($user['gender']) {
-					case 'f': $class[] = 'female '; break;
-					case 'm': $class[] = 'male '; break;
+					case 'f': $class[] = 'female'; break;
+					case 'm': $class[] = 'male'; break;
 				}
 			}
 		}
 		$class[] = Arr::get($attributes, 'class');
 		$attributes['class'] = trim(implode(' ', $class));
 
-		return empty($nick) ? __('Unknown') : HTML::anchor(URL::user($nick), $nick, $attributes);
+		return empty($nick) ? __('Unknown') : HTML::anchor($url ? $url : URL::user($nick), $nick, $attributes);
 	}
 
 }

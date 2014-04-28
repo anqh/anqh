@@ -44,43 +44,6 @@ class View_Music_Browse extends View_Section {
 			echo new View_Music_Track($track);
 		endforeach;
 
-		/*
-?>
-
-<table class="table music">
-	<thead>
-		<tr>
-			<th></th>
-			<th><?= __('Name') ?></th>
-			<th><?= __('Plays') ?></th>
-			<th><?= __('Added') ?></th>
-		</tr>
-	</thead>
-
-	<tbody>
-
-	<?php foreach ($this->tracks as $track): ?>
-		<tr>
-			<td class="cover">
-				<?php if (Valid::url($track->cover)) echo HTML::image($track->cover, array('width' => 50)) ?>
-			</td>
-			<td class="track">
-				<?= HTML::anchor(Route::model($track), HTML::chars($track->name), array('class' => 'track')) ?><br />
-				<?= HTML::user($track->author_id) ?>
-			</td>
-			<td class="count"><?= $track->listen_count ?></td>
-			<td class="date">
-				<small class="ago"><?= HTML::time(Date::short_span($track->created, true, true), $track->created) ?></small>
-			</td>
-		</tr>
-	<?php endforeach ?>
-
-	</tbody>
-</table>
-
-<?php
-		*/
-
 		return ob_get_clean();
 	}
 
