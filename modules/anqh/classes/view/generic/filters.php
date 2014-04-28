@@ -95,10 +95,11 @@ class View_Generic_Filters extends View_Section {
 
 <?php
 
-		if ($this->type == self::TYPE_JAVASCRIPT):
+		switch ($this->type):
 
 			// Filter with javascript
-			foreach ($this->filters as $type => $filter):
+			case self::TYPE_JAVASCRIPT:
+				foreach ($this->filters as $type => $filter):
 
 ?>
 
@@ -113,14 +114,15 @@ class View_Generic_Filters extends View_Section {
 
 <?php
 
-			endforeach;
+				endforeach;
 
-			echo $this->javascript();
+				echo $this->javascript();
+				break;
 
-		else:
 
 			// Filter with query
-			foreach ($this->filters as $filter):
+			case self::TYPE_QUERY:
+				foreach ($this->filters as $filter):
 
 ?>
 
@@ -135,9 +137,31 @@ class View_Generic_Filters extends View_Section {
 
 <?php
 
-			endforeach;
+				endforeach;
+				break;
 
-		endif;
+
+			// Navigate to url
+			case self::TYPE_URL:
+				foreach ($this->filters as $filter):
+
+?>
+
+<div class="btn-toolbar filters collapse">
+	<a href="<?= self::url(false) ?>" class="btn btn-xs btn-default <?= !$this->selected ? 'active' : '' ?>"><?= __('All') ?></a>
+
+	<?php foreach ($filter['filters'] as $name): ?>
+	<a href="<?= self::url($name) ?>" class="btn btn-xs btn-default <?= $this->selected == $name ? 'active' : '' ?>"><?= HTML::chars($name) ?></a>
+	<?php endforeach; ?>
+
+</div>
+
+<?php
+
+				endforeach;
+				break;
+
+		endswitch;
 
 		return ob_get_clean();
 	}
