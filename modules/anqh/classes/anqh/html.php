@@ -38,7 +38,7 @@ class Anqh_HTML extends Kohana_HTML {
 
 		if (empty($title)) {
 			return '<span class="' . $class . '">' . (!$lazy
-				? HTML::image($avatar, array('alt' => __('Avatar'), 'class' => 'img-circle'))
+				? HTML::image($avatar, array('alt' => __('Avatar'), 'class' => 'img-circle'), null, null, $lazy)
 				: HTML::image($placeholder, array('alt' => __('Avatar'), 'class' => 'img-circle lazy', 'data-original' => $avatar))
 			) . '</span>';
 		} else {
@@ -146,15 +146,16 @@ class Anqh_HTML extends Kohana_HTML {
 	 *
 	 *     echo HTML::image('media/img/logo.png', array('alt' => 'My Company'));
 	 *
-	 * @param   string  $file       file name
-	 * @param   array   $attributes default attributes
-	 * @param   mixed   $protocol   protocol to pass to URL::base()
-	 * @param   boolean $index      include the index page
+	 * @param   string   $file       file name
+	 * @param   array    $attributes default attributes
+	 * @param   mixed    $protocol   protocol to pass to URL::base()
+	 * @param   boolean  $index      include the index page
+	 * @param   boolean  $lazy       lazy load
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function image($file, array $attributes = null, $protocol = null, $index = false) {
+	public static function image($file, array $attributes = null, $protocol = null, $index = false, $lazy = false) {
 
 		// Add the base URL
 		if (strpos($file, '//') === false) {
@@ -162,7 +163,12 @@ class Anqh_HTML extends Kohana_HTML {
 		}
 
 		// Add the image link
-		$attributes['src'] = $file;
+		if ($lazy) {
+			$attributes['class']        .= ' lazy';
+			$attributes['data-original'] = $file;
+		} else {
+			$attributes['src'] = $file;
+		}
 
 		return '<img' . HTML::attributes($attributes) . ' />';
 	}

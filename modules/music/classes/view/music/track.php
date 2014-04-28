@@ -122,7 +122,7 @@ class View_Music_Track extends View_Article {
 
 		return HTML::anchor(
 			Route::model($this->track),
-			($icon ? HTML::image($icon, array('alt' => __('Cover'))) : '<i class="fa fa-music"></i>') . $rank
+			($icon ? HTML::image($icon, array('alt' => __('Cover')), null, null, true) : '<i class="fa fa-music"></i>') . $rank
 		);
 	}
 
