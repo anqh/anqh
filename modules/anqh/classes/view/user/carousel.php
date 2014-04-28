@@ -52,6 +52,10 @@ class View_User_Carousel extends View_Section {
 		endif;
 
 		if (count($images) || $facebook):
+			$count = count($images);
+			if ($facebook):
+				$count++;
+			endif;
 
 			// Check for actions
 			if (Permission::has($this->user, Model_User::PERMISSION_UPDATE, self::$_user)):
@@ -70,6 +74,7 @@ class View_User_Carousel extends View_Section {
 
 <div class="carousel">
 
+	<?php if ($count > 1): ?>
 	<ol class="carousel-indicators">
 
 			<?php if ($facebook): ?>
@@ -81,6 +86,7 @@ class View_User_Carousel extends View_Section {
 			<?php endforeach ?>
 
 	</ol>
+	<?php endif; ?>
 
 	<div class="carousel-inner">
 
@@ -123,8 +129,11 @@ class View_User_Carousel extends View_Section {
 
 	</div>
 
+	<?php if ($count > 1): ?>
 	<a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev"><i class="fa fa-chevron-left icon-prev"></i></a>
 	<a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next"><i class="fa fa-chevron-right icon-next"></i></a>
+	<?php endif; ?>
+	
 </div>
 
 <br>
