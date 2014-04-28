@@ -55,6 +55,12 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 	);
 
 
+	/**
+	 * Getter.
+	 *
+	 * @param   string  $key
+	 * @return  mixed|null|string
+	 */
 	public function __get($key) {
 		if ($key === 'size_time') {
 			$seconds = parent::__get($key);
@@ -167,6 +173,16 @@ class Anqh_Model_Music_Track extends AutoModeler_ORM implements Permission_Inter
 				->execute($this->_db)
 				->get('tracks');
 		}
+	}
+
+
+	/**
+	 * Get track cover url.
+	 *
+	 * @return  string
+	 */
+	public function cover() {
+		return $this->cover ? $this->cover : null;
 	}
 
 
