@@ -53,7 +53,7 @@ return array(
 		'events'     => array('url' => Route::url('events'),     'text' => __('Events'),     'icon' => 'fa fa-calendar'),
 		'forum'      => array('url' => Route::url('forum'),      'text' => __('Forum'),      'icon' => 'fa fa-comments-o'),
 		'galleries'  => array('url' => Route::url('galleries'),  'text' => __('Galleries'),  'icon' => 'fa fa-camera-retro'),
-		'charts'     => array('url' => Route::url('charts'),     'text' => __('Music'),      'icon' => 'fa fa-music'),
+		'music'      => array('url' => Route::url('charts'),     'text' => __('Music'),      'icon' => 'fa fa-music'),
 		'blogs'      => array('url' => Route::url('blogs'),      'text' => __('Blogs'),      'icon' => 'fa fa-book'),
 		'venues'     => array('url' => Route::url('venues'),     'text' => __('Venues'),     'icon' => 'fa fa-map-marker'),
 		'members'    => array('url' => Route::url('users'),      'text' => __('Members'),    'icon' => 'fa fa-group'),
