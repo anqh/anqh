@@ -27,4 +27,9 @@ Route::set('charts', 'charts(/<action>)', array('action' => 'add'))
 	->defaults(array(
 		'controller' => 'music',
 	));
-
+Route::set('profile_music', 'member/<username>/music', array(
+	'username' => '[^/]+')
+)->defaults(array(
+		'action'     => 'profile',
+		'controller' => 'music',
+	));

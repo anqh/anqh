@@ -969,7 +969,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	/**
 	 * Action: photographer profile
 	 */
-	public function action_photographer() {
+	public function action_profile() {
 		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
 		if (!$user) {
 			$this->request->redirect(Route::url('galleries'));
@@ -979,7 +979,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Build page
 		$this->view      = Controller_User::_set_page($user);
-		$this->view->tab = 'photographer';
+		$this->view->tab = 'galleries';
 
 		// Galleries
 		$galleries = Model_Gallery::factory()->find_by_user($user->id);

@@ -54,9 +54,9 @@ Route::set('galleries', 'galleries(/<action>(/<year>(/<month>)))', array('action
 	->defaults(array(
 		'controller' => 'galleries',
 	));
-Route::set('photographer', 'member/<username>/photographer', array(
+Route::set('profile_galleries', 'member/<username>/galleries', array(
 	'username' => '[^/]+')
 )->defaults(array(
-		'action'     => 'photographer',
+		'action'     => 'profile',
 		'controller' => 'galleries',
 	));

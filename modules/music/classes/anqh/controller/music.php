@@ -8,14 +8,14 @@
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Music extends Controller_Page {
-	public $page_id = 'charts';
+	public $page_id = 'music';
 
 
 	/**
 	 * Action: add new track
 	 */
 	public function action_add() {
-		return $this->_edit_track();
+		$this->_edit_track();
 	}
 
 
@@ -115,6 +115,24 @@ class Anqh_Controller_Music extends Controller_Page {
 		$track->listen(self::$user, Request::$client_ip);
 
 		$this->request->redirect($track->url);
+	}
+
+
+	/**
+	 * Action: Artist profile
+	 */
+	public function action_profile() {
+		$user = Model_User::find_user(urldecode((string)$this->request->param('username')));
+		if (!$user) {
+			$this->request->redirect(Route::url('charts'));
+
+			return;
+		}
+
+		// Build page
+		$this->view      = Controller_User::_set_page($user);
+		$this->view->tab = 'music';
+
 	}
 
 

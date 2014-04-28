@@ -561,6 +561,7 @@ class Anqh_Controller_User extends Controller_Page {
 		if ($user->title) {
 			$view->subtitle = HTML::chars($user->title);
 		}
+		$view->title_icon = HTML::avatar($user->avatar, $user->username);
 
 		// Set actions
 		if (self::$user) {
@@ -608,9 +609,15 @@ class Anqh_Controller_User extends Controller_Page {
 			);
 
 			// Photographer profile
-			$view->tabs['photographer'] = array(
-				'link' => Route::url('photographer', array('username' => urlencode($user->username))),
+			$view->tabs['galleries'] = array(
+				'link' => Route::url('profile_galleries', array('username' => urlencode($user->username))),
 				'text' => __('Galleries'),
+			);
+
+			// Artist profile
+			$view->tabs['music'] = array(
+				'link' => Route::url('profile_music', array('username' => urlencode($user->username))),
+				'text' => __('Music'),
 			);
 
 			// Blog

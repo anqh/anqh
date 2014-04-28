@@ -19,74 +19,49 @@ class Anqh_View_Page extends View_Base {
 	const SEARCH_EVENTS = 'events';
 	const SEARCH_USERS  = 'users';
 
-	/**
-	 * @var  array  Page actions
-	 */
+	/** @var  array  Page actions */
 	public $actions = array();
 
-	/**
-	 * @var  string  Base URL
-	 */
+	/** @var  string  Base URL */
 	public $base = '/';
 
-	/**
-	 * @var  array  Breadcrumbs
-	 */
+	/** @var  array  Breadcrumbs */
 	public $breadcrumbs = array();
 
-	/**
-	 * @var  array  Column contents
-	 */
+	/** @var  array  Column contents */
 	protected $_content = array();
 
-	/**
-	 * @var  array  Container classes
-	 */
+	/** @var  array  Container classes */
 	protected $_content_class = array();
 
-	/**
-	 * @var  string  Page language
-	 */
+	/** @var  string  Page language */
 	public $language = 'en';
 
-	/**
-	 * @var  array  Notifications
-	 */
+	/** @var  array  Notifications */
 	public static $notifications = array();
 
-	/**
-	 * @var  array  JavaScripts for footer
-	 */
+	/** @var  array  JavaScripts for footer */
 	public $scripts = array();
 
-	/**
-	 * @var  string  Default search
-	 */
+	/** @var  string  Default search */
 	public $search = self::SEARCH_USERS;
 
-	/**
-	 * @var  string  Active tab
-	 */
+	/** @var  string  Active tab */
 	public $tab;
 
-	/**
-	 * @var  array  Page tabs
-	 */
+	/** @var  array  Page tabs */
 	public $tabs = array();
 
-	/**
-	 * @var  string  Page title
-	 */
+	/** @var  string  Page title */
 	public $title;
 
-	/**
-	 * @var  string  Page title with HTML
-	 */
+	/** @var  string  Page title with HTML */
 	public $title_html;
 
-	/**
-	 * @var  string  Page subtitle
-	 */
+	/** @var  string  Page icon url */
+	public $title_icon;
+
+	/** @var  string  Page subtitle */
 	public $subtitle;
 
 
@@ -709,6 +684,12 @@ class Anqh_View_Page extends View_Base {
 
 					echo HTML::anchor($action['link'], $action['text'], $attributes) . ' ';
 				endforeach; ?>
+		</div>
+		<?php endif; ?>
+
+		<?php if ($this->title_icon): ?>
+		<div class="pull-left">
+			<?= $this->title_icon ?>
 		</div>
 		<?php endif; ?>
 
