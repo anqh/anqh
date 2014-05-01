@@ -448,7 +448,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 				$validation    = Validation::factory(array('current_password' => $old_password));
 				$validation->rule('current_password', 'not_empty');
-				if (!$visitor->check_password($old_password)) {
+				if (!$visitor->check_password($old_password) && Visitor::generate_password($user->password) !== $old_password) {
 					$validation->rule('current_password', 'equals', array(':validation', __('current password')));
 				} else if ($new_password) {
 
