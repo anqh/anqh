@@ -577,21 +577,7 @@ class Anqh_View_Page extends View_Base {
 			array('class' => 'dropdown-toggle', 'data-toggle' => 'dropdown')
 		) ?>
 		<div class="dropdown-menu dropdown-menu-right">
-			<?= Form::open(Route::url('sign', array('action' => 'in'))) ?>
-			<?= Form::input_wrap('username', null, null, __('Username or email')) ?>
-			<?= Form::password_wrap('password', null, null, __('Password')) ?>
-			<?= Form::form_group(
-				Form::checkbox_wrap('remember', 'true', true, null, __('Stay logged in'))
-			) ?>
-			<?= Form::button(null, __('Login'), array('class' => 'btn btn-block btn-primary', 'title' => __('Remember to sign out if on a public computer!'))) ?>
-			<?= Form::close(); ?>
-			<?= HTML::anchor(Route::url('sign', array('action' => 'password')), __('Forgot your password?'), array('class' => 'text-muted')) ?>
-			<hr>
-			<?= HTML::anchor(
-					Route::url('oauth', array('action' => 'login', 'provider' => 'facebook')),
-					'&nbsp;<i class="fa fa-facebook"></i> ' . __('Connect with Facebook') . '&nbsp;',
-					array('class' => 'btn btn-block btn-facebook', 'title' => __('Sign in with your Facebook account'))
-				) ?>
+			<?= View_Index_Signin::form() ?>
 		</div>
 	</li>
 

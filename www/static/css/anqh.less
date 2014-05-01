@@ -100,7 +100,11 @@ input.private                          { border-color: @brand-special; color: @b
     .tt-dropdown-menu                  { width: 250px; }
     .tt-suggestion                     { .text-overflow(); }
   }
-  #signin .dropdown-menu               { padding: 10px; }
+  #signin                              {
+    .dropdown-menu                     { padding: 10px; }
+    label[for=field-password]          { width: 100%; }
+    label[for=field-password] a        { float: right; }
+  }
   #notifications .popover-content      { min-width: 250px; }
 }
 

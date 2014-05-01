@@ -32,6 +32,11 @@ class Anqh_Controller_Index extends Controller_Page {
 		// Newsfeed
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_newsfeed());
 
+		// Login
+		if (!self::$user) {
+			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_signin());
+		}
+
 		// News
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_news());
 
@@ -125,6 +130,19 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_shouts() {
 		$section = new View_Index_Shouts();
+		$section->aside = true;
+
+		return $section;
+	}
+
+
+	/**
+	 * Get sign in form.
+	 *
+	 * @return  View_Index_Signin
+	 */
+	public function section_signin() {
+		$section = new View_Index_Signin();
 		$section->aside = true;
 
 		return $section;
