@@ -10,6 +10,16 @@
 class View_Index_Signin extends View_Section {
 
 	/**
+	 * Create view.
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		$this->title = __('Login');
+	}
+
+
+	/**
 	 * Get form.
 	 *
 	 * @return  string

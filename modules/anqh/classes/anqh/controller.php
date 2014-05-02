@@ -1,11 +1,11 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Abstract Anqh controller
+ * Abstract Anqh controller.
  *
  * @abstract
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_Controller extends Kohana_Controller {
@@ -105,7 +105,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected $_response_format;
 
 	/**
-	 * @var  Model_Session  Current session
+	 * @var  Session  Current session
 	 */
 	public $session;
 
@@ -149,7 +149,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		$this->session = Session::instance();
 
 		// Load current user, null if none
-		if (self::$user === false) {
+		if (Controller::$user === false) {
 			$visitor = Visitor::instance();
 			Controller::$user = $visitor->get_user();
 
@@ -163,7 +163,7 @@ abstract class Anqh_Controller extends Kohana_Controller {
 
 		// Update current online user for initial and ajax requests
 		if ($this->_request_type !== self::REQUEST_INTERNAL) {
-			Model_User_Online::update(self::$user);
+			Model_User_Online::update(Controller::$user);
 		}
 
 		// Open outside links to a new tab/window

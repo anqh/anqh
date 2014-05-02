@@ -34,14 +34,14 @@ class Anqh_Controller_Index extends Controller_Page {
 
 		// Login
 		if (!self::$user) {
-			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_signin());
+			$this->view->add(View_Page::COLUMN_LEFT, $this->section_signin());
 		}
+
+		// Shouts
+		$this->view->add(View_Page::COLUMN_LEFT, $this->section_shouts());
 
 		// News
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_news());
-
-		// Shouts
-		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_shouts());
 
 		// Birthdays or friend suggestions
 		if (self::$user && rand(0, 10) < 5) {
