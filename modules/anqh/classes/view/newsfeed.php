@@ -4,7 +4,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011-2013 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_Newsfeed extends View_Section {
@@ -18,9 +18,8 @@ class View_Newsfeed extends View_Section {
 	/** Newsfeed from single user only */
 	const TYPE_PERSONAL = 'personal';
 
-	public $class     = 'newsfeed border';
-	public $id        = 'newsfeed';
-	public $tab_style = self::TAB_TAB;
+	public $class = 'newsfeed';
+	public $id    = 'newsfeed';
 
 	/**
 	 * @var  integer  Item limit
