@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Init for Anqh
+ * Init for Anqh.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 
@@ -12,6 +12,11 @@
 if (Kohana::$errors === true) {
 	set_exception_handler(array('Anqh_Exception', 'handler'));
 }
+
+Model_User::default_setting(array(
+	'ui.newsfeed' => View_Newsfeed::TYPE_ALL,
+	'ui.theme'    => 'mixed'
+));
 
 Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', 'message' => '.+'))
 	->defaults(array(
@@ -127,3 +132,4 @@ Route::set('catch_all', '(<path>)', array('path' => '.+'))
 		'action' => '404'
 	));
 */
+

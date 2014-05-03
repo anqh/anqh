@@ -21,9 +21,20 @@ class Anqh_Controller_Index extends Controller_Page {
 	public function action_index() {
 
 		// Newsfeed
-		if (isset($_GET['newsfeed']) && $this->_request_type === Controller::REQUEST_AJAX) {
-			echo $this->section_newsfeed();
-			exit;
+		if ($newsfeed = Arr::get($_GET, 'newsfeed')) {
+
+			// Newsfeed changed
+			if (self::$user && in_array($newsfeed, array(View_Newsfeed::TYPE_ALL, View_Newsfeed::TYPE_FRIENDS))) {
+				self::$user->setting('ui.newsfeed', $newsfeed);
+				self::$user->save();
+			}
+
+			// Ajax
+			if ($this->_request_type === Controller::REQUEST_AJAX) {
+				echo $this->section_newsfeed();
+				exit;
+			}
+
 		}
 
 		// Build page
@@ -103,7 +114,10 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_newsfeed() {
 		$section = new View_Newsfeed();
-		$section->type = Arr::get($_REQUEST, 'newsfeed', View_Newsfeed::TYPE_ALL);
+		$section->type  = Arr::get($_GET, 'newsfeed', self::$user
+			? self::$user->setting('ui.newsfeed')
+			: Model_User::default_setting('ui.newsfeed')
+		);
 		$section->title = __("What's happening");
 
 		return $section;
