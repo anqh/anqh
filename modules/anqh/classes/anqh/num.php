@@ -42,10 +42,12 @@ class Anqh_Num extends Kohana_Num {
 	 */
 	public static function minutes($seconds) {
 		$hours   = floor($seconds / 3600);
-		$minutes = floor($seconds / 60);
+		$minutes = floor(($seconds - $hours * 3600) / 60);
 		$seconds = $seconds % 60;
 
-		return ($hours ? $hours . ':' : '') . $minutes . ':' . ($seconds < 10 ? '0' . $seconds : $seconds);
+		return ($hours ? $hours . ':' : '')
+			. ($minutes < 10 ? '0' . $minutes : $minutes) . ':'
+			. ($seconds < 10 ? '0' . $seconds : $seconds);
 	}
 
 
