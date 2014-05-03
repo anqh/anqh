@@ -371,8 +371,7 @@ $(function() {
 
 		$('body').removeClass('theme-light theme-mixed theme-dark').addClass('theme-' + theme);
 
-		// @todo: Save
-		$.cookie('theme', theme);
+		$.post('/set', { theme: theme });
 
 	});
 

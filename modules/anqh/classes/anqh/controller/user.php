@@ -426,6 +426,43 @@ class Anqh_Controller_User extends Controller_Page {
 
 
 	/**
+	 * Action: set setting.
+	 */
+	public function action_setting() {
+		$success = false;
+
+		// Support only theme
+		if ($theme = Arr::get($_POST, 'theme')) {
+			if (!in_array($theme, array_keys(Kohana::$config->load('site.themes')))) {
+				$theme = Kohana::$config->load('site.theme');
+				$this->response->status(406); // Not Acceptable
+			} else {
+				$success = true;
+				$this->response->status(200); // OK
+			}
+
+			if (self::$user) {
+				self::$user->setting('ui.theme', $theme);
+				self::$user->save();
+			}
+
+			$this->session->set('theme', $theme);
+		} else {
+			$this->response->status(400); // Bad Request
+		}
+
+		if ($this->_request_type === Controller::REQUEST_AJAX) {
+			$this->response->headers('Content-Type', Controller::FORMAT_JSON);
+			$this->response->body(json_encode(array('status' => $success ? 'ok' : 'error' )));
+
+			return;
+		}
+
+		Request::back();
+	}
+
+
+	/**
 	 * Action: settings
 	 */
 	public function action_settings() {

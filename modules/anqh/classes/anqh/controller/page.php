@@ -74,7 +74,7 @@ abstract class Anqh_Controller_Page extends Controller {
 			}*/
 
 			// Theme
-			$theme = Arr::get($_COOKIE, 'theme');
+			$theme = $this->session->get('theme');//Arr::get($_COOKIE, 'theme');
 			if (!in_array($theme, array_keys(Kohana::$config->load('site.themes')))) {
 				$theme = Kohana::$config->load('site.theme');
 			}

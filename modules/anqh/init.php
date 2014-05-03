@@ -66,9 +66,10 @@ Route::set('password', 'password')
 		'controller' => 'sign',
 		'action'     => 'password'
 	));
-Route::set('setting', 'set/<action>/<value>')
+Route::set('setting', 'set')
 	->defaults(array(
-		'controller' => 'set'
+		'controller' => 'user',
+		'action'     => 'setting'
 	));
 Route::set('shouts', 'shouts(/<action>)', array('action' => 'index|shout'))
 	->defaults(array(
