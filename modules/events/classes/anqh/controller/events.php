@@ -706,7 +706,12 @@ class Anqh_Controller_Events extends Controller_Page {
 				$event->set_tags(Arr::get($_POST, 'tag'));
 
 				if ($edit) {
-					NewsfeedItem_Events::event_edit(self::$user, $event);
+
+					// Don't flood edits right after save
+					if (time() - $event->created > 60 * 30) {
+						NewsfeedItem_Events::event_edit(self::$user, $event);
+					}
+					
 				} else {
 					NewsfeedItem_Events::event(self::$user, $event);
 
