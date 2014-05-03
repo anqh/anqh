@@ -98,6 +98,45 @@ abstract class Anqh_Arr extends Kohana_Arr {
 
 
 	/**
+	* Unset a value from an array by path.
+	*
+	* @see  Arr::path()
+	* @param  array   $array      Array to update
+	* @param  string  $path       Path
+	* @param  string  $delimiter  Path delimiter
+	*/
+	public static function unset_path(&$array, $path, $delimiter = NULL) {
+
+		// Use the default delimiter?
+		if (!$delimiter) {
+			$delimiter = Arr::$delimiter;
+		}
+
+		// Split the keys by delimiter
+		$keys = explode($delimiter, $path);
+
+		// Set current $array to inner-most array path
+		while (count($keys) > 1) {
+			$key = array_shift($keys);
+
+			// Make the key an integer?
+			if (ctype_digit($key)) {
+				$key = (int) $key;
+			}
+
+			if (!isset($array[$key])) {
+				$array[$key] = array();
+			}
+
+			$array = &$array[$key];
+		}
+
+		// Unset key on inner-most array
+		unset($array[array_shift($keys)]);
+	}
+
+
+	/**
 	 * Convert an array to XML string
 	 *
 	 * @static

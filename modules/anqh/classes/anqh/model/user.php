@@ -9,24 +9,20 @@
  */
 class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
-	/**
-	 * Permission to post comments
-	 */
+	const GENDER_FEMALE = 'f';
+	const GENDER_MALE   = 'm';
+	const GENDER_OTHER  = 'o';
+
+	/** Permission to post comments */
 	const PERMISSION_COMMENT = 'comment';
 
-	/**
-	 * Permission to read comments
-	 */
+	/** Permission to read comments */
 	const PERMISSION_COMMENTS = 'comments';
 
-	/**
-	 * Permission to add/remove friend
-	 */
+	/** Permission to add/remove friend */
 	const PERMISSION_FRIEND = 'friend';
 
-	/**
-	 * Permission to (un)ignore
-	 */
+	/** Permission to (un)ignore */
 	const PERMISSION_IGNORE = 'ignore';
 
 	protected $_table_name = 'users';
@@ -69,6 +65,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'ip'                 => null,
 		'hostname'           => null,
 
+		'settings'           => null,
+
 		// Deprecated
 		'level'              => 1,
 
@@ -87,7 +85,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 		'name'               => array('max_length' => array(':value', 50)),
 		'dob'                => array('date'),
-		'gender'             => array('in_array' => array(':value', array('f', 'm', 'o'))),
+		'gender'             => array('in_array' => array(':value', array(self::GENDER_FEMALE, self::GENDER_MALE, self::GENDER_OTHER))),
 		'homepage'           => array('url'),
 		'picture'            => array('url'),
 		'default_image_id'   => array('digit'),
@@ -112,9 +110,20 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	/**
-	 * @var  array  User's roles
+	 * @var  array
 	 */
 	protected $_roles = array();
+
+	/**
+	 * @var  array
+	 */
+	protected $_settings = array();
+
+	/**
+	 * @var  array
+	 * @see  default_setting()
+	 */
+	protected static $_default_settings = array();
 
 	/**
 	 * @var  array  Static cache of Model_Users loaded
@@ -155,12 +164,33 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Magic setter
+	 * Magic getter.
+	 *
+	 * @param   string  $key
+	 * @return  mixed
+	 */
+	public function __get($key) {
+		switch ($key) {
+
+			// Settings to array
+			case 'settings':
+				$settings = parent::__get($key);
+				return $settings ? json_decode($settings, true) : array();
+				break;
+
+		}
+
+		return parent::__get($key);
+	}
+
+
+	/**
+	 * Magic setter.
 	 *
 	 * @param  string  $key
 	 * @param  mixed   $value
 	 */
-	public function __set($key, $value)	{
+	public function __set($key, $value) {
 		switch ($key) {
 
 			// Date of birth
@@ -177,6 +207,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			case 'password':
 				$visitor = Visitor::instance();
 				$value   = $value ? $visitor->hash_password($value) : null;
+				break;
+
+			// Remove default settings
+			case 'settings':
+				$value = $value ? json_encode($value) : null;
 				break;
 
 			// Set cleaned username when setting username
@@ -201,6 +236,36 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		if (empty($array['password']) || $array['password'] !== $array[$field]) {
 			$array->error($field, 'matches', array('param1' => 'password'));
 		}
+	}
+
+
+	/**
+	 * Create friendship.
+	 *
+	 * @param   Model_User  $user
+	 * @return  boolean
+	 */
+	public function add_friend(Model_User $user) {
+		if ($this->loaded() && $this->id != $user->id && !$this->is_friend($user)) {
+			return Model_Friend::add($this->id, $user->id);
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Add user to ignore.
+	 *
+	 * @param   Model_User  $ignore
+	 * @return  boolean
+	 */
+	public function add_ignore(Model_User $ignore) {
+		if ($this->loaded() && $this->id != $ignore->id	&& !$this->is_ignored($ignore)) {
+			return Model_Ignore::add($this->id, $ignore->id);
+		}
+
+		return false;
 	}
 
 
@@ -233,8 +298,6 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	}
 
 
-	/***** COMMENTS *****/
-
 	/**
 	 * Get image comments
 	 *
@@ -258,113 +321,31 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get user's comments
+	 * Set/get default setting(s).
 	 *
-	 * @param  int    $page_num
-	 * @param  int    $page_size
-	 * @param  mixed  $user  Viewer
+	 * @param   array|string  $key
+	 * @param   mixed         $value
+	 * @return  mixed|null
 	 */
-	public function find_comments($page_num, $page_size = 25, $user = null) {
-		$user = self::find_user($user);
+	public static function default_setting($key, $value = null) {
+		if (is_string($key)) {
 
-		// Try to fetch from cache first
-		/*
-		$cache_key = $this->cache->key('comments', $this->id, $page_num);
-		if ($page_num <= User_Comment_Model::$cache_max_pages) {
-			$comments = $this->cache->get($cache_key);
-		}
+			// Set/get single value
+			if (is_null($value)) {
+				return Arr::path(self::$_default_settings, $key);
+			}
+			Arr::set_path(self::$_default_settings, $key, $value);
 
-		// Did we find any comments?
-		if (!empty($comments)) {
+		} else if (is_array($key)) {
 
-			// Found from cache
-			$comments = unserialize($comments);
-
-		} else {
-		*/
-
-			// Not found from cache, load from DB
-			$page_offset = ($page_num - 1) * $page_size;
-			if ($user && $user->id == $this->id) {
-
-				// All comments, my profile
-				$comments = $this->user_comments->find_all($page_size, $page_offset);
-
-			} else if ($user) {
-
-				// Public and my comments
-				$comments = $this->user_comments
-					->and_open()
-					->where('private', '=', 0)
-					->or_where('author_id', '=', $user->id)
-					->close()
-					->find_all($page_size, $page_offset);
-
-			} else {
-
-				// Only public comments
-				$comments = $this->user_comments
-					->where('private', '=', 0)
-					->find_all($page_size, $page_offset);
-
+			// Set multiple values
+			foreach ($key as $_key => $_value) {
+				Arr::set_path(self::$_default_settings, $_key, $_value);
 			}
 
-			/*
-			// cache only 3 first pages
-			if ($page_num <= User_Comment_Model::$cache_max_pages) {
-				$this->cache->set($cache_key, serialize($comments->as_array()), null, User_Comment_Model::$cache_max_age);
-			}
-		}
-			*/
-
-		return $comments;
-	}
-
-
-	/**
-	 * Mark user's comments read.
-	 */
-	public function mark_comments_read() {
-		if ($this->new_comment_count) {
-			$this->new_comment_count = 0;
-			$this->save();
-
-			Anqh::cache_delete('user_' . $this->id);
-		}
-	}
-
-	/***** /COMMENTS *****/
-
-
-	/***** FRIENDS & FOES *****/
-
-	/**
-	 * Create friendship.
-	 *
-	 * @param   Model_User  $user
-	 * @return  boolean
-	 */
-	public function add_friend(Model_User $user) {
-		if ($this->loaded() && $this->id != $user->id && !$this->is_friend($user)) {
-			return Model_Friend::add($this->id, $user->id);
 		}
 
-		return false;
-	}
-
-
-	/**
-	 * Add user to ignore.
-	 *
-	 * @param   Model_User  $ignore
-	 * @return  boolean
-	 */
-	public function add_ignore(Model_User $ignore) {
-		if ($this->loaded() && $this->id != $ignore->id	&& !$this->is_ignored($ignore)) {
-			return Model_Ignore::add($this->id, $ignore->id);
-		}
-
-		return false;
+		return null;
 	}
 
 
@@ -435,6 +416,70 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Get user's comments
+	 *
+	 * @param  int    $page_num
+	 * @param  int    $page_size
+	 * @param  mixed  $user  Viewer
+	 */
+	public function find_comments($page_num, $page_size = 25, $user = null) {
+		$user = self::find_user($user);
+
+		// Try to fetch from cache first
+		/*
+		$cache_key = $this->cache->key('comments', $this->id, $page_num);
+		if ($page_num <= User_Comment_Model::$cache_max_pages) {
+			$comments = $this->cache->get($cache_key);
+		}
+
+		// Did we find any comments?
+		if (!empty($comments)) {
+
+			// Found from cache
+			$comments = unserialize($comments);
+
+		} else {
+		*/
+
+			// Not found from cache, load from DB
+			$page_offset = ($page_num - 1) * $page_size;
+			if ($user && $user->id == $this->id) {
+
+				// All comments, my profile
+				$comments = $this->user_comments->find_all($page_size, $page_offset);
+
+			} else if ($user) {
+
+				// Public and my comments
+				$comments = $this->user_comments
+					->and_open()
+					->where('private', '=', 0)
+					->or_where('author_id', '=', $user->id)
+					->close()
+					->find_all($page_size, $page_offset);
+
+			} else {
+
+				// Only public comments
+				$comments = $this->user_comments
+					->where('private', '=', 0)
+					->find_all($page_size, $page_offset);
+
+			}
+
+			/*
+			// cache only 3 first pages
+			if ($page_num <= User_Comment_Model::$cache_max_pages) {
+				$this->cache->set($cache_key, serialize($comments->as_array()), null, User_Comment_Model::$cache_max_age);
+			}
+		}
+			*/
+
+		return $comments;
+	}
+
+
+	/**
 	 * Get user's friend suggetions.
 	 *
 	 * @return  array
@@ -484,125 +529,6 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			->execute()
 			->as_array('id', 'created');
 	}
-
-
-	/**
-	 * Get user's total friend count
-	 *
-	 * @return  integer
-	 */
-	public function get_friend_count() {
-		return count($this->find_friends());
-	}
-
-
-	/**
-	 * Get user's default image url
-	 *
-	 * @param   string  $size
-	 * @return  string
-	 */
-	public function get_image_url($size = null) {
-		$image = null;
-
-		if ($this->default_image_id) {
-			$image = Model_Image::factory($this->default_image_id)->get_url($size);
-		} else if (Valid::url($this->picture)) {
-			$image = $this->picture;
-		} else if (count($images = $this->images())) {
-			$image = $images->current()->get_url($size);
-		}
-
-		return $image;
-	}
-
-
-	/**
-	 * Get enterprise Validation for checking password
-	 *
-	 * @static
-	 * @param   array  $user_post
-	 * @return  Validation
-	 */
-	public static function get_password_validation($user_post) {
-		return Validation::factory(
-			array(
-				'password'         => Arr::get($user_post, 'password'),
-				'password_confirm' => Arr::get($user_post, 'password_confirm'),
-			))
-			->rule('password_confirm', 'not_empty')
-			->rule('password', 'matches', array(':validation', 'password', 'password_confirm')
-		);
-	}
-
-
-	/**
-	 * Check for friendship.
-	 *
-	 * @param   mixed  $friend  Model_User, array, $id
-	 * @return  boolean
-	 */
-	public function is_friend($friend) {
-		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
-			$benchmark = Profiler::start('Anqh', __METHOD__);
-		}
-
-		if ($friend instanceof Model_User) {
-			$friend = (int)$friend->id;
-		} else if (is_array($friend)) {
-			$friend = (int)Arr::get($friend, 'id');
-		} else {
-			$friend = (int)$friend;
-		}
-
-		if (!$friend) {
-			return false;
-		}
-
-		$is_friend = in_array($friend, (array)$this->find_friends());
-
-		if (isset($benchmark)) {
-			Profiler::stop($benchmark);
-		}
-
-		return $is_friend;
-	}
-
-
-	/**
-	 * Check for friendship.
-	 *
-	 * @param   mixed    $ignore      Model_User, array, $id
-	 * @param   boolean  $ignored_by  Check if the user ignored by $ignore or ignoring $ignore
-	 * @return  boolean
-	 */
-	public function is_ignored($ignore, $ignored_by = false) {
-		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
-			$benchmark = Profiler::start('Anqh', __METHOD__);
-		}
-
-		if ($ignore instanceof Model_User) {
-			$ignore = (int)$ignore->id;
-		} else if (is_array($ignore)) {
-			$ignore = (int)Arr::get($ignore, 'id');
-		} else {
-			$ignore = (int)$ignore;
-		}
-
-		if (!$ignore) {
-			return false;
-		}
-
-		$is_ignored = in_array($ignore, (array)$this->find_ignores($ignored_by));
-
-		if (isset($benchmark)) {
-			Profiler::stop($benchmark);
-		}
-
-		return $is_ignored;
-	}
-
-	/***** /FRIENDS & FOES *****/
 
 
 	/**
@@ -740,64 +666,52 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get light array from User Model
+	 * Get user's total friend count
 	 *
-	 * @return  array
+	 * @return  integer
 	 */
-	public function light_array() {
-		if ($this->loaded()) {
-			return array(
-				'id'         => (int)$this->id,
-				'username'   => $this->username,
-				'gender'     => $this->gender,
-				'title'      => $this->title,
-				'signature'  => $this->signature,
-				'avatar'     => $this->avatar,
-				'thumb'      => $this->get_image_url('thumbnail'),
-				'last_login' => (int)$this->last_login,
-			);
-		}
+	public function get_friend_count() {
+		return count($this->find_friends());
 	}
 
 
 	/**
-	 * Get user id from data
+	 * Get user's default image url
 	 *
-	 * @static
-	 * @param   mixed  $user
-	 * @return  integer
+	 * @param   string  $size
+	 * @return  string
 	 */
-	public static function user_id($user) {
-		if (is_int($user) || is_numeric($user)) {
+	public function get_image_url($size = null) {
+		$image = null;
 
-			// Already got id
-			return (int)$user;
-
-		} else if (is_array($user)) {
-
-			// Got user array
-			return (int)Arr::get($user, 'id');
-
-		}	else if ($user instanceof Model_User) {
-
-			// Got user model
-			return $user->id;
-
-		} else if (is_string($user)) {
-
-			// Got user name
-			$username = Text::clean($user);
-			if (!$id = (int)Anqh::cache_get('user_uid_' . $username)) {
-				if ($user = Model_User::find_user($user)) {
-					$id = $user->id;
-					Anqh::cache_set('user_uid_' . $username, $id, Date::DAY);
-				}
-			}
-
-			return $id;
+		if ($this->default_image_id) {
+			$image = Model_Image::factory($this->default_image_id)->get_url($size);
+		} else if (Valid::url($this->picture)) {
+			$image = $this->picture;
+		} else if (count($images = $this->images())) {
+			$image = $images->current()->get_url($size);
 		}
 
-		return 0;
+		return $image;
+	}
+
+
+	/**
+	 * Get enterprise Validation for checking password
+	 *
+	 * @static
+	 * @param   array  $user_post
+	 * @return  Validation
+	 */
+	public static function get_password_validation($user_post) {
+		return Validation::factory(
+			array(
+				'password'         => Arr::get($user_post, 'password'),
+				'password_confirm' => Arr::get($user_post, 'password_confirm'),
+			))
+			->rule('password_confirm', 'not_empty')
+			->rule('password', 'matches', array(':validation', 'password', 'password_confirm')
+		);
 	}
 
 
@@ -840,7 +754,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	/**
 	 * Does the user have any of these roles.
 	 *
-	 * @param  array|string  $roles
+	 * @param   array|string  $roles
+	 * @return  boolean
 	 */
 	public function has_role($roles) {
 		foreach ($this->roles() as $id => $role) {
@@ -867,7 +782,110 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
-	 * Get user's roles.
+	 * Check for friendship.
+	 *
+	 * @param   mixed  $friend  Model_User, array, $id
+	 * @return  boolean
+	 */
+	public function is_friend($friend) {
+		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('Anqh', __METHOD__);
+		}
+
+		if ($friend instanceof Model_User) {
+			$friend = (int)$friend->id;
+		} else if (is_array($friend)) {
+			$friend = (int)Arr::get($friend, 'id');
+		} else {
+			$friend = (int)$friend;
+		}
+
+		if (!$friend) {
+			return false;
+		}
+
+		$is_friend = in_array($friend, (array)$this->find_friends());
+
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
+		}
+
+		return $is_friend;
+	}
+
+
+	/**
+	 * Check for friendship.
+	 *
+	 * @param   mixed    $ignore      Model_User, array, $id
+	 * @param   boolean  $ignored_by  Check if the user ignored by $ignore or ignoring $ignore
+	 * @return  boolean
+	 */
+	public function is_ignored($ignore, $ignored_by = false) {
+		if (Kohana::$profiling === true && class_exists('Profiler', false)) {
+			$benchmark = Profiler::start('Anqh', __METHOD__);
+		}
+
+		if ($ignore instanceof Model_User) {
+			$ignore = (int)$ignore->id;
+		} else if (is_array($ignore)) {
+			$ignore = (int)Arr::get($ignore, 'id');
+		} else {
+			$ignore = (int)$ignore;
+		}
+
+		if (!$ignore) {
+			return false;
+		}
+
+		$is_ignored = in_array($ignore, (array)$this->find_ignores($ignored_by));
+
+		if (isset($benchmark)) {
+			Profiler::stop($benchmark);
+		}
+
+		return $is_ignored;
+	}
+
+
+	/**
+	 * Get light array from User Model
+	 *
+	 * @return  array
+	 */
+	public function light_array() {
+		if ($this->loaded()) {
+			return array(
+				'id'         => (int)$this->id,
+				'username'   => $this->username,
+				'gender'     => $this->gender,
+				'title'      => $this->title,
+				'signature'  => $this->signature,
+				'avatar'     => $this->avatar,
+				'thumb'      => $this->get_image_url('thumbnail'),
+				'last_login' => (int)$this->last_login,
+			);
+		}
+
+		return array();
+	}
+
+
+	/**
+	 * Mark user's comments read.
+	 */
+	public function mark_comments_read() {
+		if ($this->new_comment_count) {
+			$this->new_comment_count = 0;
+			$this->save();
+
+			Anqh::cache_delete('user_' . $this->id);
+		}
+	}
+
+
+	/**
+	 * Get roles.
 	 *
 	 * @return  array
 	 */
@@ -892,6 +910,84 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * Get/set user setting.
+	 *
+	 * @param   string  $key
+	 * @param   mixed   $value
+	 * @return  mixed
+	 */
+	public function setting($key, $value = null) {
+		if (!$this->_settings) {
+			$this->_settings = $this->settings;
+		}
+
+		if (is_null($value)) {
+
+			// Get setting
+			return Arr::path($this->_settings, $key, self::default_setting($key));
+
+		} else {
+
+			// Set setting
+			if (self::default_setting($key) === $value) {
+
+				// Default setting, unset
+				Arr::unset_path($this->_settings, $key);
+
+			} else {
+
+				// Non-default, set
+				Arr::set_path($this->_settings, $key, $value);
+
+			}
+
+			$this->settings = $this->_settings;
+		}
+	}
+
+
+	/**
+	 * Get user id from data
+	 *
+	 * @static
+	 * @param   mixed  $user
+	 * @return  integer
+	 */
+	public static function user_id($user) {
+		if (is_int($user) || is_numeric($user)) {
+
+			// Already got id
+			return (int)$user;
+
+		} else if (is_array($user)) {
+
+			// Got user array
+			return (int)Arr::get($user, 'id');
+
+		}	else if ($user instanceof Model_User) {
+
+			// Got user model
+			return $user->id;
+
+		} else if (is_string($user)) {
+
+			// Got user name
+			$username = Text::clean($user);
+			if (!$id = (int)Anqh::cache_get('user_uid_' . $username)) {
+				if ($user = Model_User::find_user($user)) {
+					$id = $user->id;
+					Anqh::cache_set('user_uid_' . $username, $id, Date::DAY);
+				}
+			}
+
+			return $id;
+		}
+
+		return 0;
 	}
 
 }
