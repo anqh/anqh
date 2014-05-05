@@ -55,7 +55,7 @@ class View_User_Settings extends View_Section {
 
 		$tabs = array(
 			'basic'    => '<i class="hidden-sm fa fa-fw fa-user"></i> ' . __('Profile'),
-			'auth'     => '<i class="hidden-sm fa fa-fw fa-key"></i> ' . __('Login'),
+			'auth'     => '<i class="hidden-sm fa fa-fw fa-key"></i> ' . __('Username & Email'),
 			'facebook' => '<i class="hidden-sm fa fa-fw fa-facebook"></i> ' . 'Facebook',
 			'forum'    => '<i class="hidden-sm fa fa-fw fa-comments"></i> ' . __('Forum'),
 		);
@@ -112,6 +112,20 @@ class View_User_Settings extends View_Section {
 					Arr::get($this->errors, 'name')
 			) ?>
 
+			<?= Form::radios_wrap(
+				'name_visibility',
+				array(
+					Model_User::NAME_VISIBLE => __('Visible'),
+					Model_User::NAME_HIDDEN  => __('Hidden'),
+				),
+				$this->user->setting('user.name'),
+				null,
+				null,
+				null,
+				null,
+				true
+			) ?>
+
 			<?= Form::input_wrap(
 					'homepage',
 					$this->user->homepage,
@@ -140,6 +154,21 @@ class View_User_Settings extends View_Section {
 				array('class' => 'date', 'maxlength' => 10, 'size' => 7, 'placeholder' => 'd.m.yyyy'),
 				__('Date of Birth'),
 				Arr::get($this->errors, 'dob')
+			) ?>
+
+			<?= Form::radios_wrap(
+				'dob_visibility',
+				array(
+					Model_User::DOB_VISIBLE  => __('Visible'),
+					Model_User::DOB_DATEONLY => __('Date only in profile'),
+					Model_User::DOB_HIDDEN   => __('Hidden'),
+				),
+				$this->user->setting('user.dob'),
+				null,
+				null,
+				null,
+				null,
+				true
 			) ?>
 
 		</fieldset>

@@ -15,7 +15,9 @@ if (Kohana::$errors === true) {
 
 Model_User::default_setting(array(
 	'ui.newsfeed' => View_Newsfeed::TYPE_ALL,
-	'ui.theme'    => 'mixed'
+	'ui.theme'    => 'mixed',
+	'user.dob'    => Model_User::DOB_VISIBLE,
+	'user.name'   => Model_User::NAME_HIDDEN,
 ));
 
 Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', 'message' => '.+'))

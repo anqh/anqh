@@ -9,9 +9,14 @@
  */
 class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
+	const DOB_DATEONLY  = 'd';
+	const DOB_HIDDEN    = 'h';
+	const DOB_VISIBLE   = 'v';
 	const GENDER_FEMALE = 'f';
 	const GENDER_MALE   = 'm';
 	const GENDER_OTHER  = 'o';
+	const NAME_HIDDEN   = 'h';
+	const NAME_VISIBLE  = 'v';
 
 	/** Permission to post comments */
 	const PERMISSION_COMMENT = 'comment';
@@ -134,7 +139,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'avatar', 'city', 'description', 'dob', 'gender', 'homepage', 'title',
+		'avatar', 'city', 'description', 'dob', 'gender', 'homepage', 'name', 'title',
 		'picture', 'signature', 'location', 'city_name', 'latitude', 'longitude',
 	);
 
@@ -171,6 +176,18 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 */
 	public function __get($key) {
 		switch ($key) {
+
+			// Get username with or without realname
+			case 'display_name':
+				if (!$this->name || $this->setting('user.name') === self::NAME_HIDDEN) {
+					return $this->username;
+				} else {
+					$name     = explode(' ', trim($this->name));
+					$lastname = array_pop($name);
+
+					return trim(implode(' ', $name) . ' "' . $this->username . '" ' . $lastname);
+				}
+				break;
 
 			// Settings to array
 			case 'settings':
@@ -886,14 +903,15 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	public function light_array() {
 		if ($this->loaded()) {
 			return array(
-				'id'         => (int)$this->id,
-				'username'   => $this->username,
-				'gender'     => $this->gender,
-				'title'      => $this->title,
-				'signature'  => $this->signature,
-				'avatar'     => $this->avatar,
-				'thumb'      => $this->get_image_url('thumbnail'),
-				'last_login' => (int)$this->last_login,
+				'id'           => (int)$this->id,
+				'username'     => $this->username,
+				'display_name' => $this->display_name,
+				'gender'       => $this->gender,
+				'title'        => $this->title,
+				'signature'    => $this->signature,
+				'avatar'       => $this->avatar,
+				'thumb'        => $this->get_image_url('thumbnail'),
+				'last_login'   => (int)$this->last_login,
 			);
 		}
 

@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * User_HoverCard
+ * User hovercard.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2012 Antti Qvickström
+ * @copyright  (c) 2012-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class View_User_HoverCard extends View_Section {
@@ -24,7 +24,7 @@ class View_User_HoverCard extends View_Section {
 		parent::__construct();
 
 		$this->user  = $user;
-		$this->title = HTML::chars($this->user['username']);
+		$this->title = HTML::chars(Arr::get($this->user, 'display_name', $this->user['username']));
 	}
 
 
@@ -38,7 +38,7 @@ class View_User_HoverCard extends View_Section {
 
 		// Title
 		if ($this->user['title']):
-			echo HTML::chars(trim($this->user['title'])) . '<br />';
+			echo HTML::chars(trim($this->user['title'])) . '<br>';
 		endif;
 
 		// Image

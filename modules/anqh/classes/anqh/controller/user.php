@@ -500,6 +500,16 @@ class Anqh_Controller_User extends Controller_Page {
 
 			$user->set_fields(Arr::intersect($_POST, Model_User::$editable_fields));
 
+			// Settings
+			$name_visiblity = Arr::get($_POST, 'name_visibility');
+			if (in_array($name_visiblity, array( Model_User::NAME_HIDDEN, Model_User::NAME_VISIBLE))) {
+				$user->setting('user.name', $name_visiblity);
+			}
+			$dob_visiblity = Arr::get($_POST, 'dob_visibility');
+			if (in_array($dob_visiblity, array(Model_User::DOB_DATEONLY, Model_User::DOB_HIDDEN, Model_User::DOB_VISIBLE))) {
+				$user->setting('user.dob', $dob_visiblity);
+			}
+
 			// Clear default image id if Facebook image is set
 			if (Arr::get($_POST, 'picture')) {
 				$user->default_image_id = null;
@@ -591,7 +601,7 @@ class Anqh_Controller_User extends Controller_Page {
 	public static function _set_page(Model_User $user) {
 
 		// Build page
-		$view = new View_Page($user->username);
+		$view = new View_Page($user->display_name);
 		if ($user->name) {
 //			$this->view->title_html = HTML::chars($user->username) . ' <small>' . HTML::chars($user->name) . '</small>';
 		}
