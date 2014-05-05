@@ -24,13 +24,17 @@ class Anqh_BB extends BBCode {
 
 		// Audio/music templates for [audio]
 		'audio' => array(
+			'mixcloud' => array(
+				'pattern'  => '/^https?:\/\/www\.mixcloud\.com\/([^\/]+)\/([^\/]+)\/?$/i',
+				'template' => '<iframe width="100%" height="360" src="//www.mixcloud.com/widget/iframe/?feed=http%3A%2F%2Fwww.mixcloud.com%2F$1%2F$2%2F&amp;replace=0&amp;hide_cover=1&amp;embed_type=widget_standard" frameborder="0"></iframe><br><sup><a href="$0" target="_blank">$0</a></sup>'
+			),
 			'soundcloud' => array(
 				'pattern'  => '/^https?:\/\/soundcloud\.com\/([^\/]+)\/([^\/]+)\/?$/i',
-				'template' => '<iframe width="100%" height="166" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F$1%2F$2&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe><br><a href="$0" target="_blank">$0</a>'
+				'template' => '<iframe width="100%" height="166" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F$1%2F$2&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe><br><sup><a href="$0" target="_blank">$0</a></sup>'
 			),
 			'soundcloud_user' => array(
 				'pattern'  => '/^https?:\/\/soundcloud\.com\/([^\/]+)\/?$/i',
-				'template' => '<iframe width="100%" height="292" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F$1&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe><br><a href="$0" target="_blank">$0</a>'
+				'template' => '<iframe width="100%" height="292" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2F$1&amp;auto_play=false&amp;show_artwork=true" frameborder="0"></iframe><br><sup><a href="$0" target="_blank">$0</a></sup>'
 			),
 			'spotify' => array(
 				'pattern'  => '/^http:\/\/open\.spotify\.com\/(track|album)\/(\w+)$/i',
