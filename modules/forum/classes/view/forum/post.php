@@ -163,11 +163,11 @@ class View_Forum_Post extends View_Article {
 		<?php if ($this->author):
 				echo HTML::user($this->author->light_array());
 				if ($this->author->title):
-					echo ' <small>&ldquo;' . HTML::chars($this->author->title) . '&rdquo;</small>';
+					echo ' <small>' . HTML::chars($this->author->title) . '</small>';
 				endif;
 			else:
 				echo $this->forum_post->author_name;
-				echo ' <small>&ldquo;' . __('Guest') . '&rdquo;</small>';
+				echo ' <small>' . __('Guest') . '</small>';
 			endif; ?>
 	</header>
 
