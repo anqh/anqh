@@ -43,7 +43,7 @@ class Anqh_Visitor {
 	/**
 	 * Attempt to automatically log a user in.
 	 *
-	 * @return  boolean
+	 * @return  Model_User
 	 */
 	public function auto_login() {
 		if ($token = Cookie::get($this->_config['cookie_name'])) {
@@ -61,10 +61,10 @@ class Anqh_Visitor {
 					Cookie::set($this->_config['cookie_name'], $token->token, $token->expires - time());
 
 					// Complete the login with the found data
-					$this->complete_login($user);
+					$this->complete_login($user, true);
 
 					// Automatic login was successful
-					return true;
+					return $user;
 				}
 
 				// Token is invalid
@@ -72,7 +72,7 @@ class Anqh_Visitor {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 
@@ -99,18 +99,11 @@ class Anqh_Visitor {
 	 * session data: user_id, username, roles
 	 *
 	 * @param   Model_User  $user
+	 * @param   boolean     $autologin
 	 * @return  boolean
 	 */
-	protected function complete_login(Model_User $user) {
-		$user->login_count++;
-		$user->old_login  = $user->last_login;
-		$user->last_login = time();
-		$user->ip         = Request::$client_ip;
-		$user->hostname   = Request::host_name();
-		try {
-			$user->save();
-		} catch (Validation_Exception $e) {
-		}
+	protected function complete_login(Model_User $user, $autologin = false) {
+		$user->complete_login($autologin);
 
 		// Regenerate session_id and store user id
 		$this->_session->regenerate();
@@ -167,7 +160,7 @@ class Anqh_Visitor {
 	/**
 	 * Force a login for a specific username.
 	 *
-	 * @param   User_Model|string  $user
+	 * @param   Model_User|string  $user
 	 * @return  boolean
 	 */
 	public function force_login($user) {
@@ -324,8 +317,8 @@ class Anqh_Visitor {
 		$user = $this->get_user();
 
 		// Not logged in, maybe autologin?
-		if (!is_object($user) && $this->_config['lifetime'] && $this->auto_login()) {
-			$user = $this->get_user();
+		if (!is_object($user) && $this->_config['lifetime']) {
+			$user = $this->auto_login();
 		}
 
 		// Check if potential user has optional roles

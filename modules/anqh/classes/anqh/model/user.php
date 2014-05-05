@@ -321,6 +321,36 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Complete login.
+	 *
+	 * @param   boolean  $autologin
+	 * @return  boolean  User updated
+	 */
+	public function complete_login($autologin = false) {
+		if (!$autologin) {
+			$this->login_count++;
+		}
+
+		$this->old_login  = $this->last_login;
+		$this->last_login = time();
+		$this->ip         = Request::$client_ip;
+		$this->hostname   = Request::host_name();
+
+		// Load session settings
+		$session = Session::instance();
+		$session->set('theme', $this->setting('ui.theme'));
+
+		try {
+			$this->save();
+		} catch (Validation_Exception $e) {
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
 	 * Set/get default setting(s).
 	 *
 	 * @param   array|string  $key

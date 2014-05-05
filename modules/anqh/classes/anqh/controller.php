@@ -154,8 +154,8 @@ abstract class Anqh_Controller extends Kohana_Controller {
 			Controller::$user = $visitor->get_user();
 
 			// If still no user, try auto login
-			if (!Controller::$user && $visitor->auto_login()) {
-				Controller::$user = $visitor->get_user();
+			if (!Controller::$user) {
+				Controller::$user = $visitor->auto_login();
 			}
 
 			unset($visitor);
