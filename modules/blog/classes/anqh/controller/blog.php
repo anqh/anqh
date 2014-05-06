@@ -34,7 +34,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE, self::$user)) {
+			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE, Visitor::$user)) {
 				    $comment->delete();
 				    $entry->comment_count--;
 				    $entry->save();
@@ -43,7 +43,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_Blog_Comment::PERMISSION_UPDATE, self::$user)) {
+				  if (Permission::has($comment, Model_Blog_Comment::PERMISSION_UPDATE, Visitor::$user)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -80,20 +80,20 @@ class Anqh_Controller_Blog extends Controller_Page {
 		if (!$entry->loaded()) {
 			throw new Model_Exception($entry, $entry_id);
 		}
-		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ, self::$user);
+		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ, Visitor::$user);
 
 
 		// Comments section
-		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, self::$user)) {
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, Visitor::$user)) {
 			$errors = array();
 			$values = array();
 
-			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, self::$user)) {
+			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, Visitor::$user)) {
 
 				// Handle comment
 				try {
 					$comment = Model_Blog_Comment::factory()->
-						add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $entry);
+						add(Visitor::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $entry);
 
 					$entry->comment_count++;
 					$entry->new_comment_count++;
@@ -101,7 +101,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 					// Newsfeed
 					if (!$comment->private) {
-						NewsfeedItem_Blog::comment(self::$user, $entry);
+						NewsfeedItem_Blog::comment(Visitor::$user, $entry);
 					}
 
 					if ($this->_request_type !== Controller::REQUEST_AJAX) {
@@ -119,7 +119,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 			$section_comments->errors = $errors;
 			$section_comments->values = $values;
 
-		} else if (!self::$user) {
+		} else if (!Visitor::$user) {
 
 			// Guest user
 			$section_comments = $this->section_comments_teaser($entry->comment_count);
@@ -137,7 +137,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		// Build page
 
 		// Set actions
-		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($entry, 'edit'),
 				'text'  => '<i class="fa fa-edit"></i> ' . __('Edit blog entry'),
@@ -153,7 +153,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		}
 
 		// Update counts
-		if (self::$user && self::$user->id == $entry->author_id) {
+		if (Visitor::$user && Visitor::$user->id == $entry->author_id) {
 
 			// Clear new comment counts for owner
 			if ($entry->new_comment_count) {
@@ -183,7 +183,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		$this->view = new View_Page(__('Blogs'));
 
 		// Set actions
-		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user)) {
+		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::url('blogs', array('action' => 'add')),
 				'text'  => '<i class="fa fa-pencil"></i> ' . __('Write new blog entry'),
@@ -304,7 +304,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
-			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, self::$user);
+			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, Visitor::$user);
 
 			$cancel = Route::model($entry);
 
@@ -316,13 +316,13 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 			// Creating new
 			$entry = new Model_Blog_Entry();
-			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, self::$user);
+			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, Visitor::$user);
 
 			$cancel   = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;
 
 			$this->view->title = __('New blog entry');
-			$entry->author_id  = self::$user->id;
+			$entry->author_id  = Visitor::$user->id;
 			$entry->created    = time();
 
 		}
@@ -337,7 +337,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 				// Newsfeed
 				if (isset($newsfeed) && $newsfeed) {
-					NewsfeedItem_Blog::entry(self::$user, $entry);
+					NewsfeedItem_Blog::entry(Visitor::$user, $entry);
 				}
 
 				$this->request->redirect(Route::model($entry));
@@ -373,7 +373,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 	 * @return  View_Generic_Comments
 	 */
 	public function section_comments(Model_Blog_Entry $blog_entry, $route = 'blog_comment') {
-		$section = new View_Generic_Comments($blog_entry->comments(self::$user));
+		$section = new View_Generic_Comments($blog_entry->comments(Visitor::$user));
 		$section->delete  = Route::url($route, array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
 		$section->private = Route::url($route, array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf();
 

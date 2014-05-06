@@ -23,7 +23,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 	 * Sign in
 	 */
 	public function action_in() {
-		if (self::$user) {
+		if (Visitor::$user) {
 			Request::back();
 		}
 
@@ -153,7 +153,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 	public function action_up() {
 		$this->history = false;
 
-		if (self::$user) {
+		if (Visitor::$user) {
 			Request::back();
 		}
 

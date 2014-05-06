@@ -44,7 +44,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Build page
 		$this->view      = View_Page::factory(__('Galleries') . ' - ' . HTML::chars(date('F Y', mktime(null, null, null, $month, 1, $year))));
 		$this->view->tab = 'galleries';
-		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user));
 		$this->_set_flyer_actions();
 
 		// Pagination
@@ -81,7 +81,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, self::$user)) {
+			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, Visitor::$user)) {
 				    $comment->delete();
 				    $image->comment_count--;
 				    $image->save();
@@ -92,7 +92,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, self::$user)) {
+				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, Visitor::$user)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -127,7 +127,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, self::$user)) {
+			    if (Permission::has($comment, Model_Image_Comment::PERMISSION_DELETE, Visitor::$user)) {
 				    $comment->delete();
 				    $image->comment_count--;
 				    $image->save();
@@ -136,7 +136,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, self::$user)) {
+				  if (Permission::has($comment, Model_Image_Comment::PERMISSION_UPDATE, Visitor::$user)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -169,7 +169,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
-		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
+		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user);
 
 		if (Security::csrf_valid()) {
 			foreach ($gallery->images() as $image) {
@@ -206,7 +206,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($image, $image_id);
 		}
 
-		Permission::required($image, Model_Image::PERMISSION_DELETE, self::$user);
+		Permission::required($image, Model_Image::PERMISSION_DELETE, Visitor::$user);
 
 		$success = 0;
 		if (Security::csrf_valid()) {
@@ -300,7 +300,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Handle post
 		$errors = array();
 		if ((isset($_POST['event_id']) || isset($_POST['name'])) && Security::csrf_valid()) {
-			Permission::required($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user);
+			Permission::required($flyer, Model_Flyer::PERMISSION_UPDATE, Visitor::$user);
 
 			try {
 				if ($event_id = (int)Arr::get($_POST, 'event_id')) {
@@ -326,7 +326,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					$flyer->save();
 
 					// Newsfeed
-					NewsfeedItem_Galleries::flyer_edit(self::$user, $flyer);
+					NewsfeedItem_Galleries::flyer_edit(Visitor::$user, $flyer);
 
 					if ($event_id && $event->loaded() && !$event->flyer_front_image_id) {
 						$event->flyer_front_image_id = $flyer->image_id;
@@ -343,25 +343,25 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 		// Comments section
-		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, self::$user)) {
+		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS, Visitor::$user)) {
 			$errors = array();
 			$values = array();
 
 			// Handle comment
-			if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENT, self::$user) && $_POST) {
+			if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENT, Visitor::$user) && $_POST) {
 				try {
 					$comment = Model_Image_Comment::factory()
-						->add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $image);
+						->add(Visitor::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $image);
 
 					$image->comment_count++;
-					if ($image->author_id != self::$user->id) {
+					if ($image->author_id != Visitor::$user->id) {
 						$image->new_comment_count++;
 					}
 					$image->save();
 
 					// Newsfeed
 					if (!$comment->private) {
-						NewsfeedItem_Galleries::comment_flyer(self::$user, $flyer, $image);
+						NewsfeedItem_Galleries::comment_flyer(Visitor::$user, $flyer, $image);
 					}
 
 					if (!$this->ajax) {
@@ -372,7 +372,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					$values = $comment;
 				}
 
-			} else if (self::$user && $image->author_id == self::$user->id && $image->new_comment_count > 0) {
+			} else if (Visitor::$user && $image->author_id == Visitor::$user->id && $image->new_comment_count > 0) {
 
 				// Clear new comment count?
 				$image->new_comment_count = 0;
@@ -385,7 +385,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			$section_comments->errors = $errors;
 			$section_comments->values = $values;
 
-		} else if (!self::$user) {
+		} else if (!Visitor::$user) {
 
 			// Guest user
 			$section_comments = $this->section_image_comments_teaser($image->comment_count);
@@ -434,7 +434,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 		// Edit flyer
-		if (Permission::has($flyer, Model_Flyer::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($flyer, Model_Flyer::PERMISSION_UPDATE, Visitor::$user)) {
 			$section = $this->section_flyer_edit($flyer);
 			$section->error = $errors;
 			$this->view->add(View_Page::COLUMN_TOP, $section);
@@ -524,19 +524,19 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
-		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
+		Permission::required($gallery, Model_Gallery::PERMISSION_READ, Visitor::$user);
 
 		// External links
 		$link_add = trim(Arr::get($_POST, 'link'));
 		$link_del = Arr::get($_GET, 'delete_link');
 		if ($link_add || is_numeric($link_del)) {
-			if (Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user) && Security::csrf_valid()) {
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user) && Security::csrf_valid()) {
 				$links  = $gallery->links;
 
 				if ($link_add && Valid::url($link_add)) {
 
 					// Add new link
-					$links .= ($links ? "\n" : '') . self::$user->id . ',' . $link_add;
+					$links .= ($links ? "\n" : '') . Visitor::$user->id . ',' . $link_add;
 
 				} else if (is_numeric($link_del)) {
 
@@ -544,7 +544,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					$old_links = explode("\n", $links);
 					if ($old_links[$link_del]) {
 						list($user_id, $url) = explode(',', $old_links[$link_del]);
-						if (self::$user->id == $user_id || Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+						if (Visitor::$user->id == $user_id || Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user)) {
 							unset($old_links[$link_del]);
 							$links = implode("\n", $old_links);
 						}
@@ -565,9 +565,9 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Build page
 		$this->view = View_Page::factory(__('Gallery'));
-		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user));
 		$this->_set_gallery($gallery);
-		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($gallery, 'update'),
 				'text'  => '<i class="icon-refresh"></i> ' . __('Update gallery'),
@@ -602,7 +602,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_gallery_thumbs($gallery));
 
 		// External links
-		if ($gallery->links || Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, self::$user)) {
+		if ($gallery->links || Permission::has($gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user)) {
 			$this->view->add(View_Page::COLUMN_CENTER, $this->section_gallery_links($gallery));
 		}
 
@@ -680,7 +680,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
-		Permission::required($gallery, Model_Gallery::PERMISSION_READ, self::$user);
+		Permission::required($gallery, Model_Gallery::PERMISSION_READ, Visitor::$user);
 		$images = $gallery->images();
 
 		// Find current, previous and next images
@@ -719,21 +719,21 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if (!is_null($current)) {
 
 			// Comments section
-			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, self::$user)) {
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENTS, Visitor::$user)) {
 				$errors = array();
 				$values = array();
 
 				// Handle comment
-				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, self::$user) && $_POST) {
+				if (Permission::has($gallery, Model_Gallery::PERMISSION_COMMENT, Visitor::$user) && $_POST) {
 					try {
 						$comment = Model_Image_Comment::factory()
-							->add(self::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $current);
+							->add(Visitor::$user->id, null, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'), $current);
 
 						$current->comment_count++;
 						$current->save();
-						if ($current->author_id != self::$user->id) {
+						if ($current->author_id != Visitor::$user->id) {
 							$target = Model_User::find_user($current->author_id);
-							Notification_Galleries::image_comment(self::$user, $target, $current, $comment->comment);
+							Notification_Galleries::image_comment(Visitor::$user, $target, $current, $comment->comment);
 						}
 
 						$gallery->comment_count++;
@@ -745,12 +745,12 @@ class Anqh_Controller_Galleries extends Controller_Page {
 							foreach ($current->notes() as $note) {
 								if ($note->user_id) {
 									$target = Model_User::find_user($note->user_id);
-									Notification_Galleries::image_comment(self::$user, $target, $current, $comment->comment);
+									Notification_Galleries::image_comment(Visitor::$user, $target, $current, $comment->comment);
 								}
 							}
 
 							// Newsfeed
-							NewsfeedItem_Galleries::comment(self::$user, $gallery, $current);
+							NewsfeedItem_Galleries::comment(Visitor::$user, $gallery, $current);
 
 						}
 
@@ -766,16 +766,16 @@ class Anqh_Controller_Galleries extends Controller_Page {
 						$values = $comment;
 					}
 
-				} else if (self::$user) {
+				} else if (Visitor::$user) {
 
 					// Clear new comment count?
 					// @TODO: Remove, deprecated after new notification system
-					if ($current->author_id == self::$user->id && $current->new_comment_count > 0) {
+					if ($current->author_id == Visitor::$user->id && $current->new_comment_count > 0) {
 						$current->new_comment_count = 0;
 						$current->save();
 					}
 					foreach ($current->notes() as $note) {
-						if ($note->user_id == self::$user->id) {
+						if ($note->user_id == Visitor::$user->id) {
 							$note->state(AutoModeler::STATE_LOADED);
 							$save = false;
 							if ($note->new_comment_count > 0) {
@@ -799,7 +799,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 				$section_comments->errors = $errors;
 				$section_comments->values = $values;
 
-			} else if (!self::$user) {
+			} else if (!Visitor::$user) {
 
 				// Guest user
 				$section_comments = $this->section_image_comments_teaser($current->comment_count);
@@ -816,21 +816,21 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			// Build page
 
 			// Image actions
-			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user)) {
+			if (Permission::has($gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'default')) . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-home"></i> ' . __('Set gallery default'),
 					'class' => 'btn-inverse image-default'
 				);
 			}
-			if (Permission::has($current, Model_Image::PERMISSION_DELETE, self::$user)) {
+			if (Permission::has($current, Model_Image::PERMISSION_DELETE, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'delete')) . '?token=' . Security::csrf(),
 					'text'  => '<i class="icon-trash"></i> ' . __('Delete'),
 					'class' => 'btn-inverse image-delete'
 				);
 			}
-			if (Permission::has($current, Model_Image::PERMISSION_REPORT, self::$user)) {
+			if (Permission::has($current, Model_Image::PERMISSION_REPORT, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $current->id, 'action' => 'report')),
 					'text'  => '<i class="icon-warning-sign"></i> ' . __('Report'),
@@ -840,7 +840,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			}
 
 			// Gallery actions
-			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user));
 			$this->_set_gallery($gallery);
 			array_unshift($this->view->tabs, array(
 				'link' => Route::model($gallery),
@@ -894,7 +894,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Build page
 		$this->view      = View_Page::factory(__('Galleries'));
 		$this->view->tab = 'latest';
-		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user));
 		$this->_set_flyer_actions();
 
 		// Galleries with latest images
@@ -935,7 +935,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// Permission check
-		Permission::required($image, Model_Image::PERMISSION_NOTE, self::$user);
+		Permission::required($image, Model_Image::PERMISSION_NOTE, Visitor::$user);
 
 		// Create note
 		if (isset($_POST['name']) && trim($_POST['name'] != '')) {
@@ -949,12 +949,12 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			try {
 				$position = Arr::intersect($_POST, array('x', 'y', 'width', 'height'), true);
-				$image->add_note(self::$user->id, count($position) == 4 ? $position : null, $user ? $user : $username);
+				$image->add_note(Visitor::$user->id, count($position) == 4 ? $position : null, $user ? $user : $username);
 
 				// Newsfeed & notification
 				if ($user) {
-					Notification_Galleries::image_note(self::$user, $user, $image);
-					NewsfeedItem_Galleries::note(self::$user, $gallery, $image, $user);
+					Notification_Galleries::image_note(Visitor::$user, $user, $image);
+					NewsfeedItem_Galleries::note(Visitor::$user, $gallery, $image, $user);
 				}
 
 			} catch (Validation_Exception $e) {}
@@ -1017,7 +1017,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($image, $image_id);
 		}
 
-		Permission::required($image, Model_Image::PERMISSION_REPORT, self::$user);
+		Permission::required($image, Model_Image::PERMISSION_REPORT, Visitor::$user);
 
 		$cancel_url = Route::url('gallery_image', array('gallery_id' => Route::model_id($gallery), 'id' => $image->id, 'action' => ''));
 
@@ -1025,7 +1025,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		if ($_POST && Security::csrf_valid()) {
 			$reason = trim(Arr::get($_POST, 'reason'));
 
-			Notification_Galleries::image_removal_request(self::$user, $image, $reason ? $reason : null);
+			Notification_Galleries::image_removal_request(Visitor::$user, $image, $reason ? $reason : null);
 
 			if ($this->_request_type === Controller::REQUEST_AJAX) {
 				$this->response->body(new View_Alert(__('Report filed.'), null, View_Alert::SUCCESS));
@@ -1083,7 +1083,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			// Build page
 			$this->view->subtitle = __(':count images', array(':count' => count($images)));
-			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+			$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user));
 
 			if (count($images)) {
 				$this->view->add(View_Page::COLUMN_CENTER, $this->section_search_results($images));
@@ -1108,7 +1108,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		// Build page
 		$this->view      = View_Page::factory(__('Top 10'));
 		$this->view->tab = 'top';
-		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user));
+		$this->_set_page_actions(Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user));
 		$this->_set_flyer_actions();
 
 		// Top images
@@ -1133,7 +1133,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		}
 
 		// Permission check
-		Permission::required($note, Model_Image_Note::PERMISSION_DELETE, self::$user);
+		Permission::required($note, Model_Image_Note::PERMISSION_DELETE, Visitor::$user);
 
 		$image   = $note->image();
 		$gallery = $image->gallery();
@@ -1160,7 +1160,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			throw new Model_Exception($gallery, $gallery_id);
 		}
 
-		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
+		Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user);
 
 		// Update copyrights
 		$gallery
@@ -1205,7 +1205,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		}
 
-		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user);
+		Permission::required(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, Visitor::$user);
 
 		// Handle post
 		$errors = array();
@@ -1245,7 +1245,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					$image = Model_Image::factory();
 					$image->normal = 'wide';
 					$image->set_fields(array(
-						'author_id' => self::$user->id,
+						'author_id' => Visitor::$user->id,
 						'file'      => $file,
 						'created'   => time(),
 					));
@@ -1270,15 +1270,15 @@ class Anqh_Controller_Galleries extends Controller_Page {
 					$gallery->save();
 
 					// Newsfeed item
-					NewsfeedItem_Galleries::upload(self::$user, $gallery);
+					NewsfeedItem_Galleries::upload(Visitor::$user, $gallery);
 
 					// Mark filename as uploaded for current gallery
 					$uploaded[$gallery->id][] = $file['name'];
 					Session::instance()->set('uploaded', $uploaded);
 
 					// Make sure the user has photo role to be able to see uploaded pictures
-					if (!self::$user->has_role('photo')) {
-						self::$user->add_role('photo');
+					if (!Visitor::$user->has_role('photo')) {
+						Visitor::$user->add_role('photo');
 					}
 
 					// Show image if uploaded with ajax
@@ -1356,7 +1356,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 			if (!$gallery->loaded()) {
 				throw new Model_Exception($gallery, $gallery_id);
 			}
-			Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, self::$user);
+			Permission::required($gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user);
 			$cancel = Route::model($gallery);
 			$save   = null;
 			$upload = false;
@@ -1365,7 +1365,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 			// Creating new
 			$gallery = Model_Gallery::factory();
-			Permission::required($gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
+			Permission::required($gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user);
 			$cancel = Request::back(Route::url('galleries'), true);
 			$save   = __('Continue');
 			$upload = true;
@@ -1513,7 +1513,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Set actions
 		$this->view->tabs['galleries']['link'] = Route::url('galleries', array('action' => 'browse', 'year' => date('Y', $gallery->date), 'month' => date('m', $gallery->date)));
-		if ($this->view->actions['upload'] && Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, self::$user)) {
+		if ($this->view->actions['upload'] && Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_UPLOAD, Visitor::$user)) {
 			$this->view->actions['upload']['link'] = Route::model($gallery, 'upload');
 		}
 		$this->view->tabs['gallery'] = array(
@@ -1640,7 +1640,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 		// Add suggestions if creating new
 		if (!$event) {
-			$events = Model_Event::factory()->find_favorites_past(self::$user, 10);
+			$events = Model_Event::factory()->find_favorites_past(Visitor::$user, 10);
 			if ($events && count($events)) {
 				$section->events = $events;
 			}
@@ -1657,7 +1657,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @return  View_Alert
 	 */
 	public function section_gallery_empty(Model_Event $event) {
-		$can_upload = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, self::$user);
+		$can_upload = Permission::has(new Model_Gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user);
 
 		$section = new View_Alert(
 			__('.. this event seems to be lacking in the image department.')
@@ -1735,7 +1735,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	 * @return  View_Generic_Comments
 	 */
 	public function section_image_comments(Model_Image $image, $route = 'gallery_image_comment') {
-		$section = new View_Generic_Comments($image->comments(self::$user));
+		$section = new View_Generic_Comments($image->comments(Visitor::$user));
 		$section->delete  = Route::url($route, array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
 		$section->private = false;
 

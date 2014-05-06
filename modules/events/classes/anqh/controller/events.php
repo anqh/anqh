@@ -77,7 +77,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			throw new Model_Exception($event, $event_id);
 		}
 
-		Permission::required($event, Model_Event::PERMISSION_DELETE, self::$user);
+		Permission::required($event, Model_Event::PERMISSION_DELETE, Visitor::$user);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($event));
@@ -117,14 +117,14 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_READ, self::$user);
+		Permission::required($event, Model_Event::PERMISSION_READ, Visitor::$user);
 
 		// Build page
 		$this->view->title    = $event->name;
 		$this->view->subtitle = self::_event_subtitle($event);
 
 		// Set actions
-		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link' => Route::model($event, 'edit'),
 				'text' => '<i class="fa fa-edit"></i> ' . __('Edit event'),
@@ -135,8 +135,8 @@ class Anqh_Controller_Events extends Controller_Page {
 				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
 			);
 		}
-		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, self::$user)) {
-			if ($event->is_favorite(self::$user)) {
+		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, Visitor::$user)) {
+			if ($event->is_favorite(Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
 					'text'  => '<i class="fa fa-heart"></i> ' . __('Remove favorite'),
@@ -216,12 +216,12 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_FAVORITE, self::$user);
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE, Visitor::$user);
 
 		if (Security::csrf_valid()) {
-			$event->add_favorite(self::$user);
+			$event->add_favorite(Visitor::$user);
 
-			NewsfeedItem_Events::favorite(self::$user, $event);
+			NewsfeedItem_Events::favorite(Visitor::$user, $event);
 		}
 
 		// Ajax requests show event day
@@ -248,7 +248,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
+		Permission::required($event, Model_Event::PERMISSION_UPDATE, Visitor::$user);
 
 		if ($this->_request_type !== Controller::REQUEST_AJAX) {
 			$this->page_title = HTML::chars($event->name);
@@ -303,7 +303,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		$errors = array();
 		if ($_POST && $_FILES) {
 			$image = Model_Image::factory();
-			$image->author_id   = self::$user->id;
+			$image->author_id   = Visitor::$user->id;
 			$image->created     = time();
 			$image->file        = Arr::get($_FILES, 'file');
 			$image->description = $event->get_forum_topic();
@@ -469,7 +469,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_events_updated());
 
 		// Set actions
-		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, self::$user)) {
+		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::get('events')->uri(array('action' => 'add')),
 				'text'  => '<i class="fa fa-plus-circle"></i> ' . __('Create event'),
@@ -494,10 +494,10 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_FAVORITE, self::$user);
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE, Visitor::$user);
 
 		if (Security::csrf_valid()) {
-			$event->delete_favorite(self::$user);
+			$event->delete_favorite(Visitor::$user);
 		}
 
 		// Ajax requests show event day
@@ -526,13 +526,13 @@ class Anqh_Controller_Events extends Controller_Page {
 			if (!$event->loaded()) {
 				throw new Model_Exception($event, $event_id);
 			}
-			Permission::required($event, Model_Event::PERMISSION_UPDATE, self::$user);
+			Permission::required($event, Model_Event::PERMISSION_UPDATE, Visitor::$user);
 			$cancel = Request::back(Route::model($event), true);
 
 			$this->view = View_Page::factory(HTML::chars($event->name));
 
 			// Set actions
-			if (Permission::has($event, Model_Event::PERMISSION_DELETE, self::$user)) {
+			if (Permission::has($event, Model_Event::PERMISSION_DELETE, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'delete') . '?token=' . Security::csrf(),
 					'text'  => '<i class="fa fa-trash-o"></i> ' . __('Delete event'),
@@ -547,12 +547,12 @@ class Anqh_Controller_Events extends Controller_Page {
 
 			// Creating new
 			$event = new Model_Event();
-			Permission::required($event, Model_Event::PERMISSION_CREATE, self::$user);
+			Permission::required($event, Model_Event::PERMISSION_CREATE, Visitor::$user);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
 			$this->view = View_Page::factory(__('New event'));
 
-			$event->author_id = self::$user->id;
+			$event->author_id = Visitor::$user->id;
 			$event->created   = time();
 			$edit = false;
 
@@ -621,7 +621,7 @@ class Anqh_Controller_Events extends Controller_Page {
 				$venue->longitude     = Arr::get($_POST, 'longitude');
 				$venue->foursquare_id = Arr::get($_POST, 'foursquare_id');
 				$venue->event_host    = true;
-				$venue->author_id     = self::$user->id;
+				$venue->author_id     = Visitor::$user->id;
 				$venue->city_name     = $event->city_name;
 
 				if (!$preview) {
@@ -659,7 +659,7 @@ class Anqh_Controller_Events extends Controller_Page {
 				$image = new Model_Image();
 				$image->remote    = $flyer_url;
 				$image->created   = time();
-				$image->author_id = self::$user->id;
+				$image->author_id = Visitor::$user->id;
 
 				try {
 					$image->save();
@@ -709,19 +709,19 @@ class Anqh_Controller_Events extends Controller_Page {
 
 					// Don't flood edits right after save
 					if (time() - $event->created > 60 * 30) {
-						NewsfeedItem_Events::event_edit(self::$user, $event);
+						NewsfeedItem_Events::event_edit(Visitor::$user, $event);
 					}
-					
+
 				} else {
-					NewsfeedItem_Events::event(self::$user, $event);
+					NewsfeedItem_Events::event(Visitor::$user, $event);
 
 					// Add to favorites
-					$event->add_favorite(self::$user);
+					$event->add_favorite(Visitor::$user);
 
 					// Create forum topic
 					if ($event->add_forum_topic()) {
-						self::$user->post_count++;
-						self::$user->save();
+						Visitor::$user->post_count++;
+						Visitor::$user->save();
 					}
 				}
 

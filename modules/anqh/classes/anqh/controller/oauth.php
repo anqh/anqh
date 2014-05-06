@@ -33,8 +33,8 @@ class Anqh_Controller_OAuth extends Controller_Page {
 		// See if we already have a token
 		$provider = $this->request->param('provider');
 		if ($provider) {
-			if (self::$user && $this->external = Model_User_External::factory()
-			->find_by_user_id(self::$user->id, $provider)
+			if (Visitor::$user && $this->external = Model_User_External::factory()
+			->find_by_user_id(Visitor::$user->id, $provider)
 			) {
 
 				// Access token should be available
@@ -60,7 +60,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 		if ($this->external && $this->external->loaded()) {
 			$this->external->delete();
 
-			$this->request->redirect(URL::user(self::$user, 'settings'));
+			$this->request->redirect(URL::user(Visitor::$user, 'settings'));
 		}
 
 		Request::back();
@@ -80,7 +80,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 	 */
 	public function action_login() {
 		if ($token = $this->consumer->get_token()) {
-			if (self::$user || $this->_login($token)) {
+			if (Visitor::$user || $this->_login($token)) {
 
 				// Already logged in
 				Request::back();
@@ -122,14 +122,14 @@ class Anqh_Controller_OAuth extends Controller_Page {
 			try {
 				$token = $this->consumer->request_token(array(OAuth2::RESPONSE_TYPE_CODE => $response));
 
-				if (self::$user) {
+				if (Visitor::$user) {
 
 					// Already logged in
-					$external = Model_User_External::factory()->find_by_user_id(self::$user->id, $provider);
+					$external = Model_User_External::factory()->find_by_user_id(Visitor::$user->id, $provider);
 					if ($this->_update_token($external, $token)) {
 
 						// Already paired with local user
-						$this->request->redirect(URL::user(self::$user, 'settings'));
+						$this->request->redirect(URL::user(Visitor::$user, 'settings'));
 						//Request::back();
 
 					} else {
@@ -154,7 +154,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 								$external = new Model_User_External();
 								$external->set_fields(array(
 									'token'            => $token['access_token'],
-									'user_id'          => self::$user->id,
+									'user_id'          => Visitor::$user->id,
 									'external_user_id' => Arr::get($response, 'id'),
 									'created'          => time(),
 									'expires'          => time() + (int)$token['expires'],
@@ -162,7 +162,7 @@ class Anqh_Controller_OAuth extends Controller_Page {
 								));
 								$external->save();
 
-								$this->request->redirect(URL::user(self::$user, 'settings'));
+								$this->request->redirect(URL::user(Visitor::$user, 'settings'));
 								//Request::back();
 
 							}

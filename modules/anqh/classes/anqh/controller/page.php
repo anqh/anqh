@@ -76,8 +76,8 @@ abstract class Anqh_Controller_Page extends Controller {
 			// Theme
 			$theme = $this->session->get('theme');//Arr::get($_COOKIE, 'theme');
 			if (!in_array($theme, array_keys(Kohana::$config->load('site.themes')))) {
-				if (self::$user) {
-					$theme = self::$user->setting('ui.theme');
+				if (Visitor::$user) {
+					$theme = Visitor::$user->setting('ui.theme');
 				}
 				if (!$theme) {
 					$theme = Kohana::$config->load('site.theme');
@@ -88,7 +88,7 @@ abstract class Anqh_Controller_Page extends Controller {
 			// Do some CSS magic to page class
 			$page_class = array_merge(array(
 				'theme-' . $theme,
-				self::$user ? 'authenticated' : 'unauthenticated',
+				Visitor::$user ? 'authenticated' : 'unauthenticated',
 			), explode(' ' , $this->page_class));
 			$page_class = implode(' ', array_unique($page_class));
 
@@ -110,7 +110,7 @@ abstract class Anqh_Controller_Page extends Controller {
 			}
 
 			// And finally the profiler stats
-			if (self::$user && self::$user->has_role('admin')) {
+			if (Visitor::$user && Visitor::$user->has_role('admin')) {
 				Widget::add('foot', new View_Generic_Debug());
 				Widget::add('foot', View::factory('profiler/stats'));
 			}

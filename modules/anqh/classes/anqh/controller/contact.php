@@ -16,9 +16,9 @@ class Anqh_Controller_Contact extends Controller_Page {
 		$this->view->title = __('Contact');
 
 		$section = $this->section_contact();
-		if (self::$user) {
-			$section->name  = self::$user->username;
-			$section->email = self::$user->email;
+		if (Visitor::$user) {
+			$section->name  = Visitor::$user->username;
+			$section->email = Visitor::$user->email;
 		}
 
 		// Handle post

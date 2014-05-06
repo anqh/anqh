@@ -13,7 +13,7 @@ class Anqh_Controller_Forum_Private extends Controller_Forum_Topic {
 	 * Construct controller
 	 */
 	public function before() {
-		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, self::$user);
+		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, Visitor::$user);
 
 		$this->private = true;
 		$this->tab_id = 'private';

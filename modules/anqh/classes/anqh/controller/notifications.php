@@ -13,7 +13,7 @@ class Anqh_Controller_Notifications extends Controller_Page {
 		parent::before();
 
 		// Authentication required
-		if (!self::$user) {
+		if (!Visitor::$user) {
 			$this->request->redirect(URL::site());
 		}
 
@@ -30,7 +30,7 @@ class Anqh_Controller_Notifications extends Controller_Page {
 			$notification = Model_Notification::factory($dismiss);
 
 			if ($notification->loaded()) {
-				Permission::required($notification, Model_Notification::PERMISSION_DELETE, self::$user);
+				Permission::required($notification, Model_Notification::PERMISSION_DELETE, Visitor::$user);
 
 				$notification->delete();
 
@@ -42,7 +42,7 @@ class Anqh_Controller_Notifications extends Controller_Page {
 			}
 		}
 
-		$section = $this->section_notifications(Notification::get_notifications(self::$user));
+		$section = $this->section_notifications(Notification::get_notifications(Visitor::$user));
 
 		if ($this->_request_type == self::REQUEST_AJAX) {
 			$this->response->body($section);

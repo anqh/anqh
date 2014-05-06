@@ -30,7 +30,7 @@ class Anqh_Controller_Shouts extends Controller_Page {
 		$shout = Model_Shout::factory();
 
 		if (Permission::has($shout, Permission_Interface::PERMISSION_CREATE) && Security::csrf_valid()) {
-			$shout->author_id = self::$user->id;
+			$shout->author_id = Visitor::$user->id;
 			$shout->shout     = $_POST['shout'];
 			$shout->created   = time();
 			try {

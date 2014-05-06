@@ -40,7 +40,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_COMBINE, self::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_COMBINE, Visitor::$user);
 
 		// Build page
 		$this->view         = new View_Page($venue->name);
@@ -118,7 +118,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_DELETE, self::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_DELETE, Visitor::$user);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($venue));
@@ -151,7 +151,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user);
 
 		if (Security::csrf_valid() && isset($_POST['foursquare_id'])) {
 			try {
@@ -160,7 +160,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 				)));
 				$venue->save();
 
-				NewsfeedItem_Venues::venue_edit(self::$user, $venue);
+				NewsfeedItem_Venues::venue_edit(Visitor::$user, $venue);
 			} catch (Validation_Exception $e) {
 
 			}
@@ -182,7 +182,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
-		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user);
 
 		// Change existing
 		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
@@ -223,7 +223,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		$errors = array();
 		if ($_POST && $_FILES && Security::csrf_valid()) {
 			$image = new Model_Image();
-			$image->author_id = self::$user->id;
+			$image->author_id = Visitor::$user->id;
 			$image->file      = Arr::get($_FILES, 'file');
 			try {
 				$image->save();
@@ -276,7 +276,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		$this->view = new View_Page(__('Venues'));
 
 		// Set actions
-		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE, self::$user)) {
+		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::get('venue_add')->uri(),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add venue'),
@@ -317,13 +317,13 @@ class Anqh_Controller_Venues extends Controller_Page {
 		);
 
 		// Set actions
-		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($venue, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit venue'),
 			);
 		}
-		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE, self::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($venue, 'combine'),
 				'text'  => '<i class="icon-filter icon-white"></i> ' . __('Combine duplicate'),
@@ -354,7 +354,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		}
 
 		// Similar venues
-		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE, self::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE, Visitor::$user)) {
 			$similar = $venue->find_similar(65);
 
 			if ($similar) {
@@ -391,7 +391,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			if (!$venue->loaded()) {
 				throw new Model_Exception($venue, $venue_id);
 			}
-			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, self::$user);
+			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user);
 			$cancel = Route::model($venue);
 
 			$this->view = View_Page::factory($venue->name);
@@ -400,7 +400,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			$venue->modified = time();
 
 			// Set actions
-			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, self::$user)) {
+			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($venue, 'delete') . '?' . Security::csrf_query(),
 					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete venue'),
@@ -413,7 +413,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			// Creating new
 			$edit = false;
 			$venue = Model_Venue::factory();
-			$venue->author_id = self::$user->id;
+			$venue->author_id = Visitor::$user->id;
 			$cancel = Route::url('venues');
 
 			$this->view = View_Page::factory(__('New venue'));
@@ -428,7 +428,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			try {
 				$venue->save();
 
-				$edit ? NewsfeedItem_Venues::venue_edit(self::$user, $venue) : NewsfeedItem_Venues::venue(self::$user, $venue);
+				$edit ? NewsfeedItem_Venues::venue_edit(Visitor::$user, $venue) : NewsfeedItem_Venues::venue(Visitor::$user, $venue);
 
 				$this->request->redirect(Route::model($venue));
 			} catch (Validation_Exception $e) {
@@ -480,7 +480,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 	public function section_venue_image($venue) {
 		$section = new View_Generic_SideImage($venue->default_image_id ? Model_Image::factory($venue->default_image_id) : null);
 
-		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user)) {
 			$uri = Route::model($venue, 'image');
 			$actions = array(
 				HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' .__('Add image'), array('class' => 'btn btn-mini btn-primary image-add ajaxify')),

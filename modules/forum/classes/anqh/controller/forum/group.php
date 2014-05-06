@@ -20,7 +20,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		if (!$group->loaded()) {
 			throw new Model_Exception($group, $group_id);
 		}
-		Permission::required($group, Model_Forum_Group::PERMISSION_DELETE, self::$user);
+		Permission::required($group, Model_Forum_Group::PERMISSION_DELETE, Visitor::$user);
 
 		$group->delete();
 		$this->request->redirect(Route::get('forum')->uri());
@@ -45,9 +45,9 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		} else {
 			$group = Model_Forum_Group::factory();
 			$group->created   = time();
-			$group->author_id = self::$user->id;
+			$group->author_id = Visitor::$user->id;
 		}
-		Permission::required($group, $group->loaded() ? Model_Forum_Group::PERMISSION_UPDATE : Model_Forum_Group::PERMISSION_CREATE, self::$user);
+		Permission::required($group, $group->loaded() ? Model_Forum_Group::PERMISSION_UPDATE : Model_Forum_Group::PERMISSION_CREATE, Visitor::$user);
 
 		// Handle post
 		$errors = array();
@@ -67,7 +67,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		$this->view->tab = 'areas';
 
 		// Set actions
-		if ($group->loaded() && Permission::has($group, Model_Forum_Group::PERMISSION_DELETE, self::$user)) {
+		if ($group->loaded() && Permission::has($group, Model_Forum_Group::PERMISSION_DELETE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($group, 'delete'),
 				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete group'),
@@ -92,7 +92,7 @@ class Anqh_Controller_Forum_Group extends Controller_Forum {
 		$this->view->tab = 'areas';
 
 		// Set actions
-		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, self::$user)) {
+		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link' => Route::url('forum_group_add'),
 				'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New group'),

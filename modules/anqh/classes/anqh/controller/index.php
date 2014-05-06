@@ -24,9 +24,9 @@ class Anqh_Controller_Index extends Controller_Page {
 		if ($newsfeed = Arr::get($_GET, 'newsfeed')) {
 
 			// Newsfeed changed
-			if (self::$user && in_array($newsfeed, array(View_Newsfeed::TYPE_ALL, View_Newsfeed::TYPE_FRIENDS))) {
-				self::$user->setting('ui.newsfeed', $newsfeed);
-				self::$user->save();
+			if (Visitor::$user && in_array($newsfeed, array(View_Newsfeed::TYPE_ALL, View_Newsfeed::TYPE_FRIENDS))) {
+				Visitor::$user->setting('ui.newsfeed', $newsfeed);
+				Visitor::$user->save();
 			}
 
 			// Ajax
@@ -44,7 +44,7 @@ class Anqh_Controller_Index extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_newsfeed());
 
 		// Login
-		if (!self::$user) {
+		if (!Visitor::$user) {
 			$this->view->add(View_Page::COLUMN_LEFT, $this->section_signin());
 		}
 
@@ -55,7 +55,7 @@ class Anqh_Controller_Index extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_news());
 
 		// Birthdays or friend suggestions
-		if (self::$user && rand(0, 10) < 5) {
+		if (Visitor::$user && rand(0, 10) < 5) {
 			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_friend_suggestions());
 		} else {
 			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_birthdays());
@@ -86,7 +86,7 @@ class Anqh_Controller_Index extends Controller_Page {
 	 * @return  View_Users_FriendSuggestions
 	 */
 	public function section_friend_suggestions() {
-		$section = new View_Users_FriendSuggestions(self::$user, 5);
+		$section = new View_Users_FriendSuggestions(Visitor::$user, 5);
 		$section->aside = true;
 
 		return $section;
@@ -114,8 +114,8 @@ class Anqh_Controller_Index extends Controller_Page {
 	 */
 	public function section_newsfeed() {
 		$section = new View_Newsfeed();
-		$section->type  = Arr::get($_GET, 'newsfeed', self::$user
-			? self::$user->setting('ui.newsfeed')
+		$section->type  = Arr::get($_GET, 'newsfeed', Visitor::$user
+			? Visitor::$user->setting('ui.newsfeed')
 			: Model_User::default_setting('ui.newsfeed')
 		);
 		$section->title = __("What's happening");

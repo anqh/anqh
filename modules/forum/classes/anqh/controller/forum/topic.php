@@ -90,7 +90,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ, self::$user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ, Visitor::$user);
 
 		// Did we request single post with ajax?
 		if (($this->ajax || $this->internal) && isset($post_id)) {
@@ -109,9 +109,9 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 		// Update counts
 		if ($this->private) {
-			$topic->mark_as_read(self::$user);
+			$topic->mark_as_read(Visitor::$user);
 		}
-		if (!self::$user || $topic->author_id != self::$user->id) {
+		if (!Visitor::$user || $topic->author_id != Visitor::$user->id) {
 			$topic->read_count++;
 			$topic->save();
 		}
@@ -137,8 +137,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$this->page_breadcrumbs[] = HTML::anchor(Route::model($topic->area()), $topic->area()->name);
 
 			// Quotes are supported only in public forum as we get notifications anyway in private
-			if (self::$user) {
-				$quotes = Model_Forum_Quote::factory()->find_by_user(self::$user);
+			if (Visitor::$user) {
+				$quotes = Model_Forum_Quote::factory()->find_by_user(Visitor::$user);
 				if (count($quotes)) {
 					foreach ($quotes as $quote) {
 						if ($topic->id == $quote->forum_topic_id) {
@@ -183,13 +183,13 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Set actions
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($topic, 'edit'),
 				'text'  => __('Edit topic'),
 			);
 		}
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Request::current_uri() . '#reply',
 				'text'  => __('Reply to topic'),
@@ -221,7 +221,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_topic($topic, $pagination));
 
 		// Reply
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, self::$user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user)) {
 
 			// Old post warning
 			if ($topic->last_posted && time() - $topic->last_posted > Date::YEAR) {
@@ -287,7 +287,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$post->loaded() || $post->forum_topic_id != $topic->id || !Security::csrf_valid()) {
 			throw new Model_Exception($post, $post_id);
 		}
-		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, self::$user);
+		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, Visitor::$user);
 
 		$post->delete();
 		$topic->refresh();
@@ -319,7 +319,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			throw new Model_Exception($topic, $topic_id);
 		}
 
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, Visitor::$user);
 
 		$area  = $topic->area();
 
@@ -353,7 +353,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_POST, self::$user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user);
 
 		if ($post_id) {
 
@@ -362,7 +362,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$post->loaded() || $post->forum_topic_id != $topic->id) {
 				throw new Model_Exception($post, $post_id);
 			}
-			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, self::$user);
+			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, Visitor::$user);
 
 		} else {
 
@@ -377,7 +377,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$quote->loaded() || $quote->forum_topic_id != $topic->id) {
 				throw new Model_Exception($quote, $quote_id);
 			}
-			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, self::$user);
+			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, Visitor::$user);
 
 			if (!$post->loaded()) {
 				$post->post = '[quote author="' . $quote->author_name . '" post="' . $quote->id . '"]' . $quote->post . "[/quote]\n\n";
@@ -397,8 +397,8 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				// New post
 				$post->forum_topic_id = $topic->id;
 				$post->forum_area_id  = $topic->forum_area_id;
-				$post->author_id      = self::$user->id;
-				$post->author_name    = self::$user->username;
+				$post->author_id      = Visitor::$user->id;
+				$post->author_name    = Visitor::$user->username;
 				$post->created        = time();
 				$increase = true;
 
@@ -431,7 +431,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 						$quoted = $quote->author_id;
 						$quote = new Model_Forum_Quote();
 						$quote->user_id        = $quoted;
-						$quote->author_id      = self::$user->id;
+						$quote->author_id      = Visitor::$user->id;
 						$quote->forum_topic_id = $topic->id;
 						$quote->forum_post_id  = $post->id;
 						$quote->created        = time();
@@ -440,7 +440,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 
 					// Notify recipients
 					if ($this->private) {
-						$topic->notify_recipients(self::$user);
+						$topic->notify_recipients(Visitor::$user);
 					}
 
 					// Topic
@@ -464,12 +464,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					}
 
 					// User
-					self::$user->post_count++;
-					self::$user->save();
+					Visitor::$user->post_count++;
+					Visitor::$user->save();
 
 					// News feed
 					if (!$this->private) {
-						NewsfeedItem_Forum::reply(self::$user, $post);
+						NewsfeedItem_Forum::reply(Visitor::$user, $post);
 					}
 
 				}
@@ -555,7 +555,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
-			Permission::required($area, Model_Forum_Area::PERMISSION_POST, self::$user);
+			Permission::required($area, Model_Forum_Area::PERMISSION_POST, Visitor::$user);
 
 			$this->view->title = HTML::chars($area->name);
 			if ($this->private) {
@@ -584,10 +584,10 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$topic->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}
-			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, self::$user);
+			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, Visitor::$user);
 
 			// Add post if admin
-			if (self::$user->has_role(array('admin', 'moderator', 'forum moderator')) && Arr::get($_POST, 'post')) {
+			if (Visitor::$user->has_role(array('admin', 'moderator', 'forum moderator')) && Arr::get($_POST, 'post')) {
 				$add_post = true;
 			}
 
@@ -601,7 +601,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$cancel = Route::model($topic);
 
 			// Set actions
-			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, self::$user)) {
+			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($topic, 'delete') . '?' . Security::csrf_query(),
 					'text'  => '<i class="fa fa-trash"></i> ' . __('Delete topic'),
@@ -627,12 +627,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				}
 
 				// Make sure author is included
-				$post_recipients[self::$user->id] = self::$user->username;
+				$post_recipients[Visitor::$user->id] = Visitor::$user->username;
 			}
 
 			// New post
 			if ($add_post) {
-				$post = $topic->create_post(Arr::get($_POST, 'post'), self::$user);
+				$post = $topic->create_post(Arr::get($_POST, 'post'), Visitor::$user);
 				try {
 					$post->is_valid();
 				} catch (Validation_Exception $e) {
@@ -691,12 +691,12 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 					}
 
 					// User
-					self::$user->post_count++;
-					self::$user->save();
+					Visitor::$user->post_count++;
+					Visitor::$user->save();
 
 					// News feed
 					if (!$this->private) {
-						NewsfeedItem_Forum::topic(self::$user, $topic);
+						NewsfeedItem_Forum::topic(Visitor::$user, $topic);
 					}
 
 					$this->request->redirect(Route::model($topic));
@@ -711,7 +711,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 				// Old topic
 				$new_area_id = false;
 				$topic->name = Arr::get($_POST, 'name');
-				if (self::$user->has_role(array('admin', 'moderator', 'forum moderator'))) {
+				if (Visitor::$user->has_role(array('admin', 'moderator', 'forum moderator'))) {
 					$topic->set_fields(Arr::intersect($_POST, array('status', 'sticky')));
 
 					// Change area?

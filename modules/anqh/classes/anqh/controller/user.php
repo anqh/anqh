@@ -48,7 +48,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_User_Comment::PERMISSION_DELETE, self::$user)) {
+			    if (Permission::has($comment, Model_User_Comment::PERMISSION_DELETE, Visitor::$user)) {
 				    $comment->delete();
 				    $user->comment_count--;
 				    $user->save();
@@ -57,7 +57,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_User_Comment::PERMISSION_UPDATE, self::$user)) {
+				  if (Permission::has($comment, Model_User_Comment::PERMISSION_UPDATE, Visitor::$user)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -138,16 +138,16 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_FRIEND, self::$user);
+		Permission::required($user, Model_User::PERMISSION_FRIEND, Visitor::$user);
 
 		if (Security::csrf_valid()) {
-			self::$user->add_friend($user);
+			Visitor::$user->add_friend($user);
 
 			// News feed
-			NewsfeedItem_User::friend(self::$user, $user);
+			NewsfeedItem_User::friend(Visitor::$user, $user);
 
 			// Notification
-			Notification_User::friend(self::$user, $user);
+			Notification_User::friend(Visitor::$user, $user);
 
 		}
 
@@ -176,7 +176,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_friends($user, Arr::get($_GET, 'of') == 'me'));
 
 		// Show suggestions on our own page
-		if ($user->id === self::$user->id) {
+		if ($user->id === Visitor::$user->id) {
 			$this->view->add(View_Page::COLUMN_RIGHT, $this->section_friend_suggestions($user));
 		}
 
@@ -212,10 +212,10 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_IGNORE, self::$user);
+		Permission::required($user, Model_User::PERMISSION_IGNORE, Visitor::$user);
 
 		if (Security::csrf_valid()) {
-			self::$user->add_ignore($user);
+			Visitor::$user->add_ignore($user);
 		}
 
 		$this->request->redirect(URL::user($user));
@@ -244,7 +244,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->history = false;
 
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_UPDATE, self::$user);
+		Permission::required($user, Model_User::PERMISSION_UPDATE, Visitor::$user);
 
 		// Change default image
 		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
@@ -344,18 +344,18 @@ class Anqh_Controller_User extends Controller_Page {
 		$user = $this->_get_user();
 
 		// Helper variables
-		$owner = (self::$user && self::$user->id == $user->id);
+		$owner = (Visitor::$user && Visitor::$user->id == $user->id);
 
 		// Comments section
-		if (Permission::has($user, Model_User::PERMISSION_COMMENTS, self::$user)) {
+		if (Permission::has($user, Model_User::PERMISSION_COMMENTS, Visitor::$user)) {
 			$errors = array();
 			$values = array();
 
 			// Handle comment
-			if (Permission::has($user, Model_User::PERMISSION_COMMENT, self::$user) && $_POST) {
+			if (Permission::has($user, Model_User::PERMISSION_COMMENT, Visitor::$user) && $_POST) {
 				try {
 					$comment = Model_User_Comment::factory()
-						->add(self::$user->id, $user->id, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
+						->add(Visitor::$user->id, $user->id, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
 
 					// Receiver
 					$user->comment_count++;
@@ -365,8 +365,8 @@ class Anqh_Controller_User extends Controller_Page {
 					$user->save();
 
 					// Sender
-					self::$user->left_comment_count++;
-					self::$user->save();
+					Visitor::$user->left_comment_count++;
+					Visitor::$user->save();
 
 					if ($this->_request_type !== Controller::REQUEST_AJAX) {
 						$this->request->redirect(Route::url('user', array('username' => urlencode($user->username))));
@@ -390,7 +390,7 @@ class Anqh_Controller_User extends Controller_Page {
 			$section_comments->errors = $errors;
 			$section_comments->values = $values;
 
-		} else if (!self::$user) {
+		} else if (!Visitor::$user) {
 
 			// Teaser for guests
 			$section_comments = $this->section_comments_teaser($user->comment_count);
@@ -441,9 +441,9 @@ class Anqh_Controller_User extends Controller_Page {
 				$this->response->status(200); // OK
 			}
 
-			if (self::$user) {
-				self::$user->setting('ui.theme', $theme);
-				self::$user->save();
+			if (Visitor::$user) {
+				Visitor::$user->setting('ui.theme', $theme);
+				Visitor::$user->save();
 			}
 
 			$this->session->set('theme', $theme);
@@ -469,7 +469,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->history = false;
 
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_UPDATE, self::$user);
+		Permission::required($user, Model_User::PERMISSION_UPDATE, Visitor::$user);
 
 		// Handle post
 		$errors = array();
@@ -541,10 +541,10 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_FRIEND, self::$user);
+		Permission::required($user, Model_User::PERMISSION_FRIEND, Visitor::$user);
 
 		if (Security::csrf_valid()) {
-			self::$user->delete_friend($user);
+			Visitor::$user->delete_friend($user);
 		}
 
 		$this->request->redirect(URL::user($user));
@@ -559,10 +559,10 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_IGNORE, self::$user);
+		Permission::required($user, Model_User::PERMISSION_IGNORE, Visitor::$user);
 
 		if (Security::csrf_valid()) {
-			self::$user->delete_ignore($user);
+			Visitor::$user->delete_ignore($user);
 		}
 
 		$this->request->redirect(URL::user($user));
@@ -581,7 +581,7 @@ class Anqh_Controller_User extends Controller_Page {
 		// Get our user, default to logged in user if no username given
 		if (!$user) {
 			$username = urldecode((string)$this->request->param('username'));
-			$user     = ($username == '') ? self::$user : Model_User::find_user($username);
+			$user     = ($username == '') ? Visitor::$user : Model_User::find_user($username);
 		}
 
 		if (!$user && $redirect) {
@@ -611,11 +611,11 @@ class Anqh_Controller_User extends Controller_Page {
 		$view->title_icon = HTML::avatar($user->avatar, $user->username);
 
 		// Set actions
-		if (self::$user) {
+		if (Visitor::$user) {
 
 			// Friend actions
-			if (Permission::has($user, Model_User::PERMISSION_FRIEND, self::$user)) {
-				if (self::$user->is_friend($user)) {
+			if (Permission::has($user, Model_User::PERMISSION_FRIEND, Visitor::$user)) {
+				if (Visitor::$user->is_friend($user)) {
 					$view->actions[] = array(
 						'link'  => URL::user($user, 'unfriend') . '?token=' . Security::csrf(),
 						'text'  => '<i class="fa fa-heart-o"></i> ' . __('Remove friend'),
@@ -631,8 +631,8 @@ class Anqh_Controller_User extends Controller_Page {
 			}
 
 			// Ignore actions
-			if (Permission::has($user, Model_User::PERMISSION_IGNORE, self::$user)) {
-				if (self::$user->is_ignored($user)) {
+			if (Permission::has($user, Model_User::PERMISSION_IGNORE, Visitor::$user)) {
+				if (Visitor::$user->is_ignored($user)) {
 					$view->actions[] = array(
 						'link'  => URL::user($user, 'unignore') . '?token=' . Security::csrf(),
 						'text'  => '<i class="fa fa-ban"></i> ' . __('Unignore'),
@@ -680,7 +680,7 @@ class Anqh_Controller_User extends Controller_Page {
 			);
 
 			// Owner / admin actions
-			if (Permission::has($user, Model_User::PERMISSION_UPDATE, self::$user)) {
+			if (Permission::has($user, Model_User::PERMISSION_UPDATE, Visitor::$user)) {
 				$view->tabs['ignores'] = array(
 					'link'  =>  URL::user($user, 'ignores'),
 					'text'  => __('Ignores'),
@@ -727,13 +727,13 @@ class Anqh_Controller_User extends Controller_Page {
 		$pagination = new View_Generic_Pagination(array(
 			'base_url'       => URL::user($user),
 			'items_per_page' => $per_page,
-			'total_items'    => max(1, count($user->comments(self::$user, null))),
+			'total_items'    => max(1, count($user->comments(Visitor::$user, null))),
 		));
 
-		$section = new View_Generic_Comments($user->comments(self::$user, $pagination));
+		$section = new View_Generic_Comments($user->comments(Visitor::$user, $pagination));
 		$section->delete       = Route::url($route, array('id' => '%d', 'commentaction' => 'delete')) . '?token=' . Security::csrf();
 		$section->private      = Route::url($route, array('id' => '%d', 'commentaction' => 'private')) . '?token=' . Security::csrf();
-		$section->new_comments = self::$user && self::$user->id === $user->id ? $user->new_comment_count : null;
+		$section->new_comments = Visitor::$user && Visitor::$user->id === $user->id ? $user->new_comment_count : null;
 		$section->pagination   = $pagination;
 
 		return $section;

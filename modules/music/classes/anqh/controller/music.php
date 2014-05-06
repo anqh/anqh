@@ -78,7 +78,7 @@ class Anqh_Controller_Music extends Controller_Page {
 			throw new Model_Exception($track, $track_id);
 		}
 
-		Permission::required($track, Model_Music_Track::PERMISSION_DELETE, self::$user);
+		Permission::required($track, Model_Music_Track::PERMISSION_DELETE, Visitor::$user);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($track));
@@ -109,10 +109,10 @@ class Anqh_Controller_Music extends Controller_Page {
 		if (!$track->loaded()) {
 			throw new Model_Exception($track, $track_id);
 		}
-		Permission::required($track, Model_Music_Track::PERMISSION_READ, self::$user);
+		Permission::required($track, Model_Music_Track::PERMISSION_READ, Visitor::$user);
 
 		// Update listen count
-		$track->listen(self::$user, Request::$client_ip);
+		$track->listen(Visitor::$user, Request::$client_ip);
 
 		$this->request->redirect($track->url);
 	}
@@ -157,7 +157,7 @@ class Anqh_Controller_Music extends Controller_Page {
 		if (!$track->loaded()) {
 			throw new Model_Exception($track, $track_id);
 		}
-		Permission::required($track, Model_Music_Track::PERMISSION_READ, self::$user);
+		Permission::required($track, Model_Music_Track::PERMISSION_READ, Visitor::$user);
 
 
 		// Build page
@@ -189,7 +189,7 @@ class Anqh_Controller_Music extends Controller_Page {
 				'text'  => __('Forum') . ' &raquo;',
 			);
 		}
-		if (Permission::has($track, Model_Music_Track::PERMISSION_UPDATE, self::$user)) {
+		if (Permission::has($track, Model_Music_Track::PERMISSION_UPDATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($track, 'edit'),
 				'text'  => '<i class="fa fa-edit"></i> ' . __('Edit'),
@@ -270,14 +270,14 @@ class Anqh_Controller_Music extends Controller_Page {
 			if (!$track->loaded()) {
 				throw new Model_Exception($track, $track_id);
 			}
-			Permission::required($track, Model_Music_Track::PERMISSION_UPDATE, self::$user);
+			Permission::required($track, Model_Music_Track::PERMISSION_UPDATE, Visitor::$user);
 
 			$cancel = Route::model($track);
 
 			$this->view = new View_Page(HTML::chars($track->name));
 
 			// Set actions
-			if (Permission::has($track, Model_Music_Track::PERMISSION_DELETE, self::$user)) {
+			if (Permission::has($track, Model_Music_Track::PERMISSION_DELETE, Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link' => Route::model($track, 'delete') . '?token=' . Security::csrf(),
 					'text' => '<i class="fa fa-trash-o"></i> ' . __('Delete'),
@@ -289,13 +289,13 @@ class Anqh_Controller_Music extends Controller_Page {
 
 			// Creating new
 			$track = new Model_Music_Track();
-			Permission::required($track, Model_Music_Track::PERMISSION_CREATE, self::$user);
+			Permission::required($track, Model_Music_Track::PERMISSION_CREATE, Visitor::$user);
 
 			$cancel   = Request::back(Route::url('charts'), true);
 			$newsfeed = true;
 
 			$this->view = new View_Page($this->request->param('music') === 'mixtape' ? __('New mixtape') : __('New track'));
-			$track->author_id = self::$user->id;
+			$track->author_id = Visitor::$user->id;
 			$track->type      = $this->request->param('music') === 'mixtape' ? Model_Music_Track::TYPE_MIX : Model_Music_Track::TYPE_TRACK;
 			$track->created   = time();
 
@@ -313,12 +313,12 @@ class Anqh_Controller_Music extends Controller_Page {
 
 				// Newsfeed
 				if (isset($newsfeed) && $newsfeed) {
-					NewsfeedItem_Music::track(self::$user, $track);
+					NewsfeedItem_Music::track(Visitor::$user, $track);
 
 					// Create forum topic
 					if ($track->add_forum_topic()) {
-						self::$user->post_count++;
-						self::$user->save();
+						Visitor::$user->post_count++;
+						Visitor::$user->save();
 					}
 				}
 
@@ -475,7 +475,7 @@ class Anqh_Controller_Music extends Controller_Page {
 		);
 
 		// Content creation
-		if ($actions && Permission::has(new Model_Music_Track, Model_Music_Track::PERMISSION_CREATE, self::$user)) {
+		if ($actions && Permission::has(new Model_Music_Track, Model_Music_Track::PERMISSION_CREATE, Visitor::$user)) {
 			$this->view->actions[] = array(
 				'link'  => Route::url('music_add', array('music' => 'mixtape')),
 				'text'  => '<i class="fa fa-plus-circle"></i> ' . __('Add new mixtape'),

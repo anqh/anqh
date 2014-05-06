@@ -120,11 +120,6 @@ abstract class Anqh_Controller extends Kohana_Controller {
 	protected $tabs;
 
 	/**
-	 * @var  Model_User  Current user
-	 */
-	protected static $user = false;
-
-	/**
 	 * @var  View_Page  Page class
 	 */
 	protected $view;
@@ -149,13 +144,13 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		$this->session = Session::instance();
 
 		// Load current user, null if none
-		if (self::$user === false && Visitor::instance()->logged_in()) {
-			self::$user = Visitor::$user;
+		if (Visitor::$user === false) {
+			Visitor::instance()->logged_in();
 		}
 
 		// Update current online user for initial and ajax requests
 		if ($this->_request_type !== self::REQUEST_INTERNAL) {
-			Model_User_Online::update(Controller::$user);
+			Model_User_Online::update(Visitor::$user);
 		}
 
 		// Open outside links to a new tab/window

@@ -123,7 +123,7 @@ class Anqh_Controller_Tags extends Controller_Page {
 
 			// Create new group
 			$group = Model_Tag_Group::factory();
-			$group->author_id = self::$user->id;
+			$group->author_id = Visitor::$user->id;
 			$group->created   = time();
 
 			$this->view = View_Page::factory(__('Tag group'));
@@ -163,7 +163,7 @@ class Anqh_Controller_Tags extends Controller_Page {
 			}
 			$tag = Model_Tag::factory();
 			$tag->tag_group_id = $group_id;
-			$tag->author_id    = self::$user->id;
+			$tag->author_id    = Visitor::$user->id;
 			$tag->created      = time();
 
 			$this->view           = View_Page::factory($group->name);
