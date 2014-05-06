@@ -85,7 +85,7 @@ class View_Venue_Foursquare extends View_Section {
 
 
 		// Admin controls
-		if (Permission::has($this->venue, Model_Venue::PERMISSION_UPDATE, self::$_user)):
+		if (Permission::has($this->venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user)):
 			echo HTML::anchor('#map', __('Link to Foursquare'), array('class' => 'action', 'id' => 'link-foursquare'));
 			echo $this->form();
 		endif;

@@ -39,7 +39,7 @@ class View_Users_List extends View_Section {
 		$total = count($this->users);
 		foreach ($this->users as $user):
 			$user = is_array($user) ? $user : Model_User::find_user_light($user);
-			if ($total < 11 || self::$_user && self::$_user->is_friend($user)):
+			if ($total < 11 || Visitor::$user && Visitor::$user->is_friend($user)):
 				$short[mb_strtoupper($user['username'])] = HTML::user($user);
 			else:
 				$long[mb_strtoupper($user['username'])] = HTML::user($user);

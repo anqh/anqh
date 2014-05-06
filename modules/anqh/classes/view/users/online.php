@@ -41,7 +41,7 @@ class View_Users_Online extends View_Section {
 		$this->title        = __('Online');
 
 		// Build user lists
-		$friends = (bool)self::$_user ? self::$_user->find_friends() : array();
+		$friends = (bool)Visitor::$user ? Visitor::$user->find_friends() : array();
 		foreach ($users as $user_id) {
 			$user = Model_User::find_user_light($user_id);
 			if (in_array($user_id, $friends)) {

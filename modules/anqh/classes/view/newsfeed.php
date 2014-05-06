@@ -101,9 +101,9 @@ class View_Newsfeed extends View_Section {
 
 			// Friend newsfeed
 			case self::TYPE_FRIENDS:
-				$newsfeed = new Newsfeed(self::$_user, Newsfeed::USERS);
-				if (self::$_user_id) {
-					$newsfeed->users = self::$_user->find_friends(0, 0);
+				$newsfeed = new Newsfeed(Visitor::$user, Newsfeed::USERS);
+				if (Visitor::$user) {
+					$newsfeed->users = Visitor::$user->find_friends(0, 0);
 				}
 		    break;
 
@@ -115,7 +115,7 @@ class View_Newsfeed extends View_Section {
 			// All users
 			case self::TYPE_ALL:
 			default:
-				$newsfeed = new NewsFeed(self::$_user, Newsfeed::ALL);
+				$newsfeed = new NewsFeed(Visitor::$user, Newsfeed::ALL);
 		    break;
 
 		}
@@ -132,7 +132,7 @@ class View_Newsfeed extends View_Section {
 	 */
 	public function tabs() {
 		$tabs = array();
-		if (self::$_user_id && $this->type !== self::TYPE_PERSONAL) {
+		if (Visitor::$user && $this->type !== self::TYPE_PERSONAL) {
 			$tabs[] = array(
 				'selected' => $this->type === self::TYPE_ALL,
 				'tab'      => HTML::anchor(Route::url('default') . '?newsfeed=' . self::TYPE_ALL, __('All')),

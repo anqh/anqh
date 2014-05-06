@@ -117,7 +117,7 @@ class View_Forum_PostEdit extends View_Article {
 
 		$button = __('Save');
 
-		$author = self::$_user;
+		$author = Visitor::$user;
 
 		if (!$this->form_action):
 			switch ($this->mode):
@@ -160,7 +160,7 @@ class View_Forum_PostEdit extends View_Article {
 
 			// Editing an old topic
 			case self::EDIT_TOPIC:
-				$is_admin = self::$_user->has_role(array('admin', 'moderator', 'forum moderator'));
+				$is_admin = Visitor::$user->has_role(array('admin', 'moderator', 'forum moderator'));
 
 				if ($is_admin):
 
@@ -266,7 +266,7 @@ class View_Forum_PostEdit extends View_Article {
 ?>
 
 <div class="pull-left">
-	<?= HTML::avatar(self::$_user->avatar, self::$_user->username) ?>
+	<?= HTML::avatar(Visitor::$user->avatar, Visitor::$user->username) ?>
 </div>
 
 <?php
@@ -322,7 +322,7 @@ class View_Forum_PostEdit extends View_Article {
 <script>
 head.ready('anqh', function() {
 	$('textarea[name=recipients]').autocompleteUser({
-		user:     <?= self::$_user_id ?>,
+		user:     <?= Visitor::$user->id ?>,
 		maxUsers: 100
 	});
 });

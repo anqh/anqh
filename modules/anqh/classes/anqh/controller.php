@@ -149,16 +149,8 @@ abstract class Anqh_Controller extends Kohana_Controller {
 		$this->session = Session::instance();
 
 		// Load current user, null if none
-		if (Controller::$user === false) {
-			$visitor = Visitor::instance();
-			Controller::$user = $visitor->get_user();
-
-			// If still no user, try auto login
-			if (!Controller::$user) {
-				Controller::$user = $visitor->auto_login();
-			}
-
-			unset($visitor);
+		if (self::$user === false && Visitor::instance()->logged_in()) {
+			self::$user = Visitor::$user;
 		}
 
 		// Update current online user for initial and ajax requests

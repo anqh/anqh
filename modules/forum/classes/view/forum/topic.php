@@ -59,7 +59,7 @@ class View_Forum_Topic extends View_Section {
 		foreach ($this->forum_topic->posts($offset, $this->pagination->items_per_page) as $post):
 
 			// Ignore
-			if (!Permission::has($post, Model_Forum_Post::PERMISSION_READ, self::$_user)) {
+			if (!Permission::has($post, Model_Forum_Post::PERMISSION_READ, Visitor::$user)) {
 				continue;
 			}
 

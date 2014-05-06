@@ -52,7 +52,7 @@ class View_Users_Birthdays extends View_Section {
 			$today    = strtotime('today');
 			$stamp    = strtotime('today', $this->stamp);
 			$stamp_to = strtotime('+' . $this->days . ' days', $this->stamp);
-			$friends  = self::$_user ? self::$_user->find_friends() : null;
+			$friends  = Visitor::$user ? Visitor::$user->find_friends() : null;
 
 			// Load birthdays
 			$this->_birthdays = array();

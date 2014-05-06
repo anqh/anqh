@@ -29,7 +29,7 @@ class View_Index_Shouts extends View_Section {
 		$this->id    = 'shouts';
 		$this->title = HTML::anchor(Route::url('shouts'), __('Shouts'));
 
-		$this->_can_shout = Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE, self::$_user);
+		$this->_can_shout = Permission::has(new Model_Shout, Model_Shout::PERMISSION_CREATE, Visitor::$user);
 	}
 
 

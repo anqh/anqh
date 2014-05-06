@@ -60,7 +60,7 @@ class View_Forum_Group extends View_Section {
 			<li>
 
 <?php
-				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, self::$_user)):
+				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, Visitor::$user)):
 
 					// Can read area
 					if ($area->topic_count > 0):
@@ -94,11 +94,11 @@ class View_Forum_Group extends View_Section {
 			<li>
 				<?= __('No areas available.') ?><br>
 
-				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, self::$_user)): ?>
+				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, Visitor::$user)): ?>
 					<?= HTML::anchor(Route::model($group, 'edit'), '<i class="icon-edit"></i> ' . __('Edit group'), array('class' => 'btn btn-inverse')) ?>
 				<?php endif; ?>
 
-				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, self::$_user)): ?>
+				<?php if (Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, Visitor::$user)): ?>
 					<?= HTML::anchor(Route::model($group, 'add'), '<i class="icon-plus-sign"></i> ' . __('New area'), array('class' => 'btn btn-primary')) ?>
 				<?php endif; ?>
 

@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * View element base class
+ * View element base class.
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 abstract class Anqh_View_Base {
@@ -34,16 +34,6 @@ abstract class Anqh_View_Base {
 	 */
 	protected static $_request_type = Controller::REQUEST_INITIAL;
 
-	/**
-	 * @var  Model_User  Current authenticated user, if any
-	 */
-	protected static $_user = null;
-
-	/**
-	 * @var  integer  Current authenticated user id, if any
-	 */
-	protected static $_user_id = null;
-
 
 	/**
 	 * Create new View class.
@@ -58,11 +48,6 @@ abstract class Anqh_View_Base {
 				self::$_request_type = Controller::REQUEST_AJAX;
 			} else if (!Request::current()->is_initial()) {
 				self::$_request_type = Controller::REQUEST_INTERNAL;
-			}
-
-			// Viewing user
-			if (self::$_user = Visitor::instance()->get_user()) {
-				self::$_user_id = self::$_user->id;
 			}
 
 			self::$_initialized = true;

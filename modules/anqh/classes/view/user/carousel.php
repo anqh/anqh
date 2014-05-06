@@ -58,7 +58,7 @@ class View_User_Carousel extends View_Section {
 			endif;
 
 			// Check for actions
-			if (Permission::has($this->user, Model_User::PERMISSION_UPDATE, self::$_user)):
+			if (Permission::has($this->user, Model_User::PERMISSION_UPDATE, Visitor::$user)):
 				$action_uri = URL::user($this->user, 'image');
 			endif;
 
@@ -133,7 +133,7 @@ class View_User_Carousel extends View_Section {
 	<a class="carousel-control left" href="#<?= $this->id ?>" data-slide="prev"><i class="fa fa-chevron-left icon-prev"></i></a>
 	<a class="carousel-control right" href="#<?= $this->id ?>" data-slide="next"><i class="fa fa-chevron-right icon-next"></i></a>
 	<?php endif; ?>
-	
+
 </div>
 
 <br>

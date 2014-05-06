@@ -361,7 +361,7 @@ class Anqh_View_Page extends View_Base {
 
 	<ul class="nav navbar-nav navbar-right collapse navbar-collapse" role="menubar">
 		<?= $this->_search() ?>
-		<?= self::$_user_id ? $this->_visitor() : $this->_signin() ?>
+		<?= Visitor::$user ? $this->_visitor() : $this->_signin() ?>
 		<?= $this->_theme() ?>
 	</ul>
 
@@ -757,19 +757,19 @@ class Anqh_View_Page extends View_Base {
 
 ?>
 
-	<li id="notifications"><?= implode(' ', Anqh::notifications(self::$_user)) ?></li>
+	<li id="notifications"><?= implode(' ', Anqh::notifications(Visitor::$user)) ?></li>
 
 	<li class="hidden-xs">
-		<?= HTML::avatar(self::$_user->avatar, self::$_user->username, 'small') ?>
+		<?= HTML::avatar(Visitor::$user->avatar, Visitor::$user->username, 'small') ?>
 	</li>
 
 	<li id="visitor" class="dropdown">
-		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(self::$_user->username) ?> <span class="caret"></span></i></a>
+		<a class="user dropdown-toggle" href="#menu-profile" data-toggle="dropdown"><?= HTML::chars(Visitor::$user->username) ?> <span class="caret"></span></i></a>
 		<ul class="dropdown-menu pull-right" role="menu">
 			<?php foreach (Kohana::$config->load('site.menu_visitor') as $item): ?>
 			<li role="menuitem"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i> ' . $item['text']) ?></li>
 			<?php endforeach; ?>
-			<?php if (self::$_user->has_role('admin')): ?>
+			<?php if (Visitor::$user->has_role('admin')): ?>
 			<li role="presentation" class="dropdown-header"><?= __('Admin functions') ?></li>
 				<?php foreach (Kohana::$config->load('site.menu_admin') as $item): ?>
 			<li role="menuitem"><?= HTML::anchor($item['url'], '<i class="' . $item['icon'] . '"></i> ' . $item['text'], Arr::get($item, 'attributes')) ?></li>

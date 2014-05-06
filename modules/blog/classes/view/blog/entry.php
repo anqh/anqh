@@ -40,7 +40,7 @@ class View_Blog_Entry extends View_Section {
 				':date' => date('l ', $blog_entry->created) . Date::format(Date::DMY_SHORT, $blog_entry->created)
 			));
 
-			if (Permission::has($blog_entry, Model_Blog_Entry::PERMISSION_COMMENTS, self::$_user)) {
+			if (Permission::has($blog_entry, Model_Blog_Entry::PERMISSION_COMMENTS, Visitor::$user)) {
 				$this->subtitle .= ' | ' . HTML::anchor(Route::model($blog_entry), __('Comments') . ' (' . (int)$blog_entry->comment_count . ')');
 			}
 		}

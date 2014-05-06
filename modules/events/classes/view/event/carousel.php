@@ -51,7 +51,7 @@ class View_Event_Carousel extends View_Section {
 		elseif (count($flyers)):
 
 			// Check for actions
-			if (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
+			if (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, Visitor::$user)):
 				$action_uri = Route::model($this->event, 'flyer');
 			endif;
 
@@ -113,7 +113,7 @@ class View_Event_Carousel extends View_Section {
 
 <?php
 
-		elseif (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, self::$_user)):
+		elseif (Permission::has($this->event, Model_Event::PERMISSION_UPDATE, Visitor::$user)):
 
 			// Add new flyer
 			echo HTML::anchor(Route::model($this->event, 'flyer'), '<i class="fa fa-picture-o"></i> ' . __('Upload flyer'), array('class' => 'empty ajaxify'));

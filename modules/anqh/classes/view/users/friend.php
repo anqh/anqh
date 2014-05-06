@@ -54,7 +54,7 @@ class View_Users_Friend extends View_Base {
 	</div>
 	<div class="media-body">
 
-		<?php if (self::$_user && !self::$_user->is_friend($this->user)): ?>
+		<?php if (Visitor::$user && !Visitor::$user->is_friend($this->user)): ?>
 		<?= HTML::anchor(
 			URL::user($this->user, 'friend') . '?token=' . Security::csrf(),
 			'<i class="fa fa-heart"></i> ' . __('Add to friends'),

@@ -86,7 +86,7 @@ class View_Generic_Comments extends View_Section {
 			$author = $comment->author();
 
 			// Ignore
-			if (self::$_user && self::$_user->is_ignored($author)) continue;
+			if (Visitor::$user && Visitor::$user->is_ignored($author)) continue;
 
 			$classes = array('media');
 
@@ -96,7 +96,7 @@ class View_Generic_Comments extends View_Section {
 			}
 
 			// Viewer's post
-			if (self::$_user_id && $author['id'] == self::$_user_id) {
+			if (Visitor::$user && $author['id'] == Visitor::$user->id) {
 				$classes[] = 'my';
 			}
 
@@ -119,7 +119,7 @@ class View_Generic_Comments extends View_Section {
 		<div class="arrow"></div>
 		<div class="media-body">
 			<small class="pull-right">
-				<?php if (self::$_user_id && $comment->user_id == self::$_user_id || in_array('my', $classes)):
+				<?php if (Visitor::$user && $comment->user_id == Visitor::$user->id || in_array('my', $classes)):
 
 					if ($this->private && !$comment->private):
 						echo HTML::anchor(sprintf($this->private, $comment->id), __('Set as private'), array('class' => 'comment-private')) . ' &bull; ';

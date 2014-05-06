@@ -61,7 +61,7 @@ class View_Forum_Post extends View_Article {
 		$this->author = Model_User::find_user($this->forum_post->author_id);
 
 		// Viewer's post
-		$this->my = self::$_user && $this->author && $this->author->id == self::$_user_id;
+		$this->my = Visitor::$user && $this->author && $this->author->id == Visitor::$user->id;
 
 		// Topic author's post
 		$this->owner = $this->author
@@ -122,7 +122,7 @@ class View_Forum_Post extends View_Article {
 
 			&bull;
 
-			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_UPDATE, self::$_user)) echo HTML::anchor(
+			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_UPDATE, Visitor::$user)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
 						'topic_id' => Route::model_id($this->forum_topic),
@@ -130,7 +130,7 @@ class View_Forum_Post extends View_Article {
 						__('Edit'),
 					array('class' => 'post-edit')) ?>
 
-			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, self::$_user)) echo HTML::anchor(
+			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, Visitor::$user)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
 						'topic_id' => Route::model_id($this->forum_topic),
@@ -138,7 +138,7 @@ class View_Forum_Post extends View_Article {
 						__('Delete'),
 					array('class' => 'post-delete')) ?>
 
-			<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, self::$_user)) echo HTML::anchor(
+			<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
 						'topic_id' => Route::model_id($this->forum_topic),
