@@ -33,7 +33,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		foreach ($groups as $group) {
 			$divider = false;
 			foreach ($group->areas() as $area) {
-				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ, Visitor::$user)) {
+				if (Permission::has($area, Model_Forum_Area::PERMISSION_READ)) {
 					$divider = true;
 					$areas[] = array(
 						'link'  => Route::model($area),
@@ -74,7 +74,7 @@ class Anqh_Controller_Forum extends Controller_Page {
 		$this->view->tab = 'areas';
 
 		// Actions
-		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE, Visitor::$user)) {
+		if (Permission::has(new Model_Forum_Group, Model_Forum_Group::PERMISSION_CREATE)) {
 			$this->view->actions[] = array(
 				'link' => Route::url('forum_group_add'),
 				'text' => '<i class="icon-plus-sign"></i> ' . __('New group'),

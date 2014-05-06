@@ -34,7 +34,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE, Visitor::$user)) {
+			    if (Permission::has($comment, Model_Blog_Comment::PERMISSION_DELETE)) {
 				    $comment->delete();
 				    $entry->comment_count--;
 				    $entry->save();
@@ -43,7 +43,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_Blog_Comment::PERMISSION_UPDATE, Visitor::$user)) {
+				  if (Permission::has($comment, Model_Blog_Comment::PERMISSION_UPDATE)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -80,15 +80,15 @@ class Anqh_Controller_Blog extends Controller_Page {
 		if (!$entry->loaded()) {
 			throw new Model_Exception($entry, $entry_id);
 		}
-		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ, Visitor::$user);
+		Permission::required($entry, Model_Blog_Entry::PERMISSION_READ);
 
 
 		// Comments section
-		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS, Visitor::$user)) {
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENTS)) {
 			$errors = array();
 			$values = array();
 
-			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT, Visitor::$user)) {
+			if ($_POST && Permission::has($entry, Model_Blog_Entry::PERMISSION_COMMENT)) {
 
 				// Handle comment
 				try {
@@ -137,7 +137,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		// Build page
 
 		// Set actions
-		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE, Visitor::$user)) {
+		if (Permission::has($entry, Model_Blog_Entry::PERMISSION_UPDATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($entry, 'edit'),
 				'text'  => '<i class="fa fa-edit"></i> ' . __('Edit blog entry'),
@@ -183,7 +183,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 		$this->view = new View_Page(__('Blogs'));
 
 		// Set actions
-		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE, Visitor::$user)) {
+		if (Permission::has(new Model_Blog_Entry, Model_Blog_Entry::PERMISSION_CREATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::url('blogs', array('action' => 'add')),
 				'text'  => '<i class="fa fa-pencil"></i> ' . __('Write new blog entry'),
@@ -304,7 +304,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 			if (!$entry->loaded()) {
 				throw new Model_Exception($entry, $entry_id);
 			}
-			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($entry, Model_Blog_Entry::PERMISSION_UPDATE);
 
 			$cancel = Route::model($entry);
 
@@ -316,7 +316,7 @@ class Anqh_Controller_Blog extends Controller_Page {
 
 			// Creating new
 			$entry = new Model_Blog_Entry();
-			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE, Visitor::$user);
+			Permission::required($entry, Model_Blog_Entry::PERMISSION_CREATE);
 
 			$cancel   = Request::back(Route::get('blogs')->uri(), true);
 			$newsfeed = true;

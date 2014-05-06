@@ -77,7 +77,7 @@ class Anqh_Controller_Events extends Controller_Page {
 			throw new Model_Exception($event, $event_id);
 		}
 
-		Permission::required($event, Model_Event::PERMISSION_DELETE, Visitor::$user);
+		Permission::required($event, Model_Event::PERMISSION_DELETE);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($event));
@@ -117,14 +117,14 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_READ, Visitor::$user);
+		Permission::required($event, Model_Event::PERMISSION_READ);
 
 		// Build page
 		$this->view->title    = $event->name;
 		$this->view->subtitle = self::_event_subtitle($event);
 
 		// Set actions
-		if (Permission::has($event, Model_Event::PERMISSION_UPDATE, Visitor::$user)) {
+		if (Permission::has($event, Model_Event::PERMISSION_UPDATE)) {
 			$this->view->actions[] = array(
 				'link' => Route::model($event, 'edit'),
 				'text' => '<i class="fa fa-edit"></i> ' . __('Edit event'),
@@ -135,7 +135,7 @@ class Anqh_Controller_Events extends Controller_Page {
 				'class' => !count($event->flyers()) ? 'btn btn-primary' : null
 			);
 		}
-		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE, Visitor::$user)) {
+		if (Permission::has($event, Model_Event::PERMISSION_FAVORITE)) {
 			if ($event->is_favorite(Visitor::$user)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'unfavorite') . '?token=' . Security::csrf(),
@@ -216,7 +216,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_FAVORITE, Visitor::$user);
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE);
 
 		if (Security::csrf_valid()) {
 			$event->add_favorite(Visitor::$user);
@@ -248,7 +248,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_UPDATE, Visitor::$user);
+		Permission::required($event, Model_Event::PERMISSION_UPDATE);
 
 		if ($this->_request_type !== Controller::REQUEST_AJAX) {
 			$this->page_title = HTML::chars($event->name);
@@ -469,7 +469,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		$this->view->add(View_Page::COLUMN_RIGHT, $this->section_events_updated());
 
 		// Set actions
-		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE, Visitor::$user)) {
+		if (Permission::has(new Model_Event, Model_Event::PERMISSION_CREATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::get('events')->uri(array('action' => 'add')),
 				'text'  => '<i class="fa fa-plus-circle"></i> ' . __('Create event'),
@@ -494,7 +494,7 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$event->loaded()) {
 			throw new Model_Exception($event, $event_id);
 		}
-		Permission::required($event, Model_Event::PERMISSION_FAVORITE, Visitor::$user);
+		Permission::required($event, Model_Event::PERMISSION_FAVORITE);
 
 		if (Security::csrf_valid()) {
 			$event->delete_favorite(Visitor::$user);
@@ -526,13 +526,13 @@ class Anqh_Controller_Events extends Controller_Page {
 			if (!$event->loaded()) {
 				throw new Model_Exception($event, $event_id);
 			}
-			Permission::required($event, Model_Event::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($event, Model_Event::PERMISSION_UPDATE);
 			$cancel = Request::back(Route::model($event), true);
 
 			$this->view = View_Page::factory(HTML::chars($event->name));
 
 			// Set actions
-			if (Permission::has($event, Model_Event::PERMISSION_DELETE, Visitor::$user)) {
+			if (Permission::has($event, Model_Event::PERMISSION_DELETE)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($event, 'delete') . '?token=' . Security::csrf(),
 					'text'  => '<i class="fa fa-trash-o"></i> ' . __('Delete event'),
@@ -547,7 +547,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 			// Creating new
 			$event = new Model_Event();
-			Permission::required($event, Model_Event::PERMISSION_CREATE, Visitor::$user);
+			Permission::required($event, Model_Event::PERMISSION_CREATE);
 			$cancel = Request::back(Route::get('events')->uri(), true);
 
 			$this->view = View_Page::factory(__('New event'));

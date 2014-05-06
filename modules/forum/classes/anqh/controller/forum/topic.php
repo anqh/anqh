@@ -90,7 +90,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ, Visitor::$user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_READ);
 
 		// Did we request single post with ajax?
 		if (($this->ajax || $this->internal) && isset($post_id)) {
@@ -183,13 +183,13 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		}
 
 		// Set actions
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE, Visitor::$user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_UPDATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($topic, 'edit'),
 				'text'  => __('Edit topic'),
 			);
 		}
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST)) {
 			$this->view->actions[] = array(
 				'link'  => Request::current_uri() . '#reply',
 				'text'  => __('Reply to topic'),
@@ -221,7 +221,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		$this->view->add(View_Page::COLUMN_CENTER, $this->section_topic($topic, $pagination));
 
 		// Reply
-		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user)) {
+		if (Permission::has($topic, Model_Forum_Topic::PERMISSION_POST)) {
 
 			// Old post warning
 			if ($topic->last_posted && time() - $topic->last_posted > Date::YEAR) {
@@ -287,7 +287,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$post->loaded() || $post->forum_topic_id != $topic->id || !Security::csrf_valid()) {
 			throw new Model_Exception($post, $post_id);
 		}
-		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE, Visitor::$user);
+		Permission::required($post, Model_Forum_Post::PERMISSION_DELETE);
 
 		$post->delete();
 		$topic->refresh();
@@ -319,7 +319,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			throw new Model_Exception($topic, $topic_id);
 		}
 
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE, Visitor::$user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_DELETE);
 
 		$area  = $topic->area();
 
@@ -353,7 +353,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 		if (!$topic->loaded()) {
 			throw new Model_Exception($topic, $topic_id);
 		}
-		Permission::required($topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user);
+		Permission::required($topic, Model_Forum_Topic::PERMISSION_POST);
 
 		if ($post_id) {
 
@@ -362,7 +362,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$post->loaded() || $post->forum_topic_id != $topic->id) {
 				throw new Model_Exception($post, $post_id);
 			}
-			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($post, Model_Forum_Post::PERMISSION_UPDATE);
 
 		} else {
 
@@ -377,7 +377,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$quote->loaded() || $quote->forum_topic_id != $topic->id) {
 				throw new Model_Exception($quote, $quote_id);
 			}
-			Permission::required($quote, Model_Forum_Post::PERMISSION_READ, Visitor::$user);
+			Permission::required($quote, Model_Forum_Post::PERMISSION_READ);
 
 			if (!$post->loaded()) {
 				$post->post = '[quote author="' . $quote->author_name . '" post="' . $quote->id . '"]' . $quote->post . "[/quote]\n\n";
@@ -555,7 +555,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
-			Permission::required($area, Model_Forum_Area::PERMISSION_POST, Visitor::$user);
+			Permission::required($area, Model_Forum_Area::PERMISSION_POST);
 
 			$this->view->title = HTML::chars($area->name);
 			if ($this->private) {
@@ -584,7 +584,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			if (!$topic->loaded()) {
 				throw new Model_Exception($topic, $topic_id);
 			}
-			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($topic, Model_Forum_Topic::PERMISSION_UPDATE);
 
 			// Add post if admin
 			if (Visitor::$user->has_role(array('admin', 'moderator', 'forum moderator')) && Arr::get($_POST, 'post')) {
@@ -601,7 +601,7 @@ class Anqh_Controller_Forum_Topic extends Controller_Forum {
 			$cancel = Route::model($topic);
 
 			// Set actions
-			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE, Visitor::$user)) {
+			if (Permission::has($topic, Model_Forum_Topic::PERMISSION_DELETE)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($topic, 'delete') . '?' . Security::csrf_query(),
 					'text'  => '<i class="fa fa-trash"></i> ' . __('Delete topic'),

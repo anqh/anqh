@@ -41,7 +41,7 @@ class View_Image_Full extends View_Section {
 
 		$this->image    = $image;
 		$this->gallery  = $gallery;
-		$this->can_note = Permission::has($image, Model_Image::PERMISSION_NOTE, Visitor::$user);
+		$this->can_note = Permission::has($image, Model_Image::PERMISSION_NOTE);
 	}
 
 
@@ -218,7 +218,7 @@ class View_Image_Full extends View_Section {
 					endif;
 
 					// Deletable?
-					if (Permission::has($note, Model_Image_Note::PERMISSION_DELETE, Visitor::$user)):
+					if (Permission::has($note, Model_Image_Note::PERMISSION_DELETE)):
 						echo ' ', HTML::anchor(
 							Route::url('image_note', array('id' => $note->id, 'action' => 'unnote')),
 							'&#215;',

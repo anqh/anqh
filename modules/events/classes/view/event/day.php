@@ -84,7 +84,7 @@ class View_Event_Day extends View_Article {
 	public function actions() {
 
 		// Clickable favorites
-		if (Permission::has($this->event, Model_Event::PERMISSION_FAVORITE, Visitor::$user)):
+		if (Permission::has($this->event, Model_Event::PERMISSION_FAVORITE)):
 			if ($this->event->is_favorite(Visitor::$user)):
 
 				// Favorite event, click to unfavorite

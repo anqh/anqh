@@ -122,7 +122,7 @@ class View_Forum_Post extends View_Article {
 
 			&bull;
 
-			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_UPDATE, Visitor::$user)) echo HTML::anchor(
+			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_UPDATE)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
 						'topic_id' => Route::model_id($this->forum_topic),
@@ -130,7 +130,7 @@ class View_Forum_Post extends View_Article {
 						__('Edit'),
 					array('class' => 'post-edit')) ?>
 
-			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE, Visitor::$user)) echo HTML::anchor(
+			<?php if (Permission::has($this->forum_post, Model_Forum_Post::PERMISSION_DELETE)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
 						'topic_id' => Route::model_id($this->forum_topic),
@@ -138,7 +138,7 @@ class View_Forum_Post extends View_Article {
 						__('Delete'),
 					array('class' => 'post-delete')) ?>
 
-			<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST, Visitor::$user)) echo HTML::anchor(
+			<?php if (Permission::has($this->forum_topic, Model_Forum_Topic::PERMISSION_POST)) echo HTML::anchor(
 					Route::url($this->private ? 'forum_private_post' : 'forum_post', array(
 						'id'       => Route::model_id($this->forum_post),
 						'topic_id' => Route::model_id($this->forum_topic),

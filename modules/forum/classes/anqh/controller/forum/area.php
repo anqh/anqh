@@ -28,7 +28,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, $area_id);
 		}
-		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE, Visitor::$user);
+		Permission::required($area, Model_Forum_Area::PERMISSION_DELETE);
 
 		$group = $area->group();
 		$area->delete();
@@ -50,7 +50,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			if (!$area->loaded()) {
 				throw new Model_Exception($area, $area_id);
 			}
-			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($area, Model_Forum_Area::PERMISSION_UPDATE);
 		} else {
 			$area = new Model_Forum_Area();
 			$area->author_id = Visitor::$user->id;
@@ -66,7 +66,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 			if (!$group->loaded()) {
 				throw new Model_Exception($group, $group_id);
 			}
-			Permission::required($group, Model_Forum_Group::PERMISSION_CREATE_AREA, Visitor::$user);
+			Permission::required($group, Model_Forum_Group::PERMISSION_CREATE_AREA);
 		}
 
 		// Handle post
@@ -87,7 +87,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->view->tab = 'areas';
 
 		// Set actions
-		if ($area->loaded() && Permission::has($area, Model_Forum_Area::PERMISSION_DELETE, Visitor::$user)) {
+		if ($area->loaded() && Permission::has($area, Model_Forum_Area::PERMISSION_DELETE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'delete'),
 				'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete area'),
@@ -122,7 +122,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 		/** @var  Model_Forum_Area  $area */
 		$area = Model_Forum_Area::factory((int)$area_id);
-		if (!$area->loaded() || !Permission::has($area, Model_Forum_Area::PERMISSION_READ, Visitor::$user)) {
+		if (!$area->loaded() || !Permission::has($area, Model_Forum_Area::PERMISSION_READ)) {
 			$this->response->body(__('Area not accessible'));
 		} else {
 			$this->response->body(new View_Forum_HoverCard($area));
@@ -148,7 +148,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		if (!$area->loaded()) {
 			throw new Model_Exception($area, (int)$area_id);
 		}
-		Permission::required($area, Model_Forum_Area::PERMISSION_READ, Visitor::$user);
+		Permission::required($area, Model_Forum_Area::PERMISSION_READ);
 
 
 		// Build page
@@ -158,25 +158,25 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 
 		// Set actions
 		$group = $area->group();
-		if ($group && Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE, Visitor::$user)) {
+		if ($group && Permission::has($group, Model_Forum_Group::PERMISSION_UPDATE)) {
 			$this->view->actions[] = array(
 				'link' => Route::model($group, 'edit'),
 				'text' => '<i class="icon-edit icon-white"></i> ' . __('Edit group'),
 			);
 		}
-		if ($group && Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA, Visitor::$user)) {
+		if ($group && Permission::has($group, Model_Forum_Group::PERMISSION_CREATE_AREA)) {
 			$this->view->actions[] = array(
 				'link' => Route::model($group, 'add'),
 				'text' => '<i class="icon-plus-sign icon-white"></i> ' . __('New area'),
 			);
 		}
-		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE, Visitor::$user)) {
+		if (Permission::has($area, Model_Forum_Area::PERMISSION_UPDATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'edit', false),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit area'),
 			);
 		}
-		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST, Visitor::$user)) {
+		if (Permission::has($area, Model_Forum_Area::PERMISSION_POST)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($area, 'post'),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New topic'),
@@ -202,7 +202,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 	 * Action: private
 	 */
 	public function action_messages() {
-		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, Visitor::$user);
+		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ);
 
 		// Build page
 		$this->view           = new View_Page(__('Private messages'));
@@ -210,7 +210,7 @@ class Anqh_Controller_Forum_Area extends Controller_Forum {
 		$this->view->subtitle = __('Personal and group messages');
 
 		// Set actions
-		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST, Visitor::$user)) {
+		if (Permission::has(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_POST)) {
 			$this->view->actions[] = array(
 				'link'  => Route::url('forum_private_topic_add', array('action' => 'post')),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('New message'),

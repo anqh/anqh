@@ -48,7 +48,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 				// Delete comment
 				case 'delete':
-			    if (Permission::has($comment, Model_User_Comment::PERMISSION_DELETE, Visitor::$user)) {
+			    if (Permission::has($comment, Model_User_Comment::PERMISSION_DELETE)) {
 				    $comment->delete();
 				    $user->comment_count--;
 				    $user->save();
@@ -57,7 +57,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 				// Set comment as private
 			  case 'private':
-				  if (Permission::has($comment, Model_User_Comment::PERMISSION_UPDATE, Visitor::$user)) {
+				  if (Permission::has($comment, Model_User_Comment::PERMISSION_UPDATE)) {
 					  $comment->private = true;
 					  $comment->save();
 				  }
@@ -138,7 +138,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_FRIEND, Visitor::$user);
+		Permission::required($user, Model_User::PERMISSION_FRIEND);
 
 		if (Security::csrf_valid()) {
 			Visitor::$user->add_friend($user);
@@ -212,7 +212,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_IGNORE, Visitor::$user);
+		Permission::required($user, Model_User::PERMISSION_IGNORE);
 
 		if (Security::csrf_valid()) {
 			Visitor::$user->add_ignore($user);
@@ -244,7 +244,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->history = false;
 
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_UPDATE, Visitor::$user);
+		Permission::required($user, Model_User::PERMISSION_UPDATE);
 
 		// Change default image
 		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
@@ -347,12 +347,12 @@ class Anqh_Controller_User extends Controller_Page {
 		$owner = (Visitor::$user && Visitor::$user->id == $user->id);
 
 		// Comments section
-		if (Permission::has($user, Model_User::PERMISSION_COMMENTS, Visitor::$user)) {
+		if (Permission::has($user, Model_User::PERMISSION_COMMENTS)) {
 			$errors = array();
 			$values = array();
 
 			// Handle comment
-			if (Permission::has($user, Model_User::PERMISSION_COMMENT, Visitor::$user) && $_POST) {
+			if (Permission::has($user, Model_User::PERMISSION_COMMENT) && $_POST) {
 				try {
 					$comment = Model_User_Comment::factory()
 						->add(Visitor::$user->id, $user->id, Arr::get($_POST, 'comment'), Arr::get($_POST, 'private'));
@@ -469,7 +469,7 @@ class Anqh_Controller_User extends Controller_Page {
 		$this->history = false;
 
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_UPDATE, Visitor::$user);
+		Permission::required($user, Model_User::PERMISSION_UPDATE);
 
 		// Handle post
 		$errors = array();
@@ -541,7 +541,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_FRIEND, Visitor::$user);
+		Permission::required($user, Model_User::PERMISSION_FRIEND);
 
 		if (Security::csrf_valid()) {
 			Visitor::$user->delete_friend($user);
@@ -559,7 +559,7 @@ class Anqh_Controller_User extends Controller_Page {
 
 		// Load user
 		$user = $this->_get_user();
-		Permission::required($user, Model_User::PERMISSION_IGNORE, Visitor::$user);
+		Permission::required($user, Model_User::PERMISSION_IGNORE);
 
 		if (Security::csrf_valid()) {
 			Visitor::$user->delete_ignore($user);
@@ -614,7 +614,7 @@ class Anqh_Controller_User extends Controller_Page {
 		if (Visitor::$user) {
 
 			// Friend actions
-			if (Permission::has($user, Model_User::PERMISSION_FRIEND, Visitor::$user)) {
+			if (Permission::has($user, Model_User::PERMISSION_FRIEND)) {
 				if (Visitor::$user->is_friend($user)) {
 					$view->actions[] = array(
 						'link'  => URL::user($user, 'unfriend') . '?token=' . Security::csrf(),
@@ -631,7 +631,7 @@ class Anqh_Controller_User extends Controller_Page {
 			}
 
 			// Ignore actions
-			if (Permission::has($user, Model_User::PERMISSION_IGNORE, Visitor::$user)) {
+			if (Permission::has($user, Model_User::PERMISSION_IGNORE)) {
 				if (Visitor::$user->is_ignored($user)) {
 					$view->actions[] = array(
 						'link'  => URL::user($user, 'unignore') . '?token=' . Security::csrf(),
@@ -680,7 +680,7 @@ class Anqh_Controller_User extends Controller_Page {
 			);
 
 			// Owner / admin actions
-			if (Permission::has($user, Model_User::PERMISSION_UPDATE, Visitor::$user)) {
+			if (Permission::has($user, Model_User::PERMISSION_UPDATE)) {
 				$view->tabs['ignores'] = array(
 					'link'  =>  URL::user($user, 'ignores'),
 					'text'  => __('Ignores'),

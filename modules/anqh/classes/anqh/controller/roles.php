@@ -15,7 +15,7 @@ class Anqh_Controller_Roles extends Controller_Page {
 	public function before() {
 		parent::before();
 
-		Permission::required(new Model_Role, Model_Role::PERMISSION_UPDATE, Visitor::$user);
+		Permission::required(new Model_Role, Model_Role::PERMISSION_UPDATE);
 	}
 
 
@@ -46,7 +46,7 @@ class Anqh_Controller_Roles extends Controller_Page {
 		if (!$role->loaded() || !Security::csrf_valid()) {
 			throw new Model_Exception($role, $role_id);
 		}
-		Permission::required($role, Model_Role::PERMISSION_DELETE, Visitor::$user);
+		Permission::required($role, Model_Role::PERMISSION_DELETE);
 
 		$role->delete();
 
@@ -67,10 +67,10 @@ class Anqh_Controller_Roles extends Controller_Page {
 			if (!$role->loaded()) {
 				throw new Model_Exception($role, $role_id);
 			}
-			Permission::required($role, Model_Role::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($role, Model_Role::PERMISSION_UPDATE);
 		} else {
 			$role = Model_Role::factory();
-			Permission::required($role, Model_Role::PERMISSION_CREATE, Visitor::$user);
+			Permission::required($role, Model_Role::PERMISSION_CREATE);
 		}
 
 		// Handle post
@@ -90,7 +90,7 @@ class Anqh_Controller_Roles extends Controller_Page {
 		$this->view = View_Page::factory(__('Role') . ($role->name ? ': ' . $role->name : ''));
 
 		// Set actions
-		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE, Visitor::$user)) {
+		if ($role->loaded() && Permission::has($role, Model_Role::PERMISSION_DELETE)) {
 			$this->page_actions[] = array(
 				'link'  =>  Route::model($role, 'delete') . '?token=' . Security::csrf(),
 				'text'  =>  '<i class="icon-trash icon-white"></i> ' . __('Delete role'),

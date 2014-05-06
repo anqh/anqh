@@ -52,7 +52,7 @@ class View_Gallery_Links extends View_Section {
 	<?php	foreach ($links as $link): list($user_id, $url) = explode(',', $link, 2); ?>
 	<li>
 		<?= HTML::anchor($url, Text::limit_url($url, 75)) ?> &copy; <?= HTML::user($user_id) ?>
-		<?php if (Visitor::$user && $user_id == Visitor::$user->id || Permission::has($this->gallery, Model_Gallery::PERMISSION_UPDATE, Visitor::$user)): ?>
+		<?php if (Visitor::$user && $user_id == Visitor::$user->id || Permission::has($this->gallery, Model_Gallery::PERMISSION_UPDATE)): ?>
 		<?= HTML::anchor(Route::model($this->gallery) . '?delete_link=' . $count . '&' . Security::csrf_query(), __('Remove'), array('class' => 'btn btn-danger btn-xs link-delete')) ?>
 		<?php endif; ?>
 	</li>
@@ -65,7 +65,7 @@ class View_Gallery_Links extends View_Section {
 		endif;
 
 		// Add new link
-		if (Permission::has($this->gallery, Model_Gallery::PERMISSION_CREATE, Visitor::$user)):
+		if (Permission::has($this->gallery, Model_Gallery::PERMISSION_CREATE)):
 			echo HTML::anchor('#add-link', '<i class="fa fa-plus-circle"></i> ' . __('Add link'), array('data-toggle' => 'collapse', 'data-target' => '#form-link'));
 			echo $this->form();
 		endif;

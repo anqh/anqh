@@ -40,7 +40,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_COMBINE, Visitor::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_COMBINE);
 
 		// Build page
 		$this->view         = new View_Page($venue->name);
@@ -118,7 +118,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_DELETE, Visitor::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_DELETE);
 
 		if (!Security::csrf_valid()) {
 			$this->request->redirect(Route::model($venue));
@@ -151,7 +151,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			throw new Model_Exception($venue, $venue_id);
 		}
 
-		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_UPDATE);
 
 		if (Security::csrf_valid() && isset($_POST['foursquare_id'])) {
 			try {
@@ -182,7 +182,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		if (!$venue->loaded()) {
 			throw new Model_Exception($venue, $venue_id);
 		}
-		Permission::required($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user);
+		Permission::required($venue, Model_Venue::PERMISSION_UPDATE);
 
 		// Change existing
 		if ($image_id = (int)Arr::get($_REQUEST, 'default')) {
@@ -276,7 +276,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		$this->view = new View_Page(__('Venues'));
 
 		// Set actions
-		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE, Visitor::$user)) {
+		if (Permission::has(new Model_Venue, Model_Venue::PERMISSION_CREATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::get('venue_add')->uri(),
 				'text'  => '<i class="icon-plus-sign icon-white"></i> ' . __('Add venue'),
@@ -317,13 +317,13 @@ class Anqh_Controller_Venues extends Controller_Page {
 		);
 
 		// Set actions
-		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($venue, 'edit'),
 				'text'  => '<i class="icon-edit icon-white"></i> ' . __('Edit venue'),
 			);
 		}
-		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE, Visitor::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE)) {
 			$this->view->actions[] = array(
 				'link'  => Route::model($venue, 'combine'),
 				'text'  => '<i class="icon-filter icon-white"></i> ' . __('Combine duplicate'),
@@ -354,7 +354,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 		}
 
 		// Similar venues
-		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE, Visitor::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_COMBINE)) {
 			$similar = $venue->find_similar(65);
 
 			if ($similar) {
@@ -391,7 +391,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			if (!$venue->loaded()) {
 				throw new Model_Exception($venue, $venue_id);
 			}
-			Permission::required($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user);
+			Permission::required($venue, Model_Venue::PERMISSION_UPDATE);
 			$cancel = Route::model($venue);
 
 			$this->view = View_Page::factory($venue->name);
@@ -400,7 +400,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 			$venue->modified = time();
 
 			// Set actions
-			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE, Visitor::$user)) {
+			if (Permission::has($venue, Model_Venue::PERMISSION_DELETE)) {
 				$this->view->actions[] = array(
 					'link'  => Route::model($venue, 'delete') . '?' . Security::csrf_query(),
 					'text'  => '<i class="icon-trash icon-white"></i> ' . __('Delete venue'),
@@ -480,7 +480,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 	public function section_venue_image($venue) {
 		$section = new View_Generic_SideImage($venue->default_image_id ? Model_Image::factory($venue->default_image_id) : null);
 
-		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE, Visitor::$user)) {
+		if (Permission::has($venue, Model_Venue::PERMISSION_UPDATE)) {
 			$uri = Route::model($venue, 'image');
 			$actions = array(
 				HTML::anchor($uri, '<i class="icon-plus-sign icon-white"></i> ' .__('Add image'), array('class' => 'btn btn-mini btn-primary image-add ajaxify')),

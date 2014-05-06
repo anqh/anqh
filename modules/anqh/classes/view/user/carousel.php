@@ -58,7 +58,7 @@ class View_User_Carousel extends View_Section {
 			endif;
 
 			// Check for actions
-			if (Permission::has($this->user, Model_User::PERMISSION_UPDATE, Visitor::$user)):
+			if (Permission::has($this->user, Model_User::PERMISSION_UPDATE)):
 				$action_uri = URL::user($this->user, 'image');
 			endif;
 

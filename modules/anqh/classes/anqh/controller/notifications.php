@@ -30,7 +30,7 @@ class Anqh_Controller_Notifications extends Controller_Page {
 			$notification = Model_Notification::factory($dismiss);
 
 			if ($notification->loaded()) {
-				Permission::required($notification, Model_Notification::PERMISSION_DELETE, Visitor::$user);
+				Permission::required($notification, Model_Notification::PERMISSION_DELETE);
 
 				$notification->delete();
 

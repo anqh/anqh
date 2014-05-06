@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Anqh Private Forum Topic controller
+ * Anqh Private Forum Topic controller.
  *
  * @package    Forum
  * @author     Antti Qvickström
- * @copyright  (c) 2011 Antti Qvickström
+ * @copyright  (c) 2011-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Controller_Forum_Private extends Controller_Forum_Topic {
@@ -13,7 +13,7 @@ class Anqh_Controller_Forum_Private extends Controller_Forum_Topic {
 	 * Construct controller
 	 */
 	public function before() {
-		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ, Visitor::$user);
+		Permission::required(new Model_Forum_Private_Area, Model_Forum_Private_Area::PERMISSION_READ);
 
 		$this->private = true;
 		$this->tab_id = 'private';
