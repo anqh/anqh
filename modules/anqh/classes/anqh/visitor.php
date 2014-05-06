@@ -5,7 +5,7 @@
  *
  * @package    Anqh
  * @author     Antti Qvickström
- * @copyright  (c) 2010-2011 Antti Qvickström
+ * @copyright  (c) 2010-2014 Antti Qvickström
  * @license    http://www.opensource.org/licenses/mit-license.php MIT license
  */
 class Anqh_Visitor {
@@ -25,6 +25,11 @@ class Anqh_Visitor {
 	 */
 	protected $_session;
 
+	/**
+	 * @var  Model_User|boolean  Current logged in user
+	 */
+	public static $user = false;
+
 
 	/**
 	 * Loads Session and configuration options.
@@ -33,7 +38,9 @@ class Anqh_Visitor {
 	 */
 	public function __construct($config = array()) {
 		$config['salt_pattern'] = Arr::get($config, 'salt_pattern', Kohana::$config->load('visitor')->get('salt_pattern'));
-		!is_array($config['salt_pattern']) and $config['salt_pattern'] = preg_split('/,\s*/', $config['salt_pattern']);
+		if (!is_array($config['salt_pattern'])) {
+			$config['salt_pattern'] = preg_split('/,\s*/', $config['salt_pattern']);
+		}
 
 		$this->_config  = $config;
 		$this->_session = Session::instance();
@@ -95,14 +102,15 @@ class Anqh_Visitor {
 
 
 	/**
-	 * Complete the login for a user by incrementing the logins and setting
-	 * session data: user_id, username, roles
+	 * Complete the login for a user.
 	 *
 	 * @param   Model_User  $user
 	 * @param   boolean     $autologin
 	 * @return  boolean
 	 */
 	protected function complete_login(Model_User $user, $autologin = false) {
+		self::$user = $user;
+
 		$user->complete_login($autologin);
 
 		// Regenerate session_id and store user id
@@ -160,11 +168,10 @@ class Anqh_Visitor {
 	/**
 	 * Force a login for a specific username.
 	 *
-	 * @param   Model_User|string  $user
+	 * @param   Model_User  $user
 	 * @return  boolean
 	 */
-	public function force_login($user) {
-		$user = $this->_get_user($user);
+	public function force_login(Model_User $user) {
 
 		// Mark the session as forced, to prevent users from changing account information
 		$_SESSION['visitor_forced'] = true;
@@ -213,32 +220,15 @@ class Anqh_Visitor {
 	 * @return  Model_User
 	 */
 	public function get_user() {
-		if ($user_id = $this->_session->get($this->_config['session_key'], null)) {
-			return Model_User::find_user($user_id);
+		if (self::$user === false) {
+			if ($user_id = $this->_session->get($this->_config['session_key'], null)) {
+				self::$user = Model_User::find_user($user_id);
+			} else {
+				self::$user = null;
+			}
 		}
 
-		return null;
-	}
-
-
-	/**
-	 * Make sure given user is a proper user object
-	 *
-	 * @param   mixed  $user
-	 * @return  Model_User
-	 */
-	protected function _get_user($user) {
-		static $current;
-
-		if (!is_object($current) && (is_string($user) || is_int($user))) {
-			$current = Model_User::find_user($user);
-		}
-
-		if ($user instanceof Model_User && $user->loaded()) {
-			$current = $user;
-		}
-
-		return $current;
+		return self::$user;
 	}
 
 
@@ -323,7 +313,7 @@ class Anqh_Visitor {
 
 		// Check if potential user has optional roles
 		if ($user instanceof Model_User && $user->loaded()) {
-			$status = (empty($roles)) ? true : $user->has_role($roles);
+			$status = empty($roles) || $user->has_role($roles);
 		}
 
 		return $status;
@@ -333,17 +323,15 @@ class Anqh_Visitor {
 	/**
 	 * Attempt to log in a user by using an ORM object and plain-text password.
 	 *
-	 * @param   string|Model_User  $user
-	 * @param   string             $password  plain text
-	 * @param   boolean            $remember  auto-login
+	 * @param   Model_User  $user
+	 * @param   string      $password  plain text
+	 * @param   boolean     $remember  auto-login
 	 * @return  boolean
 	 */
-	public function login($user, $password, $remember = false) {
-		if (empty($password) || empty($user)) {
+	public function login(Model_User $user, $password, $remember = false) {
+		if (!$password || !$user) {
 			return false;
 		}
-
-		$user = $this->_get_user($user);
 
 		// Get the salt from the stored password
 		$salt = $this->find_salt($user->password);
