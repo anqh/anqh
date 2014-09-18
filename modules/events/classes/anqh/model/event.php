@@ -51,7 +51,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_rules = array(
-		'name'                 => array('not_empty', 'length' => array(':value', 3, 64)),
+		'name'                 => array('not_empty', 'length' => array(':value', 3, 128)),
 		'homepage'             => array('url'),
 		'stamp_begin'          => array('not_empty', 'digit'),
 		'stamp_end'            => array('not_empty', 'digit', 'after' => array(':validation', 'stamp_end', 'stamp_begin')),
