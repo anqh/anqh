@@ -52,11 +52,12 @@ abstract class Anqh_Notification {
 	public static function get_notifications(Model_User $target) {
 		$notifications = array();
 
+		/** @var  Model_Notification  $notification */
 		foreach (Model_Notification::factory()->find_by_target($target) as $notification) {
 
 			// Ignored?
 			if ($target->is_ignored($notification->user_id)) {
-				$target->delete();
+				$notification->delete();
 
 				continue;
 			}
