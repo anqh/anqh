@@ -397,6 +397,16 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 
 
 	/**
+	 * Don't allow deleting user models..
+	 *
+	 * @throws  AutoModeler_Exception
+	 */
+	public function delete() {
+		throw new AutoModeler_Exception('Cannot delete a user model!!', array(), array());
+	}
+
+
+	/**
 	 * Delete friendship.
 	 *
 	 * @param   Model_User  $friend
