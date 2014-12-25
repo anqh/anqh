@@ -1044,7 +1044,7 @@ head.ready("anqh", function() {
 				return new View_Generic_Pagination(array(
 				  'current_page'  => __('Show week'),
 					'current_url'   => Route::url('events_yw', array(
-							'year' => date('Y', $this->stamp_begin),
+							'year' => date('Y', strtotime('this Thursday', $this->stamp_begin)),
 							'week' => date('W', $this->stamp_begin))),
 					'previous_text' => '&lsaquo; ' . __('Previous day'),
 					'next_text'     => __('Next day') . ' &rsaquo;',
@@ -1064,10 +1064,10 @@ head.ready("anqh", function() {
 					'previous_text' => '&lsaquo; ' . __('Previous week'),
 					'next_text'     => __('Next week') . ' &rsaquo;',
 					'previous_url'  => Route::url('events_yw', array(
-							'year' => date('Y', $this->stamp_previous),
+							'year' => date('Y', strtotime('this Thursday', $this->stamp_previous)),
 							'week' => date('W', $this->stamp_previous))),
 					'next_url'      => Route::url('events_yw', array(
-							'year' => date('Y', $this->stamp_next),
+							'year' => date('Y', strtotime('this Thursday', $this->stamp_next)),
 							'week' => date('W', $this->stamp_next))),
 				));
 
