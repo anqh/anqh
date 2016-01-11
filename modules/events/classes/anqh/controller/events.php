@@ -792,7 +792,7 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Tickets
 		$tickets = '';
-		if ($event->price === 0 || $event->price > 0 || $event->tickets_url) {
+		if ($event->price === 0 || $event->price > 0 || $event->ticket_url) {
 			$tickets = '<i class="fa fa-ticket"></i> ';
 		}
 		if ($event->price === 0) {
@@ -800,8 +800,8 @@ class Anqh_Controller_Events extends Controller_Page {
 		} else if ($event->price > 0) {
 			$tickets .= __('Tickets :price', array(':price' => '<strong>' . Num::currency($event->price, $event->stamp_begin) . '</strong>')) . ' ';
 		}
-		if ($event->tickets_url) {
-			$tickets .= HTML::anchor($event->tickets_url, __('Buy tickets'), array('target' => '_blank'));
+		if ($event->ticket_url) {
+			$tickets .= HTML::anchor($event->ticket_url, __('Buy tickets'), array('target' => '_blank'));
 		}
 		if ($tickets) {
 			$subtitle[] = $tickets;
