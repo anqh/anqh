@@ -74,8 +74,8 @@ class View_Event_Info extends View_Section {
 
 		/*
 		// Homepage
-		if (!empty($this->event->homepage)):
-			echo '<i class="icon-home icon-white"></i> ' . HTML::anchor($this->event->homepage, Text::limit_url($this->event->homepage, 25)) . '<br />';
+		if (!empty($this->event->url)):
+			echo '<i class="icon-home icon-white"></i> ' . HTML::anchor($this->event->url, Text::limit_url($this->event->url, 25)) . '<br />';
 		endif;
 
 

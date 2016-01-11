@@ -214,11 +214,11 @@ class View_Event_Edit extends View_Article {
 		) ?>
 
 		<?= Form::input_wrap(
-			'homepage',
-			$this->event->homepage,
+			'url',
+			$this->event->url,
 			array('type' => 'url', 'placeholder' => 'http://'),
 			__('Homepage'),
-			Arr::get($this->event_errors, 'homepage')
+			Arr::get($this->event_errors, 'url')
 		) ?>
 	</fieldset>
 
@@ -248,11 +248,11 @@ class View_Event_Edit extends View_Article {
 
 		<div class="col-md-12">
 			<?= Form::input_wrap(
-				'tickets_url',
-				$this->event->tickets_url,
+				'ticket_url',
+				$this->event->ticket_url,
 				array('placeholder' => 'http://'),
 				__('Buy tickets from'),
-				Arr::get($this->event_errors, 'tickets_url')
+				Arr::get($this->event_errors, 'ticket_url')
 			) ?>
 		</div>
 

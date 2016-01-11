@@ -51,7 +51,6 @@ class View_User_Info extends View_Section {
 
 		<dt><?= __('Registered') ?></dt><dd><?= Date::format(Date::DATETIME, $this->user->created) ?>
 			(<?= __('member #:member', array(':member' => '<var>' . number_format($this->user->id) . '</var>')) ?>)</dd>
-		<dt><?= __('Last login') ?></dt><dd><?= HTML::time(Date::fuzzy_span($this->user->last_login), $this->user->last_login) ?></dd>
 
 </dl>
 

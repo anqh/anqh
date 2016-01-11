@@ -46,11 +46,6 @@ class View_User_HoverCard extends View_Section {
 			echo '<figure>' . HTML::image($this->user['thumb'], array('width' => 160)) . '</figure>';
 		endif;
 
-		// Last login
-		echo __('Last login: :login', array(
-				':login' => HTML::time(Date::fuzzy_span($this->user['last_login']), $this->user['last_login']))
-		);
-
 		return ob_get_clean();
 	}
 

@@ -13,7 +13,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 	 * @var  array  Fetchable fields
 	 */
 	public static $_fields = array(
-		'id', 'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue', 'venue_id', 'city',
+		'id', 'name', 'url', 'stamp_begin', 'stamp_end', 'venue', 'venue_id', 'city',
 		'dj', 'info', 'age', 'price', 'price2', 'created', 'modified',
 		'flyer', 'flyer_thumb', 'flyer_icon', 'flyer_id',
 		'favorite_count', 'music', 'url'
@@ -226,7 +226,6 @@ class Anqh_Controller_Events_API extends Controller_API {
 				case 'favorite_count':
 				case 'flyer_id':
 				case 'dj':
-				case 'homepage':
 				case 'id':
 				case 'info':
 				case 'modified':

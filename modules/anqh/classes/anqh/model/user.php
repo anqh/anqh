@@ -36,7 +36,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'id'                 => null,
 		'username'           => null,
 		'username_clean'     => null,
-		'password'           => null,
+		'password_kohana'    => null,
 		'email'              => null,
 
 		// Personal information
@@ -60,7 +60,6 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		// Stats
 		'login_count'        => null,
 		'last_login'         => null,
-		'old_login'          => null,
 		'post_count'         => 0,
 		'new_comment_count'  => 0,
 		'comment_count'      => 0,
@@ -85,7 +84,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			'AutoModeler::unique' => array(':model', ':value', ':field')
 		),
 		'username_clean'     => array('not_empty', 'AutoModeler::unique' => array(':model', ':value', ':field')),
-		'password'           => array('not_empty'),
+		'password_kohana'    => array('not_empty'),
 		'email'              => array('not_empty', 'email', 'AutoModeler::unique' => array(':model', ':value', ':field')),
 
 		'name'               => array('max_length' => array(':value', 50)),
@@ -101,13 +100,10 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'longitude'          => array('numeric'),
 
 		'login_count'        => array('digit'),
-		'last_login'         => array('digit'),
 		'post_count'         => array('digit'),
 		'new_comment_count'  => array('digit'),
 		'comment_count'      => array('digit'),
 		'left_comment_count' => array('digit'),
-		'created'            => array('digit'),
-		'modified'           => array('digit'),
 	);
 
 	protected $_has_many = array(
@@ -221,7 +217,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 				break;
 
 			// Hash password
-			case 'password':
+			case 'password_kohana':
 				$visitor = Visitor::instance();
 				$value   = $value ? $visitor->hash_password($value) : null;
 				break;
@@ -250,8 +246,8 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @param  string      $field
 	 */
 	public static function _check_password_matches(Validation $array, $field) {
-		if (empty($array['password']) || $array['password'] !== $array[$field]) {
-			$array->error($field, 'matches', array('param1' => 'password'));
+		if (empty($array['password_kohana']) || $array['password_kohana'] !== $array[$field]) {
+			$array->error($field, 'matches', array('param1' => 'password_kohana'));
 		}
 	}
 
@@ -348,8 +344,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 			$this->login_count++;
 		}
 
-		$this->old_login  = $this->last_login;
-		$this->last_login = time();
+		$this->last_login = Date::format(Date::TIME_SQL);
 		$this->ip         = Request::$client_ip;
 		$this->hostname   = Request::host_name();
 
@@ -763,11 +758,11 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	public static function get_password_validation($user_post) {
 		return Validation::factory(
 			array(
-				'password'         => Arr::get($user_post, 'password'),
+				'password_kohana'  => Arr::get($user_post, 'password'),
 				'password_confirm' => Arr::get($user_post, 'password_confirm'),
 			))
 			->rule('password_confirm', 'not_empty')
-			->rule('password', 'matches', array(':validation', 'password', 'password_confirm')
+			->rule('password_kohana', 'matches', array(':validation', 'password_kohana', 'password_confirm')
 		);
 	}
 
@@ -921,7 +916,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 				'signature'    => $this->signature,
 				'avatar'       => $this->avatar,
 				'thumb'        => $this->get_image_url('thumbnail'),
-				'last_login'   => (int)$this->last_login,
+				'last_login'   => $this->last_login,
 			);
 		}
 

@@ -95,9 +95,9 @@ class Anqh_Visitor {
 			return false;
 		}
 
-		$hash = $this->hash_password($password, $this->find_salt($user->password));
+		$hash = $this->hash_password($password, $this->find_salt($user->password_kohana));
 
-		return $hash == $user->password;
+		return $hash == $user->password_kohana;
 	}
 
 
@@ -334,13 +334,13 @@ class Anqh_Visitor {
 		}
 
 		// Get the salt from the stored password
-		$salt = $this->find_salt($user->password);
+		$salt = $this->find_salt($user->password_kohana);
 
 		// Create a hashed password using the salt from the stored password
 		$hashed_password = $this->hash_password($password, $salt);
 
 		// If the passwords match to hashed password or "generated" password, perform a login
-		if (($user->password === $hashed_password || self::generate_password($user->password) === $password) && $user->has_role('login')) {
+		if (($user->password_kohana === $hashed_password || self::generate_password($user->password_kohana) === $password) && $user->has_role('login')) {
 			if ($remember === true) {
 
 				// Create a new autologin token

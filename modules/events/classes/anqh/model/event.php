@@ -18,7 +18,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'id'                   => null,
 		'name'                 => null,
 		'title'                => null,
-		'homepage'             => null,
+		'url'                  => null,
 		'stamp_begin'          => null,
 		'stamp_end'            => null,
 
@@ -33,7 +33,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'age'                  => null,
 		'price'                => null,
 		'price2'               => null,
-		'tickets_url'          => null,
+		'ticket_url'           => null,
 		'music'                => null,
 		'flyer_id'             => null,
 		'flyer_url'            => null,
@@ -43,7 +43,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 		'flyer_back_image_id'  => null,
 		'favorite_count'       => null,
 
-		'modifies'             => null,
+		'update_count'         => null,
 		'views'                => null,
 		'created'              => null,
 		'modified'             => null,
@@ -52,7 +52,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 	protected $_rules = array(
 		'name'                 => array('not_empty', 'length' => array(':value', 3, 128)),
-		'homepage'             => array('url'),
+		'url'                  => array('url'),
 		'stamp_begin'          => array('not_empty', 'digit'),
 		'stamp_end'            => array('not_empty', 'digit', 'after' => array(':validation', 'stamp_end', 'stamp_begin')),
 
@@ -62,7 +62,7 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 
 		'age'                  => array('digit', 'range' => array(':value', 0, 99)),
 		'price'                => array('numeric'),
-		'tickets_url'          => array('url'),
+		'ticket_url'           => array('url'),
 		'flyer_id'             => array('digit'),
 		'flyer_url'            => array('url'),
 		'flyer_front_url'      => array('url'),
@@ -81,8 +81,8 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'name', 'homepage', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
-		'city_name', 'age', 'price', 'price2', 'tickets_url', 'dj', 'info',
+		'name', 'url', 'stamp_begin', 'stamp_end', 'venue_id', 'venue_name',
+		'city_name', 'age', 'price', 'price2', 'ticket_url', 'dj', 'info',
 	);
 
 	/**

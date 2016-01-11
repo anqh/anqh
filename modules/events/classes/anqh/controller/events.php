@@ -540,7 +540,7 @@ class Anqh_Controller_Events extends Controller_Page {
 				);
 			}
 			$edit = true;
-			$event->modifies++;
+			$event->update_count++;
 			$event->modified = time();
 
 		} else {
@@ -792,10 +792,10 @@ class Anqh_Controller_Events extends Controller_Page {
 
 		// Tickets
 		$tickets = '';
-		if ($event->price == 0 || $event->price > 0 || $event->tickets_url) {
+		if ($event->price === 0 || $event->price > 0 || $event->tickets_url) {
 			$tickets = '<i class="fa fa-ticket"></i> ';
 		}
-		if ($event->price == 0) {
+		if ($event->price === 0) {
 			$tickets .= '<strong>' . __('Free entry') . '</strong> ';
 		} else if ($event->price > 0) {
 			$tickets .= __('Tickets :price', array(':price' => '<strong>' . Num::currency($event->price, $event->stamp_begin) . '</strong>')) . ' ';
@@ -813,8 +813,8 @@ class Anqh_Controller_Events extends Controller_Page {
 		}
 
 		// Homepage
-		if (!empty($event->homepage)) {
-			$subtitle[] = '<i class="fa fa-link"></i> ' . HTML::anchor($event->homepage, Text::limit_url($event->homepage, 25));
+		if (!empty($event->url)) {
+			$subtitle[] = '<i class="fa fa-link"></i> ' . HTML::anchor($event->url, Text::limit_url($event->url, 25));
 		}
 
 		// Venue
