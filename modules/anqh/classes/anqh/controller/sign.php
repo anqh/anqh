@@ -279,7 +279,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 			$post = Arr::extract($_POST, array('username', 'password', 'password_confirm'));
 			try {
 				$user->username = $post['username'];
-				$user->password = $post['password'];
+				$user->password_kohana = $post['password'];
 				$user->created  = time();
 				$user->save();
 
@@ -314,7 +314,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 
 				$this->request->redirect(URL::user($user));
 			} catch (Validation_Exception $e) {
-				$user->password = $user->password_confirm = null;
+				$user->password_kohana = $user->password_confirm = null;
 				$errors = $e->array->errors('validation');
 			}
 		}
