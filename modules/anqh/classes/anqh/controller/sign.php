@@ -124,7 +124,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 					array(
 						':site'     => Kohana::$config->load('site.site_name'),
 						':username' => Text::clean($user->username),
-						':password' => Visitor::generate_password($user->password),
+						':password' => Visitor::generate_password($user->password_kohana),
 					)
 				);
 
