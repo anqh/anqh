@@ -130,6 +130,8 @@ class View_Event_Day extends View_Article {
 			? $flyer->image()->get_url(Model_Image::SIZE_THUMBNAIL)
 			: null;
 
+		$icon = $icon ?: $this->event->flyer_front_url;
+
 		return HTML::anchor(
 			Route::model($this->event),
 			$icon ? HTML::image($icon, array('alt' => __('Flyer'))) : '<i class="fa fa-calendar"></i>'
