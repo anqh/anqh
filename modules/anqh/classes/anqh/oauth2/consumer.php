@@ -22,7 +22,12 @@ class Anqh_OAuth2_Consumer extends Kohana_OAuth2_Consumer {
 		} else {
 			$params['access_token'] = $this->_token['access_token'];
 		}
+
 		$api_call = $this->base_uri() . $call . URL::query($params, false);
+
+		if (substr_count($api_call, '?') > 1) {
+			$api_call = str_replace('?access_token', '&access_token', $api_call);
+		}
 
 		$request = Request::factory($api_call)->method(Request::GET);
 
