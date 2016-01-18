@@ -72,7 +72,7 @@ class Anqh_Controller_Venues extends Controller_Page {
 				// Copy info from duplicate
 				$new_data = false;
 				foreach (array(
-					'description', 'homepage', 'hours', 'info', 'address', 'zip', 'city_name',
+					'description', 'url', 'hours', 'info', 'address', 'zip', 'city_name',
 					'latitude', 'longitude', 'foursquare_id', 'foursquare_category_id'
 				) as $data) {
 					if ($duplicate[$data] && !$venue[$data]) {

@@ -212,7 +212,6 @@ class Anqh_Controller_Venues_API extends Controller_API {
 				// Raw value
 				case 'id':
 				case 'name':
-				case 'homepage':
 				case 'description':
 				case 'hours':
 				case 'address':
@@ -236,6 +235,10 @@ class Anqh_Controller_Venues_API extends Controller_API {
 					$image = new Model_Image($venue->default_image_id);
 			    $data[$field] = $image->loaded() ? $image->get_url() : '';
 			    break;
+
+				case 'homepage':
+					$data[$field] = $venue->url;
+					break;
 
 				case 'url':
 					$data[$field] = URL::site(Route::model($venue), true);

@@ -61,7 +61,7 @@ class View_Venue_Edit extends View_Section {
 
 			<?= Form::input_wrap(
 				'homepage',
-				$this->venue->homepage,
+				$this->venue->url,
 				null,
 				__('Homepage'),
 				Arr::get($this->errors, 'homepage')

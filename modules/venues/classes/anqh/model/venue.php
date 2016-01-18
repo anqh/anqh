@@ -20,7 +20,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 		'id'                     => null,
 		'name'                   => null,
 		'description'            => null,
-		'homepage'               => null,
+		'url'                    => null,
 		'hours'                  => null,
 		'info'                   => null,
 		'default_image_id'       => null,
@@ -43,7 +43,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	protected $_rules = array(
 		'name'                   => array('not_empty', 'max_length' => array(':value', 100)),
 		'description'            => array('max_length' => array(':value', 250)),
-		'homepage'               => array('url'),
+		'url'                    => array('url'),
 		'hours'                  => array('max_length' => array(':value', 250)),
 		'info'                   => array('max_length' => array(':value', 512)),
 		'default_image_id'       => array('digit'),
@@ -69,7 +69,7 @@ class Anqh_Model_Venue extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'name', 'description', 'homepage', 'hours', 'info', 'event_host',
+		'name', 'description', 'url', 'hours', 'info', 'event_host',
 		'address', 'zip', 'city_name', 'latitude', 'longitude',
 		'foursquare_id', 'foursquare_category_id',
 	);

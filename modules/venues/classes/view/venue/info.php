@@ -35,7 +35,7 @@ class View_Venue_Info extends View_Section {
 	public function content() {
 		ob_start();
 
-		if ($this->venue->homepage || $this->venue->description || $this->venue->info || $this->venue->hours || $this->venue->tags):
+		if ($this->venue->url || $this->venue->description || $this->venue->info || $this->venue->hours || $this->venue->tags):
 
 ?>
 
@@ -45,7 +45,7 @@ class View_Venue_Info extends View_Section {
 		</header>
 
 		<dl>
-			<?= empty($this->venue->homepage)    ? '' : '<dt>' . __('Homepage')      . '</dt><dd>' . HTML::anchor($this->venue->homepage) . '</dd>' ?>
+			<?= empty($this->venue->url)         ? '' : '<dt>' . __('Homepage')      . '</dt><dd>' . HTML::anchor($this->venue->url) . '</dd>' ?>
 			<?= empty($this->venue->description) ? '' : '<dt>' . __('Description')   . '</dt><dd>' . HTML::chars($this->venue->description) . '</dd>' ?>
 			<?= empty($this->venue->info)        ? '' : '<dt>' . __('Extra info')    . '</dt><dd>' . HTML::chars($this->venue->info) . '</dd>' ?>
 			<?= empty($this->venue->hours)       ? '' : '<dt>' . __('Opening hours') . '</dt><dd>' . HTML::chars($this->venue->hours) . '</dd>' ?>
