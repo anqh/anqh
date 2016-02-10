@@ -183,7 +183,9 @@ class Anqh_Controller_Events extends Controller_Page {
 		Anqh::page_meta('url', URL::site(Route::get('event')->uri(array('id' => $event->id, 'action' => '')), true));
 		Anqh::page_meta('description', date('l ', $event->stamp_begin) . Date::format(Date::DMY_SHORT, $event->stamp_begin) . ' @ ' . $event->venue_name);
 		if ($flyer = $event->flyer()) {
-			Anqh::page_meta('image', $flyer->image()->get_url('thumbnail'));
+			if ($flyer->image()) {
+				Anqh::page_meta('image', $flyer->image()->get_url('thumbnail'));
+			}
 		}
 		Anqh::share(true);
 

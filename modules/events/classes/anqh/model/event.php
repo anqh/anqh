@@ -175,7 +175,9 @@ class Anqh_Model_Event extends AutoModeler_ORM implements Permission_Interface {
 				// Post
 				$content = $this->info;
 				if ($flyer = $this->flyer()) {
-					$content = '[url=' . Route::model($flyer) . '][img]' . $flyer->image()->get_url() . '[/img][/url]' . "\n\n" . $content;
+					if ($flyer->image()) {
+						$content = '[url=' . Route::model($flyer) . '][img]' . $flyer->image()->get_url() . '[/img][/url]' . "\n\n" . $content;
+					}
 				}
 
 				$topic = $area->create_topic($name, $content, $this->author());

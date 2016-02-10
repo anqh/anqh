@@ -1554,7 +1554,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	protected function section_event_image(Model_Event $event) {
 
 		// Display front flyer by default
-		if ($flyer = $event->flyer()) {
+		if (($flyer = $event->flyer()) && $event->flyer()->image()) {
 			$image = $flyer->image();
 			$link  = Route::model($flyer);
 		} else {

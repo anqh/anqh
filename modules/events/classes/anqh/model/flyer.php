@@ -56,7 +56,11 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	 * @return  integer
 	 */
 	public function delete() {
-		return $this->image()->delete();
+		if ($this->image()) {
+			return $this->image()->delete();
+		}
+
+		return 1;
 	}
 
 
@@ -83,6 +87,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	public function find_by_event($event_id) {
 		return $this->load(
 			DB::select_array($this->fields())
+			  ->where('image_id', 'IS NOT', null)
 				->where('event_id', '=', (int)$event_id),
 			null
 		);
@@ -114,6 +119,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 		if ($year == 1970 && $month == 0) {
 			return $this->load(
 				DB::select_array($this->fields())
+					->where('image_id', 'IS NOT', null)
 					->where('stamp_begin', 'IS', null)
 					->order_by('id', 'DESC'),
 				null
@@ -123,6 +129,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 			$end   = strtotime('+1 month', $start);
 			return $this->load(
 				DB::select_array($this->fields())
+					->where('image_id', 'IS NOT', null)
 					->where('stamp_begin', 'BETWEEN', array($start, $end))
 					->order_by('stamp_begin', 'DESC')
 					->order_by('event_id', 'DESC'),
@@ -141,6 +148,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	public function find_latest($limit = 4) {
 		return $this->load(
 			DB::select_array($this->fields())
+				->where('image_id', 'IS NOT', null)
 				->order_by('image_id', 'DESC'),
 			$limit
 		);
@@ -198,7 +206,7 @@ GROUP BY 1
 			DB::select_array($this->fields())
 				->join('images', 'INNER')
 				->on('images.id', '=', 'flyers.image_id')
-				->where('author_id', '=', $user->id)
+				->where('images.author_id', '=', $user->id)
 				->and_where('new_comment_count', '>', 0),
 			null
 		);
@@ -213,6 +221,7 @@ GROUP BY 1
 	 */
 	public function find_random($unknown = false) {
 		$query = DB::select_array($this->fields())
+			->where('image_id', 'IS NOT', null)
 			->order_by(DB::expr('RANDOM()'));
 
 		if ($unknown) {

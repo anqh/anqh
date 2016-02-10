@@ -43,7 +43,7 @@ class View_Event_Carousel extends View_Section {
 		// Load images
 		$flyers = $this->event->flyers();
 
-		if (!count($flyers) && $this->event->flyer_front_url):
+		if ((!count($flyers) || !$flyers->current()->image()) && $this->event->flyer_front_url):
 
 			// Legacy support
 			echo HTML::image($this->event->flyer_front_url, [ 'class' => 'img-responsive' ]);
@@ -79,7 +79,7 @@ class View_Event_Carousel extends View_Section {
 
 	<div class="carousel-inner">
 
-		<?php foreach ($flyers as $flyer): ?>
+		<?php foreach ($flyers as $flyer): if ($flyer->image()): ?>
 
 		<div class="item<?= $flyer->id == $active_id ? ' active' : '' ?>">
 
@@ -100,7 +100,7 @@ class View_Event_Carousel extends View_Section {
 
 		</div>
 
-		<?php endforeach; ?>
+		<?php endif; endforeach; ?>
 
 	</div>
 
