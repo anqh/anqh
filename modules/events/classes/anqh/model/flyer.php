@@ -87,7 +87,6 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	public function find_by_event($event_id) {
 		return $this->load(
 			DB::select_array($this->fields())
-			  ->where('image_id', 'IS NOT', null)
 				->where('event_id', '=', (int)$event_id),
 			null
 		);
@@ -119,7 +118,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 		if ($year == 1970 && $month == 0) {
 			return $this->load(
 				DB::select_array($this->fields())
-					->where('image_id', 'IS NOT', null)
+				  ->where('image_id', 'IS NOT', null)
 					->where('stamp_begin', 'IS', null)
 					->order_by('id', 'DESC'),
 				null
@@ -148,7 +147,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	public function find_latest($limit = 4) {
 		return $this->load(
 			DB::select_array($this->fields())
-				->where('image_id', 'IS NOT', null)
+			  ->where('image_id', 'IS NOT', null)
 				->order_by('image_id', 'DESC'),
 			$limit
 		);
@@ -221,8 +220,8 @@ GROUP BY 1
 	 */
 	public function find_random($unknown = false) {
 		$query = DB::select_array($this->fields())
-			->where('image_id', 'IS NOT', null)
-			->order_by(DB::expr('RANDOM()'));
+				->where('image_id', 'IS NOT', null)
+				->order_by(DB::expr('RANDOM()'));
 
 		if ($unknown) {
 			$query = $query->where('event_id', 'IS', null);
@@ -279,6 +278,35 @@ GROUP BY 1
 		} catch (AutoModeler_Exception $e) {
 			return null;
 		}
+	}
+
+
+	/**
+	 * Get flyer image url, supports OctoberCMS attachments.
+	 *
+	 * @param  string  $size
+	 * @return  null|string
+	 */
+	public function image_url($size = null) {
+		if ($image = $this->image()) {
+			return $image->get_url($size);
+		}
+		else {
+			$filename = DB::select(['disk_name', 'file'])
+					->from('system_files')
+					->where('attachment_type', '=', 'Klubitus\Calendar\Models\Flyer')
+					->and_where('attachment_id', '=', $this->id)
+					->execute()
+					->get('file');
+
+			if ($filename) {
+				$path = implode('/', array_slice(str_split($filename, 3), 0, 3)) . '/';
+
+				return '/storage/app/uploads/public/' . $path . $filename;
+			}
+		}
+
+		return null;
 	}
 
 }

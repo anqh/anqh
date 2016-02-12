@@ -258,7 +258,7 @@ class Anqh_Controller_Events_API extends Controller_API {
 						$size = null;
 					}
 
-					$data[$field] = ($flyer = $event->flyer()) ? ($flyer->image() ? $flyer->image()->get_url($size) : null) : null;
+					$data[$field] = ($flyer = $event->flyer()) ? $flyer->image_url($size) : null;
 					break;
 
 				case 'music':

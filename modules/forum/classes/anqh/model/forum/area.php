@@ -15,7 +15,7 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 	/** Everybody can read area */
 	const READ_NORMAL = 0;
 
-	/** Only memberes can read area */
+	/** Only members can read area */
 	const READ_MEMBERS = 1;
 
 	/** Visible area */
@@ -54,6 +54,9 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		'access_write'   => self::WRITE_NORMAL,
 		'status'         => self::STATUS_NORMAL,
 		'area_type'      => self::TYPE_NORMAL,
+		'is_hidden'      => false,
+		'is_moderated'   => false,
+		'is_private'     => false,
 		'bind'           => null,
 
 		'post_count'     => null,
@@ -162,9 +165,19 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 		return $this->load(
 			DB::select_array($this->fields())
 				->where('area_type', '=', Model_Forum_Area::TYPE_BIND)
-				->where('status', '=', Model_Forum_Area::STATUS_NORMAL)
+				->where('is_hidden', '=', false)
+//				->where('status', '=', Model_Forum_Area::STATUS_NORMAL)
 				->where('bind', '=', $bind)
 		);
+	}
+
+
+	public function __get($key) {
+		if (strpos($key, 'is_') === 0 && isset($this->_data[$key])) {
+			return $this->_data[$key] == 't';
+		}
+
+		return parent::__get($key);
 	}
 
 
@@ -230,16 +243,13 @@ class Anqh_Model_Forum_Area extends AutoModeler_ORM implements Permission_Interf
 
 			case self::PERMISSION_POST:
 		    return $user
-			    && ($this->access_write != self::WRITE_ADMINS
-//				    && $this->area_type != self::TYPE_BIND
-				    && $this->status != self::STATUS_HIDDEN
-				    || $user->has_role('admin')
-			    );
+		      && !$this->is_hidden
+		      && (!$this->is_moderated || $user->has_role('admin'));
 
 			case self::PERMISSION_READ:
-				return $this->status == self::STATUS_NORMAL
+				return !$this->is_hidden
 					&& $this->area_type != self::TYPE_PRIVATE
-					&& ($this->access_read == self::READ_NORMAL || $user);
+					&& (!$this->is_private || $user);
 
 		}
 

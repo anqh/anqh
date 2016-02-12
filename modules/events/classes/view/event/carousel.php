@@ -46,7 +46,9 @@ class View_Event_Carousel extends View_Section {
 		if ((!count($flyers) || !$flyers->current()->image()) && $this->event->flyer_front_url):
 
 			// Legacy support
-			echo HTML::image($this->event->flyer_front_url, [ 'class' => 'img-responsive' ]);
+			$flyer_url = ($flyer = $flyers->current()) ? $flyer->image_url() : $this->event->flyer_front_url;
+
+			echo HTML::image($flyer_url, [ 'class' => 'img-responsive' ]);
 
 		elseif (count($flyers)):
 
