@@ -92,14 +92,14 @@ class View_User_Settings extends View_Section {
 			<div class="col-sm-10">
 				<?= Form::input_wrap(
 						'avatar',
-						$this->user->avatar,
+						$this->user->avatar_url,
 						null,
 						__('Avatar'),
 						Arr::get($this->errors, 'avatar')
 				) ?>
 			</div>
 			<div class="col-sm-2">
-				<?= HTML::avatar($this->user->avatar, null, null, false) ?>
+				<?= HTML::avatar($this->user->avatar_url, null, null, false) ?>
 			</div>
 			</div>
 
@@ -255,7 +255,7 @@ class View_User_Settings extends View_Section {
 				<?= HTML::avatar($avatar, null, 'pull-left facebook', false) ?>
 				<div class="media-body">
 					<?= HTML::anchor($facebook['link'], HTML::chars($facebook['name']), array('target' => '_blank')) ?>
-					<?= Form::checkbox_wrap('avatar', $avatar, $this->user->avatar == $avatar, null, __('Set as your avatar')) ?>
+					<?= Form::checkbox_wrap('avatar', $avatar, $this->user->avatar_url == $avatar, null, __('Set as your avatar')) ?>
 					<?= Form::checkbox_wrap('picture', $avatar . '?type=large', $this->user->picture == $avatar . '?type=large', null, __('Set as your profile image')) ?>
 					<?= HTML::anchor(
 								Route::url('oauth', array('action' => 'disconnect', 'provider' => 'facebook')),

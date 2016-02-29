@@ -256,7 +256,7 @@ class Anqh_Controller_Sign extends Controller_Page {
 			$user->email    = Arr::get($external, 'email');
 			$user->name     = Arr::get($external, 'name');
 			$user->username = Arr::get($external, 'username', $user->name);
-			$user->avatar   = 'https://graph.facebook.com/' . $external['id'] . '/picture';
+			$user->avatar_url = 'https://graph.facebook.com/' . $external['id'] . '/picture';
 			$user->picture  = 'https://graph.facebook.com/' . $external['id'] . '/picture?type=large';
 			if ($location = Arr::get($external, 'location')) {
 				$user->location  = $location->name;

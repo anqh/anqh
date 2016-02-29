@@ -47,7 +47,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 		'signature'          => null,
 		'description'        => null,
 		'homepage'           => null,
-		'avatar'             => null,
+		'avatar_url'         => null,
 		'picture'            => null,
 		'default_image_id'   => null,
 
@@ -135,7 +135,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 	 * @var  array  User editable fields
 	 */
 	public static $editable_fields = array(
-		'avatar', 'city', 'description', 'dob', 'gender', 'homepage', 'name', 'title',
+		'avatar_url', 'city', 'description', 'dob', 'gender', 'homepage', 'name', 'title',
 		'picture', 'signature', 'location', 'city_name', 'latitude', 'longitude',
 	);
 
@@ -914,7 +914,7 @@ class Anqh_Model_User extends AutoModeler_ORM implements Permission_Interface {
 				'gender'       => $this->gender,
 				'title'        => $this->title,
 				'signature'    => $this->signature,
-				'avatar'       => $this->avatar,
+				'avatar'       => $this->avatar_url,
 				'thumb'        => $this->get_image_url('thumbnail'),
 				'last_login'   => $this->last_login,
 			);

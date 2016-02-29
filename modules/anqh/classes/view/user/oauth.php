@@ -70,7 +70,7 @@ class View_User_OAuth extends View_Section {
 	</div>
 
 	<div class="media span3">
-		<?= HTML::avatar($this->user->avatar, $this->user->username, 'pull-left') ?>
+		<?= HTML::avatar($this->user->avatar_url, $this->user->username, 'pull-left') ?>
 		<div class="media-body">
 			<?= HTML::user($this->user) ?>
 		</div>

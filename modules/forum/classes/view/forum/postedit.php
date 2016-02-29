@@ -266,7 +266,7 @@ class View_Forum_PostEdit extends View_Article {
 ?>
 
 <div class="pull-left">
-	<?= HTML::avatar(Visitor::$user->avatar, Visitor::$user->username) ?>
+	<?= HTML::avatar(Visitor::$user->avatar_url, Visitor::$user->username) ?>
 </div>
 
 <?php

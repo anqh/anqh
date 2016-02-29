@@ -608,7 +608,7 @@ class Anqh_Controller_User extends Controller_Page {
 		if ($user->title) {
 			$view->subtitle = HTML::chars($user->title);
 		}
-		$view->title_icon = HTML::avatar($user->avatar, $user->username);
+		$view->title_icon = HTML::avatar($user->avatar_url, $user->username);
 
 		// Set actions
 		if (Visitor::$user) {

@@ -97,7 +97,7 @@ class View_Forum_Post extends View_Article {
 <div class="pull-left">
 
 	<?php if ($this->author): ?>
-		<?= HTML::avatar($this->author->avatar, $this->author->username) ?>
+		<?= HTML::avatar($this->author->avatar_url, $this->author->username) ?>
 
 		<p>
 			<small><?= __('Posts: :posts', array(':posts' => '<var>' . Num::format($this->author->post_count, 0) . '</var>')) ?></small>

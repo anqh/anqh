@@ -760,7 +760,7 @@ class Anqh_View_Page extends View_Base {
 	<li id="notifications"><?= implode(' ', Anqh::notifications(Visitor::$user)) ?></li>
 
 	<li class="hidden-xs">
-		<?= HTML::avatar(Visitor::$user->avatar, Visitor::$user->username, 'small') ?>
+		<?= HTML::avatar(Visitor::$user->avatar_url, Visitor::$user->username, 'small') ?>
 	</li>
 
 	<li id="visitor" class="dropdown">
