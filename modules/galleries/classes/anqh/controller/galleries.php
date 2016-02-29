@@ -343,7 +343,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 		// Comments section
-		if (Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS)) {
+		if (false && Permission::has($flyer, Model_Flyer::PERMISSION_COMMENTS)) {
 			$errors = array();
 			$values = array();
 
@@ -408,7 +408,7 @@ class Anqh_Controller_Galleries extends Controller_Page {
 		Anqh::page_meta('title', __('Flyer') . ': ' . $event->name);
 		Anqh::page_meta('url', URL::site(Route::get('flyer')->uri(array('id' => $flyer->id, 'action' => '')), true));
 		Anqh::page_meta('twitter:card', 'photo');
-		Anqh::page_meta('image', URL::site($image->get_url('thumbnail'), true));
+		Anqh::page_meta('image', URL::site($flyer->image_url('thumbnail'), true));
 		if ($event) {
 
 			// Flyer is linked to an event
@@ -442,9 +442,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 
 
 		// Flyer
-		$image->view_count++;
-		$image->save();
-		$this->view->add(View_Page::COLUMN_TOP, $this->section_flyer($image));
+		if ($image) {
+			$image->view_count++;
+			$image->save();
+		}
+		$this->view->add(View_Page::COLUMN_TOP, $this->section_flyer($flyer));
 
 		// Comments
 		if (isset($section_comments)) {
@@ -1569,11 +1571,11 @@ class Anqh_Controller_Galleries extends Controller_Page {
 	/**
 	 * Get flyer view.
 	 *
-	 * @param   Model_Image  $image
+	 * @param   Model_Flyer  $flyer
 	 * @return  View_Flyer_Full
 	 */
-	public function section_flyer(Model_Image $image) {
-		return new View_Flyer_Full($image);
+	public function section_flyer(Model_Flyer $flyer) {
+		return new View_Flyer_Full($flyer);
 	}
 
 

@@ -51,7 +51,7 @@ class View_Flyers_Thumbs extends View_Section {
 
 			<?= HTML::anchor(
 				Route::get('flyer')->uri(array('id' => $flyer->id)),
-				HTML::image($flyer->image->get_url('thumbnail'))) ?>
+				HTML::image($flyer->image_url('thumbnail'))) ?>
 
 			<div class="caption">
 				<h4><?= HTML::anchor(Route::url('flyer', array('id' => $flyer->id)), HTML::chars($name), array('title' => HTML::chars($name))) ?></h4>

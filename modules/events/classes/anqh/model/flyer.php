@@ -30,7 +30,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	);
 
 	protected $_rules = array(
-		'image_id'    => array('not_empty'),
+//		'image_id'    => array('not_empty'),
 		'stamp_begin' => array('not_empty', 'digit'),
 	);
 
@@ -118,7 +118,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 		if ($year == 1970 && $month == 0) {
 			return $this->load(
 				DB::select_array($this->fields())
-				  ->where('image_id', 'IS NOT', null)
+//				  ->where('image_id', 'IS NOT', null)
 					->where('stamp_begin', 'IS', null)
 					->order_by('id', 'DESC'),
 				null
@@ -128,7 +128,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 			$end   = strtotime('+1 month', $start);
 			return $this->load(
 				DB::select_array($this->fields())
-					->where('image_id', 'IS NOT', null)
+//					->where('image_id', 'IS NOT', null)
 					->where('stamp_begin', 'BETWEEN', array($start, $end))
 					->order_by('stamp_begin', 'DESC')
 					->order_by('event_id', 'DESC'),
@@ -147,7 +147,7 @@ class Anqh_Model_Flyer extends AutoModeler_ORM implements Permission_Interface {
 	public function find_latest($limit = 4) {
 		return $this->load(
 			DB::select_array($this->fields())
-			  ->where('image_id', 'IS NOT', null)
+//			  ->where('image_id', 'IS NOT', null)
 				->order_by('image_id', 'DESC'),
 			$limit
 		);
@@ -220,7 +220,7 @@ GROUP BY 1
 	 */
 	public function find_random($unknown = false) {
 		$query = DB::select_array($this->fields())
-				->where('image_id', 'IS NOT', null)
+//				->where('image_id', 'IS NOT', null)
 				->order_by(DB::expr('RANDOM()'));
 
 		if ($unknown) {

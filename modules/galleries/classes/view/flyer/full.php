@@ -10,20 +10,20 @@
 class View_Flyer_Full extends View_Section {
 
 	/**
-	 * @var  Model_Image
+	 * @var  Model_Flyer
 	 */
-	public $image;
+	public $flyer;
 
 
 	/**
 	 * Create new view.
 	 *
-	 * @param  Model_Image  $image
+	 * @param  Model_Flyer  $flyer
 	 */
-	public function __construct(Model_Image $image) {
+	public function __construct(Model_Flyer $flyer) {
 		parent::__construct();
 
-		$this->image = $image;
+		$this->flyer = $flyer;
 	}
 
 
@@ -40,7 +40,7 @@ class View_Flyer_Full extends View_Section {
 <div class="image">
 	<figure>
 
-		<?= HTML::image($this->image->get_url()) ?>
+		<?= HTML::image($this->flyer->image_url()) ?>
 
 	</figure>
 </div>
