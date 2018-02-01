@@ -393,11 +393,11 @@ class Anqh_Controller_Events extends Controller_Page {
 		if (!$day && !$month && !$week) {
 
 			// Create todays events
-			$this->stamp_begin = strtotime('today');
-			$this->stamp_end   = strtotime('tomorrow -1 second');
-			if ($events = $this->_events()) {
-				$section_today = $this->sections_events($events);
-			}
+//			$this->stamp_begin = strtotime('today');
+//			$this->stamp_end   = strtotime('tomorrow -1 second');
+//			if ($events = $this->_events()) {
+//				$section_today = $this->sections_events($events);
+//			}
 
 			$week = date('W');
 		}
